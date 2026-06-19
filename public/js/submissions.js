@@ -113,8 +113,25 @@
     });
 
     document.addEventListener('click', e => {
-      if (!e.target.closest('#subLevelSearchWrap')) hideSuggestions();
+      if (!e.target.closest('#subLevelSearchWrap') && !e.target.closest('#levelSuggestions')) hideSuggestions();
     });
+
+    function scoreMatch(name, ql) {
+      if (name === ql) return 1000;
+      if (name.startsWith(ql)) return 900;
+      if (name.includes(ql)) return 700;
+      const words = name.split(/\s+/);
+      if (words.some(w => w === ql)) return 600;
+      if (words.some(w => w.startsWith(ql))) return 500;
+      if (words.some(w => w.includes(ql))) return 300;
+      // fuzzy: todos los caracteres de ql aparecen en orden en name
+      let qi = 0;
+      for (let i = 0; i < name.length && qi < ql.length; i++) {
+        if (name[i] === ql[qi]) qi++;
+      }
+      if (qi === ql.length) return 100;
+      return 0;
+    }
 
     function renderLevelSuggestions(q) {
       if (!q || q.length < 1) { hideSuggestions(); return; }
@@ -123,62 +140,20 @@
 
       // Niveles que YA están en nuestra lista
       const listHits = levels
-  .map(level => {
-    const name = (level.name || '').toLowerCase();
-
-    let score = 0;
-
-if (name === ql) score = 1000;
-else if (name.startsWith(ql)) score = 700;
-else if (name.includes(ql)) score = 500;
-else {
-  const words = name.split(/\s+/);
-
-  if (words.some(w => w.startsWith(ql))) {
-    score = 300;
-  }
-}
-
-    return {
-      ...level,
-      score
-    };
-  })
-  .filter(x => x.score > 0)
-  .sort((a, b) => b.score - a.score)
-  .slice(0, 25);
+        .map(level => ({ ...level, score: scoreMatch((level.name || '').toLowerCase(), ql) }))
+        .filter(x => x.score > 0)
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 25);
 
       // Niveles de AREDL que NO están en nuestra lista todavía (sugerencia para agregar nuevo)
       const aredlMapData = window.aredlMap || {};
       const listNames    = new Set(levels.map(l => l.name?.toLowerCase()));
       const aredlHits = Object.entries(aredlMapData)
-  .map(([name, info]) => {
-    let score = 0;
-
-if (name === ql) score = 1000;
-else if (name.startsWith(ql)) score = 700;
-else if (name.includes(ql)) score = 500;
-else {
-  const words = name.split(/\s+/);
-
-  if (words.some(w => w.startsWith(ql))) {
-    score = 300;
-  }
-}
-
-    return {
-      score,
-      name,
-      info
-    };
-  })
-  .filter(x => x.score > 0 && !listNames.has(x.name))
-  .sort((a, b) => b.score - a.score)
-  .slice(0, 25)
-  .map(x => ({
-    name: x.info.originalName || x.name,
-    ...x.info
-  }));
+        .map(([name, info]) => ({ score: scoreMatch(name, ql), name, info }))
+        .filter(x => x.score > 0 && !listNames.has(x.name))
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 25)
+        .map(x => ({ name: x.info.originalName || x.name, ...x.info }));
 
       if (!listHits.length && !aredlHits.length) {
         suggestions.innerHTML = `<div class="sub-sug-empty"><i class="fas fa-search"></i> Sin resultados</div>`;
@@ -219,6 +194,7 @@ else {
       suggestions.classList.add('open');
 
       suggestions.querySelectorAll('.sub-sug-item').forEach(item => {
+        item.addEventListener('mousedown', e => { e.preventDefault(); }); // evita que el blur cierre antes del click
         item.addEventListener('click', () => selectLevel({
           name:           item.dataset.name,
           position:       item.dataset.pos ? parseInt(item.dataset.pos) : null,
