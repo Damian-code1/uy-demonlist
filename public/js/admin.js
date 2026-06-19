@@ -406,7 +406,7 @@ function renderVictorsTable(victors, opts = {}) {
       <td>${videoCell}</td>
       <td>
         <button class="btn-icon btn-edit"
-          onclick="openVictorModal(${v.id},'${esc(name)}','${esc(ownVideoUrl)}')">
+          onclick="openVictorModal(${v.id},'${esc(name)}','${esc(effectiveUrl)}')">
           <i class="fas fa-pen"></i>
         </button>
         <button class="btn-icon btn-delete" onclick="deleteVictor(${v.id})">
