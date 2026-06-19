@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ruleta Extreme Demon — UY Demonlist</title>
+  <meta name="description" content="Extreme Demon Roulette basada en el demonlist uruguayo. ¿Podés completar todos los niveles que te toquen?">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Toastify -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js@1.12.0/src/toastify.min.css">
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/roulette.css">
+</head>
+<body class="roulette-page">
+
+<!-- ─── NAVBAR ─── -->
+<nav class="navbar" id="navbar">
+  <div class="navbar-inner">
+    <a href="index.html" class="navbar-logo">
+      <img src="" alt="GD Uruguay" class="logo-img" id="serverLogoImg" style="display:none">
+      <span class="logo-flag" id="logoFlag">🇺🇾</span>
+      <span class="logo-name">DEMONLIST</span>
+    </a>
+
+    <div class="nav-links" id="navLinks">
+      <a href="index.html#lista"       class="nav-link">Lista</a>
+      <a href="index.html#submissions" class="nav-link">Submissions</a>
+      <a href="index.html#leaderboard" class="nav-link">Jugadores</a>
+      <a href="roulette.html"          class="nav-link nav-roulette active">
+        <i class="fas fa-dice" style="margin-right:.3rem;font-size:.8rem"></i>Ruleta
+      </a>
+      <a href="index.html#comunidad"   class="nav-link">Discord</a>
+    </div>
+
+    <div class="nav-right">
+      <button id="navAdminBtn" onclick="openAdminPanel?.()">
+        <i class="fas fa-shield-alt"></i> Admin
+      </button>
+      <button class="login-btn" id="loginBtn">
+        <i class="fab fa-discord"></i><span>Login</span>
+      </button>
+      <div class="user-widget" id="userWidget">
+        <div class="user-widget-card" onclick="toggleUserDropdown()">
+        </div>
+        <div class="user-widget-dropdown"></div>
+      </div>
+    </div>
+
+    <button class="hamburger" id="hamburger" aria-label="Menú">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- ─── HERO ─── -->
+<section class="rl-hero" id="rlHero">
+  <div class="rl-hero-bg"></div>
+  <div class="rl-embers" id="rlEmbers"></div>
+
+  <div class="rl-hero-content">
+    <div class="rl-hero-eyebrow">
+      <i class="fas fa-fire"></i>
+      UY Demonlist · Roulette
+    </div>
+
+    <h1 class="rl-hero-title">
+      <span class="rl-title-extreme">EXTREME</span>
+      <span class="rl-title-demon">DEMON</span>
+      <span class="rl-title-roulette">ROULETTE</span>
+    </h1>
+
+    <p class="rl-hero-desc">
+      Probá tu aguante: girá la ruleta y completá los niveles que te asigne la suerte.
+      Basada en los demons más difíciles de la lista uruguaya.
+    </p>
+
+    <div class="rl-hero-stats">
+      <div class="rl-stat-item">
+        <span class="rl-stat-num" id="rlStatLevels">–</span>
+        <span class="rl-stat-lbl">Niveles</span>
+      </div>
+      <div class="rl-stat-sep"></div>
+      <div class="rl-stat-item">
+        <span class="rl-stat-num" id="rlStatAredl">–</span>
+        <span class="rl-stat-lbl">En AREDL</span>
+      </div>
+      <div class="rl-stat-sep"></div>
+      <div class="rl-stat-item">
+        <span class="rl-stat-num" id="rlStatPool">–</span>
+        <span class="rl-stat-lbl">Disponibles</span>
+      </div>
+    </div>
+
+    <button class="rl-hero-cta" id="rlHeroCta">
+      <i class="fas fa-dice spin-icon"></i>
+      <span>¡Empezar Ruleta!</span>
+    </button>
+  </div>
+</section>
+
+<!-- ─── MAIN ─── -->
+<main class="rl-main" id="rlSlotSection">
+
+  <!-- CONFIG PANEL -->
+  <div class="rl-config-panel" id="rlConfigPanel">
+
+    <!-- Niveles a completar -->
+    <div class="rl-config-group">
+      <div class="rl-config-label">
+        <i class="fas fa-target"></i> Meta de niveles
+      </div>
+      <div class="rl-range-wrap">
+        <input type="range" id="rlGoalSlider" min="50" max="100" value="50" step="1">
+        <div class="rl-range-labels"><span>50</span><span>100</span></div>
+        <div class="rl-range-val">
+          <span id="rlGoalVal">50</span> niveles
+        </div>
+      </div>
+    </div>
+
+    <!-- Rango de posiciones -->
+    <div class="rl-config-group">
+      <div class="rl-config-label">
+        <i class="fas fa-filter"></i> Rango de dificultad
+      </div>
+      <div class="rl-range-wrap">
+        <input type="range" id="rlRangeMax" min="1" max="999" value="999" step="1">
+        <div class="rl-range-labels"><span>#1</span><span>Full lista</span></div>
+        <div class="rl-range-val" id="rlRangeMaxVal">— de —</div>
+      </div>
+    </div>
+
+    <!-- Toggles -->
+    <div class="rl-config-group">
+      <div class="rl-config-label">
+        <i class="fas fa-sliders-h"></i> Opciones
+      </div>
+      <div style="display:flex;flex-direction:column;gap:.75rem;padding-top:.3rem">
+        <div class="rl-toggle-row">
+          <label class="rl-toggle">
+            <input type="checkbox" id="rlAredlOnly">
+            <span class="rl-toggle-slider"></span>
+          </label>
+          <span class="rl-toggle-label">Solo niveles en AREDL</span>
+        </div>
+        <div class="rl-toggle-row">
+          <label class="rl-toggle">
+            <input type="checkbox" id="rlHideLevel">
+            <span class="rl-toggle-slider"></span>
+          </label>
+          <span class="rl-toggle-label">Ocultar nivel hasta el giro</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pool info -->
+    <div class="rl-config-group" style="align-self:flex-end">
+      <div class="rl-config-label">
+        <i class="fas fa-database"></i> Pool actual
+      </div>
+      <div style="font-size:1.4rem;font-family:var(--font-title);letter-spacing:2px;
+                  background:linear-gradient(135deg,var(--violet),var(--roulette-fire));
+                  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent"
+           id="rlPoolInfo">Cargando…</div>
+      <div class="rl-config-label" style="margin-top:.3rem;font-style:italic;letter-spacing:0;text-transform:none">
+        Se actualiza con cada spin
+      </div>
+    </div>
+  </div>
+
+  <!-- SLOT MACHINE -->
+  <div class="rl-slot-section">
+    <div class="rl-slot-title">
+      <i class="fas fa-dice-d20"></i> Nivel actual
+    </div>
+
+    <div class="rl-slot-machine" id="rlSlotMachine">
+      <!-- Thumbnail -->
+      <div class="rl-slot-thumb-wrap">
+        <img class="rl-slot-thumb" id="rlSlotThumb" src="" alt="" style="display:none">
+        <div class="rl-slot-overlay"></div>
+
+        <!-- Strip animado durante el giro -->
+        <div class="rl-slot-spin-overlay">
+          <div class="rl-spin-strip" id="rlSpinStrip"></div>
+        </div>
+
+        <!-- Info del nivel -->
+        <div class="rl-slot-info" id="rlSlotInfo">
+          <div class="rl-slot-pos-badge">
+            <i class="fas fa-dice"></i> ¿Qué nivel te toca?
+          </div>
+          <div class="rl-slot-name">Presioná GIRAR</div>
+          <div class="rl-slot-meta"></div>
+        </div>
+      </div>
+
+      <!-- Controles -->
+      <div class="rl-controls">
+        <button class="rl-btn-spin" id="rlBtnSpin">
+          <i class="fas fa-dice spin-icon"></i>
+          <span class="spin-text">Girar</span>
+        </button>
+        <button class="rl-btn-complete" id="rlBtnComplete" disabled>
+          <i class="fas fa-check"></i> Completado
+        </button>
+        <button class="rl-btn-fail" id="rlBtnFail" disabled>
+          <i class="fas fa-skull-crossbones"></i> Rendirse
+        </button>
+        <button class="rl-btn-skip" id="rlBtnSkip" disabled>
+          <i class="fas fa-forward"></i> Saltear
+        </button>
+        <div class="rl-controls-info" id="rlControlsInfo">
+          0 completados · 0 salteados
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="rl-progress-section">
+    <div class="rl-progress-header">
+      <div class="rl-progress-title">
+        <i class="fas fa-chart-line"></i> Progreso de la sesión
+      </div>
+      <div class="rl-progress-count" id="rlProgressCount">0 / 50</div>
+    </div>
+    <div class="rl-progress-bar-wrap">
+      <div class="rl-progress-bar-fill" id="rlProgressFill"></div>
+    </div>
+    <div class="rl-progress-steps" id="rlProgressDots"></div>
+  </div>
+
+  <!-- HISTORY -->
+  <div class="rl-history-section">
+    <div class="rl-history-header">
+      <div class="rl-history-title">
+        <i class="fas fa-scroll"></i> Historial de la sesión
+      </div>
+      <button class="rl-history-clear" id="rlHistoryClear">
+        <i class="fas fa-trash"></i> Limpiar
+      </button>
+    </div>
+    <div class="rl-history-empty" id="rlHistoryEmpty">
+      <i class="fas fa-dice"></i>
+      Girá la ruleta para empezar tu sesión
+    </div>
+    <div class="rl-history-list" id="rlHistoryList" style="display:none"></div>
+  </div>
+
+  <!-- SESSION STATS -->
+  <div class="rl-stats-section" id="rlStatsSection">
+    <div class="rl-stats-header">
+      <div class="rl-stats-title">
+        <i class="fas fa-chart-bar"></i> Estadísticas de la sesión
+      </div>
+      <button class="rl-btn-pdf" id="rlBtnDownloadPdf" disabled>
+        <i class="fas fa-file-pdf"></i> Descargar PDF
+      </button>
+    </div>
+    <div class="rl-stats-grid" id="rlStatsGrid">
+      <div class="rl-stat-card">
+        <div class="rl-stat-card-val" id="rlStatCompleted">0</div>
+        <div class="rl-stat-card-lbl">Completados</div>
+      </div>
+      <div class="rl-stat-card">
+        <div class="rl-stat-card-val" id="rlStatFailed" style="color:var(--red)">0</div>
+        <div class="rl-stat-card-lbl">Rendidos</div>
+      </div>
+      <div class="rl-stat-card">
+        <div class="rl-stat-card-val" id="rlStatSkipped" style="color:var(--warning)">0</div>
+        <div class="rl-stat-card-lbl">Salteados</div>
+      </div>
+      <div class="rl-stat-card">
+        <div class="rl-stat-card-val" id="rlStatAvgPct" style="color:var(--violet)">—</div>
+        <div class="rl-stat-card-lbl">Promedio %</div>
+      </div>
+      <div class="rl-stat-card">
+        <div class="rl-stat-card-val" id="rlStatBestPct" style="color:var(--success)">—</div>
+        <div class="rl-stat-card-lbl">Mejor %</div>
+      </div>
+      <div class="rl-stat-card">
+        <div class="rl-stat-card-val" id="rlStatLastPct" style="color:var(--roulette-fire)">—</div>
+        <div class="rl-stat-card-lbl">Último %</div>
+      </div>
+    </div>
+    <div class="rl-stats-detail" id="rlStatsDetail">
+      <p class="rl-stats-empty">Girá la ruleta para empezar a registrar estadísticas.</p>
+    </div>
+  </div>
+
+</main>
+
+<!-- ─── FOOTER ─── -->
+<footer class="footer">
+  <div class="footer-inner">
+    <a href="index.html" class="footer-logo">
+      <span class="logo-flag">🇺🇾</span>
+      <span class="footer-logo-text">UY Demonlist</span>
+    </a>
+    <nav class="footer-nav">
+      <a href="index.html#lista">Lista</a>
+      <a href="index.html#submissions">Submissions</a>
+      <a href="index.html#leaderboard">Jugadores</a>
+      <a href="roulette.html">Ruleta</a>
+    </nav>
+  </div>
+  <div class="footer-bottom">
+    <span>Hecho con <i class="fas fa-heart" style="color:var(--red)"></i> para la comunidad de GD Uruguay</span>
+    <span>&copy; <span id="year"></span> UY Demonlist</span>
+  </div>
+</footer>
+
+<!-- ─── PERCENTAGE MODAL ─── -->
+<div class="rl-pct-modal" id="rlPctModal">
+  <div class="modal-backdrop" id="rlPctBackdrop"></div>
+  <div class="rl-pct-box">
+    <div class="rl-pct-header">
+      <div class="rl-pct-icon" id="rlPctIcon"><i class="fas fa-percent"></i></div>
+      <div class="rl-pct-title" id="rlPctTitle">Registrar progreso</div>
+      <div class="rl-pct-sub" id="rlPctSub">¿Hasta qué porcentaje llegaste en este nivel?</div>
+    </div>
+    <div class="rl-pct-level" id="rlPctLevelName">—</div>
+    <div class="rl-pct-input-wrap">
+      <input type="number" id="rlPctInput" min="1" max="100" step="1" placeholder="Ej: 47" inputmode="numeric">
+      <span class="rl-pct-suffix">%</span>
+    </div>
+    <div class="rl-pct-hint" id="rlPctHint"></div>
+    <div class="rl-pct-error" id="rlPctError"></div>
+    <div class="rl-pct-actions">
+      <button class="rl-pct-btn-cancel" id="rlPctCancel">Cancelar</button>
+      <button class="rl-pct-btn-submit" id="rlPctSubmit">
+        <i class="fas fa-check"></i> Confirmar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── FINISH MODAL ─── -->
+<div class="rl-finish-modal" id="rlFinishModal">
+  <div class="modal-backdrop" onclick="document.getElementById('rlFinishModal').classList.remove('open')"></div>
+  <div class="rl-finish-box">
+    <div class="rl-finish-header">
+      <div class="rl-finish-trophy">🏆</div>
+      <div class="rl-finish-title">¡RULETA COMPLETADA!</div>
+      <div class="rl-finish-sub">Completaste tu sesión de Extreme Demon Roulette</div>
+    </div>
+    <div class="rl-finish-stats-grid">
+      <div class="rl-finish-stat">
+        <div class="rl-finish-stat-val" id="rlFinishCompleted" style="color:var(--success)">0</div>
+        <div class="rl-finish-stat-lbl">Completados</div>
+      </div>
+      <div class="rl-finish-stat">
+        <div class="rl-finish-stat-val" id="rlFinishFailed" style="color:var(--red)">0</div>
+        <div class="rl-finish-stat-lbl">Rendidos</div>
+      </div>
+      <div class="rl-finish-stat">
+        <div class="rl-finish-stat-val" id="rlFinishSkipped" style="color:var(--warning)">0</div>
+        <div class="rl-finish-stat-lbl">Salteados</div>
+      </div>
+      <div class="rl-finish-stat">
+        <div class="rl-finish-stat-val" id="rlFinishPct" style="color:var(--violet)">0%</div>
+        <div class="rl-finish-stat-lbl">Ratio</div>
+      </div>
+    </div>
+    <div class="rl-finish-actions">
+      <button class="rl-finish-btn-pdf" id="rlBtnFinishPdf">
+        <i class="fas fa-file-pdf"></i> PDF
+      </button>
+      <button class="rl-finish-btn-new" id="rlBtnNewSession">
+        <i class="fas fa-redo"></i> Nueva sesión
+      </button>
+      <button class="rl-finish-btn-close" id="rlBtnCloseFinish">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Canvas confetti -->
+<canvas id="confettiCanvas"></canvas>
+
+<!-- ─── SCRIPTS ─── -->
+<script src="https://cdn.jsdelivr.net/npm/toastify-js@1.12.0/src/toastify.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="js/data.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/roulette.js"></script>
+<script>
+  // Año en footer
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  // Navbar scroll
+  window.addEventListener('scroll', () => {
+    document.getElementById('navbar')?.classList.toggle('scrolled', window.scrollY > 20);
+  }, { passive: true });
+
+  // Hamburger
+  document.getElementById('hamburger')?.addEventListener('click', function () {
+    this.classList.toggle('open');
+    document.getElementById('navLinks')?.classList.toggle('open');
+  });
+</script>
+
+</body>
+</html>

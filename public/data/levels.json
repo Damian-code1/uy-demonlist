@@ -1,0 +1,4837 @@
+{
+  "levels": [
+    {
+      "id": 0,
+      "position": 1,
+      "name": "Beeline",
+      "placement": 86,
+      "tier": "Fuck",
+      "youtubeId": "NwIfx2kwpyE",
+      "youtubeUrl": "https://www.youtube.com/watch?v=NwIfx2kwpyE",
+      "victors": [
+        {
+          "name": "Neuronfish",
+          "videoId": "NwIfx2kwpyE",
+          "videoUrl": "https://www.youtube.com/watch?v=NwIfx2kwpyE"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "position": 2,
+      "name": "Tartarus",
+      "placement": 88,
+      "tier": "Monstrous",
+      "youtubeId": "IWQDfnVnlt0",
+      "youtubeUrl": "https://www.youtube.com/watch?v=IWQDfnVnlt0",
+      "victors": [
+        {
+          "name": "Santiricca",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "position": 3,
+      "name": "Zodiac",
+      "placement": 134,
+      "tier": "Merciless",
+      "youtubeId": "LZd8oulTiEw",
+      "youtubeUrl": "https://www.youtube.com/watch?v=LZd8oulTiEw",
+      "victors": [
+        {
+          "name": "Santiricca",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "position": 4,
+      "name": "Thinking Space",
+      "placement": 149,
+      "tier": "Excruciating",
+      "youtubeId": "0ZxavmAd8cw",
+      "youtubeUrl": "http://www.youtube.com/watch?v=0ZxavmAd8cw&pp=2AYB",
+      "victors": [
+        {
+          "name": "cxve",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "position": 5,
+      "name": "Renevant",
+      "placement": 152,
+      "tier": "Excruciating",
+      "youtubeId": "c0w0wnL0Txw",
+      "youtubeUrl": "https://www.youtube.com/watch?v=c0w0wnL0Txw",
+      "victors": [
+        {
+          "name": "Pissa",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "position": 6,
+      "name": "Crimson Planet",
+      "placement": 160,
+      "tier": "Excruciating",
+      "youtubeId": "IbhrF4yXrrQ",
+      "youtubeUrl": "https://www.youtube.com/watch?v=IbhrF4yXrrQ",
+      "victors": [
+        {
+          "name": "Salva",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "position": 7,
+      "name": "Call Me Maybe",
+      "placement": 174,
+      "tier": "Excruciating",
+      "youtubeId": "JfiG0Lh87nM",
+      "youtubeUrl": "https://youtu.be/JfiG0Lh87nM?si=HFFfpHp7NefFssky",
+      "victors": [
+        {
+          "name": "Santiricca",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "position": 8,
+      "name": "SUPERHATEMEWORLD",
+      "placement": 186,
+      "tier": "Inexorable",
+      "youtubeId": "RJsZ06HSGCE",
+      "youtubeUrl": "https://www.youtube.com/watch?v=RJsZ06HSGCE",
+      "victors": [
+        {
+          "name": "Pissa",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "position": 9,
+      "name": "Sides Of My Mind (Solo)",
+      "placement": 192,
+      "tier": "Fuck",
+      "youtubeId": "G35fOZRVX6Y",
+      "youtubeUrl": "https://youtu.be/G35fOZRVX6Y",
+      "victors": [
+        {
+          "name": "Neuronfish",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "position": 10,
+      "name": "Bloodlust",
+      "placement": 216,
+      "tier": "Inexorable",
+      "youtubeId": "VqjFFQwQk_Q",
+      "youtubeUrl": "https://www.youtube.com/watch?v=VqjFFQwQk_Q",
+      "victors": [
+        {
+          "name": "Andres Beltran",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "Santiricca",
+          "videoId": "Nd-0qeX0H7Q",
+          "videoUrl": "https://www.youtube.com/watch?v=Nd-0qeX0H7Q"
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "position": 11,
+      "name": "Nhelv",
+      "placement": 227,
+      "tier": "Catastrophic",
+      "youtubeId": "bjFJ-eXT6gw",
+      "youtubeUrl": "https://www.youtube.com/watch?v=bjFJ-eXT6gw",
+      "victors": [
+        {
+          "name": "Chimpi",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "DoYouself",
+          "videoId": "Q2vopXoYkAY",
+          "videoUrl": "https://www.youtube.com/watch?v=Q2vopXoYkAY"
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "position": 12,
+      "name": "Congregation",
+      "placement": 233,
+      "tier": "Catastrophic",
+      "youtubeId": "nfi_1m1aToc",
+      "youtubeUrl": "https://youtu.be/nfi_1m1aToc",
+      "victors": [
+        {
+          "name": "Rodro",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "Gekura",
+          "videoId": "YtBqQ_jIQ6o",
+          "videoUrl": "https://www.youtube.com/watch?v=YtBqQ_jIQ6o"
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "position": 13,
+      "name": "Knights of Thunder",
+      "placement": 241,
+      "tier": "Catastrophic",
+      "youtubeId": "-QRbugvcsWc",
+      "youtubeUrl": "https://youtu.be/-QRbugvcsWc",
+      "victors": [
+        {
+          "name": "Geroventi31",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "position": 14,
+      "name": "Arctic Lights",
+      "placement": 268,
+      "tier": "Catastrophic",
+      "youtubeId": "X0CuBf3jbDU",
+      "youtubeUrl": "https://www.youtube.com/watch?v=X0CuBf3jbDU&t=118s&pp=ygUXYXJjdGljIGxpZ2h0cyBqb2FxdWVtaXg%3D",
+      "victors": [
+        {
+          "name": "Joaquemix",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "cxve",
+          "videoId": "AfDXD1O4pIo",
+          "videoUrl": "https://www.youtube.com/watch?v=AfDXD1O4pIo&ab_channel=cxve"
+        },
+        {
+          "name": "Andres Beltran",
+          "videoId": "kT2QIU5-xyU",
+          "videoUrl": "https://www.youtube.com/watch?v=kT2QIU5-xyU"
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "position": 15,
+      "name": "Wasureta",
+      "placement": 317,
+      "tier": "Terrifying",
+      "youtubeId": "vvDqdI5xfmo",
+      "youtubeUrl": "https://www.youtube.com/watch?v=vvDqdI5xfmo",
+      "victors": [
+        {
+          "name": "Redelekys",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "FranPes",
+          "videoId": "SlRDXXef8Qg",
+          "videoUrl": "https://www.youtube.com/watch?v=SlRDXXef8Qg"
+        },
+        {
+          "name": "Geroventi31",
+          "videoId": "XsQvHJ0Zh00",
+          "videoUrl": "https://www.youtube.com/watch?v=XsQvHJ0Zh00"
+        },
+        {
+          "name": "Thiago",
+          "videoId": "zWJtLAwLTq8",
+          "videoUrl": "https://www.youtube.com/watch?v=zWJtLAwLTq8"
+        }
+      ]
+    },
+    {
+      "id": 16,
+      "position": 16,
+      "name": "Sonic Wave Rebirth",
+      "placement": 332,
+      "tier": "Relentless",
+      "youtubeId": "_H7kimx8tYE",
+      "youtubeUrl": "https://www.youtube.com/watch?v=_H7kimx8tYE&ab_channel=ijoakko",
+      "victors": [
+        {
+          "name": "Joako",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "Santiricca",
+          "videoId": null,
+          "videoUrl": "https://www.twitch.tv/videos/2524307007?filter=all&sort=time"
+        }
+      ]
+    },
+    {
+      "id": 17,
+      "position": 17,
+      "name": "Sonic Wave",
+      "placement": 333,
+      "tier": "Relentless",
+      "youtubeId": "pO2UCKtTYWU",
+      "youtubeUrl": "https://www.youtube.com/watch?v=pO2UCKtTYWU&t=263s&pp=ygUUc29uaWMgd2F2ZSBqb2FxdWVtaXg%3D",
+      "victors": [
+        {
+          "name": "Joaquemix",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "Andres Beltran",
+          "videoId": "cR6jRkXe4NA",
+          "videoUrl": "https://www.youtube.com/watch?v=cR6jRkXe4NA"
+        },
+        {
+          "name": "Salva",
+          "videoId": "sEdHdpVE3Wg",
+          "videoUrl": "https://www.youtube.com/watch?v=sEdHdpVE3Wg"
+        },
+        {
+          "name": "Santiricca",
+          "videoId": null,
+          "videoUrl": "https://www.twitch.tv/videos/2508271501"
+        },
+        {
+          "name": "Ardizz",
+          "videoId": "keW6oKrdYeA",
+          "videoUrl": "https://youtu.be/keW6oKrdYeA"
+        },
+        {
+          "name": "Pissa",
+          "videoId": "PrrGfMuZnT8",
+          "videoUrl": "https://www.youtube.com/watch?v=PrrGfMuZnT8"
+        }
+      ]
+    },
+    {
+      "id": 18,
+      "position": 18,
+      "name": "Yatagarasu",
+      "placement": 342,
+      "tier": "Relentless",
+      "youtubeId": "7KvSabvGyvA",
+      "youtubeUrl": "https://www.youtube.com/watch?v=7KvSabvGyvA&t=1s",
+      "victors": [
+        {
+          "name": "Andres Beltran",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "Santiricca",
+          "videoId": null,
+          "videoUrl": "https://www.twitch.tv/videos/2529712898"
+        }
+      ]
+    },
+    {
+      "id": 19,
+      "position": 19,
+      "name": "xo",
+      "placement": 356,
+      "tier": "Relentless",
+      "youtubeId": "PTZyyZEM6D4",
+      "youtubeUrl": "https://www.youtube.com/watch?v=PTZyyZEM6D4&t=3s",
+      "victors": [
+        {
+          "name": "Pissa",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "position": 20,
+      "name": "GONER",
+      "placement": 363,
+      "tier": "Relentless",
+      "youtubeId": "uM9whIXz3GE",
+      "youtubeUrl": "https://youtu.be/uM9whIXz3GE",
+      "victors": [
+        {
+          "name": "Redelekys",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 21,
+      "position": 21,
+      "name": "Sunset Sandstorm",
+      "placement": 376,
+      "tier": "Relentless",
+      "youtubeId": "VVsciEKQckI",
+      "youtubeUrl": "https://youtu.be/VVsciEKQckI?si=ALb1RS_eURMr8Y2B",
+      "victors": [
+        {
+          "name": "DoYouself",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 22,
+      "position": 22,
+      "name": "Erebus",
+      "placement": 378,
+      "tier": "Relentless",
+      "youtubeId": "kje12YGl5HY",
+      "youtubeUrl": "https://www.youtube.com/watch?v=kje12YGl5HY",
+      "victors": [
+        {
+          "name": "Andres Beltran",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "Santiricca",
+          "videoId": "bsDMICqL4NA",
+          "videoUrl": "https://youtu.be/bsDMICqL4NA"
+        }
+      ]
+    },
+    {
+      "id": 23,
+      "position": 23,
+      "name": "Catalyze",
+      "placement": 404,
+      "tier": "Relentless",
+      "youtubeId": "JiwpsEPpTRA",
+      "youtubeUrl": "https://www.youtube.com/watch?v=JiwpsEPpTRA",
+      "victors": [
+        {
+          "name": "Skyllz",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 24,
+      "position": 24,
+      "name": "Digital Descent",
+      "placement": 435,
+      "tier": "Remorseless",
+      "youtubeId": "1YElK-JuMkc",
+      "youtubeUrl": "https://www.youtube.com/watch?v=1YElK-JuMkc&t=28s&pp=ygUJcmVkZWxla3lz",
+      "victors": [
+        {
+          "name": "Redelekys",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "Skyllz",
+          "videoId": "t7Fg4ptp01Y",
+          "videoUrl": "https://youtu.be/t7Fg4ptp01Y?si=nM2924MAhhZoRniE"
+        },
+        {
+          "name": "Santiricca",
+          "videoId": "iWHjV9_wLUI",
+          "videoUrl": "https://youtu.be/iWHjV9_wLUI"
+        }
+      ]
+    },
+    {
+      "id": 25,
+      "position": 25,
+      "name": "Stalemate Redux",
+      "placement": 436,
+      "tier": "Remorseless",
+      "youtubeId": "_dvcWcvnPFI",
+      "youtubeUrl": "https://www.youtube.com/watch?v=_dvcWcvnPFI",
+      "victors": [
+        {
+          "name": "Overm0n",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 26,
+      "position": 26,
+      "name": "Omicron",
+      "placement": 438,
+      "tier": "Remorseless",
+      "youtubeId": "BvTGHR7YzVE",
+      "youtubeUrl": "https://www.youtube.com/watch?v=BvTGHR7YzVE&t=352s&pp=ygURam9hcXVlbWl4IG9taWNyb24%3D",
+      "victors": [
+        {
+          "name": "Joaquemix",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 27,
+      "position": 27,
+      "name": "Jard Factory",
+      "placement": 444,
+      "tier": "Remorseless",
+      "youtubeId": "7KRlJzPhO1Y",
+      "youtubeUrl": "https://www.youtube.com/watch?v=7KRlJzPhO1Y",
+      "victors": [
+        {
+          "name": "creiz",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 28,
+      "position": 28,
+      "name": "Killbot",
+      "placement": 460,
+      "tier": "Remorseless",
+      "youtubeId": "8VFfNAdcXz8",
+      "youtubeUrl": "https://www.youtube.com/watch?v=8VFfNAdcXz8",
+      "victors": [
+        {
+          "name": "EmilioRory",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 29,
+      "position": 29,
+      "name": "Delta Interface",
+      "placement": 464,
+      "tier": "Remorseless",
+      "youtubeId": "H__myhXfnIg",
+      "youtubeUrl": "http://youtube.com/watch?v=H__myhXfnIg",
+      "victors": [
+        {
+          "name": "GDNacho",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 30,
+      "position": 30,
+      "name": "Artificial Ascent",
+      "placement": 467,
+      "tier": "Remorseless",
+      "youtubeId": "ezBaczBWnKA",
+      "youtubeUrl": "https://youtu.be/ezBaczBWnKA",
+      "victors": [
+        {
+          "name": "GDNacho",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "Joaquemix",
+          "videoId": "ZYr2wfXcNOA",
+          "videoUrl": "https://www.youtube.com/watch?v=ZYr2wfXcNOA&t=1s&ab_channel=Joaquemix"
+        },
+        {
+          "name": "Skyllz",
+          "videoId": "wB-k-CuTvEI",
+          "videoUrl": "https://www.youtube.com/watch?v=wB-k-CuTvEI"
+        },
+        {
+          "name": "KadriaN",
+          "videoId": "Bxv9iYhjt-w",
+          "videoUrl": "https://www.youtube.com/watch?v=Bxv9iYhjt-w"
+        },
+        {
+          "name": "Gekura",
+          "videoId": "Jw9RZ7hqFFs",
+          "videoUrl": "https://www.youtube.com/watch?v=Jw9RZ7hqFFs"
+        }
+      ]
+    },
+    {
+      "id": 31,
+      "position": 31,
+      "name": "2‎ 1‎ 1",
+      "placement": 486,
+      "tier": "Extreme",
+      "youtubeId": "4tDElA9Ac8w",
+      "youtubeUrl": "https://www.youtube.com/watch?v=4tDElA9Ac8w&pp=ygUPam9hcXVlbWl4IDIgMSAx",
+      "victors": [
+        {
+          "name": "Joaquemix",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 32,
+      "position": 32,
+      "name": "Mind Control",
+      "placement": 498,
+      "tier": "Extreme",
+      "youtubeId": null,
+      "youtubeUrl": "https://medal.tv/es/games/geometry-dash/clips/1TBSz4n961ZEwU/WyfRlty7IYR4?invite=cr-MSxVQVQsNTI2NzAxMDMs?mobilebypass=true",
+      "victors": [
+        {
+          "name": "Joako",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 33,
+      "position": 33,
+      "name": "Quantum Processing",
+      "placement": 499,
+      "tier": "Extreme",
+      "youtubeId": "S-3l-Cx_pcE",
+      "youtubeUrl": "https://medal.tv/es/games/geometry-dash/clips/jrY0U3tbpLTyFQytZ/CgMZrTdrtkZ9?invite=cr-MSxQWTIsMTc3OTcwOTg0LA",
+      "victors": [
+        {
+          "name": "Overm0n",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "Andres Beltran",
+          "videoId": "S-3l-Cx_pcE",
+          "videoUrl": "https://www.youtube.com/watch?v=S-3l-Cx_pcE"
+        },
+        {
+          "name": "Pissa",
+          "videoId": "aIM3yweufTs",
+          "videoUrl": "https://youtu.be/aIM3yweufTs"
+        },
+        {
+          "name": "KadriaN",
+          "videoId": "XmL-Y7Wq4zQ",
+          "videoUrl": "https://www.youtube.com/watch?v=XmL-Y7Wq4zQ"
+        },
+        {
+          "name": "cxve",
+          "videoId": "WE6U0PoPgMk",
+          "videoUrl": "https://youtu.be/WE6U0PoPgMk"
+        },
+        {
+          "name": "Gekura",
+          "videoId": "lh2jULJ38UA",
+          "videoUrl": "https://www.youtube.com/watch?v=lh2jULJ38UA"
+        }
+      ]
+    },
+    {
+      "id": 34,
+      "position": 34,
+      "name": "Black Blizzard",
+      "placement": 504,
+      "tier": "Extreme",
+      "youtubeId": "i-ogPFB-sr0",
+      "youtubeUrl": "https://medal.tv/es/games/geometry-dash/clips/1OCqW7kF95G8jX/cB9uQZTRtjrF?invite=cr-MSxlNG0sNTI2NzAxMDMs?mobilebypass=true",
+      "victors": [
+        {
+          "name": "Joako",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "DoYouself",
+          "videoId": "i-ogPFB-sr0",
+          "videoUrl": "https://www.youtube.com/watch?v=i-ogPFB-sr0"
+        },
+        {
+          "name": "WinRAR",
+          "videoId": "4MA5rZJxJ2I",
+          "videoUrl": "https://www.youtube.com/watch?v=4MA5rZJxJ2I"
+        },
+        {
+          "name": "Chimpi",
+          "videoId": "wayGjQI538A",
+          "videoUrl": "https://www.youtube.com/watch?v=wayGjQI538A"
+        },
+        {
+          "name": "Santiricca",
+          "videoId": null,
+          "videoUrl": "https://www.twitch.tv/videos/2484515233?filter=all&sort=time"
+        }
+      ]
+    },
+    {
+      "id": 35,
+      "position": 35,
+      "name": "SECTOR 19",
+      "placement": 508,
+      "tier": "Extreme",
+      "youtubeId": "iPf9-Z4ME34",
+      "youtubeUrl": "https://youtu.be/iPf9-Z4ME34?si=VRuLYue_f50A5Yrt",
+      "victors": [
+        {
+          "name": "cxve",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 36,
+      "position": 36,
+      "name": "Astral Divinity",
+      "placement": 517,
+      "tier": "Extreme",
+      "youtubeId": "c7E_SyoAZjg",
+      "youtubeUrl": "https://medal.tv/es/games/geometry-dash/clips/1Q0LcKJ8SjIhLb/PEfpg85eVjJQ?invite=cr-MSwyOXAsNTI2NzAxMDMs?mobilebypass=true",
+      "victors": [
+        {
+          "name": "Joako",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "Santiricca",
+          "videoId": "c7E_SyoAZjg",
+          "videoUrl": "https://youtu.be/c7E_SyoAZjg?si=3JBWgCZBOLHbVcxo"
+        },
+        {
+          "name": "Tryken",
+          "videoId": "3QoA7Gzba58",
+          "videoUrl": "https://www.youtube.com/watch?v=3QoA7Gzba58"
+        }
+      ]
+    },
+    {
+      "id": 37,
+      "position": 37,
+      "name": "BuTiTi III",
+      "placement": 528,
+      "tier": "Extreme",
+      "youtubeId": null,
+      "youtubeUrl": "https://www.twitch.tv/videos/2527886186?filter=all&sort=time",
+      "victors": [
+        {
+          "name": "Santiricca",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 38,
+      "position": 38,
+      "name": "Magnificent Gaps",
+      "placement": 546,
+      "tier": "Extreme",
+      "youtubeId": "j3L1JwHfEWg",
+      "youtubeUrl": "https://youtu.be/j3L1JwHfEWg?si=bFlFpkpx-YEm5Y8U",
+      "victors": [
+        {
+          "name": "Neuronfish",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 39,
+      "position": 39,
+      "name": "Hatred",
+      "placement": 558,
+      "tier": "Extreme",
+      "youtubeId": "xSHvW2Wzpgo",
+      "youtubeUrl": "https://youtu.be/xSHvW2Wzpgo?si=hvlrVWLqUlLXFEbP",
+      "victors": [
+        {
+          "name": "cxve",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 40,
+      "position": 40,
+      "name": "Auditory Breaker",
+      "placement": 571,
+      "tier": "Extreme",
+      "youtubeId": "_IBdnNiYaJ8",
+      "youtubeUrl": "https://youtu.be/_IBdnNiYaJ8",
+      "victors": [
+        {
+          "name": "Joaquemix",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "cxve",
+          "videoId": null,
+          "videoUrl": "https://pointercrate.com/demonlist/statsviewer?player=42284"
+        },
+        {
+          "name": "Salva",
+          "videoId": "c0DyXI7X1Wc",
+          "videoUrl": "https://youtu.be/c0DyXI7X1Wc"
+        },
+        {
+          "name": "Skyllz",
+          "videoId": "d4N7Y1w44hk",
+          "videoUrl": "https://youtu.be/d4N7Y1w44hk?t=133"
+        },
+        {
+          "name": "TropixVG",
+          "videoId": "s3TpXCE6pc4",
+          "videoUrl": "https://youtu.be/s3TpXCE6pc4"
+        },
+        {
+          "name": "Ardizz",
+          "videoId": "5PgsdCIiiaQ",
+          "videoUrl": "https://www.youtube.com/watch?v=5PgsdCIiiaQ"
+        },
+        {
+          "name": "Santiricca",
+          "videoId": null,
+          "videoUrl": "https://www.twitch.tv/videos/2524307010?filter=all&sort=time"
+        },
+        {
+          "name": "Belux",
+          "videoId": "lRtURnkJrxY",
+          "videoUrl": "https://www.youtube.com/watch?v=lRtURnkJrxY"
+        },
+        {
+          "name": "Pissa",
+          "videoId": "MrecvJLNTIE",
+          "videoUrl": "https://www.youtube.com/watch?v=MrecvJLNTIE"
+        }
+      ]
+    },
+    {
+      "id": 41,
+      "position": 41,
+      "name": "Surge of the Shield",
+      "placement": 578,
+      "tier": "Extreme",
+      "youtubeId": "1DUiZM1CeIk",
+      "youtubeUrl": "https://www.youtube.com/watch?v=1DUiZM1CeIk&t=162s&pp=ygUdam9hcXVlbWl4IHN1cmdlIG9mIHRoZSBzaGllbGQ%3D",
+      "victors": [
+        {
+          "name": "Joaquemix",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 42,
+      "position": 42,
+      "name": "Hyper Paradox",
+      "placement": 581,
+      "tier": "Extreme",
+      "youtubeId": "Jke-qE6DVio",
+      "youtubeUrl": "https://www.youtube.com/watch?v=Jke-qE6DVio",
+      "victors": [
+        {
+          "name": "Redelekys",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 43,
+      "position": 43,
+      "name": "SubSonic",
+      "placement": 583,
+      "tier": "Insane",
+      "youtubeId": "fBgUWk-MCaw",
+      "youtubeUrl": "https://youtu.be/fBgUWk-MCaw",
+      "victors": [
+        {
+          "name": "Chimpi",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 44,
+      "position": 44,
+      "name": "Dolos",
+      "placement": 585,
+      "tier": "Insane",
+      "youtubeId": "YoSLqpCdJrk",
+      "youtubeUrl": "https://www.youtube.com/watch?v=YoSLqpCdJrk&t=178s&pp=ygUPam9hcXVlbWl4IGRvbG9z",
+      "victors": [
+        {
+          "name": "Joaquemix",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "DoYouself",
+          "videoId": "6vtXwKEAwBc",
+          "videoUrl": "https://www.youtube.com/watch?v=6vtXwKEAwBc"
+        }
+      ]
+    },
+    {
+      "id": 45,
+      "position": 45,
+      "name": "The Hell Inferno",
+      "placement": 593,
+      "tier": "Insane",
+      "youtubeId": "y2y07crm6ZY",
+      "youtubeUrl": "https://www.youtube.com/watch?v=y2y07crm6ZY",
+      "victors": [
+        {
+          "name": "creiz",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 46,
+      "position": 46,
+      "name": "Boogie",
+      "placement": 599,
+      "tier": "Insane",
+      "youtubeId": "iim11sMt8oQ",
+      "youtubeUrl": "https://youtu.be/iim11sMt8oQ",
+      "victors": [
+        {
+          "name": "Redelekys",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 47,
+      "position": 47,
+      "name": "Athanatos",
+      "placement": 621,
+      "tier": "Insane",
+      "youtubeId": "7K4Jg7HA7kI",
+      "youtubeUrl": "https://www.youtube.com/watch?v=7K4Jg7HA7kI&pp=ygUJcmVkZWxla3lz",
+      "victors": [
+        {
+          "name": "Redelekys",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "Chimpi",
+          "videoId": "RJ28imc3pe0",
+          "videoUrl": "https://youtu.be/RJ28imc3pe0"
+        },
+        {
+          "name": "Skyllz",
+          "videoId": "3S8UjOVmNag",
+          "videoUrl": "https://www.youtube.com/watch?v=3S8UjOVmNag"
+        },
+        {
+          "name": "Santiricca",
+          "videoId": "vOzFNtVo4xc",
+          "videoUrl": "https://youtu.be/vOzFNtVo4xc"
+        },
+        {
+          "name": "KadriaN",
+          "videoId": "iqF95K0r5zI",
+          "videoUrl": "https://www.youtube.com/watch?v=iqF95K0r5zI"
+        },
+        {
+          "name": "cxve",
+          "videoId": "ndC2-2ql43o",
+          "videoUrl": "https://youtu.be/ndC2-2ql43o?si=Qqbo-Zr0oWBbzxrf"
+        }
+      ]
+    },
+    {
+      "id": 48,
+      "position": 48,
+      "name": "Gentlemens Clique (Solo)",
+      "placement": 626,
+      "tier": "Fuck",
+      "youtubeId": "dyGTegwYIaA",
+      "youtubeUrl": "https://youtu.be/dyGTegwYIaA",
+      "victors": [
+        {
+          "name": "Neuronfish",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 49,
+      "position": 49,
+      "name": "Wild Rose",
+      "placement": 627,
+      "tier": "Insane",
+      "youtubeId": "KZGkycVOnrU",
+      "youtubeUrl": "https://youtu.be/KZGkycVOnrU",
+      "victors": [
+        {
+          "name": "Redelekys",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 50,
+      "position": 50,
+      "name": "Infernal Abyss",
+      "placement": 632,
+      "tier": "Insane",
+      "youtubeId": "DqvaUwbpJfo",
+      "youtubeUrl": "https://www.youtube.com/watch?v=DqvaUwbpJfo&pp=ygUYZ2Qgc2t5bGx6IGluZmVybmFsIGFieXNz",
+      "victors": [
+        {
+          "name": "Skyllz",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "DoYouself",
+          "videoId": "-IfDfoqbzpI",
+          "videoUrl": "https://www.youtube.com/watch?v=-IfDfoqbzpI"
+        },
+        {
+          "name": "cxve",
+          "videoId": "0GqjVPCGvmc",
+          "videoUrl": "https://www.youtube.com/watch?v=0GqjVPCGvmc"
+        }
+      ]
+    },
+    {
+      "id": 51,
+      "position": 51,
+      "name": "hot rod",
+      "placement": 651,
+      "tier": "Very Hard",
+      "youtubeId": "brFug1pCiWg",
+      "youtubeUrl": "https://www.youtube.com/watch?v=brFug1pCiWg",
+      "victors": [
+        {
+          "name": "Redelekys",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "Neuronfish",
+          "videoId": "QwdlIhQ6wQw",
+          "videoUrl": "https://www.youtube.com/watch?v=QwdlIhQ6wQw"
+        },
+        {
+          "name": "EmilioRory",
+          "videoId": "hyBjG7k_37w",
+          "videoUrl": "https://youtu.be/hyBjG7k_37w"
+        },
+        {
+          "name": "DoYouself",
+          "videoId": "HM9I9fZVevc",
+          "videoUrl": "https://youtu.be/HM9I9fZVevc"
+        },
+        {
+          "name": "Geroventi31",
+          "videoId": "FtkCVEOAFr0",
+          "videoUrl": "https://youtu.be/FtkCVEOAFr0"
+        }
+      ]
+    },
+    {
+      "id": 52,
+      "position": 52,
+      "name": "Based Gang (Solo)",
+      "placement": 652,
+      "tier": "Fuck",
+      "youtubeId": "KjE_r_8N54s",
+      "youtubeUrl": "https://www.youtube.com/watch?v=KjE_r_8N54s",
+      "victors": [
+        {
+          "name": "Neuronfish",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 53,
+      "position": 53,
+      "name": "WcropoliX",
+      "placement": 657,
+      "tier": "Insane",
+      "youtubeId": "HKAEOLUbPRM",
+      "youtubeUrl": "https://www.youtube.com/watch?v=HKAEOLUbPRM",
+      "victors": [
+        {
+          "name": "Santiricca",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 54,
+      "position": 54,
+      "name": "Bang Gang (Solo)",
+      "placement": 660,
+      "tier": "Fuck",
+      "youtubeId": "VOuHFYRl2qQ",
+      "youtubeUrl": "https://youtu.be/VOuHFYRl2qQ%20nivel%20tan%20malo%20que%20tenes%20que%20pausar%20y%20cambiar%20de%20teclas",
+      "victors": [
+        {
+          "name": "Neuronfish",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 55,
+      "position": 55,
+      "name": "Carnage Mode",
+      "placement": 668,
+      "tier": "Insane",
+      "youtubeId": "mpXlMqCswag",
+      "youtubeUrl": "https://www.youtube.com/watch?v=mpXlMqCswag",
+      "victors": [
+        {
+          "name": "Inc0gnit",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 56,
+      "position": 56,
+      "name": "Blade of Justice",
+      "placement": 672,
+      "tier": "Very Hard",
+      "youtubeId": "kM0l64QQK7k",
+      "youtubeUrl": "https://www.youtube.com/watch?v=kM0l64QQK7k&pp=ygUYZ2RuYWNobyBibGFkZSBvZiBqdXN0aWNl",
+      "victors": [
+        {
+          "name": "GDNacho",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "Andres Beltran",
+          "videoId": "hk97FBiLswM",
+          "videoUrl": "https://www.youtube.com/watch?v=hk97FBiLswM&ab_channel=AndresBeltran"
+        },
+        {
+          "name": "Joaquemix",
+          "videoId": "mxfi1H16Fbg",
+          "videoUrl": "https://www.youtube.com/watch?v=mxfi1H16Fbg"
+        },
+        {
+          "name": "DoYouself",
+          "videoId": "XlgcmEkuibI",
+          "videoUrl": "https://www.youtube.com/watch?v=XlgcmEkuibI"
+        },
+        {
+          "name": "WinRAR",
+          "videoId": "4jBt49WSg_I",
+          "videoUrl": "https://www.youtube.com/watch?v=4jBt49WSg_I"
+        },
+        {
+          "name": "Pissa",
+          "videoId": "XN2K-TmFqrk",
+          "videoUrl": "https://www.youtube.com/watch?v=XN2K-TmFqrk"
+        },
+        {
+          "name": "Neuronfish",
+          "videoId": "uWLHoduSYAo",
+          "videoUrl": "https://youtu.be/uWLHoduSYAo"
+        },
+        {
+          "name": "Santiricca",
+          "videoId": null,
+          "videoUrl": "https://www.twitch.tv/videos/2484506153?filter=all&sort=time"
+        },
+        {
+          "name": "Overm0n",
+          "videoId": "22epcyKIwmo",
+          "videoUrl": "https://www.youtube.com/watch?v=22epcyKIwmo"
+        },
+        {
+          "name": "Gekura",
+          "videoId": "90Mda5OlhRA",
+          "videoUrl": "https://www.youtube.com/watch?v=90Mda5OlhRA"
+        },
+        {
+          "name": "cxve",
+          "videoId": "IoADgpzkGoI",
+          "videoUrl": "https://youtu.be/IoADgpzkGoI?si=KRz3pGFKR0TjCdyM"
+        },
+        {
+          "name": "Inc0gnit",
+          "videoId": "MaFc_lcGMtQ",
+          "videoUrl": "https://youtu.be/MaFc_lcGMtQ?si=LfisGmQQbuHgibpe"
+        },
+        {
+          "name": "SVib21",
+          "videoId": "RmekHLiRo7Y",
+          "videoUrl": "https://www.youtube.com/watch?v=RmekHLiRo7Y"
+        }
+      ]
+    },
+    {
+      "id": 57,
+      "position": 57,
+      "name": "Carbon Fiber",
+      "placement": 720,
+      "tier": "Very Hard",
+      "youtubeId": "g3DM1O0HReo",
+      "youtubeUrl": "https://www.youtube.com/watch?v=g3DM1O0HReo",
+      "victors": [
+        {
+          "name": "federicotl",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 58,
+      "position": 58,
+      "name": "Phobos",
+      "placement": 679,
+      "tier": "Very Hard",
+      "youtubeId": "gQsiCXfinv4",
+      "youtubeUrl": "https://www.youtube.com/watch?v=gQsiCXfinv4&pp=ygUQam9hcXVlbWl4IHBob2Jvcw%3D%3D",
+      "victors": [
+        {
+          "name": "Joaquemix",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "Andres Beltran",
+          "videoId": "N6-_DSW5PpI",
+          "videoUrl": "https://www.youtube.com/watch?v=N6-_DSW5PpI&pp=ygURZ2QgYW5kcmVzIGJlbHRyYW4%3D"
+        },
+        {
+          "name": "WinRAR",
+          "videoId": "fyhAaWA3rm8",
+          "videoUrl": "https://www.youtube.com/watch?v=fyhAaWA3rm8&pp=wgIGCgQQAhgB"
+        },
+        {
+          "name": "Santiricca",
+          "videoId": "_uJqsUadWW8",
+          "videoUrl": "https://youtu.be/_uJqsUadWW8"
+        },
+        {
+          "name": "DoYouself",
+          "videoId": "MdGNs6ze7D8",
+          "videoUrl": "https://www.youtube.com/watch?v=MdGNs6ze7D8"
+        }
+      ]
+    },
+    {
+      "id": 59,
+      "position": 59,
+      "name": "Asmodeus",
+      "placement": 683,
+      "tier": "Very Hard",
+      "youtubeId": "ZLLEkNi-rpM",
+      "youtubeUrl": "https://www.youtube.com/watch?v=ZLLEkNi-rpM",
+      "victors": [
+        {
+          "name": "cxve",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 60,
+      "position": 60,
+      "name": "EXPLICIT",
+      "placement": 689,
+      "tier": "Very Hard",
+      "youtubeId": null,
+      "youtubeUrl": "https://medal.tv/es/games/geometry-dash/clips/26nTuB12hPfX72/8PYLXNFaByJ2?invite=cr-MSxzamosNTI2NzAxMDMs?mobilebypass=true",
+      "victors": [
+        {
+          "name": "Joako",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 61,
+      "position": 61,
+      "name": "Sakupen Hell",
+      "placement": 691,
+      "tier": "Very Hard",
+      "youtubeId": "2841JeRJrqE",
+      "youtubeUrl": "https://www.youtube.com/watch?v=2841JeRJrqE&ab_channel=AndresBeltran",
+      "victors": [
+        {
+          "name": "Andres Beltran",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "Joaquemix",
+          "videoId": "MIiAWaA76NU",
+          "videoUrl": "https://www.youtube.com/watch?v=MIiAWaA76NU&pp=ygUWam9hcXVlbWl4IHNha3VwZW4gaGVsbA%3D%3D"
+        },
+        {
+          "name": "KadriaN",
+          "videoId": "rl6zkbt4OGM",
+          "videoUrl": "https://www.youtube.com/watch?v=rl6zkbt4OGM"
+        }
+      ]
+    },
+    {
+      "id": 62,
+      "position": 62,
+      "name": "Betrayal of Fate",
+      "placement": 700,
+      "tier": "Very Hard",
+      "youtubeId": "9Qi8FLugcl8",
+      "youtubeUrl": "https://www.youtube.com/watch?v=9Qi8FLugcl8",
+      "victors": [
+        {
+          "name": "Nahuel2998",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "Gekura",
+          "videoId": "yIXnS_1Vi8w",
+          "videoUrl": "https://www.youtube.com/watch?v=yIXnS_1Vi8w"
+        },
+        {
+          "name": "Inc0gnit",
+          "videoId": "jpS0AMVCQac",
+          "videoUrl": "https://youtu.be/jpS0AMVCQac"
+        }
+      ]
+    },
+    {
+      "id": 63,
+      "position": 63,
+      "name": "Tenth Circle",
+      "placement": 706,
+      "tier": "Very Hard",
+      "youtubeId": "Xq8tZCZD1Ko",
+      "youtubeUrl": "https://www.youtube.com/watch?v=Xq8tZCZD1Ko&pp=ygUWam9hcXVlbWl4IHRlbnRoIGNpcmNsZQ%3D%3D",
+      "victors": [
+        {
+          "name": "Joaquemix",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "Redelekys",
+          "videoId": "eNHjJdsS86k",
+          "videoUrl": "https://www.youtube.com/watch?v=eNHjJdsS86k&ab_channel=Redelekys"
+        }
+      ]
+    },
+    {
+      "id": 64,
+      "position": 64,
+      "name": "Fusion Z",
+      "placement": 710,
+      "tier": "Very Hard",
+      "youtubeId": "OkcOZQAijzc",
+      "youtubeUrl": "https://www.youtube.com/watch?v=OkcOZQAijzc",
+      "victors": [
+        {
+          "name": "Skyllz",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 65,
+      "position": 65,
+      "name": "Carcano",
+      "placement": 713,
+      "tier": "Very Hard",
+      "youtubeId": "VVvy6Fjy3OI",
+      "youtubeUrl": "https://youtu.be/VVvy6Fjy3OI",
+      "victors": [
+        {
+          "name": "DoYouself",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "Geroventi31",
+          "videoId": "y3e4oS4ercE",
+          "videoUrl": "https://www.youtube.com/watch?v=y3e4oS4ercE"
+        }
+      ]
+    },
+    {
+      "id": 66,
+      "position": 66,
+      "name": "Epsilon",
+      "placement": 717,
+      "tier": "Very Hard",
+      "youtubeId": "80txmC8BPpk",
+      "youtubeUrl": "https://www.youtube.com/watch?v=80txmC8BPpk&pp=ygURam9hcXVlbWl4IGVwc2lsb24%3D",
+      "victors": [
+        {
+          "name": "Joaquemix",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 67,
+      "position": 67,
+      "name": "Azurite",
+      "placement": 745,
+      "tier": "Very Hard",
+      "youtubeId": "tVWnx08WIGo",
+      "youtubeUrl": "https://youtu.be/tVWnx08WIGo?si=xM9r_GCAr1cy6TIN",
+      "victors": [
+        {
+          "name": "cxve",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 68,
+      "position": 68,
+      "name": "Gravity",
+      "placement": 752,
+      "tier": "Very Hard",
+      "youtubeId": "8DtIBPyMudE",
+      "youtubeUrl": "https://www.youtube.com/watch?v=8DtIBPyMudE",
+      "victors": [
+        {
+          "name": "Redelekys",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "DoYouself",
+          "videoId": "xdkBgUtCweQ",
+          "videoUrl": "https://www.youtube.com/watch?v=xdkBgUtCweQ"
+        },
+        {
+          "name": "Geroventi31",
+          "videoId": "Ybv7hCh69sM",
+          "videoUrl": "https://www.youtube.com/watch?v=Ybv7hCh69sM"
+        },
+        {
+          "name": "Neuronfish",
+          "videoId": "OnQkIBa4Zgo",
+          "videoUrl": "https://youtu.be/OnQkIBa4Zgo"
+        },
+        {
+          "name": "Creiz",
+          "videoId": "bXwHb4Umghc",
+          "videoUrl": "https://www.youtube.com/watch?v=bXwHb4Umghc"
+        },
+        {
+          "name": "KadriaN",
+          "videoId": "1LyXNZmvzD8",
+          "videoUrl": "https://youtu.be/1LyXNZmvzD8"
+        },
+        {
+          "name": "FranPes",
+          "videoId": "xVGlHfPHLFA",
+          "videoUrl": "https://www.youtube.com/watch?v=xVGlHfPHLFA"
+        },
+        {
+          "name": "EmilioRory",
+          "videoId": "e5_P0xlxdjk",
+          "videoUrl": "https://youtu.be/e5_P0xlxdjk"
+        }
+      ]
+    },
+    {
+      "id": 69,
+      "position": 69,
+      "name": "Bloodbath",
+      "placement": 753,
+      "tier": "Very Hard",
+      "youtubeId": "gKs4Po-NFgc",
+      "youtubeUrl": "https://youtu.be/gKs4Po-NFgc?list=PLWOoVYfOzoyX2FVTYd3xe2vCPqw9zZcp-",
+      "victors": [
+        {
+          "name": "Joaquemix",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "GDNacho",
+          "videoId": "AAf4u6QAUR4",
+          "videoUrl": "https://www.youtube.com/watch?v=AAf4u6QAUR4&t=8s&pp=ygURZ2RuYWNobyBibG9vZGJhdGg%3D"
+        },
+        {
+          "name": "Skyllz",
+          "videoId": "ZteSvquek6M",
+          "videoUrl": "https://www.youtube.com/watch?v=ZteSvquek6M&t=1s&ab_channel=Skyllz"
+        },
+        {
+          "name": "Tryken",
+          "videoId": "EcCgfZPQ9qE",
+          "videoUrl": "https://www.youtube.com/watch?v=EcCgfZPQ9qE"
+        },
+        {
+          "name": "Redelekys",
+          "videoId": "jyqNipnQUsQ",
+          "videoUrl": "https://www.youtube.com/watch?v=jyqNipnQUsQ"
+        },
+        {
+          "name": "Rodro",
+          "videoId": "JvM24MuUqXY",
+          "videoUrl": "https://www.youtube.com/watch?v=JvM24MuUqXY"
+        },
+        {
+          "name": "DoYouself",
+          "videoId": "olMR0AwhSJg",
+          "videoUrl": "https://www.youtube.com/watch?v=olMR0AwhSJg"
+        },
+        {
+          "name": "Runnie_M",
+          "videoId": "_tzpJ4x_to8",
+          "videoUrl": "https://www.youtube.com/watch?v=_tzpJ4x_to8"
+        },
+        {
+          "name": "WinRAR",
+          "videoId": "xjW5H7fWtJY",
+          "videoUrl": "https://www.youtube.com/watch?v=xjW5H7fWtJY"
+        },
+        {
+          "name": "PoleEast",
+          "videoId": "qy5l-Qv0dQs",
+          "videoUrl": "https://www.youtube.com/watch?v=qy5l-Qv0dQs"
+        },
+        {
+          "name": "Salva",
+          "videoId": "V7ye7VtD8O4",
+          "videoUrl": "https://www.youtube.com/watch?v=V7ye7VtD8O4&"
+        },
+        {
+          "name": "Andres Beltran",
+          "videoId": "HlxwlqOA_uI",
+          "videoUrl": "https://www.youtube.com/watch?v=HlxwlqOA_uI&ab_channel=AndresBeltran"
+        },
+        {
+          "name": "Kuo",
+          "videoId": "AwETdyw1B4Q",
+          "videoUrl": "https://www.youtube.com/watch?v=AwETdyw1B4Q"
+        },
+        {
+          "name": "Pissa",
+          "videoId": "QD_eIznWrqM",
+          "videoUrl": "https://www.youtube.com/watch?v=QD_eIznWrqM"
+        },
+        {
+          "name": "Geroventi31",
+          "videoId": "1cm2ohcpJeM",
+          "videoUrl": "https://youtu.be/1cm2ohcpJeM"
+        },
+        {
+          "name": "Overm0n",
+          "videoId": null,
+          "videoUrl": "https://medal.tv/es/games/geometry-dash/clips/jrAkc5hCwrcHevLGi/M50ZPNFYxH5s?invite=cr-MSxJRGksMTc3OTcwOTg0LA"
+        },
+        {
+          "name": "Chimpi",
+          "videoId": "1FWO2LsY5_s",
+          "videoUrl": "https://youtu.be/1FWO2LsY5_s"
+        },
+        {
+          "name": "TropixVG",
+          "videoId": "INQHhMDmBj4",
+          "videoUrl": "https://youtu.be/INQHhMDmBj4"
+        },
+        {
+          "name": "Nahuel2998",
+          "videoId": "A6ruG_oJfqM",
+          "videoUrl": "https://www.youtube.com/watch?v=A6ruG_oJfqM"
+        },
+        {
+          "name": "federicotl",
+          "videoId": "CnK2H7MSY9E",
+          "videoUrl": "https://www.youtube.com/watch?v=CnK2H7MSY9E"
+        },
+        {
+          "name": "Santiricca",
+          "videoId": "Lvp-f-YXc58",
+          "videoUrl": "https://www.youtube.com/watch?v=Lvp-f-YXc58"
+        },
+        {
+          "name": "Belux",
+          "videoId": "iIctlXjKU8c",
+          "videoUrl": "https://www.youtube.com/watch?v=iIctlXjKU8c"
+        },
+        {
+          "name": "Ardizz",
+          "videoId": "M-EORdnMAtU",
+          "videoUrl": "https://www.youtube.com/watch?v=M-EORdnMAtU"
+        },
+        {
+          "name": "KadriaN",
+          "videoId": "XW5xXG4yisM",
+          "videoUrl": "https://www.youtube.com/watch?v=XW5xXG4yisM"
+        },
+        {
+          "name": "FranPes",
+          "videoId": "fUuBg4kUFOQ",
+          "videoUrl": "https://www.youtube.com/watch?v=fUuBg4kUFOQ"
+        },
+        {
+          "name": "Creiz",
+          "videoId": "T6V5BzlQ8jk",
+          "videoUrl": "https://www.youtube.com/watch?v=T6V5BzlQ8jk"
+        },
+        {
+          "name": "MaTeO_BeLu",
+          "videoId": "vmwf7ZFAwxQ",
+          "videoUrl": "https://www.youtube.com/watch?v=vmwf7ZFAwxQ"
+        },
+        {
+          "name": "sen",
+          "videoId": "ycgfVXMnBAM",
+          "videoUrl": "https://youtu.be/ycgfVXMnBAM"
+        },
+        {
+          "name": "Rals",
+          "videoId": "DIdl-OlFNOg",
+          "videoUrl": "https://www.youtube.com/watch?v=DIdl-OlFNOg"
+        }
+      ]
+    },
+    {
+      "id": 70,
+      "position": 70,
+      "name": "Idols",
+      "placement": 758,
+      "tier": "Hard",
+      "youtubeId": "lQZR2LhYp_U",
+      "youtubeUrl": "https://www.youtube.com/watch?v=lQZR2LhYp_U&t=2s&pp=ygUSZ2Qgam9hcXVlbWl4IGlkb2xz",
+      "victors": [
+        {
+          "name": "Joaquemix",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "Chimpi",
+          "videoId": "2-NBIFbPokQ",
+          "videoUrl": "https://www.youtube.com/watch?v=2-NBIFbPokQ"
+        },
+        {
+          "name": "Santiricca",
+          "videoId": "CcP8L0Z3fjw",
+          "videoUrl": "https://youtu.be/CcP8L0Z3fjw"
+        }
+      ]
+    },
+    {
+      "id": 71,
+      "position": 71,
+      "name": "Moment",
+      "placement": 762,
+      "tier": "Very Hard",
+      "youtubeId": "Ix4Ia87Rm-M",
+      "youtubeUrl": "https://www.youtube.com/watch?v=Ix4Ia87Rm-M",
+      "victors": [
+        {
+          "name": "Skyllz",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "Runnie_M",
+          "videoId": "S4itGV5V2zc",
+          "videoUrl": "https://www.youtube.com/watch?v=S4itGV5V2zc"
+        },
+        {
+          "name": "Redelekys",
+          "videoId": "ZIigprtTbY4",
+          "videoUrl": "https://www.youtube.com/watch?v=ZIigprtTbY4&ab_channel=Redelekys"
+        },
+        {
+          "name": "DoYouself",
+          "videoId": "p8WdG7h74AE",
+          "videoUrl": "https://www.youtube.com/watch?v=p8WdG7h74AE&ab_channel=DoYouself"
+        },
+        {
+          "name": "Pissa",
+          "videoId": "deyv_LC5b3U",
+          "videoUrl": "https://www.youtube.com/watch?v=deyv_LC5b3U"
+        },
+        {
+          "name": "EmilioRory",
+          "videoId": "nWAlWPro7Dk",
+          "videoUrl": "https://youtu.be/nWAlWPro7Dk"
+        },
+        {
+          "name": "Wesok",
+          "videoId": "f2yHf3-BKVs",
+          "videoUrl": "https://www.youtube.com/watch?v=f2yHf3-BKVs"
+        },
+        {
+          "name": "Creiz",
+          "videoId": "gVcW79lDf7g",
+          "videoUrl": "https://www.youtube.com/watch?v=gVcW79lDf7g"
+        },
+        {
+          "name": "Neuronfish",
+          "videoId": "GJrva6twWHg",
+          "videoUrl": "https://www.youtube.com/watch?v=GJrva6twWHg"
+        },
+        {
+          "name": "KadriaN",
+          "videoId": "q9olbUCD3ME",
+          "videoUrl": "https://www.youtube.com/watch?v=q9olbUCD3ME"
+        },
+        {
+          "name": "FranPes",
+          "videoId": "-rO40vLLC2s",
+          "videoUrl": "https://www.youtube.com/watch?v=-rO40vLLC2s"
+        },
+        {
+          "name": "Chimpi",
+          "videoId": "Y6ntIEXpxvk",
+          "videoUrl": "https://www.youtube.com/watch?v=Y6ntIEXpxvk"
+        }
+      ]
+    },
+    {
+      "id": 72,
+      "position": 72,
+      "name": "Barbaros Finale",
+      "placement": 780,
+      "tier": "Very Hard",
+      "youtubeId": "C6rOOZqTDyc",
+      "youtubeUrl": "https://youtu.be/C6rOOZqTDyc",
+      "victors": [
+        {
+          "name": "Redelekys",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 73,
+      "position": 73,
+      "name": "Down Bass",
+      "placement": 774,
+      "tier": "Hard",
+      "youtubeId": "SjDYYZV1nSc",
+      "youtubeUrl": "https://www.youtube.com/watch?v=SjDYYZV1nSc&pp=wgIGCgQQAhgB",
+      "victors": [
+        {
+          "name": "Redelekys",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "Ardizz",
+          "videoId": "VK9EnESrFKg",
+          "videoUrl": "https://www.youtube.com/watch?v=VK9EnESrFKg"
+        },
+        {
+          "name": "Pissa",
+          "videoId": "siC35CFJwWY",
+          "videoUrl": "https://www.youtube.com/watch?v=siC35CFJwWY"
+        },
+        {
+          "name": "MaTeO_BeLu",
+          "videoId": "CYJ9PxRGHLA",
+          "videoUrl": "https://youtu.be/CYJ9PxRGHLA"
+        }
+      ]
+    },
+    {
+      "id": 74,
+      "position": 74,
+      "name": "i just wish i could",
+      "placement": 783,
+      "tier": "Fuck",
+      "youtubeId": "2sTI98fHhqs",
+      "youtubeUrl": "https://www.youtube.com/watch?v=2sTI98fHhqs",
+      "victors": [
+        {
+          "name": "Neuronfish",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 75,
+      "position": 75,
+      "name": "Prismatic Haze",
+      "placement": 784,
+      "tier": "Hard",
+      "youtubeId": "Jfl5Y-LRHHI",
+      "youtubeUrl": "https://www.youtube.com/watch?v=Jfl5Y-LRHHI",
+      "victors": [
+        {
+          "name": "Neuronfish",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "Redelekys",
+          "videoId": "Weia8yuQE3A",
+          "videoUrl": "https://youtu.be/Weia8yuQE3A"
+        }
+      ]
+    },
+    {
+      "id": 76,
+      "position": 76,
+      "name": "A Bizarre Phantasm",
+      "placement": 787,
+      "tier": "Hard",
+      "youtubeId": "ChaMa0UxEls",
+      "youtubeUrl": "https://www.youtube.com/watch?v=ChaMa0UxEls",
+      "victors": [
+        {
+          "name": "Skyllz",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "Chimpi",
+          "videoId": "m_prfGBW2Ts",
+          "videoUrl": "https://www.youtube.com/watch?v=m_prfGBW2Ts&t=22s&pp=0gcJCccJAYcqIYzv"
+        }
+      ]
+    },
+    {
+      "id": 77,
+      "position": 77,
+      "name": "Conical Depression",
+      "placement": 797,
+      "tier": "Hard",
+      "youtubeId": "qL5ffVzswtU",
+      "youtubeUrl": "https://www.youtube.com/watch?v=qL5ffVzswtU",
+      "victors": [
+        {
+          "name": "Santiricca",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "creiz",
+          "videoId": "2Ej7wKRZUdI",
+          "videoUrl": "https://youtu.be/2Ej7wKRZUdI"
+        }
+      ]
+    },
+    {
+      "id": 78,
+      "position": 78,
+      "name": "EKO",
+      "placement": 804,
+      "tier": "Hard",
+      "youtubeId": "bN73YL88kmc",
+      "youtubeUrl": "https://www.youtube.com/watch?v=bN73YL88kmc",
+      "victors": [
+        {
+          "name": "DoYouself",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "Geroventi31",
+          "videoId": "eqNYKBkeRCA",
+          "videoUrl": "https://youtu.be/eqNYKBkeRCA?si=sb8GCWXvzdyts745"
+        }
+      ]
+    },
+    {
+      "id": 79,
+      "position": 79,
+      "name": "QDYNAMIX",
+      "placement": 830,
+      "tier": "Medium",
+      "youtubeId": "6dkz9ong3Qk",
+      "youtubeUrl": "https://youtu.be/6dkz9ong3Qk?si=crRxfk4lBovkhl8q",
+      "victors": [
+        {
+          "name": "Neuronfish",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 80,
+      "position": 80,
+      "name": "Overtime",
+      "placement": 838,
+      "tier": "Medium",
+      "youtubeId": "xb5ptB62TyA",
+      "youtubeUrl": "https://www.youtube.com/watch?v=xb5ptB62TyA",
+      "victors": [
+        {
+          "name": "Neuronfish",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "federicotl",
+          "videoId": "QIAnxQVi6fI",
+          "videoUrl": "https://www.youtube.com/watch?v=QIAnxQVi6fI"
+        },
+        {
+          "name": "MaTeO_BeLu",
+          "videoId": "H58lNhZkYOI",
+          "videoUrl": "https://youtu.be/H58lNhZkYOI"
+        }
+      ]
+    },
+    {
+      "id": 81,
+      "position": 81,
+      "name": "Karma",
+      "placement": null,
+      "tier": "Unknown",
+      "youtubeId": null,
+      "youtubeUrl": null,
+      "victors": []
+    },
+    {
+      "id": 82,
+      "position": 82,
+      "name": "Ch1ll Puddy",
+      "placement": null,
+      "tier": "Unknown",
+      "youtubeId": null,
+      "youtubeUrl": null,
+      "victors": []
+    },
+    {
+      "id": 83,
+      "position": 83,
+      "name": "Lovers Sadness",
+      "placement": 856,
+      "tier": "Medium",
+      "youtubeId": "BU1ncLTP_6o",
+      "youtubeUrl": "https://www.youtube.com/watch?v=BU1ncLTP_6o&feature=youtu.be",
+      "victors": [
+        {
+          "name": "Redelekys",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 84,
+      "position": 84,
+      "name": "Aftermath",
+      "placement": 898,
+      "tier": "Hard",
+      "youtubeId": "iC0ow8xh4A4",
+      "youtubeUrl": "https://www.youtube.com/watch?v=iC0ow8xh4A4&list=PLaVAu9oqIRsHZeXtddD8l0AF5UiiKb9Uh&index=2&ab_channel=Skyllz",
+      "victors": [
+        {
+          "name": "Skyllz",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "Redelekys",
+          "videoId": "dR_tVc-mgo4",
+          "videoUrl": "https://www.youtube.com/watch?v=dR_tVc-mgo4&ab_channel=Redelekys"
+        },
+        {
+          "name": "WinRAR",
+          "videoId": "hy0zT4GnL3U",
+          "videoUrl": "https://www.youtube.com/watch?v=hy0zT4GnL3U&ab_channel=MaxinderGD"
+        },
+        {
+          "name": "DoYouself",
+          "videoId": "b30uvqgApsY",
+          "videoUrl": "https://www.youtube.com/watch?v=b30uvqgApsY&ab_channel=DoYouself"
+        },
+        {
+          "name": "Andres Beltran",
+          "videoId": "3ngtONl7TJ8",
+          "videoUrl": "https://www.youtube.com/watch?v=3ngtONl7TJ8"
+        },
+        {
+          "name": "Garo204",
+          "videoId": "8y9JMBwKCnc",
+          "videoUrl": "https://youtu.be/8y9JMBwKCnc"
+        },
+        {
+          "name": "Pissa",
+          "videoId": "BGcY5zjoBa8",
+          "videoUrl": "https://www.youtube.com/watch?v=BGcY5zjoBa8"
+        },
+        {
+          "name": "Overm0n",
+          "videoId": null,
+          "videoUrl": "https://medal.tv/es/games/geometry-dash/clips/jrG8OBf6RNOt5ZobK/FsH1atAQLvAn?invite=cr-MSxzY3IsMTc3OTcwOTg0LA"
+        },
+        {
+          "name": "TropixVG",
+          "videoId": "CzhH8uxrvcw",
+          "videoUrl": "https://youtu.be/CzhH8uxrvcw"
+        },
+        {
+          "name": "Santiricca",
+          "videoId": "Qq5WSGqiO_0",
+          "videoUrl": "https://youtu.be/Qq5WSGqiO_0"
+        },
+        {
+          "name": "Gekura",
+          "videoId": "R_DzOde0mNU",
+          "videoUrl": "https://www.youtube.com/watch?v=R_DzOde0mNU"
+        },
+        {
+          "name": "Inc0gnit",
+          "videoId": "JuZ3clmVx0I",
+          "videoUrl": "https://www.youtube.com/watch?v=JuZ3clmVx0I"
+        },
+        {
+          "name": "Geroventi31",
+          "videoId": "2vaTGJjXxcs",
+          "videoUrl": "https://youtu.be/2vaTGJjXxcs"
+        }
+      ]
+    },
+    {
+      "id": 85,
+      "position": 85,
+      "name": "Cat Planet",
+      "placement": 908,
+      "tier": "Medium",
+      "youtubeId": "VSJquyJSbGc",
+      "youtubeUrl": "https://www.youtube.com/watch?v=VSJquyJSbGc",
+      "victors": [
+        {
+          "name": "Redelekys",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "Neuronfish",
+          "videoId": "8h4wjKmFQhw",
+          "videoUrl": "https://www.youtube.com/watch?v=8h4wjKmFQhw"
+        },
+        {
+          "name": "cxve",
+          "videoId": "V3DLklNj_H4",
+          "videoUrl": "https://www.youtube.com/watch?v=V3DLklNj_H4"
+        },
+        {
+          "name": "MaTeO_BeLu",
+          "videoId": "dTWVCKza-z0",
+          "videoUrl": "https://youtu.be/dTWVCKza-z0"
+        }
+      ]
+    },
+    {
+      "id": 86,
+      "position": 86,
+      "name": "Plasma Pulse III",
+      "placement": 913,
+      "tier": "Hard",
+      "youtubeId": "I8GCMPVYfdY",
+      "youtubeUrl": "https://www.youtube.com/watch?v=I8GCMPVYfdY",
+      "victors": [
+        {
+          "name": "Gekura",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "Inc0gnit",
+          "videoId": "kUefBHyEK_s",
+          "videoUrl": "https://www.youtube.com/watch?v=kUefBHyEK_s"
+        }
+      ]
+    },
+    {
+      "id": 87,
+      "position": 87,
+      "name": "Panasonic",
+      "placement": 916,
+      "tier": "Medium",
+      "youtubeId": "mxCRJWEmGa0",
+      "youtubeUrl": "https://www.youtube.com/watch?v=mxCRJWEmGa0",
+      "victors": [
+        {
+          "name": "DoYouself",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "Chimpi",
+          "videoId": "KLEFzpVysSc",
+          "videoUrl": "https://youtu.be/KLEFzpVysSc"
+        },
+        {
+          "name": "Santiricca",
+          "videoId": "MHAvS5JgX_o",
+          "videoUrl": "https://youtu.be/MHAvS5JgX_o"
+        }
+      ]
+    },
+    {
+      "id": 88,
+      "position": 88,
+      "name": "Maybe Possibly Thing",
+      "placement": 923,
+      "tier": "Medium",
+      "youtubeId": "gY-XzRJHJTY",
+      "youtubeUrl": "https://www.youtube.com/watch?v=gY-XzRJHJTY",
+      "victors": [
+        {
+          "name": "Neuronfish",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "Chimpi",
+          "videoId": "8BSfRzNcqEE",
+          "videoUrl": "https://youtu.be/8BSfRzNcqEE"
+        }
+      ]
+    },
+    {
+      "id": 89,
+      "position": 89,
+      "name": "Manic Machine",
+      "placement": 924,
+      "tier": "Medium",
+      "youtubeId": "N6WNZyqIs2o",
+      "youtubeUrl": "https://www.youtube.com/watch?v=N6WNZyqIs2o",
+      "victors": [
+        {
+          "name": "DoYouself",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "Neuronfish",
+          "videoId": "SK7C_3ZVli4",
+          "videoUrl": "https://www.youtube.com/watch?v=SK7C_3ZVli4"
+        },
+        {
+          "name": "EmilioRory",
+          "videoId": "bL79eyjruWY",
+          "videoUrl": "https://www.youtube.com/watch?v=bL79eyjruWY"
+        }
+      ]
+    },
+    {
+      "id": 90,
+      "position": 90,
+      "name": "Warning",
+      "placement": 925,
+      "tier": "Medium",
+      "youtubeId": "coWkpwZ3Fuk",
+      "youtubeUrl": "https://www.youtube.com/watch?v=coWkpwZ3Fuk",
+      "victors": [
+        {
+          "name": "Neuronfish",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 91,
+      "position": 91,
+      "name": "VIRTUE",
+      "placement": 995,
+      "tier": "Easy",
+      "youtubeId": "Q3trIxovt8s",
+      "youtubeUrl": "https://www.youtube.com/watch?v=Q3trIxovt8s&ab_channel=Redelekys",
+      "victors": [
+        {
+          "name": "Redelekys",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 92,
+      "position": 92,
+      "name": "Glide",
+      "placement": 968,
+      "tier": "Medium",
+      "youtubeId": "mF5JHyBHFHU",
+      "youtubeUrl": "https://www.youtube.com/watch?v=mF5JHyBHFHU&ab_channel=AndresBeltran",
+      "victors": [
+        {
+          "name": "Andres Beltran",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "Facu28",
+          "videoId": "tE2iku_MIEM",
+          "videoUrl": "https://www.youtube.com/watch?v=tE2iku_MIEM&ab_channel=Facu28"
+        },
+        {
+          "name": "Runnie_M",
+          "videoId": "tidIuwBTCbw",
+          "videoUrl": "https://www.youtube.com/watch?v=tidIuwBTCbw&ab_channel=Runnie"
+        },
+        {
+          "name": "DoYouself",
+          "videoId": "U3SbkKHAyVs",
+          "videoUrl": "https://www.youtube.com/watch?v=U3SbkKHAyVs"
+        }
+      ]
+    },
+    {
+      "id": 93,
+      "position": 93,
+      "name": "SLAY MOMENT",
+      "placement": 972,
+      "tier": "Medium",
+      "youtubeId": "XL6aIhp3-W0",
+      "youtubeUrl": "https://youtu.be/XL6aIhp3-W0?si=__hwanUws69oNSoR",
+      "victors": [
+        {
+          "name": "Ferrotheiz",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 94,
+      "position": 94,
+      "name": "Heartbeat",
+      "placement": 973,
+      "tier": "Medium",
+      "youtubeId": "fJ6xzR-d9Pc",
+      "youtubeUrl": "https://www.youtube.com/watch?v=fJ6xzR-d9Pc",
+      "victors": [
+        {
+          "name": "cxve",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "WinRAR",
+          "videoId": "lEbB8qtTcgc",
+          "videoUrl": "https://www.youtube.com/watch?v=lEbB8qtTcgc"
+        },
+        {
+          "name": "Chimpi",
+          "videoId": "_JrOLL_k1is",
+          "videoUrl": "https://www.youtube.com/watch?v=_JrOLL_k1is"
+        },
+        {
+          "name": "Santiricca",
+          "videoId": "nCY2AlH-QgA",
+          "videoUrl": "https://www.youtube.com/watch?v=nCY2AlH-QgA"
+        },
+        {
+          "name": "creiz",
+          "videoId": "2Ej7wKRZUdI",
+          "videoUrl": "https://youtu.be/2Ej7wKRZUdI"
+        }
+      ]
+    },
+    {
+      "id": 95,
+      "position": 95,
+      "name": "Under Lavaland",
+      "placement": 996,
+      "tier": "Easy",
+      "youtubeId": "NK4h7goA71I",
+      "youtubeUrl": "https://www.youtube.com/watch?v=NK4h7goA71I",
+      "victors": [
+        {
+          "name": "cxve",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 96,
+      "position": 96,
+      "name": "Wacky McWhackface v2",
+      "placement": null,
+      "tier": "Unknown",
+      "youtubeId": null,
+      "youtubeUrl": null,
+      "victors": []
+    },
+    {
+      "id": 97,
+      "position": 97,
+      "name": "1330X",
+      "placement": 1021,
+      "tier": "Medium",
+      "youtubeId": "UCxbxwmTt1I",
+      "youtubeUrl": "https://www.youtube.com/watch?v=UCxbxwmTt1I",
+      "victors": [
+        {
+          "name": "Santiricca",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 98,
+      "position": 98,
+      "name": "Pumped Up Kicks",
+      "placement": 1029,
+      "tier": "Easy",
+      "youtubeId": "_e3TpkzHcdk",
+      "youtubeUrl": "https://youtu.be/_e3TpkzHcdk?si=YB5vO4_6HRytd6LI",
+      "victors": [
+        {
+          "name": "Santiricca",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 99,
+      "position": 99,
+      "name": "Cupid",
+      "placement": 1035,
+      "tier": "Easy",
+      "youtubeId": "wwoVtoWeVEI",
+      "youtubeUrl": "https://youtu.be/wwoVtoWeVEI?si=BLw-QDV4BXxaaJ3M",
+      "victors": [
+        {
+          "name": "Redelekys",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 100,
+      "position": 100,
+      "name": "Skrrah",
+      "placement": 1039,
+      "tier": "Medium",
+      "youtubeId": "WELgzONeUcY",
+      "youtubeUrl": "https://youtu.be/WELgzONeUcY?si=lz-CfmpcBNWEAa6G",
+      "victors": [
+        {
+          "name": "cxve",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 101,
+      "position": 101,
+      "name": "Rivers of Nazareth",
+      "placement": 1053,
+      "tier": "Easy",
+      "youtubeId": "ap61-uNQl6c",
+      "youtubeUrl": "https://www.youtube.com/watch?v=ap61-uNQl6c",
+      "victors": [
+        {
+          "name": "Redelekys",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 102,
+      "position": 102,
+      "name": "Shukufuku",
+      "placement": 1054,
+      "tier": "Easy",
+      "youtubeId": "NM5sm2IA_MU",
+      "youtubeUrl": "https://youtu.be/NM5sm2IA_MU",
+      "victors": [
+        {
+          "name": "DoYouself",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "Redelekys",
+          "videoId": "2WOij1UrZJ0",
+          "videoUrl": "https://www.youtube.com/watch?v=2WOij1UrZJ0"
+        }
+      ]
+    },
+    {
+      "id": 103,
+      "position": 103,
+      "name": "NecropoliX",
+      "placement": 1066,
+      "tier": "Easy",
+      "youtubeId": "temC2pkOB6Q",
+      "youtubeUrl": "https://www.youtube.com/watch?v=temC2pkOB6Q",
+      "victors": [
+        {
+          "name": "Santiricca",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "cxve",
+          "videoId": "1HnbZYq5oPw",
+          "videoUrl": "https://youtu.be/1HnbZYq5oPw?si=7X4YqMe2871s1Kty"
+        }
+      ]
+    },
+    {
+      "id": 104,
+      "position": 104,
+      "name": "nowdead",
+      "placement": 1071,
+      "tier": "Easy",
+      "youtubeId": "SnBAva86A34",
+      "youtubeUrl": "https://www.youtube.com/watch?v=SnBAva86A34",
+      "victors": [
+        {
+          "name": "Geroventi31",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 105,
+      "position": 105,
+      "name": "Steel Terrors",
+      "placement": 1089,
+      "tier": "Easy",
+      "youtubeId": "IzLW-tbVLFc",
+      "youtubeUrl": "https://youtu.be/IzLW-tbVLFc",
+      "victors": [
+        {
+          "name": "EmilioRory",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 106,
+      "position": 106,
+      "name": "The Ultimate Phase",
+      "placement": 1092,
+      "tier": "Easy",
+      "youtubeId": "BSbaS8Q6-ZA",
+      "youtubeUrl": "https://www.youtube.com/watch?v=BSbaS8Q6-ZA&pp=ygUadGhlIHVsdGltYXRlIHBoYXNlIGdkbmFjaG8%3D",
+      "victors": [
+        {
+          "name": "GDNacho",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "Andres Beltran",
+          "videoId": "_OrviTGBPqU",
+          "videoUrl": "https://www.youtube.com/watch?v=_OrviTGBPqU"
+        },
+        {
+          "name": "Skyllz",
+          "videoId": "bbwvCmgkt9E",
+          "videoUrl": "https://youtu.be/bbwvCmgkt9E?list=PLaVAu9oqIRsFepksy5fwUx05vM5S3SjGO"
+        },
+        {
+          "name": "WinRAR",
+          "videoId": "BTu6T4gaGQM",
+          "videoUrl": "https://www.youtube.com/watch?v=BTu6T4gaGQM&ab_channel=MaxinderGD"
+        },
+        {
+          "name": "Santiricca",
+          "videoId": "CMFWWOnVKVs",
+          "videoUrl": "https://www.youtube.com/watch?v=CMFWWOnVKVs"
+        }
+      ]
+    },
+    {
+      "id": 107,
+      "position": 107,
+      "name": "headlock",
+      "placement": 1113,
+      "tier": "Easy",
+      "youtubeId": "kNMIQWy0xaQ",
+      "youtubeUrl": "https://www.youtube.com/watch?v=kNMIQWy0xaQ&ab_channel=Emilio10",
+      "victors": [
+        {
+          "name": "EmilioRory",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "Neuronfish",
+          "videoId": "u-wddcZdc-M",
+          "videoUrl": "https://www.youtube.com/watch?v=u-wddcZdc-M"
+        }
+      ]
+    },
+    {
+      "id": 108,
+      "position": 108,
+      "name": "BYE",
+      "placement": 1118,
+      "tier": "Easy",
+      "youtubeId": "FakTjJH1bZY",
+      "youtubeUrl": "https://www.youtube.com/watch?v=FakTjJH1bZY&ab_channel=MaxinderGD",
+      "victors": [
+        {
+          "name": "WinRAR",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 109,
+      "position": 109,
+      "name": "Broken Signal",
+      "placement": 1122,
+      "tier": "Beginner",
+      "youtubeId": "OWgfU_tFw4w",
+      "youtubeUrl": "https://youtu.be/OWgfU_tFw4w",
+      "victors": [
+        {
+          "name": "Santiricca",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "Geroventi31",
+          "videoId": "VVkjGSmV4Wo",
+          "videoUrl": "https://youtu.be/VVkjGSmV4Wo"
+        }
+      ]
+    },
+    {
+      "id": 110,
+      "position": 110,
+      "name": "Volume",
+      "placement": 1124,
+      "tier": "Easy",
+      "youtubeId": "Dz1glygn5uA",
+      "youtubeUrl": "https://www.youtube.com/watch?v=Dz1glygn5uA",
+      "victors": [
+        {
+          "name": "Skyllz",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 111,
+      "position": 111,
+      "name": "reverence",
+      "placement": 1127,
+      "tier": "Easy",
+      "youtubeId": "YPNkkYwcUDE",
+      "youtubeUrl": "https://youtu.be/YPNkkYwcUDE",
+      "victors": [
+        {
+          "name": "EmilioRory",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "Redelekys",
+          "videoId": "QaAzSwmLl7k",
+          "videoUrl": "https://www.youtube.com/watch?v=QaAzSwmLl7k&feature=youtu.be"
+        },
+        {
+          "name": "FranPes",
+          "videoId": "7BnFtlxD2yo",
+          "videoUrl": "https://www.youtube.com/watch?v=7BnFtlxD2yo"
+        }
+      ]
+    },
+    {
+      "id": 112,
+      "position": 112,
+      "name": "Napalm",
+      "placement": 1131,
+      "tier": "Easy",
+      "youtubeId": "MABQtIre6LQ",
+      "youtubeUrl": "https://www.youtube.com/watch?v=MABQtIre6LQ",
+      "victors": [
+        {
+          "name": "Ruitsu",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "Redelekys",
+          "videoId": "4NiYlcfTfRw",
+          "videoUrl": "https://youtu.be/4NiYlcfTfRw?si=GJ2O3JGYvgPY-qpW"
+        }
+      ]
+    },
+    {
+      "id": 113,
+      "position": 113,
+      "name": "Stellaluna",
+      "placement": 1132,
+      "tier": "Easy",
+      "youtubeId": "AvB8T7kqmZY",
+      "youtubeUrl": "https://youtu.be/AvB8T7kqmZY?si=qPLR3smcJXO9vbth",
+      "victors": [
+        {
+          "name": "Geroventi31",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 114,
+      "position": 114,
+      "name": "Tech Manifestation",
+      "placement": 1134,
+      "tier": "Easy",
+      "youtubeId": "WSVLVd0MXIg",
+      "youtubeUrl": "https://www.youtube.com/watch?v=WSVLVd0MXIg",
+      "victors": [
+        {
+          "name": "Pissa",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 115,
+      "position": 115,
+      "name": "ElectroLux",
+      "placement": 1135,
+      "tier": "Easy",
+      "youtubeId": "_nbm9mgdEX4",
+      "youtubeUrl": "https://www.youtube.com/watch?v=_nbm9mgdEX4",
+      "victors": [
+        {
+          "name": "Santiricca",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 116,
+      "position": 116,
+      "name": "Interstellar Entropy",
+      "placement": 1136,
+      "tier": "Easy",
+      "youtubeId": "Le8_hyD-T8o",
+      "youtubeUrl": "https://www.youtube.com/watch?v=Le8_hyD-T8o",
+      "victors": [
+        {
+          "name": "Pissa",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 117,
+      "position": 117,
+      "name": "Retention",
+      "placement": 1141,
+      "tier": "Easy",
+      "youtubeId": "at9pfoc0lc8",
+      "youtubeUrl": "https://www.youtube.com/watch?v=at9pfoc0lc8",
+      "victors": [
+        {
+          "name": "Chimpi",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "KadriaN",
+          "videoId": "BKr61a0ppGA",
+          "videoUrl": "https://www.youtube.com/watch?v=BKr61a0ppGA"
+        }
+      ]
+    },
+    {
+      "id": 118,
+      "position": 118,
+      "name": "Falling Up",
+      "placement": 1142,
+      "tier": "Easy",
+      "youtubeId": "tKdXdZUzLVk",
+      "youtubeUrl": "https://www.youtube.com/watch?v=tKdXdZUzLVk",
+      "victors": [
+        {
+          "name": "WinRAR",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "Skyllz",
+          "videoId": "njnn7HX7Hk8",
+          "videoUrl": "https://youtu.be/njnn7HX7Hk8"
+        },
+        {
+          "name": "Overm0n",
+          "videoId": "Qr25-BAcUk8",
+          "videoUrl": "https://youtu.be/Qr25-BAcUk8?si=csbM0idaWTZ1Nxps"
+        },
+        {
+          "name": "Tryken",
+          "videoId": "AJsBq1Aga4o",
+          "videoUrl": "https://www.youtube.com/watch?v=AJsBq1Aga4o&t=242s"
+        },
+        {
+          "name": "Santiricca",
+          "videoId": "J00j5P2WcCE",
+          "videoUrl": "https://youtu.be/J00j5P2WcCE"
+        }
+      ]
+    },
+    {
+      "id": 119,
+      "position": 119,
+      "name": "La Llorona",
+      "placement": 1147,
+      "tier": "Beginner",
+      "youtubeId": "tNGeIQTln_E",
+      "youtubeUrl": "https://www.youtube.com/watch?v=tNGeIQTln_E",
+      "victors": [
+        {
+          "name": "Chimpi",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "Santiricca",
+          "videoId": "1rz9Kg1hfuY",
+          "videoUrl": "https://youtu.be/1rz9Kg1hfuY?si=rkMrQEaCBaRt-c2d"
+        }
+      ]
+    },
+    {
+      "id": 120,
+      "position": 120,
+      "name": "ZOOOOOOOOOOOOOOOOOOM",
+      "placement": 1156,
+      "tier": "Easy",
+      "youtubeId": "8p0hF0B5MBE",
+      "youtubeUrl": "https://www.youtube.com/watch?v=8p0hF0B5MBE",
+      "victors": [
+        {
+          "name": "Neuronfish",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 121,
+      "position": 121,
+      "name": "Red World Rebirth",
+      "placement": 1158,
+      "tier": "Easy",
+      "youtubeId": "_Q4nN0I-jWk",
+      "youtubeUrl": "https://www.youtube.com/watch?v=_Q4nN0I-jWk",
+      "victors": [
+        {
+          "name": "Tryken",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "WinRAR",
+          "videoId": "pxpIfvLm07w",
+          "videoUrl": "https://www.youtube.com/watch?v=pxpIfvLm07w"
+        },
+        {
+          "name": "Santiricca",
+          "videoId": "rGx1tNBz7z0",
+          "videoUrl": "https://www.youtube.com/watch?v=rGx1tNBz7z0"
+        },
+        {
+          "name": "KadriaN",
+          "videoId": "uDxCvEZ5d2I",
+          "videoUrl": "https://www.youtube.com/watch?v=uDxCvEZ5d2I"
+        }
+      ]
+    },
+    {
+      "id": 122,
+      "position": 122,
+      "name": "Heart Attack",
+      "placement": 1167,
+      "tier": "Beginner",
+      "youtubeId": "J4nyDBPLKM8",
+      "youtubeUrl": "https://www.youtube.com/watch?v=J4nyDBPLKM8",
+      "victors": [
+        {
+          "name": "WinRAR",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 123,
+      "position": 123,
+      "name": "Dismal Duststorm",
+      "placement": 1169,
+      "tier": "Beginner",
+      "youtubeId": "WZbTAnAundc",
+      "youtubeUrl": "https://www.youtube.com/watch?v=WZbTAnAundc",
+      "victors": [
+        {
+          "name": "DoYouself",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 124,
+      "position": 124,
+      "name": "Zettabyte",
+      "placement": 1174,
+      "tier": "Easy",
+      "youtubeId": "VN-2iTwPPtM",
+      "youtubeUrl": "https://www.youtube.com/watch?v=VN-2iTwPPtM",
+      "victors": [
+        {
+          "name": "Neuronfish",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 125,
+      "position": 125,
+      "name": "Deception Dive",
+      "placement": 1184,
+      "tier": "Beginner",
+      "youtubeId": "3_UOwZ5Jntw",
+      "youtubeUrl": "https://www.youtube.com/watch?v=3_UOwZ5Jntw",
+      "victors": [
+        {
+          "name": "Redelekys",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "Skyllz",
+          "videoId": "L32qfdlxLHY",
+          "videoUrl": "https://youtu.be/L32qfdlxLHY"
+        },
+        {
+          "name": "TropixVG",
+          "videoId": "1bkuotBTTBs",
+          "videoUrl": "https://youtu.be/1bkuotBTTBs?si=_0LCWK1dH1nJNbCZ"
+        },
+        {
+          "name": "Santiricca",
+          "videoId": "ryii1dQ9p5k",
+          "videoUrl": "https://www.youtube.com/watch?v=ryii1dQ9p5k"
+        },
+        {
+          "name": "Inc0gnit",
+          "videoId": "VldWp8jNYtw",
+          "videoUrl": "https://www.youtube.com/watch?v=VldWp8jNYtw"
+        }
+      ]
+    },
+    {
+      "id": 126,
+      "position": 126,
+      "name": "Reanimate",
+      "placement": 1185,
+      "tier": "Easy",
+      "youtubeId": "JYXGPpXKmMU",
+      "youtubeUrl": "https://www.youtube.com/watch?v=JYXGPpXKmMU",
+      "victors": [
+        {
+          "name": "MecaSony",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "Chimpi",
+          "videoId": "6-FywBC-wkw",
+          "videoUrl": "https://youtu.be/6-FywBC-wkw"
+        }
+      ]
+    },
+    {
+      "id": 127,
+      "position": 127,
+      "name": "Crowd Control",
+      "placement": 1187,
+      "tier": "Easy",
+      "youtubeId": "I4TjEtz9UZQ",
+      "youtubeUrl": "https://www.youtube.com/watch?v=I4TjEtz9UZQ",
+      "victors": [
+        {
+          "name": "Runnie_M",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "Redelekys",
+          "videoId": "MZe9ejHxSzs",
+          "videoUrl": "https://www.youtube.com/watch?v=MZe9ejHxSzs&t=4s&pp=ygUJcmVkZWxla3lz"
+        },
+        {
+          "name": "Pissa",
+          "videoId": "BjznEDgY098",
+          "videoUrl": "https://www.youtube.com/watch?v=BjznEDgY098&"
+        },
+        {
+          "name": "DoYouself",
+          "videoId": "cy7WSxCbDV0",
+          "videoUrl": "https://www.youtube.com/watch?v=cy7WSxCbDV0"
+        },
+        {
+          "name": "Overm0n",
+          "videoId": null,
+          "videoUrl": "https://medal.tv/es/games/geometry-dash/clips/jrT75AjeZMoYrW4Sk?invite=cr-MSxjdWIsMTc3OTcwOTg0LA"
+        },
+        {
+          "name": "Santiricca",
+          "videoId": "wwtuNm5M6ys",
+          "videoUrl": "https://youtu.be/wwtuNm5M6ys?si=z_eRZQ7_eK3ajYLc"
+        },
+        {
+          "name": "Wesok",
+          "videoId": "g7jPGi-EThs",
+          "videoUrl": "https://www.youtube.com/watch?v=g7jPGi-EThs"
+        },
+        {
+          "name": "Creiz",
+          "videoId": "txNY21NjQhM",
+          "videoUrl": "https://www.youtube.com/watch?v=txNY21NjQhM"
+        },
+        {
+          "name": "federicotl",
+          "videoId": "Q_8ODp25tJg",
+          "videoUrl": "https://www.youtube.com/watch?v=Q_8ODp25tJg"
+        }
+      ]
+    },
+    {
+      "id": 128,
+      "position": 128,
+      "name": "Elite Z Rebirth",
+      "placement": 1193,
+      "tier": "Easy",
+      "youtubeId": "gPk6mirnFZg",
+      "youtubeUrl": "https://www.youtube.com/watch?v=gPk6mirnFZg",
+      "victors": [
+        {
+          "name": "cxve",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "Neuronfish",
+          "videoId": "2QbDp2KeaFw",
+          "videoUrl": "https://www.youtube.com/watch?v=2QbDp2KeaFw"
+        }
+      ]
+    },
+    {
+      "id": 129,
+      "position": 129,
+      "name": "Polish Alphabet",
+      "placement": 1203,
+      "tier": "Beginner",
+      "youtubeId": "iMmOthiyrJM",
+      "youtubeUrl": "https://www.youtube.com/watch?v=iMmOthiyrJM&t=1s",
+      "victors": [
+        {
+          "name": "Creiz",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 130,
+      "position": 130,
+      "name": "TROLLMACHINE",
+      "placement": 1204,
+      "tier": "Beginner",
+      "youtubeId": "v6zzbp-l8Xs",
+      "youtubeUrl": "https://www.youtube.com/watch?v=v6zzbp-l8Xs",
+      "victors": [
+        {
+          "name": "Geroventi31",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 131,
+      "position": 131,
+      "name": "STRATUS",
+      "placement": 1207,
+      "tier": "Beginner",
+      "youtubeId": "mekiH1JqJKg",
+      "youtubeUrl": "https://youtu.be/mekiH1JqJKg",
+      "victors": [
+        {
+          "name": "Chimpi",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 132,
+      "position": 132,
+      "name": "The Flawless",
+      "placement": 1213,
+      "tier": "Beginner",
+      "youtubeId": "Fpe83L1lcog",
+      "youtubeUrl": "https://www.youtube.com/watch?v=Fpe83L1lcog&ab_channel=DoYouself",
+      "victors": [
+        {
+          "name": "DoYouself",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "Salva",
+          "videoId": "ntnZJn_u-N4",
+          "videoUrl": "https://www.youtube.com/watch?v=ntnZJn_u-N4"
+        },
+        {
+          "name": "Chimpi",
+          "videoId": "tFxrjh6pUU0",
+          "videoUrl": "https://youtu.be/tFxrjh6pUU0"
+        },
+        {
+          "name": "WinRAR",
+          "videoId": "Xz2DJ19gm9U",
+          "videoUrl": "https://www.youtube.com/watch?v=Xz2DJ19gm9U"
+        },
+        {
+          "name": "Santiricca",
+          "videoId": "u_MEEaVQEFM",
+          "videoUrl": "https://youtu.be/u_MEEaVQEFM?si=9TTqcgv4mzWaiap5"
+        },
+        {
+          "name": "cxve",
+          "videoId": "vjpl3FeLyYY",
+          "videoUrl": "https://www.youtube.com/watch?v=vjpl3FeLyYY"
+        }
+      ]
+    },
+    {
+      "id": 133,
+      "position": 133,
+      "name": "CICADA3302",
+      "placement": 1220,
+      "tier": "Beginner",
+      "youtubeId": "aDv74R-vels",
+      "youtubeUrl": "https://www.youtube.com/watch?v=aDv74R-vels&t=28s",
+      "victors": [
+        {
+          "name": "DoYouself",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 134,
+      "position": 134,
+      "name": "Maths",
+      "placement": 1221,
+      "tier": "Beginner",
+      "youtubeId": "y13dVWFMjeQ",
+      "youtubeUrl": "https://youtu.be/y13dVWFMjeQ",
+      "victors": [
+        {
+          "name": "Geroventi31",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 135,
+      "position": 135,
+      "name": "Allegiance",
+      "placement": 1223,
+      "tier": "Beginner",
+      "youtubeId": "HjM26Ugpl9s",
+      "youtubeUrl": "https://www.youtube.com/watch?v=HjM26Ugpl9s&ab_channel=AndresBeltran",
+      "victors": [
+        {
+          "name": "Andres Beltran",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "Pissa",
+          "videoId": "7PUOixvm_ak",
+          "videoUrl": "https://www.youtube.com/watch?v=7PUOixvm_ak&ab_channel=%CF%80zza"
+        },
+        {
+          "name": "Redelekys",
+          "videoId": "_ED-xxR-1qA",
+          "videoUrl": "https://www.youtube.com/watch?v=_ED-xxR-1qA&ab_channel=Redelekys"
+        },
+        {
+          "name": "DoYouself",
+          "videoId": "pfLAYbrb2Ds",
+          "videoUrl": "https://youtu.be/pfLAYbrb2Ds"
+        },
+        {
+          "name": "WinRAR",
+          "videoId": "AOrdMs8dqCY",
+          "videoUrl": "https://www.youtube.com/watch?v=AOrdMs8dqCY"
+        },
+        {
+          "name": "federicotl",
+          "videoId": "jJiBmPEFMSY",
+          "videoUrl": "https://www.youtube.com/watch?v=jJiBmPEFMSY"
+        },
+        {
+          "name": "Skyllz",
+          "videoId": "mdwpjMFQkdg",
+          "videoUrl": "https://www.youtube.com/watch?v=mdwpjMFQkdg"
+        },
+        {
+          "name": "Santiricca",
+          "videoId": "q1qy1ziW4zM",
+          "videoUrl": "https://youtu.be/q1qy1ziW4zM"
+        },
+        {
+          "name": "Gekura",
+          "videoId": "yVubyeigNds",
+          "videoUrl": "https://www.youtube.com/watch?v=yVubyeigNds"
+        },
+        {
+          "name": "KadriaN",
+          "videoId": "Fvrk86Qmyok",
+          "videoUrl": "https://www.youtube.com/watch?v=Fvrk86Qmyok"
+        },
+        {
+          "name": "Chimpi",
+          "videoId": "d5RYeJPP_38",
+          "videoUrl": "https://www.youtube.com/watch?v=d5RYeJPP_38"
+        },
+        {
+          "name": "FranPes",
+          "videoId": "i1po6u66jH8",
+          "videoUrl": "https://www.youtube.com/watch?v=i1po6u66jH8"
+        },
+        {
+          "name": "GeroVenti31",
+          "videoId": "AOcJpsObtT4",
+          "videoUrl": "https://www.youtube.com/watch?v=AOcJpsObtT4"
+        },
+        {
+          "name": "Thiago",
+          "videoId": "5TasgxugOv0",
+          "videoUrl": "https://youtu.be/5TasgxugOv0"
+        }
+      ]
+    },
+    {
+      "id": 136,
+      "position": 136,
+      "name": "HyperSonic",
+      "placement": 1236,
+      "tier": "Beginner",
+      "youtubeId": "2kBCFxLZj9w",
+      "youtubeUrl": "https://www.youtube.com/watch?v=2kBCFxLZj9w",
+      "victors": [
+        {
+          "name": "Joaquemix",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "Skyllz",
+          "videoId": "XrJh4BzcK3o",
+          "videoUrl": "https://www.youtube.com/watch?v=XrJh4BzcK3o&t=1s"
+        },
+        {
+          "name": "Pissa",
+          "videoId": "bRwdjkNvGRo",
+          "videoUrl": "https://www.youtube.com/watch?v=bRwdjkNvGRo&ab_channel=%CF%80zza"
+        },
+        {
+          "name": "Redelekys",
+          "videoId": "g6ZBqdrf-yU",
+          "videoUrl": "https://www.youtube.com/watch?v=g6ZBqdrf-yU&ab_channel=Redelekys"
+        },
+        {
+          "name": "Runnie_M",
+          "videoId": "uDZMeqgk_m8",
+          "videoUrl": "https://www.youtube.com/watch?v=uDZMeqgk_m8"
+        },
+        {
+          "name": "TropixVG",
+          "videoId": "95uJiKDeytc",
+          "videoUrl": "https://youtu.be/95uJiKDeytc"
+        },
+        {
+          "name": "Santiricca",
+          "videoId": "2R7h79VbSuM",
+          "videoUrl": "https://www.youtube.com/watch?v=2R7h79VbSuM"
+        },
+        {
+          "name": "DoYouself",
+          "videoId": "E5Vg_ETDwcE",
+          "videoUrl": "https://youtu.be/E5Vg_ETDwcE"
+        },
+        {
+          "name": "MaTeO_BeLu",
+          "videoId": "Fy9bbkAzGCM",
+          "videoUrl": "https://youtu.be/Fy9bbkAzGCM"
+        },
+        {
+          "name": "Inc0gnit",
+          "videoId": "Gqann9nn2Bc",
+          "videoUrl": "https://www.youtube.com/watch?v=Gqann9nn2Bc"
+        }
+      ]
+    },
+    {
+      "id": 137,
+      "position": 137,
+      "name": "Just DANCE",
+      "placement": 1239,
+      "tier": "Beginner",
+      "youtubeId": "ykDYXCKrfJ4",
+      "youtubeUrl": "https://www.youtube.com/watch?v=ykDYXCKrfJ4&pp=ygUUam9hcXVlbWl4IGp1c3QgZGFuY2U%3D",
+      "victors": [
+        {
+          "name": "Joaquemix",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 138,
+      "position": 138,
+      "name": "Incipient",
+      "placement": 1240,
+      "tier": "Beginner",
+      "youtubeId": "jgm8N5K_hd0",
+      "youtubeUrl": "https://youtu.be/jgm8N5K_hd0?si=Ya8SkwYzrIv5dA03",
+      "victors": [
+        {
+          "name": "Santiricca",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 139,
+      "position": 139,
+      "name": "Virtual Collapse",
+      "placement": 1263,
+      "tier": "Beginner",
+      "youtubeId": "vyKqEjRY_Tc",
+      "youtubeUrl": "https://www.youtube.com/watch?v=vyKqEjRY_Tc&pp=ygUaam9hcXVlbWl4IHZpcnR1YWwgY29sbGFwc2U%3D",
+      "victors": [
+        {
+          "name": "Joaquemix",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 140,
+      "position": 140,
+      "name": "Redemption",
+      "placement": 1265,
+      "tier": "Beginner",
+      "youtubeId": "z6DwK0fHcxc",
+      "youtubeUrl": "https://www.youtube.com/watch?v=z6DwK0fHcxc&t",
+      "victors": [
+        {
+          "name": "Joaquemix",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "Chimpi",
+          "videoId": "U_gvz7EX4PI",
+          "videoUrl": "https://www.youtube.com/watch?v=U_gvz7EX4PI"
+        }
+      ]
+    },
+    {
+      "id": 141,
+      "position": 141,
+      "name": "Robi",
+      "placement": 1266,
+      "tier": "Beginner",
+      "youtubeId": "uWpxyhDcIaM",
+      "youtubeUrl": "https://youtu.be/uWpxyhDcIaM",
+      "victors": [
+        {
+          "name": "Redelekys",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 142,
+      "position": 142,
+      "name": "AcropoliX",
+      "placement": 1269,
+      "tier": "Beginner",
+      "youtubeId": "sl6knI2IoOo",
+      "youtubeUrl": "https://youtu.be/sl6knI2IoOo",
+      "victors": [
+        {
+          "name": "Skyllz",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "Santiricca",
+          "videoId": "k6fXefsn4EU",
+          "videoUrl": "https://youtu.be/k6fXefsn4EU"
+        }
+      ]
+    },
+    {
+      "id": 143,
+      "position": 143,
+      "name": "Hidden in the Sand",
+      "placement": 1275,
+      "tier": "Beginner",
+      "youtubeId": "f6sNSbiLyMU",
+      "youtubeUrl": "https://www.youtube.com/watch?v=f6sNSbiLyMU&pp=ygUJcmVkZWxla3lz",
+      "victors": [
+        {
+          "name": "Redelekys",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "Pissa",
+          "videoId": "ezLXPykzdg4",
+          "videoUrl": "https://www.youtube.com/watch?v=ezLXPykzdg4"
+        }
+      ]
+    },
+    {
+      "id": 144,
+      "position": 144,
+      "name": "robotchief exposal",
+      "placement": 1276,
+      "tier": "Beginner",
+      "youtubeId": "_WYDXn_ZhZQ",
+      "youtubeUrl": "https://www.youtube.com/watch?v=_WYDXn_ZhZQ",
+      "victors": [
+        {
+          "name": "Ardizz",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 145,
+      "position": 145,
+      "name": "Uprise",
+      "placement": 1283,
+      "tier": "Beginner",
+      "youtubeId": "MnZ47Akoe6c",
+      "youtubeUrl": "https://www.youtube.com/watch?v=MnZ47Akoe6c",
+      "victors": [
+        {
+          "name": "Santiricca",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 146,
+      "position": 146,
+      "name": "Clarity",
+      "placement": 1287,
+      "tier": "Beginner",
+      "youtubeId": "9WzEGDxLfFE",
+      "youtubeUrl": "https://www.youtube.com/watch?v=9WzEGDxLfFE",
+      "victors": [
+        {
+          "name": "Runnie_M",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 147,
+      "position": 147,
+      "name": "Make it Drop",
+      "placement": 1294,
+      "tier": "Beginner",
+      "youtubeId": "mil_fB9Qso0",
+      "youtubeUrl": "https://youtu.be/mil_fB9Qso0",
+      "victors": [
+        {
+          "name": "Geroventi31",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "Santiricca",
+          "videoId": "VoIoU8UzghY",
+          "videoUrl": "http://www.youtube.com/watch?v=VoIoU8UzghY&feature=youtu.be"
+        }
+      ]
+    },
+    {
+      "id": 148,
+      "position": 148,
+      "name": "Plasmatic",
+      "placement": 1297,
+      "tier": "Beginner",
+      "youtubeId": "E3ohv0euemM",
+      "youtubeUrl": "https://www.youtube.com/watch?v=E3ohv0euemM",
+      "victors": [
+        {
+          "name": "Santiricca",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 149,
+      "position": 149,
+      "name": "Bangarang",
+      "placement": 1299,
+      "tier": "Beginner",
+      "youtubeId": "r9C0YQ8K5CY",
+      "youtubeUrl": "https://www.youtube.com/watch?v=r9C0YQ8K5CY",
+      "victors": [
+        {
+          "name": "Geroventi31",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 150,
+      "position": 150,
+      "name": "Dark Odyssey",
+      "placement": 1302,
+      "tier": "Beginner",
+      "youtubeId": "1bjrt0kDGIU",
+      "youtubeUrl": "https://www.youtube.com/watch?v=1bjrt0kDGIU",
+      "victors": [
+        {
+          "name": "Santiricca",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 151,
+      "position": 151,
+      "name": "8o X",
+      "placement": 1311,
+      "tier": "Beginner",
+      "youtubeId": "qnAKPfzrkRs",
+      "youtubeUrl": "https://www.youtube.com/watch?v=qnAKPfzrkRs",
+      "victors": [
+        {
+          "name": "Tryken",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "WinRAR",
+          "videoId": "ozFM3YrgnCI",
+          "videoUrl": "https://www.youtube.com/watch?v=ozFM3YrgnCI"
+        },
+        {
+          "name": "Santiricca",
+          "videoId": "jg1sGnCsG30",
+          "videoUrl": "https://www.youtube.com/watch?v=jg1sGnCsG30"
+        },
+        {
+          "name": "cxve",
+          "videoId": "mj9qKvXVPUM",
+          "videoUrl": "https://www.youtube.com/watch?v=mj9qKvXVPUM"
+        }
+      ]
+    },
+    {
+      "id": 152,
+      "position": 152,
+      "name": "Anya III",
+      "placement": 1318,
+      "tier": "Beginner",
+      "youtubeId": "9Wk3DsFj6PU",
+      "youtubeUrl": "https://youtu.be/9Wk3DsFj6PU?si=SpqCCO4f9G8Pwht4",
+      "victors": [
+        {
+          "name": "WinRAR",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "Carnanoc",
+          "videoId": "A6pmLihLoAM",
+          "videoUrl": "https://www.youtube.com/watch?v=A6pmLihLoAM"
+        }
+      ]
+    },
+    {
+      "id": 153,
+      "position": 153,
+      "name": "Forbidden Isle",
+      "placement": 1320,
+      "tier": "Beginner",
+      "youtubeId": "O2oEYoHbots",
+      "youtubeUrl": "https://www.youtube.com/watch?v=O2oEYoHbots&ab_channel=Redelekys",
+      "victors": [
+        {
+          "name": "Redelekys",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "WinRAR",
+          "videoId": "9KDzc1JstAk",
+          "videoUrl": "https://www.youtube.com/watch?v=9KDzc1JstAk"
+        },
+        {
+          "name": "Garo204",
+          "videoId": "giaMvMSlSZo",
+          "videoUrl": "https://www.youtube.com/watch?v=giaMvMSlSZo"
+        },
+        {
+          "name": "Thiago",
+          "videoId": "spRRYD35KHE",
+          "videoUrl": "https://www.youtube.com/watch?v=spRRYD35KHE&pp=0gcJCccJAYcqIYzv"
+        },
+        {
+          "name": "Santiricca",
+          "videoId": "D3m-AXlDVWI",
+          "videoUrl": "https://www.youtube.com/watch?v=D3m-AXlDVWI"
+        },
+        {
+          "name": "Gekura",
+          "videoId": "3E98BaZwzic",
+          "videoUrl": "https://youtu.be/3E98BaZwzic"
+        },
+        {
+          "name": "Pissa",
+          "videoId": "AIVZ5G7gnrU",
+          "videoUrl": "https://www.youtube.com/watch?v=AIVZ5G7gnrU"
+        }
+      ]
+    },
+    {
+      "id": 154,
+      "position": 154,
+      "name": "The Lost Existence",
+      "placement": 1322,
+      "tier": "Beginner",
+      "youtubeId": "Jto_PpNG18A",
+      "youtubeUrl": "https://youtu.be/Jto_PpNG18A",
+      "victors": [
+        {
+          "name": "Santiricca",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 155,
+      "position": 155,
+      "name": "Cataclysm",
+      "placement": 1340,
+      "tier": "Beginner",
+      "youtubeId": "ccYngAb_TJk",
+      "youtubeUrl": "https://www.youtube.com/watch?v=ccYngAb_TJk&ab_channel=GWFirestorm",
+      "victors": [
+        {
+          "name": "Firestorm",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "NotDone",
+          "videoId": "DgG9yWSIg28",
+          "videoUrl": "https://www.youtube.com/watch?v=DgG9yWSIg28&ab_channel=NotDoneYet"
+        },
+        {
+          "name": "Joaquemix",
+          "videoId": "auSLO8aAKOI",
+          "videoUrl": "https://youtu.be/auSLO8aAKOI"
+        },
+        {
+          "name": "Andres Beltran",
+          "videoId": "iu2-p00mkMg",
+          "videoUrl": "https://youtu.be/iu2-p00mkMg"
+        },
+        {
+          "name": "Runnie_M",
+          "videoId": "X8nlW5na_kg",
+          "videoUrl": "https://youtu.be/X8nlW5na_kg"
+        },
+        {
+          "name": "DoYouself",
+          "videoId": "rJGmeDbCJ70",
+          "videoUrl": "https://www.youtube.com/watch?v=rJGmeDbCJ70&t=1s"
+        },
+        {
+          "name": "Salva",
+          "videoId": "QMcr2w6Gs0M",
+          "videoUrl": "https://youtu.be/QMcr2w6Gs0M"
+        },
+        {
+          "name": "Redelekys",
+          "videoId": "eahCRm-eBSc",
+          "videoUrl": "https://youtu.be/eahCRm-eBSc"
+        },
+        {
+          "name": "PoleEast",
+          "videoId": "lvkHG_5mSnA",
+          "videoUrl": "https://youtu.be/lvkHG_5mSnA"
+        },
+        {
+          "name": "Kuo",
+          "videoId": "mwiSRZhLwlg",
+          "videoUrl": "https://youtu.be/mwiSRZhLwlg"
+        },
+        {
+          "name": "Pissa",
+          "videoId": "75tUt7TAEJA",
+          "videoUrl": "https://youtu.be/75tUt7TAEJA"
+        },
+        {
+          "name": "Donato",
+          "videoId": "x0u0WQ428sU",
+          "videoUrl": "https://youtu.be/x0u0WQ428sU"
+        },
+        {
+          "name": "Garo204",
+          "videoId": "jPrR8jOd90c",
+          "videoUrl": "https://youtu.be/jPrR8jOd90c?si=FBp39NlQLrgnEkRQ"
+        },
+        {
+          "name": "WinRAR",
+          "videoId": "qwZE_bPJJJs",
+          "videoUrl": "https://www.youtube.com/watch?v=qwZE_bPJJJs"
+        },
+        {
+          "name": "Ardizz",
+          "videoId": "FljVj7T79IM",
+          "videoUrl": "https://www.youtube.com/watch?v=FljVj7T79IM&ab_channel=Fallingboii_"
+        },
+        {
+          "name": "Taser",
+          "videoId": "kVkbx13wnus",
+          "videoUrl": "https://www.youtube.com/watch?v=kVkbx13wnus"
+        },
+        {
+          "name": "Kingus",
+          "videoId": "Dm50ekGtpk8",
+          "videoUrl": "https://www.youtube.com/watch?v=Dm50ekGtpk8"
+        },
+        {
+          "name": "Overm0n",
+          "videoId": null,
+          "videoUrl": "https://medal.tv/es/games/geometry-dash/clips/jrAkc5hCwrcHevLGi/M50ZPNFYxH5s?invite=cr-MSxJRGksMTc3OTcwOTg0LA"
+        },
+        {
+          "name": "Chimpi",
+          "videoId": "dBQvpVG3BBI",
+          "videoUrl": "https://youtu.be/dBQvpVG3BBI"
+        },
+        {
+          "name": "federicotl",
+          "videoId": "PimJe95OAn8",
+          "videoUrl": "https://www.youtube.com/watch?v=PimJe95OAn8"
+        },
+        {
+          "name": "Neuronfish",
+          "videoId": "lGnF-U11CWY",
+          "videoUrl": "https://www.youtube.com/watch?v=lGnF-U11CWY"
+        },
+        {
+          "name": "TropixVG",
+          "videoId": "Y4F8I0pV7eM",
+          "videoUrl": "https://youtu.be/Y4F8I0pV7eM"
+        },
+        {
+          "name": "Skyllz",
+          "videoId": "jWd0blQaCOY",
+          "videoUrl": "https://youtu.be/jWd0blQaCOY"
+        },
+        {
+          "name": "Santiricca",
+          "videoId": "39m-fGmHU64",
+          "videoUrl": "https://www.youtube.com/watch?v=39m-fGmHU64"
+        },
+        {
+          "name": "Gekura",
+          "videoId": "Ir7uL4cXaYU",
+          "videoUrl": "https://www.youtube.com/watch?v=Ir7uL4cXaYU"
+        },
+        {
+          "name": "Wesok",
+          "videoId": "FfZbL1oNiNk",
+          "videoUrl": "https://www.youtube.com/watch?v=FfZbL1oNiNk"
+        },
+        {
+          "name": "Rodro",
+          "videoId": "epeiPFsWxL4",
+          "videoUrl": "https://www.youtube.com/watch?v=epeiPFsWxL4"
+        },
+        {
+          "name": "Digit",
+          "videoId": null,
+          "videoUrl": "https://medal.tv/games/geometry-dash/clips/lku7Ev3BzjfD1a2pp?invite=cr-MSxJNngsMjQ0ODkzNzE5LA"
+        },
+        {
+          "name": "KadriaN",
+          "videoId": "-5nUFd9qXeQ",
+          "videoUrl": "https://www.youtube.com/watch?v=-5nUFd9qXeQ"
+        },
+        {
+          "name": "sen",
+          "videoId": "E0k7cgwG5aE",
+          "videoUrl": "https://www.youtube.com/watch?v=E0k7cgwG5aE"
+        },
+        {
+          "name": "MrAlx",
+          "videoId": "aFUcFByRTY0",
+          "videoUrl": "https://youtu.be/aFUcFByRTY0"
+        },
+        {
+          "name": "Creiz",
+          "videoId": "FkVCcoP5XcI",
+          "videoUrl": "https://www.youtube.com/watch?v=FkVCcoP5XcI"
+        },
+        {
+          "name": "MaTeO_BeLu",
+          "videoId": "ca3y-E2OD5o",
+          "videoUrl": "https://youtu.be/ca3y-E2OD5o"
+        },
+        {
+          "name": "EmilioRory",
+          "videoId": "ZvNgFv0kWWc",
+          "videoUrl": "https://youtu.be/ZvNgFv0kWWc"
+        },
+        {
+          "name": "Thiago",
+          "videoId": "jGj3oAn3d6o",
+          "videoUrl": "https://www.youtube.com/watch?v=jGj3oAn3d6o"
+        },
+        {
+          "name": "GeroVenti31",
+          "videoId": "NarOijgZ9tg",
+          "videoUrl": "https://youtu.be/NarOijgZ9tg"
+        }
+      ]
+    },
+    {
+      "id": 156,
+      "position": 156,
+      "name": "Lost Love",
+      "placement": 1342,
+      "tier": "Beginner",
+      "youtubeId": "8Il19-7bfPc",
+      "youtubeUrl": "https://www.youtube.com/watch?v=8Il19-7bfPc",
+      "victors": [
+        {
+          "name": "DoYouself",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "Neuronfish",
+          "videoId": "8upgEyjot_Y",
+          "videoUrl": "https://youtu.be/8upgEyjot_Y"
+        }
+      ]
+    },
+    {
+      "id": 157,
+      "position": 157,
+      "name": "Komodo",
+      "placement": 1349,
+      "tier": "Beginner",
+      "youtubeId": "T9mbYRWx3iY",
+      "youtubeUrl": "https://youtu.be/T9mbYRWx3iY",
+      "victors": [
+        {
+          "name": "Santiricca",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 158,
+      "position": 158,
+      "name": "Glisten",
+      "placement": 1352,
+      "tier": "Beginner",
+      "youtubeId": "c2yp4tPOZlk",
+      "youtubeUrl": "https://streamable.com/s53sx3",
+      "victors": [
+        {
+          "name": "Digit",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "Geroventi31",
+          "videoId": "c2yp4tPOZlk",
+          "videoUrl": "https://www.youtube.com/watch?v=c2yp4tPOZlk"
+        },
+        {
+          "name": "Redelekys",
+          "videoId": "-XcZ9Lj2xxc",
+          "videoUrl": "https://www.youtube.com/watch?v=-XcZ9Lj2xxc"
+        }
+      ]
+    },
+    {
+      "id": 159,
+      "position": 159,
+      "name": "Kanpai",
+      "placement": 1354,
+      "tier": "Beginner",
+      "youtubeId": "dMq0mN1oJus",
+      "youtubeUrl": "https://www.youtube.com/watch?v=dMq0mN1oJus&lc=UgxocC1Ho3_5W042dpZ4AaABAg",
+      "victors": [
+        {
+          "name": "Redelekys",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 160,
+      "position": 160,
+      "name": "Proteus",
+      "placement": 1357,
+      "tier": "Beginner",
+      "youtubeId": "Ipg8DZzAL5Q",
+      "youtubeUrl": "https://www.youtube.com/watch?v=Ipg8DZzAL5Q",
+      "victors": [
+        {
+          "name": "Andres Beltran",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "PoleEast",
+          "videoId": "2jJhnVKLmnU",
+          "videoUrl": "https://www.youtube.com/watch?v=2jJhnVKLmnU&ab_channel=PoleEast"
+        },
+        {
+          "name": "Santiricca",
+          "videoId": "lBfCDS8W3Y4",
+          "videoUrl": "https://www.youtube.com/watch?v=lBfCDS8W3Y4"
+        }
+      ]
+    },
+    {
+      "id": 161,
+      "position": 161,
+      "name": "9Blue",
+      "placement": 1359,
+      "tier": "Beginner",
+      "youtubeId": "QxRpJJo2ztg",
+      "youtubeUrl": "https://youtu.be/QxRpJJo2ztg?si=tpaQn3lzC9zvZZZw",
+      "victors": [
+        {
+          "name": "Geroventi31",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 162,
+      "position": 162,
+      "name": "Azurite",
+      "placement": 1363,
+      "tier": "Beginner",
+      "youtubeId": "UTnFQSWaqE4",
+      "youtubeUrl": "https://www.youtube.com/watch?v=UTnFQSWaqE4&ab_channel=%CF%80zza",
+      "victors": [
+        {
+          "name": "Pissa",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "DoYouself",
+          "videoId": "XIpSLILF9Bw",
+          "videoUrl": "https://www.youtube.com/watch?v=XIpSLILF9Bw"
+        },
+        {
+          "name": "Thiago",
+          "videoId": "G43dg4Q6ogA",
+          "videoUrl": "https://www.youtube.com/watch?v=G43dg4Q6ogA"
+        },
+        {
+          "name": "Santiricca",
+          "videoId": "S52lec3wPeE",
+          "videoUrl": "https://www.youtube.com/watch?v=S52lec3wPeE"
+        },
+        {
+          "name": "Rev121",
+          "videoId": "JbMESFAqTnQ",
+          "videoUrl": "https://www.youtube.com/watch?v=JbMESFAqTnQ"
+        },
+        {
+          "name": "cxve",
+          "videoId": "CncEnraT3rk",
+          "videoUrl": "https://youtu.be/CncEnraT3rk?si=z7GbpEMQSUgiF90u"
+        }
+      ]
+    },
+    {
+      "id": 163,
+      "position": 163,
+      "name": "Flappy Dynamix II",
+      "placement": 1365,
+      "tier": "Beginner",
+      "youtubeId": "sbObXyi9JyQ",
+      "youtubeUrl": "https://www.youtube.com/watch?v=sbObXyi9JyQ",
+      "victors": [
+        {
+          "name": "Neuronfish",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 164,
+      "position": 164,
+      "name": "The Depths Above",
+      "placement": 1367,
+      "tier": "Beginner",
+      "youtubeId": "v4IzQcbzJhg",
+      "youtubeUrl": "https://youtu.be/v4IzQcbzJhg?si=PbX5zP_rIrH7SbwP",
+      "victors": [
+        {
+          "name": "Neuronfish",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 165,
+      "position": 165,
+      "name": "reverie",
+      "placement": 1309,
+      "tier": "Beginner",
+      "youtubeId": "VUyzv6EadG4",
+      "youtubeUrl": "https://youtu.be/VUyzv6EadG4",
+      "victors": [
+        {
+          "name": "Santiricca",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 166,
+      "position": 166,
+      "name": "Mystic Bounds",
+      "placement": 1380,
+      "tier": "Beginner",
+      "youtubeId": "DREvmnE9PIA",
+      "youtubeUrl": "https://youtu.be/DREvmnE9PIA?si=Q4ec8FMEIE0Rl70y",
+      "victors": [
+        {
+          "name": "Geroventi31",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "Santiricca",
+          "videoId": "Vnk2VdpT4sE",
+          "videoUrl": "https://youtu.be/Vnk2VdpT4sE?si=z2uoEOFJtxlQ1ZHt"
+        }
+      ]
+    },
+    {
+      "id": 167,
+      "position": 167,
+      "name": "Mizureta",
+      "placement": 1382,
+      "tier": "Beginner",
+      "youtubeId": "FPQv77s-0xM",
+      "youtubeUrl": "https://youtu.be/FPQv77s-0xM",
+      "victors": [
+        {
+          "name": "Redelekys",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "FranPes",
+          "videoId": "K2tOJ8MLCkw",
+          "videoUrl": "https://www.youtube.com/watch?v=K2tOJ8MLCkw"
+        }
+      ]
+    },
+    {
+      "id": 168,
+      "position": 168,
+      "name": "Misty Mountains",
+      "placement": 1383,
+      "tier": "Beginner",
+      "youtubeId": "Yw0MnqXb1JQ",
+      "youtubeUrl": "https://youtu.be/Yw0MnqXb1JQ",
+      "victors": [
+        {
+          "name": "DoYouself",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "Santiricca",
+          "videoId": "8SbW8rkxyBs",
+          "videoUrl": "https://www.youtube.com/watch?v=8SbW8rkxyBs"
+        }
+      ]
+    },
+    {
+      "id": 169,
+      "position": 169,
+      "name": "Niwa",
+      "placement": 1385,
+      "tier": "Beginner",
+      "youtubeId": "xEYF0tpFLhs",
+      "youtubeUrl": "https://www.youtube.com/watch?v=xEYF0tpFLhs&ab_channel=Redelekys",
+      "victors": [
+        {
+          "name": "Redelekys",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "Wesok",
+          "videoId": "TVgEOS4UdDc",
+          "videoUrl": "https://www.youtube.com/watch?v=TVgEOS4UdDc&ab_channel=zwesok"
+        },
+        {
+          "name": "DoYouself",
+          "videoId": "oA-D_SCKD1E",
+          "videoUrl": "https://www.youtube.com/watch?v=oA-D_SCKD1E&ab_channel=DoYouself"
+        },
+        {
+          "name": "ThaLion087",
+          "videoId": "pq48kWUTigI",
+          "videoUrl": "https://youtu.be/pq48kWUTigI"
+        },
+        {
+          "name": "Thiago",
+          "videoId": "wQ2UxVzZIEg",
+          "videoUrl": "https://youtu.be/wQ2UxVzZIEg"
+        },
+        {
+          "name": "Chimpi",
+          "videoId": "UYscvre-YZs",
+          "videoUrl": "https://youtu.be/UYscvre-YZs"
+        },
+        {
+          "name": "FranPes",
+          "videoId": "5gGxqUu6xBw",
+          "videoUrl": "https://www.youtube.com/watch?v=5gGxqUu6xBw"
+        },
+        {
+          "name": "Rodro",
+          "videoId": "fAx4O7Lp1Mo",
+          "videoUrl": "https://youtu.be/fAx4O7Lp1Mo"
+        },
+        {
+          "name": "EmilioRory",
+          "videoId": "fD09__FctMc",
+          "videoUrl": "https://www.youtube.com/watch?v=fD09__FctMc"
+        },
+        {
+          "name": "Santiricca",
+          "videoId": "oXyHQaS6tyA",
+          "videoUrl": "https://youtu.be/oXyHQaS6tyA"
+        },
+        {
+          "name": "Pissa",
+          "videoId": "XCOMQxEbFgg",
+          "videoUrl": "https://www.youtube.com/watch?v=XCOMQxEbFgg"
+        }
+      ]
+    },
+    {
+      "id": 170,
+      "position": 170,
+      "name": "Without U",
+      "placement": 1386,
+      "tier": "Beginner",
+      "youtubeId": "LH1zem9e27Y",
+      "youtubeUrl": "https://youtu.be/LH1zem9e27Y",
+      "victors": [
+        {
+          "name": "Runnie_M",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 171,
+      "position": 171,
+      "name": "Prismatic",
+      "placement": 1392,
+      "tier": "Beginner",
+      "youtubeId": "XQpIoqvP5dw",
+      "youtubeUrl": "https://www.youtube.com/watch?v=XQpIoqvP5dw",
+      "victors": [
+        {
+          "name": "Thiago",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "Santiricca",
+          "videoId": "voFMZM6THFI",
+          "videoUrl": "https://youtu.be/voFMZM6THFI"
+        }
+      ]
+    },
+    {
+      "id": 172,
+      "position": 172,
+      "name": "Troll Level",
+      "placement": 1411,
+      "tier": "Beginner",
+      "youtubeId": "YCXv2AGH2es",
+      "youtubeUrl": "https://youtu.be/YCXv2AGH2es?si=Q7_qsnJPGTuAw1UL",
+      "victors": [
+        {
+          "name": "Creiz",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "Ramii",
+          "videoId": "nCLdACyqEgo",
+          "videoUrl": "https://www.youtube.com/watch?v=nCLdACyqEgo"
+        },
+        {
+          "name": "DoYouself",
+          "videoId": "DkpynV8JikY",
+          "videoUrl": "https://www.youtube.com/watch?v=DkpynV8JikY&ab_channel=DoYouself"
+        },
+        {
+          "name": "EmilioRory",
+          "videoId": "eGBoRf7hrm0",
+          "videoUrl": "https://youtu.be/eGBoRf7hrm0"
+        },
+        {
+          "name": "Redelekys",
+          "videoId": "0A7l4EEr7d8",
+          "videoUrl": "https://www.youtube.com/watch?v=0A7l4EEr7d8"
+        }
+      ]
+    },
+    {
+      "id": 173,
+      "position": 173,
+      "name": "Sweater Weather",
+      "placement": 1421,
+      "tier": "Beginner",
+      "youtubeId": "lpU-zWdlT14",
+      "youtubeUrl": "https://www.youtube.com/watch?v=lpU-zWdlT14&feature=youtu.be",
+      "victors": [
+        {
+          "name": "Pissa",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "Skyllz",
+          "videoId": "jClT3_Bdf5c",
+          "videoUrl": "https://www.youtube.com/watch?v=jClT3_Bdf5c"
+        },
+        {
+          "name": "Thiago",
+          "videoId": "qlM0CaHSw7I",
+          "videoUrl": "https://www.youtube.com/watch?v=qlM0CaHSw7I"
+        },
+        {
+          "name": "EmilioRory",
+          "videoId": "zbOILOUylvE",
+          "videoUrl": "https://youtu.be/zbOILOUylvE"
+        },
+        {
+          "name": "GeroVenti31",
+          "videoId": "JaxqPZRiAeA",
+          "videoUrl": "https://www.youtube.com/watch?v=JaxqPZRiAeA"
+        }
+      ]
+    },
+    {
+      "id": 174,
+      "position": 174,
+      "name": "Acu",
+      "placement": 1422,
+      "tier": "Beginner",
+      "youtubeId": "Wk0XAujuiyA",
+      "youtubeUrl": "https://youtu.be/Wk0XAujuiyA?list=PLWOoVYfOzoyX2FVTYd3xe2vCPqw9zZcp-",
+      "victors": [
+        {
+          "name": "Joaquemix",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "Corews",
+          "videoId": "z8yGnP4ilbY",
+          "videoUrl": "https://www.youtube.com/watch?v=z8yGnP4ilbY&pp=ygULejh5R25QNGlsYlk%3D"
+        },
+        {
+          "name": "Runnie_M",
+          "videoId": "LfDIzR1Orxc",
+          "videoUrl": "https://www.youtube.com/watch?v=LfDIzR1Orxc&pp=ygULTGZESXpSMU9yeGM%3D"
+        },
+        {
+          "name": "DoYouself",
+          "videoId": "3J6tHYLFfCc",
+          "videoUrl": "https://www.youtube.com/watch?v=3J6tHYLFfCc&t=1s&pp=ygULM0o2dEhZTEZmQ2M%3D"
+        },
+        {
+          "name": "Tryken",
+          "videoId": "CnABl58-oFM",
+          "videoUrl": "https://youtu.be/CnABl58-oFM"
+        },
+        {
+          "name": "Pissa",
+          "videoId": "0MaxnZSBeDQ",
+          "videoUrl": "https://www.youtube.com/watch?v=0MaxnZSBeDQ&pp=ygULME1heG5aU0JlRFE%3D"
+        },
+        {
+          "name": "Ruitsu",
+          "videoId": "oW-waB2cSfw",
+          "videoUrl": "https://youtu.be/oW-waB2cSfw"
+        },
+        {
+          "name": "Creiz",
+          "videoId": "Hao6CjxPLaM",
+          "videoUrl": "https://www.youtube.com/watch?v=Hao6CjxPLaM&pp=ygULSGFvNkNqeFBMYU0%3D"
+        },
+        {
+          "name": "ThaLion087",
+          "videoId": "sWFY9PBVkAU",
+          "videoUrl": "https://www.youtube.com/watch?v=sWFY9PBVkAU&ab_channel=ThaLion087"
+        },
+        {
+          "name": "EmilioRory",
+          "videoId": "MfFl-PuN4B0",
+          "videoUrl": "https://www.youtube.com/watch?v=MfFl-PuN4B0&ab_channel=Emilio10"
+        },
+        {
+          "name": "Redelekys",
+          "videoId": "qJvei03Ckqo",
+          "videoUrl": "https://www.youtube.com/watch?v=qJvei03Ckqo&pp=ygULcUp2ZWkwM0NrcW8%3D"
+        },
+        {
+          "name": "WinRAR",
+          "videoId": "xybd6cyKuVM",
+          "videoUrl": "https://www.youtube.com/watch?v=xybd6cyKuVM&t=2s&pp=ygULeHliZDZjeUt1Vk0%3D"
+        },
+        {
+          "name": "Neuronfish",
+          "videoId": "vFsT5FBpaI4",
+          "videoUrl": "https://www.youtube.com/watch?v=vFsT5FBpaI4"
+        },
+        {
+          "name": "Geroventi31",
+          "videoId": "LmhAdX7ofZM",
+          "videoUrl": "https://www.youtube.com/watch?v=LmhAdX7ofZM"
+        },
+        {
+          "name": "Thiago",
+          "videoId": "uq5V6VHND9c",
+          "videoUrl": "https://www.youtube.com/watch?v=uq5V6VHND9c"
+        },
+        {
+          "name": "Skyllz",
+          "videoId": "0fiPEic1HEQ",
+          "videoUrl": "https://www.youtube.com/watch?v=0fiPEic1HEQ"
+        },
+        {
+          "name": "Overm0n",
+          "videoId": null,
+          "videoUrl": "https://medal.tv/es/games/geometry-dash/clips/jrX5i3g40BdWpYajY/TqRChxNTYg94?invite=cr-MSxXdnksMTc3OTcwOTg0LA"
+        },
+        {
+          "name": "TropixVG",
+          "videoId": "vlt9SUKg5-8",
+          "videoUrl": "https://www.youtube.com/watch?v=vlt9SUKg5-8"
+        },
+        {
+          "name": "Santiricca",
+          "videoId": "Z3iqZkXWA_w",
+          "videoUrl": "https://youtu.be/Z3iqZkXWA_w"
+        },
+        {
+          "name": "FranPes",
+          "videoId": "FQMEydm_2Uw",
+          "videoUrl": "https://www.youtube.com/watch?v=FQMEydm_2Uw"
+        },
+        {
+          "name": "Chimpi",
+          "videoId": "VzYR0k_caGA",
+          "videoUrl": "https://www.youtube.com/watch?v=VzYR0k_caGA"
+        },
+        {
+          "name": "MaTeO_BeLu",
+          "videoId": "54G1WlA4rBA",
+          "videoUrl": "https://youtu.be/54G1WlA4rBA"
+        },
+        {
+          "name": "Ferrotheiz",
+          "videoId": "19KmLMXu4Ks",
+          "videoUrl": "https://www.youtube.com/watch?v=19KmLMXu4Ks"
+        }
+      ]
+    },
+    {
+      "id": 175,
+      "position": 175,
+      "name": "Through The Decay",
+      "placement": 1424,
+      "tier": "Beginner",
+      "youtubeId": "jHxRiLKQtT4",
+      "youtubeUrl": "https://www.youtube.com/watch?v=jHxRiLKQtT4",
+      "victors": [
+        {
+          "name": "KadriaN",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "FranPes",
+          "videoId": "I2_dzP-BmIc",
+          "videoUrl": "https://www.youtube.com/watch?v=I2_dzP-BmIc"
+        },
+        {
+          "name": "Santiricca",
+          "videoId": "sDwi1zAM8ks",
+          "videoUrl": "https://youtu.be/sDwi1zAM8ks"
+        },
+        {
+          "name": "Gekura",
+          "videoId": "nw-uT02ub2I",
+          "videoUrl": "https://www.youtube.com/watch?v=nw-uT02ub2I"
+        },
+        {
+          "name": "Pissa",
+          "videoId": "o6M9sfysq_4",
+          "videoUrl": "https://www.youtube.com/watch?v=o6M9sfysq_4"
+        }
+      ]
+    },
+    {
+      "id": 176,
+      "position": 176,
+      "name": "Precipitance",
+      "placement": 1425,
+      "tier": "Beginner",
+      "youtubeId": "niMI1-bcbRE",
+      "youtubeUrl": "https://www.youtube.com/watch?v=niMI1-bcbRE",
+      "victors": [
+        {
+          "name": "Redelekys",
+          "videoId": null,
+          "videoUrl": null
+        }
+      ]
+    },
+    {
+      "id": 177,
+      "position": 177,
+      "name": "Red World",
+      "placement": 1426,
+      "tier": "Beginner",
+      "youtubeId": "Nhk73jAQ4DE",
+      "youtubeUrl": "https://www.youtube.com/watch?v=Nhk73jAQ4DE&ab_channel=AndresBeltran",
+      "victors": [
+        {
+          "name": "Andres Beltran",
+          "videoId": null,
+          "videoUrl": null
+        },
+        {
+          "name": "WinRAR",
+          "videoId": "jVJhcX1rKHs",
+          "videoUrl": "https://www.youtube.com/watch?v=jVJhcX1rKHs&ab_channel=MaxinderGD"
+        },
+        {
+          "name": "Santiricca",
+          "videoId": "MvgT7NHRKdM",
+          "videoUrl": "https://www.youtube.com/watch?v=MvgT7NHRKdM"
+        },
+        {
+          "name": "FranPes",
+          "videoId": "ZCAycYyjqSY",
+          "videoUrl": "https://www.youtube.com/watch?v=ZCAycYyjqSY"
+        },
+        {
+          "name": "Inc0gnit",
+          "videoId": "8dFRpK4fNXY",
+          "videoUrl": "https://www.youtube.com/watch?v=8dFRpK4fNXY"
+        }
+      ]
+    }
+  ],
+  "players": [
+    {
+      "id": 1,
+      "name": "Santiricca",
+      "hardest": "Zodiac",
+      "extremeCount": 56,
+      "points": 28645,
+      "completions": 58,
+      "completedLevels": [
+        2,
+        3,
+        7,
+        10,
+        16,
+        17,
+        18,
+        22,
+        24,
+        34,
+        36,
+        37,
+        40,
+        47,
+        53
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Pissa",
+      "hardest": "Renevant",
+      "extremeCount": 19,
+      "points": 12085,
+      "completions": 24,
+      "completedLevels": [
+        5,
+        8,
+        17,
+        19,
+        33,
+        40,
+        56,
+        69,
+        71,
+        73,
+        84,
+        114,
+        116,
+        127,
+        135
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Neuronfish",
+      "hardest": "",
+      "extremeCount": 25,
+      "points": 15140,
+      "completions": 27,
+      "completedLevels": [
+        1,
+        9,
+        38,
+        48,
+        51,
+        52,
+        54,
+        56,
+        68,
+        71,
+        74,
+        75,
+        79,
+        80,
+        85
+      ]
+    },
+    {
+      "id": 4,
+      "name": "Cxve",
+      "hardest": "Thinking Space",
+      "extremeCount": 15,
+      "points": 12630,
+      "completions": 20,
+      "completedLevels": [
+        4,
+        14,
+        33,
+        35,
+        39,
+        40,
+        47,
+        50,
+        56,
+        59,
+        67,
+        85,
+        94,
+        95,
+        100
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Gekura",
+      "hardest": "",
+      "extremeCount": 0,
+      "points": 6150,
+      "completions": 11,
+      "completedLevels": [
+        12,
+        30,
+        33,
+        56,
+        62,
+        84,
+        86,
+        135,
+        153,
+        155,
+        175
+      ]
+    },
+    {
+      "id": 6,
+      "name": "Joaquemix",
+      "hardest": "Arctic Lights",
+      "extremeCount": 21,
+      "points": 13270,
+      "completions": 21,
+      "completedLevels": [
+        14,
+        17,
+        26,
+        30,
+        31,
+        40,
+        41,
+        44,
+        56,
+        58,
+        61,
+        63,
+        66,
+        69,
+        70
+      ]
+    },
+    {
+      "id": 7,
+      "name": "Salva",
+      "hardest": "",
+      "extremeCount": 0,
+      "points": 3935,
+      "completions": 6,
+      "completedLevels": [
+        6,
+        17,
+        40,
+        69,
+        132,
+        155
+      ]
+    },
+    {
+      "id": 8,
+      "name": "Andrés Beltrán",
+      "hardest": "Bloodlust",
+      "extremeCount": 17,
+      "points": 10750,
+      "completions": 17,
+      "completedLevels": [
+        10,
+        14,
+        17,
+        18,
+        22,
+        33,
+        56,
+        58,
+        61,
+        69,
+        84,
+        92,
+        106,
+        135,
+        155
+      ]
+    },
+    {
+      "id": 9,
+      "name": "Chimpi",
+      "hardest": "Athanatos",
+      "extremeCount": 22,
+      "points": 10665,
+      "completions": 21,
+      "completedLevels": [
+        11,
+        34,
+        43,
+        47,
+        69,
+        70,
+        71,
+        76,
+        87,
+        88,
+        94,
+        117,
+        119,
+        126,
+        131
+      ]
+    },
+    {
+      "id": 10,
+      "name": "Geroventi",
+      "hardest": "",
+      "extremeCount": 0,
+      "points": 9855,
+      "completions": 22,
+      "completedLevels": [
+        13,
+        15,
+        51,
+        65,
+        68,
+        69,
+        78,
+        84,
+        104,
+        109,
+        113,
+        130,
+        134,
+        135,
+        147
+      ]
+    },
+    {
+      "id": 11,
+      "name": "Overm0n",
+      "hardest": "Stalemate Redux X1.1",
+      "extremeCount": 8,
+      "points": 4840,
+      "completions": 9,
+      "completedLevels": [
+        25,
+        33,
+        56,
+        69,
+        84,
+        118,
+        127,
+        155,
+        174
+      ]
+    },
+    {
+      "id": 12,
+      "name": "FranPes",
+      "hardest": "Wasureta",
+      "extremeCount": 11,
+      "points": 4400,
+      "completions": 11,
+      "completedLevels": [
+        15,
+        68,
+        69,
+        71,
+        111,
+        135,
+        167,
+        169,
+        174,
+        175,
+        177
+      ]
+    },
+    {
+      "id": 13,
+      "name": "Redelekys",
+      "hardest": "Wasureta",
+      "extremeCount": 35,
+      "points": 19480,
+      "completions": 39,
+      "completedLevels": [
+        15,
+        20,
+        24,
+        42,
+        46,
+        47,
+        49,
+        51,
+        63,
+        68,
+        69,
+        71,
+        72,
+        73,
+        75
+      ]
+    },
+    {
+      "id": 14,
+      "name": "Ardizz",
+      "hardest": "Sonic Wave",
+      "extremeCount": 8,
+      "points": 3540,
+      "completions": 6,
+      "completedLevels": [
+        17,
+        40,
+        69,
+        73,
+        144,
+        155
+      ]
+    },
+    {
+      "id": 15,
+      "name": "Doyou",
+      "hardest": "Sunset Sandstorm",
+      "extremeCount": 25,
+      "points": 15795,
+      "completions": 31,
+      "completedLevels": [
+        11,
+        21,
+        34,
+        44,
+        50,
+        51,
+        56,
+        58,
+        65,
+        68,
+        69,
+        71,
+        78,
+        84,
+        87
+      ]
+    },
+    {
+      "id": 16,
+      "name": "Rodro",
+      "hardest": "Congregation",
+      "extremeCount": 4,
+      "points": 1995,
+      "completions": 4,
+      "completedLevels": [
+        12,
+        69,
+        155,
+        169
+      ]
+    }
+  ]
+}

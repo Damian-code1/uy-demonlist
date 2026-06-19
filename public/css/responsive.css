@@ -1,0 +1,84 @@
+/* =============================================
+   RESPONSIVE.CSS — UY Demonlist v2
+   ============================================= */
+
+/* ─── Tablet ─── */
+@media (max-width: 900px) {
+  .navbar-inner { gap: 1rem; }
+  .nav-links { gap: 0; }
+  .nav-link { padding: .4rem .65rem; font-size: .68rem; }
+
+  .hero-stats { flex-direction: row; }
+  .stat-item { padding: .9rem 1.4rem; }
+
+  .lb-header,
+  .lb-row {
+    grid-template-columns: 50px 1fr 80px 90px;
+  }
+  .lbh-bar, .lb-bar-wrap { display: none; }
+
+  .form-grid-2 { grid-template-columns: 1fr; }
+  .admin-form-grid2 { grid-template-columns: 1fr; }
+}
+
+/* ─── Mobile ─── */
+@media (max-width: 640px) {
+  :root { --navbar-h: 56px; }
+
+  /* Nav: show hamburger */
+  .nav-links {
+    position: fixed; top: var(--navbar-h); left: 0; right: 0;
+    background: rgba(7,7,13,.97);
+    flex-direction: column; align-items: flex-start;
+    padding: .75rem 1rem; gap: .15rem;
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(20px);
+    opacity: 0; pointer-events: none;
+    transform: translateY(-8px);
+    transition: opacity .2s ease, transform .2s ease;
+  }
+  .nav-links.open { opacity: 1; pointer-events: auto; transform: none; }
+  .nav-link { width: 100%; padding: .7rem .85rem; font-size: .8rem; }
+  .hamburger { display: flex; }
+
+  /* Float user widget smaller on mobile */
+  .user-widget { right: 10px; top: calc(var(--navbar-h) + 8px); }
+  .user-widget-card { padding: .38rem .6rem .38rem .42rem; max-width: 180px; }
+  .user-widget-name { font-size: .72rem; }
+
+  /* Hero */
+  .hero-title { font-size: clamp(4rem, 18vw, 6rem); }
+  .hero-stats { border-radius: var(--r); }
+  .stat-item { padding: .8rem 1rem; }
+  .stat-num { font-size: 1.8rem; }
+
+  /* Sections */
+  .page-section { padding: 4rem 0; }
+
+  /* Level cards */
+  .level-card { flex-direction: column; }
+  .level-rank-stripe {
+    width: 100%; height: 36px; min-width: unset;
+    flex-direction: row; padding: 0 .85rem; gap: .5rem;
+    border-right: none; border-bottom: 1px solid var(--border-s);
+  }
+  .level-info { padding: .65rem .85rem; }
+
+  /* Leaderboard */
+  .lb-header,
+  .lb-row { grid-template-columns: 44px 1fr 70px 70px; padding: .65rem .85rem; }
+  .lbh-bar, .lb-bar-wrap, .lbh-comp, .lb-comp { display: none; }
+
+  /* Admin panel full screen */
+  .admin-panel { max-width: 100%; }
+
+  /* Footer */
+  .footer-inner { flex-direction: column; align-items: flex-start; gap: 1.25rem; }
+  .footer-bottom { flex-direction: column; align-items: flex-start; gap: .4rem; }
+}
+
+/* ─── Very small ─── */
+@media (max-width: 380px) {
+  .user-widget-info { display: none; }
+  .user-widget-card { padding: .38rem .42rem; }
+}

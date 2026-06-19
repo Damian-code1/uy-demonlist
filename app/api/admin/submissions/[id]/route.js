@@ -1,0 +1,158 @@
+import { query } from '../../../../../lib/db.js';
+import { requireAdmin } from '../../../../../lib/auth.js';
+
+function extractYouTubeId(url) {
+  if (!url) return null;
+  const m = url.match(
+    /(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/\s]{11})/
+  );
+  return m ? m[1] : null;
+}
+
+export async function PUT(request, { params }) {
+  const admin = await requireAdmin(request);
+  if (!admin) return Response.json({ error: 'No autorizado' }, { status: 401 });
+
+  try {
+    const { status, rejection_reason } = await request.json();
+    if (!['pending','approved','rejected'].includes(status))
+      return Response.json({ error: 'Status inválido' }, { status: 400 });
+
+    const [subRows] = await query('SELECT * FROM submissions WHERE id = ? LIMIT 1', [params.id]);
+    if (!subRows.length) return Response.json({ error: 'Submission no encontrada' }, { status: 404 });
+    const sub = subRows[0];
+
+    await query(
+      'UPDATE submissions SET status = ?, rejection_reason = ?, updated_at = NOW() WHERE id = ?',
+      [status, status === 'rejected' ? (rejection_reason?.trim() || null) : null, params.id]
+    );
+
+    if (status === 'approved') {
+      console.log('========================');
+      console.log('APPROVING SUBMISSION:', params.id, sub.level_name, '→', sub.username);
+      console.log('========================');
+
+      let [levelRows] = await query(
+        'SELECT id FROM levels WHERE LOWER(name) = LOWER(?) LIMIT 1',
+        [sub.level_name]
+      );
+
+      let levelId;
+
+      if (levelRows.length) {
+        levelId = levelRows[0].id;
+        console.log(`[submissions] Nivel existente id=${levelId}`);
+      } else {
+        // Nivel nuevo — calcular posición en base a AREDL
+        const [[maxRow]]  = await query('SELECT MAX(position) as maxPos FROM levels');
+        const totalLevels = maxRow?.maxPos || 0;
+
+        let targetPos    = totalLevels + 1; // fallback: al final
+        let ytId         = extractYouTubeId(sub.youtube_url);
+        let aredlVideoId = null; // video_id del showcase de AREDL (para thumbnail)
+
+        try {
+          const baseUrl  = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+          const aredlRes = await fetch(`${baseUrl}/api/aredl`, {
+            headers: { 'User-Agent': 'UY-Demonlist-Internal/2.0' },
+          });
+
+          if (aredlRes.ok) {
+            const { levels: aredlLevels = [] } = await aredlRes.json();
+            const nameLower = sub.level_name?.toLowerCase().trim();
+            const match     = aredlLevels.find(e => e.name?.toLowerCase().trim() === nameLower);
+
+            if (match?.position) {
+              // Mapear nombre → posición AREDL
+              const aredlPosMap = {};
+              aredlLevels.forEach(e => {
+                if (e.name) aredlPosMap[e.name.toLowerCase().trim()] = e.position;
+              });
+
+              // Contar cuántos niveles de nuestra lista están por encima en AREDL
+              const [ourLevels] = await query('SELECT name FROM levels');
+              let countAbove = 0;
+              ourLevels.forEach(l => {
+                const ap = aredlPosMap[l.name?.toLowerCase().trim()];
+                if (ap !== undefined && ap < match.position) countAbove++;
+              });
+
+              targetPos    = countAbove + 1;
+              aredlVideoId = match.video_id || null;
+              console.log(`[submissions] AREDL #${match.position} → ${countAbove} niveles nuestros lo superan → pos ${targetPos}, aredl_video_id: ${aredlVideoId}`);
+            } else {
+              console.log(`[submissions] "${sub.level_name}" no está en AREDL, se inserta al final`);
+            }
+          }
+        } catch (e) {
+          console.warn('[submissions] Error consultando AREDL:', e.message);
+        }
+
+        // Desplazar niveles existentes para hacer espacio
+        if (targetPos <= totalLevels) {
+          await query(
+            'UPDATE levels SET position = position + 1 WHERE position >= ?',
+            [targetPos]
+          );
+        }
+
+        // Si el submission tiene YT propio usarlo, sino usar el showcase de AREDL
+        const thumbId = ytId || aredlVideoId || null;
+
+        const [insertResult] = await query(
+          'INSERT INTO levels (name, position, youtube_url, youtube_id) VALUES (?, ?, ?, ?)',
+          [sub.level_name, targetPos, sub.youtube_url || null, thumbId]
+        );
+        levelId = insertResult.insertId;
+        console.log(`[submissions] Nivel "${sub.level_name}" insertado en pos ${targetPos}, thumbnail: ${thumbId}`);
+      }
+
+      // Crear victor si no existe ya
+      const [existing] = await query(
+        'SELECT id FROM victors WHERE level_id = ? AND LOWER(player_name) = LOWER(?) LIMIT 1',
+        [levelId, sub.username]
+      );
+
+      if (!existing.length) {
+        await query(
+          'INSERT INTO victors (level_id, player_name, video_url) VALUES (?, ?, ?)',
+          [levelId, sub.username, sub.youtube_url || null]
+        );
+        console.log(`[submissions] Victor creado: ${sub.username} en level ${levelId}`);
+      } else {
+        console.log(`[submissions] Victor ya existía`);
+      }
+    }
+
+    console.log('[submissions] FINISHED OK');
+    return Response.json({ success: true });
+  } catch (error) {
+    console.error('[submissions] ERROR:', error);
+    return Response.json({ error: error.message }, { status: 500 });
+  }
+}
+
+export async function DELETE(request, { params }) {
+  const admin = await requireAdmin(request);
+  if (!admin) return Response.json({ error: 'No autorizado' }, { status: 401 });
+
+  try {
+    await query('DELETE FROM submissions WHERE id = ?', [params.id]);
+    console.log('[submissions] Submission eliminada:', params.id);
+    return Response.json({ success: true });
+  } catch (error) {
+    console.error('[submissions] ERROR:', error);
+    return Response.json({ error: error.message, stack: error.stack }, { status: 500 });
+  }
+}
+
+export async function OPTIONS() {
+  return new Response(null, {
+    status: 204,
+    headers: {
+      'Access-Control-Allow-Origin':  '*',
+      'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type,x-discord-id',
+    },
+  });
+}

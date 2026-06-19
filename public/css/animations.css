@@ -1,0 +1,61 @@
+/* =============================================
+   ANIMATIONS.CSS — UY Demonlist v2
+   ============================================= */
+
+/* ─── AOS overrides ─── */
+[data-aos] { will-change: transform, opacity; }
+
+/* ─── Fade in up ─── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.anim-fade-up {
+  animation: fadeInUp .55s ease both;
+}
+
+/* ─── Particle canvas glow ─── */
+@keyframes hero-glow-pulse {
+  0%,100% { opacity: .7; }
+  50% { opacity: 1; }
+}
+.hero-glow { animation: hero-glow-pulse 4s ease-in-out infinite; }
+
+/* ─── Count-up animation ─── */
+.stat-num { transition: all .1s; }
+
+/* ─── Level card entrance ─── */
+@keyframes cardIn {
+  from { opacity: 0; transform: translateX(-12px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ─── Spinner ─── */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+.fa-spin { animation: spin .8s linear infinite; }
+
+/* ─── Victor chip hover glow ─── */
+.victor-chip.has-video::before {
+  content: '';
+  position: absolute; inset: 0; border-radius: inherit;
+  background: rgba(244,63,94,.06);
+  opacity: 0; transition: opacity var(--trans);
+  pointer-events: none;
+}
+.victor-chip { position: relative; overflow: hidden; }
+.victor-chip.has-video:hover::before { opacity: 1; }
+
+/* ─── Admin panel slide ─── */
+.admin-panel {
+  box-shadow: -16px 0 64px rgba(0,0,0,.7);
+}
+
+/* ─── reduced motion ─── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
+}
