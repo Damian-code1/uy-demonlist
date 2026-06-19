@@ -1208,17 +1208,48 @@ function loadAdminSyncTab() {
   const container = document.getElementById('admin-sync-table');
   if (!container) return;
   container.innerHTML = `
-    <div class="admin-sync-card">
-      <div class="admin-sync-icon"><i class="fas fa-sync-alt"></i></div>
-      <h3>Sincronizar posiciones con AREDL</h3>
-      <p>Reordena todos los niveles de la lista según su posición actual en la AREDL.<br>
-      Los niveles que no estén en AREDL van al final, ordenados alfabéticamente.</p>
-      <div class="admin-sync-info">
-        <span><i class="fas fa-info-circle"></i> Esta operación es segura y reversible desde el tab Niveles.</span>
+    <div class="sync-page">
+      <div class="sync-hero">
+        <div class="sync-hero-icon">
+          <i class="fas fa-sync-alt"></i>
+        </div>
+        <div class="sync-hero-text">
+          <h2>Sincronizar con AREDL</h2>
+          <p>Reordena todos los niveles según su posición actual en la Argentina Extreme Demon List.</p>
+        </div>
       </div>
-      <button class="btn-admin-sync" id="syncPositionsBtn" onclick="syncPositionsWithAredl()">
-        <i class="fas fa-sync-alt"></i> Sincronizar ahora
-      </button>
+
+      <div class="sync-cards">
+        <div class="sync-info-card">
+          <div class="sync-info-icon"><i class="fas fa-list-ol"></i></div>
+          <div>
+            <div class="sync-info-title">Reordenamiento automático</div>
+            <div class="sync-info-desc">Los niveles se ordenan según su posición en AREDL. Los que no estén en AREDL van al final, ordenados alfabéticamente.</div>
+          </div>
+        </div>
+        <div class="sync-info-card">
+          <div class="sync-info-icon" style="color:#34d399;background:rgba(52,211,153,.12)"><i class="fas fa-shield-alt"></i></div>
+          <div>
+            <div class="sync-info-title">Operación segura</div>
+            <div class="sync-info-desc">Solo se modifican las posiciones. Victors, videos y thumbnails no se tocan. Reversible manualmente desde el tab Niveles.</div>
+          </div>
+        </div>
+        <div class="sync-info-card">
+          <div class="sync-info-icon" style="color:#f59e0b;background:rgba(245,158,11,.12)"><i class="fas fa-globe"></i></div>
+          <div>
+            <div class="sync-info-title">Datos en tiempo real</div>
+            <div class="sync-info-desc">Se consulta la AREDL en el momento de la sincronización para usar las posiciones más actualizadas.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sync-action">
+        <button class="btn-sync-main" id="syncPositionsBtn" onclick="syncPositionsWithAredl()">
+          <i class="fas fa-sync-alt"></i>
+          <span>Sincronizar ahora</span>
+        </button>
+        <p class="sync-action-hint"><i class="fas fa-clock"></i> El proceso puede tardar unos segundos</p>
+      </div>
     </div>`;
 }
 
