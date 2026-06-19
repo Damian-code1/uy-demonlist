@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { query } from '../../../../../lib/db.js';
+import { query } from '../../../../lib/db.js';
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
