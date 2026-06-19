@@ -11,8 +11,12 @@ let userFavorites    = JSON.parse(localStorage.getItem('favorites') || '[]');
 
 async function syncFavoritesWithDB() {
   if (!window.currentUser) return;
+  const discordId = localStorage.getItem('uy_discord_id');
+  if (!discordId) return;
   try {
-    const res  = await fetch('/api/users/favorites');
+    const res  = await fetch('/api/admin/users/favorites', {
+      headers: { 'x-discord-id': discordId }
+    });
     const data = await res.json();
     if (Array.isArray(data.favorites)) {
       userFavorites = data.favorites;
@@ -28,13 +32,19 @@ async function toggleFavoriteDB(levelId) {
   localStorage.setItem('favorites', JSON.stringify(userFavorites));
 
   if (window.currentUser) {
-    try {
-      await fetch('/api/users/favorites', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ levelId, action })
-      });
-    } catch {}
+    const discordId = localStorage.getItem('uy_discord_id');
+    if (discordId) {
+      try {
+        await fetch('/api/admin/users/favorites', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-discord-id': discordId
+          },
+          body: JSON.stringify({ levelId, action })
+        });
+      } catch {}
+    }
   }
 }
 
