@@ -257,7 +257,14 @@ function renderModalContent(level) {
 
     <div class="lm-body">
       <div class="lm-header-row">
-        <div class="lm-rank-badge">${pos <= 3 ? ['🥇','🥈','🥉'][pos-1] : `#${pos}`}</div>
+        <div class="lm-rank-badge">${pos <= 3
+          ? [
+              `<i class="fas fa-crown" style="color:#f59e0b"></i>`,
+              `<i class="fas fa-medal" style="color:#cbd5e1"></i>`,
+              `<i class="fas fa-medal" style="color:#c2722a"></i>`,
+            ][pos-1]
+          : `#${pos}`
+        }</div>
         <div>
           <h2 class="lm-title">${esc(level.name)}</h2>
           <div class="lm-badges">
@@ -740,7 +747,12 @@ const avatarUrl = player.discord_id && player.discord_avatar
   ? `https://cdn.discordapp.com/avatars/${player.discord_id}/${player.discord_avatar}.png?size=128`
   : null;
   const rank     = players.findIndex(p => p.name === playerName) + 1;
-  const rankLabel = rank <= 3 ? ['🥇','🥈','🥉'][rank-1] : `#${rank}`;
+  const rankIcons = [
+    `<i class="fas fa-crown" style="color:#f59e0b;font-size:.85em"></i>`,
+    `<i class="fas fa-medal" style="color:#cbd5e1;font-size:.85em"></i>`,
+    `<i class="fas fa-medal" style="color:#c2722a;font-size:.85em"></i>`,
+  ];
+  const rankLabel = rank <= 3 ? rankIcons[rank-1] : `#${rank}`;
 
   // Crear o reusar el modal
   let modal = document.getElementById('playerProfileModal');
@@ -841,13 +853,20 @@ const avatarUrl = player.discord_id && player.discord_avatar
           : `<div class="pm-completions-list">
               ${completions.map(({ level, victor }) => {
                 const ytId  = victor?.videoId || extractYTId(victor?.videoUrl);
-                const thumb = level.thumb_url || null;
+                const victorThumb = ytId ? `https://img.youtube.com/vi/${ytId}/mqdefault.jpg` : null;
+                const fallbackThumb = level.thumb_url || null;
+                const thumb = victorThumb || fallbackThumb;
                 const pos   = level.position;
-                const posLabel = pos <= 3 ? ['🥇','🥈','🥉'][pos-1] : `#${pos}`;
+                const posIcons = [
+                  `<i class="fas fa-crown" style="color:#f59e0b;font-size:.8em"></i>`,
+                  `<i class="fas fa-medal" style="color:#cbd5e1;font-size:.8em"></i>`,
+                  `<i class="fas fa-medal" style="color:#c2722a;font-size:.8em"></i>`,
+                ];
+                const posLabel = pos <= 3 ? posIcons[pos-1] : `#${pos}`;
                 return `
                   <div class="pm-completion-row" onclick="closePlayerProfile();openLevelModal(${JSON.stringify(level).replace(/"/g,'&quot;')})">
                     ${thumb
-                      ? `<img class="pm-comp-thumb" src="${thumb}" alt="">`
+                      ? `<img class="pm-comp-thumb" src="${thumb}" alt="" onerror="this.src='${fallbackThumb||''}';this.onerror=null">`
                       : `<div class="pm-comp-thumb pm-comp-thumb-ph"></div>`
                     }
                     <div class="pm-comp-info">
