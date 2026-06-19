@@ -1,5 +1,7 @@
 import { query } from '../../../../../lib/db.js';
 import { requireAdmin } from '../../../../../lib/auth.js';
+import { invalidateLevelsCache } from '../../../levels/route.js';
+import { invalidatePlayersCache } from '../../../players/route.js';
 
 function extractYouTubeId(url) {
   if (!url) return null;
@@ -96,8 +98,8 @@ export async function PUT(request, { params }) {
 
         const thumbId = ytId || aredlVideoId || null;
         const [insertResult] = await query(
-          'INSERT INTO levels (name, position, youtube_url, youtube_id) VALUES (?, ?, ?, ?)',
-          [sub.level_name, targetPos, sub.youtube_url || null, thumbId]
+          'INSERT INTO levels (name, position, youtube_url, youtube_id, created_from_submission) VALUES (?, ?, ?, ?, ?)',
+          [sub.level_name, targetPos, sub.youtube_url || null, thumbId, 1]
         );
         levelId = insertResult.insertId;
         console.log(`[submissions] Nivel "${sub.level_name}" insertado en pos ${targetPos}`);
@@ -107,22 +109,47 @@ export async function PUT(request, { params }) {
           await query('UPDATE levels SET position = ? WHERE id = ?', [i + 1, allLevels[i].id]);
         }
       }
+      let victorName = sub.username;
 
+try {
+  const [linkedRows] = await query(
+    `
+    SELECT
+      u.linked_player_name
+    FROM users u
+    WHERE LOWER(u.discord_username) = LOWER(?)
+       OR LOWER(u.discord_display_name) = LOWER(?)
+    LIMIT 1
+    `,
+    [sub.username, sub.username]
+  );
+
+  if (
+    linkedRows.length &&
+    linkedRows[0].linked_player_name
+  ) {
+    victorName = linkedRows[0].linked_player_name;
+  }
+} catch (e) {
+  console.warn('[submissions] link lookup failed', e);
+}
       const [existing] = await query(
-        'SELECT id FROM victors WHERE level_id = ? AND LOWER(player_name) = LOWER(?) LIMIT 1',
-        [levelId, sub.username]
-      );
+  'SELECT id FROM victors WHERE level_id = ? AND LOWER(player_name) = LOWER(?) LIMIT 1',
+  [levelId, victorName]
+);
 
       if (!existing.length) {
         await query(
           'INSERT INTO victors (level_id, player_name, video_url) VALUES (?, ?, ?)',
-          [levelId, sub.username, sub.youtube_url || null]
+          [levelId, victorName, sub.youtube_url || null]
         );
         victorAdded = true;
-        console.log(`[submissions] Victor creado: ${sub.username} en level ${levelId}`);
+        console.log(`[submissions] Victor creado: ${victorName} en level ${levelId}`);
       }
     }
 
+    invalidateLevelsCache();
+    invalidatePlayersCache();
     console.log('[submissions] FINISHED OK');
     return Response.json({ success: true, levelId, newLevel, victorAdded });
   } catch (error) {

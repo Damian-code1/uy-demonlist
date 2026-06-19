@@ -28,13 +28,14 @@ export async function GET(request) {
     `);
 
     const [userRows] = await query(`
-      SELECT
-        discord_id,
-        discord_avatar,
-        gd_username,
-        discord_display_name,
-        discord_username
-      FROM users
+  SELECT
+    discord_id,
+    discord_avatar,
+    gd_username,
+    discord_display_name,
+    discord_username,
+    linked_player_name
+  FROM users
       WHERE gd_username IS NOT NULL
          OR discord_display_name IS NOT NULL
     `);
@@ -43,10 +44,11 @@ export async function GET(request) {
     const userMap = new Map();
     for (const u of userRows) {
       const keys = [
-        u.gd_username?.toLowerCase(),
-        u.discord_display_name?.toLowerCase(),
-        u.discord_username?.toLowerCase(),
-      ].filter(Boolean);
+  u.linked_player_name?.toLowerCase(),
+  u.gd_username?.toLowerCase(),
+  u.discord_display_name?.toLowerCase(),
+  u.discord_username?.toLowerCase(),
+].filter(Boolean);
       for (const k of keys) {
         if (!userMap.has(k)) userMap.set(k, u);
       }
@@ -83,6 +85,7 @@ export async function GET(request) {
           discord_id:     u?.discord_id     || null,
           discord_avatar: u?.discord_avatar || null,
           gd_username:    u?.gd_username    || null,
+          linked_player_name: u?.linked_player_name || null,
         };
       })
       .sort((a, b) => b.points - a.points);
@@ -97,4 +100,9 @@ export async function GET(request) {
     console.error('[/api/players] Error:', error);
     return Response.json({ players: [], error: error.message }, { status: 500 });
   }
+}
+
+export function invalidatePlayersCache() {
+  serverCache = null;
+  cacheTime = 0;
 }

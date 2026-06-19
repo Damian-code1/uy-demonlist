@@ -30,13 +30,25 @@
 
     // ─── Decidir qué mostrar según sesión ───
     function applySession() {
-      const user = window.currentUser;
-      if (!user) {
-        notLoggedIn.style.display = '';
-        noGd.style.display        = 'none';
-        form.style.display        = 'none';
-        return;
-      }
+  const user = window.currentUser;
+
+  if (!user) {
+    notLoggedIn.style.display = '';
+    noGd.style.display        = 'none';
+    form.style.display        = 'none';
+
+    const loginBtn =
+      notLoggedIn.querySelector('button') ||
+      notLoggedIn.querySelector('a');
+
+    if (loginBtn) {
+      loginBtn.onclick = () => {
+        window.location.href = '/api/auth/callback/discord';
+      };
+    }
+
+    return;
+  }
       if (!user.gdUsername) {
         notLoggedIn.style.display = 'none';
         noGd.style.display        = '';
@@ -107,18 +119,66 @@
     function renderLevelSuggestions(q) {
       if (!q || q.length < 1) { hideSuggestions(); return; }
       const levels = typeof getLevelsData === 'function' ? getLevelsData() : [];
-      const ql     = q.toLowerCase();
+      const ql = q.toLowerCase().trim();
 
       // Niveles que YA están en nuestra lista
-      const listHits = levels.filter(l => l.name?.toLowerCase().includes(ql)).slice(0, 6);
+      const listHits = levels
+  .map(level => {
+    const name = (level.name || '').toLowerCase();
+
+    let score = 0;
+
+if (name === ql) score = 1000;
+else if (name.startsWith(ql)) score = 700;
+else if (name.includes(ql)) score = 500;
+else {
+  const words = name.split(/\s+/);
+
+  if (words.some(w => w.startsWith(ql))) {
+    score = 300;
+  }
+}
+
+    return {
+      ...level,
+      score
+    };
+  })
+  .filter(x => x.score > 0)
+  .sort((a, b) => b.score - a.score)
+  .slice(0, 25);
 
       // Niveles de AREDL que NO están en nuestra lista todavía (sugerencia para agregar nuevo)
       const aredlMapData = window.aredlMap || {};
       const listNames    = new Set(levels.map(l => l.name?.toLowerCase()));
       const aredlHits = Object.entries(aredlMapData)
-        .filter(([name]) => name.includes(ql) && !listNames.has(name))
-        .slice(0, 4)
-        .map(([name, info]) => ({ name: info.originalName || name, ...info }));
+  .map(([name, info]) => {
+    let score = 0;
+
+if (name === ql) score = 1000;
+else if (name.startsWith(ql)) score = 700;
+else if (name.includes(ql)) score = 500;
+else {
+  const words = name.split(/\s+/);
+
+  if (words.some(w => w.startsWith(ql))) {
+    score = 300;
+  }
+}
+
+    return {
+      score,
+      name,
+      info
+    };
+  })
+  .filter(x => x.score > 0 && !listNames.has(x.name))
+  .sort((a, b) => b.score - a.score)
+  .slice(0, 25)
+  .map(x => ({
+    name: x.info.originalName || x.name,
+    ...x.info
+  }));
 
       if (!listHits.length && !aredlHits.length) {
         suggestions.innerHTML = `<div class="sub-sug-empty"><i class="fas fa-search"></i> Sin resultados</div>`;

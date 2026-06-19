@@ -28,6 +28,8 @@ export async function GET(request) {
         l.points,
         l.youtube_id,
         l.youtube_url,
+        l.custom_thumbnail,
+        l.created_from_submission,
         l.created_at,
         v.id         AS victor_id,
         v.player_name,
@@ -49,6 +51,8 @@ export async function GET(request) {
           points:      row.points,
           youtube_id:  row.youtube_id,
           youtube_url: row.youtube_url,
+          custom_thumbnail: row.custom_thumbnail,
+          created_from_submission: row.created_from_submission,
           created_at:  row.created_at,
           victors:     [],
         });
@@ -70,16 +74,23 @@ export async function GET(request) {
       let thumb_url          = null;
       let thumb_url_fallback = null;
 
-      if (level.victors.length > 0) {
+      if (!thumb_url) {
         for (const v of level.victors) {
           const ytId = extractYTId(v.videoUrl);
+
           if (ytId) {
-            thumb_url          = `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
-            thumb_url_fallback = `https://img.youtube.com/vi/${ytId}/mqdefault.jpg`;
-            break;
-          }
-        }
-      } else {
+            thumb_url =
+        `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
+
+      thumb_url_fallback =
+        `https://img.youtube.com/vi/${ytId}/mqdefault.jpg`;
+
+      break;
+    }
+  }
+}
+
+if (!thumb_url) {
         // Sin victors: usar el video del nivel como showcase
         const ytId = extractYTId(level.youtube_url);
         if (ytId) {
@@ -88,7 +99,20 @@ export async function GET(request) {
         }
       }
 
-      return { ...level, thumb_url, thumb_url_fallback, completionCount: level.victors.length };
+      return {
+  ...level,
+  thumb_url,
+  thumb_url_fallback,
+  completionCount: level.victors.length,
+
+  isNew:
+    level.created_from_submission &&
+    (
+      Date.now() -
+      new Date(level.created_at).getTime()
+    ) <
+    (3 * 24 * 60 * 60 * 1000)
+};
     });
 
     serverCache = levels;
@@ -110,6 +134,10 @@ export function invalidateLevelsCache() {
 
 function extractYTId(url) {
   if (!url) return null;
-  const m = url.match(/(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/\s]{11})/);
+
+  const m = url.match(
+    /(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/|youtube-nocookie\.com\/embed\/)([^"&?/\s]{11})/
+  );
+
   return m ? m[1] : null;
 }
