@@ -42,6 +42,10 @@
     </div>
 
     <div class="nav-right">
+      <!-- Owner button (visible only for owner) -->
+      <button id="navOwnerBtn" onclick="openOwnerPanel()" title="Panel Owner" style="display:none">
+        <i class="fas fa-crown"></i> Owner
+      </button>
       <!-- Admin button (visible for list_mod+) -->
       <button id="navAdminBtn" onclick="openAdminPanel()" title="Panel de Admin">
         <i class="fas fa-shield-alt"></i> Admin
@@ -457,6 +461,37 @@
   </div>
 </aside>
 
+<!-- ═══════════════════════════════════════
+     OWNER PANEL (solo owner)
+     ═══════════════════════════════════════ -->
+<div class="admin-overlay" id="ownerOverlay"></div>
+
+<aside class="admin-panel owner-panel" id="ownerPanel">
+  <div class="admin-header owner-header">
+    <h2 class="admin-title"><i class="fas fa-crown"></i> PANEL OWNER</h2>
+    <button class="admin-close" id="ownerClose" onclick="closeOwnerPanel()">
+      <i class="fas fa-times"></i>
+    </button>
+  </div>
+  <div class="admin-body">
+    <div class="admin-toolbar" style="margin-bottom:.9rem">
+      <div class="search-box enhanced-search" style="flex:1">
+        <i class="fas fa-search search-icon-left"></i>
+        <input type="text" id="ownerUserSearch" class="adm-search-input"
+          placeholder="Buscar usuario…" autocomplete="off"
+          oninput="filterOwnerUsers(this.value)">
+        <button type="button" class="search-clear-btn" id="ownerUserClear" style="display:none">
+          <i class="fas fa-times-circle"></i>
+        </button>
+      </div>
+      <button class="btn-admin-add" onclick="loadOwnerUsers()">
+        <i class="fas fa-sync"></i> Actualizar
+      </button>
+    </div>
+    <div id="owner-users-table"></div>
+  </div>
+</aside>
+
 <!-- ── Level Form Modal ── -->
 <div class="admin-form-modal" id="levelFormModal">
   <div class="modal-backdrop" onclick="closeLevelModal()"></div>
@@ -573,6 +608,7 @@
 <script src="js/submissions.js"></script>
 <script src="js/auth.js"></script>
 <script src="js/admin.js"></script>
+<script src="js/owner.js"></script>
 
 <script>
   // Admin level filter

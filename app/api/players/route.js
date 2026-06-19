@@ -25,7 +25,8 @@ u.discord_id,
       FROM victors v
       JOIN levels l ON v.level_id = l.id
       LEFT JOIN users u ON (
-        LOWER(u.gd_username)            = LOWER(v.player_name)
+        LOWER(u.linked_player_name)     = LOWER(v.player_name)
+        OR LOWER(u.gd_username)            = LOWER(v.player_name)
         OR LOWER(u.discord_display_name) = LOWER(v.player_name)
         OR LOWER(u.discord_username)     = LOWER(v.player_name)
       )

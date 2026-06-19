@@ -1408,3 +1408,11 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
   .rl-hero-stats { flex-direction: column; border-radius: var(--r-lg); }
   .rl-stat-sep { width: 100%; height: 1px; }
 }
+
+.rl-surrender-banner {
+  display: flex; align-items: center; gap: .6rem;
+  padding: .85rem 1.1rem; margin-bottom: 1rem;
+  background: rgba(244,63,94,.12); border: 1px solid rgba(244,63,94,.35);
+  border-radius: var(--r-md); color: #fda4af; font-size: .88rem; font-weight: 600;
+}
+.rl-surrender-banner i { color: var(--roulette-fire); font-size: 1rem; }

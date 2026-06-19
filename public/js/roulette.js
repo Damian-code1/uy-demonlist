@@ -16,6 +16,7 @@ const RL = {
   filterRange: [1, 1],
   filterAredlOnly: false,
   spinning:     false,
+  surrendered:  false,
   confettiCtx:  null,
   confettiParticles: [],
   pctModalMode: 'complete', // 'complete' | 'fail'
@@ -46,13 +47,15 @@ if (RL.current) {
   );
 
   if (!pendingExists) {
-    RL.session.unshift({
-      level: RL.current,
-      status: 'pending',
-      percentage: null,
-      timestamp: Date.now()
-    });
-  }
+  RL.session.unshift({
+    level: RL.current,
+    status: 'pending',
+    percentage: null,
+    timestamp: Date.now()
+  });
+
+  saveSession();
+}
 
   updateButtons();
 }
@@ -169,7 +172,7 @@ function initPctModal() {
 }
 
 function openPctModal(mode) {
-  if (!RL.current) return;
+  if (!RL.current || isSessionEnded()) return;
   RL.pctModalMode = mode;
 
   const modal   = document.getElementById('rlPctModal');
@@ -249,7 +252,6 @@ function initControls() {
     RL.totalGoal = parseInt(goalSlider.value, 10);
     document.getElementById('rlGoalVal').textContent = RL.totalGoal;
     updateProgressUI();
-    console.trace('SAVE');
     saveSession();
   });
 
@@ -312,6 +314,27 @@ if (rangeMax) {
   updateButtons();
 }
 
+function isSessionEnded() {
+  return RL.surrendered || RL.session.some(s => s.status === 'failed');
+}
+
+function showSurrenderBanner() {
+  let banner = document.getElementById('rlSurrenderBanner');
+  if (!banner) {
+    banner = document.createElement('div');
+    banner.id = 'rlSurrenderBanner';
+    banner.className = 'rl-surrender-banner';
+    banner.innerHTML = '<i class="fas fa-skull-crossbones"></i> Sesión terminada — te rendiste. Iniciá una nueva sesión para continuar.';
+    document.getElementById('rlSlotSection')?.prepend(banner);
+  }
+  banner.style.display = '';
+}
+
+function hideSurrenderBanner() {
+  const banner = document.getElementById('rlSurrenderBanner');
+  if (banner) banner.style.display = 'none';
+}
+
 function updateRangeDisplay() {
   const maxEl = document.getElementById('rlRangeMaxVal');
   const total = RL.levels.length || parseInt(document.getElementById('rlRangeMax')?.max, 10) || 1;
@@ -326,6 +349,7 @@ function saveSession() {
     session: RL.session,
     current: RL.current,
     sessionActive: RL.sessionActive,
+    surrendered: RL.surrendered,
     totalGoal: RL.totalGoal,
     filterRange: RL.filterRange,
     filterAredlOnly: RL.filterAredlOnly,
@@ -350,6 +374,7 @@ function loadSession() {
     RL.session = data.session || [];
     RL.current = data.current || null;
     RL.sessionActive = !!data.sessionActive;
+    RL.surrendered = !!data.surrendered || RL.session.some(s => s.status === 'failed');
     RL.totalGoal = data.totalGoal || 50;
     RL.filterRange = data.filterRange || [1, RL.filterRange[1]];
     RL.filterAredlOnly = !!data.filterAredlOnly;
@@ -368,6 +393,8 @@ function loadSession() {
     const hide = document.getElementById('rlHideLevel');
     if (hide) hide.checked = RL.revealHidden;
 
+    if (RL.surrendered) showSurrenderBanner();
+
   } catch (err) {
     console.error('Roulette save corrupted', err);
   }
@@ -377,7 +404,9 @@ function loadSession() {
 function startSession() {
   RL.session = [];
   RL.sessionActive = true;
+  RL.surrendered = false;
   RL.current = null;
+  hideSurrenderBanner();
   resetSlotDisplay();
   updateButtons();
   rebuildPool();
@@ -386,14 +415,15 @@ function startSession() {
   updateSessionStats();
   updateButtons();
   handleSpin();
-  console.trace('SAVE');
   saveSession();
 }
 
 function resetSession() {
   RL.session = [];
   RL.sessionActive = false;
+  RL.surrendered = false;
   RL.current = null;
+  hideSurrenderBanner();
   console.trace('SAVE');
   resetSlotDisplay();
   updateButtons();
@@ -414,6 +444,8 @@ function checkActiveSession() {
       renderCurrentLevel(RL.current);
     }
 
+    if (RL.surrendered) showSurrenderBanner();
+
     updateProgressUI();
     updateSessionStats();
     updateButtons();
@@ -422,6 +454,12 @@ function checkActiveSession() {
 
 // ─── SPIN ───
 async function handleSpin() {
+  if (isSessionEnded()) {
+    showRlToast('La sesión terminó porque te rendiste.', 'error');
+    showSurrenderBanner();
+    return;
+  }
+
   if (RL.spinning) return;
 
 if (RL.current) {
@@ -502,9 +540,9 @@ function renderCurrentLevel(level) {
       <div class="rl-slot-meta">
         <span class="rl-slot-chip"><i class="fas fa-star" style="color:var(--gold)"></i>${pts.toLocaleString()} pts</span>
         ${level.victors?.length ? `<span class="rl-slot-chip"><i class="fas fa-flag-checkered" style="color:var(--violet)"></i>${level.victors.length} completion${level.victors.length !== 1 ? 's' : ''}</span>` : ''}
-        ${level.level_id ? `
-<button class="rl-slot-chip rl-copy-id-btn" onclick="copyLevelId('${level.level_id}')">
-  <i class="fas fa-copy"></i> ID ${level.level_id}
+        ${level.aredl_level_id ? `
+<button class="rl-slot-chip rl-copy-id-btn" onclick="copyLevelId('${level.aredl_level_id}')">
+  <i class="fas fa-copy"></i> ID ${level.aredl_level_id}
 </button>
 ` : ''}
 
@@ -546,6 +584,7 @@ function resetSlotDisplay() {
 
 // ─── COMPLETE / FAIL / SKIP ───
 function finalizeComplete(percentage) {
+  if (isSessionEnded()) return;
   if (!RL.current) return;
   const entry = RL.session.find(s => s.level.id === RL.current.id);
   if (entry) {
@@ -583,29 +622,41 @@ function finalizeComplete(percentage) {
 }
 
   function finalizeFail(percentage) {
-    if (!RL.current) return;
-    const entry = RL.session.find(s => s.level.id === RL.current.id);
-    if (entry) {
-      entry.status     = 'failed';
-      entry.percentage = percentage;
-      entry.timestamp  = Date.now();
-    }
+  if (!RL.current || isSessionEnded()) return;
 
-    showRlToast(`${RL.current.name} — Abandonado en ${percentage}%`, 'info');
+  const entry = RL.session.find(
+    s => s.level.id === RL.current.id
+  );
 
-    rebuildPool();
-    renderHistory();
-    updateProgressUI();
-    updateSessionStats();
-
-    RL.current = null;
-    resetSlotDisplay();
-    updateButtons();      
-    console.trace('SAVE');
-    saveSession();
+  if (entry) {
+    entry.status = 'failed';
+    entry.percentage = percentage;
+    entry.timestamp = Date.now();
   }
 
+  RL.surrendered = true;
+  RL.sessionActive = false;
+
+  showSurrenderBanner();
+  showRlToast(
+    `${RL.current.name} — Abandonado en ${percentage}%. Sesión terminada.`,
+    'info'
+  );
+
+  rebuildPool();
+  renderHistory();
+  updateProgressUI();
+  updateSessionStats();
+
+  RL.current = null;
+
+  resetSlotDisplay();
+  updateButtons();
+  saveSession();
+}
+
 function handleSkip() {
+  if (isSessionEnded()) return;
   if (!RL.current) return;
   const entry = RL.session.find(s => s.level.id === RL.current.id);
   if (entry) {
@@ -790,19 +841,30 @@ function renderHistory() {
 
 // ─── BUTTONS STATE ───
 function updateButtons() {
+  const ended       = isSessionEnded();
   const spinBtn     = document.getElementById('rlBtnSpin');
   const skipBtn     = document.getElementById('rlBtnSkip');
   const completeBtn = document.getElementById('rlBtnComplete');
   const failBtn     = document.getElementById('rlBtnFail');
+  const goalSlider  = document.getElementById('rlGoalSlider');
+  const rangeMax    = document.getElementById('rlRangeMax');
+  const aredlOnly   = document.getElementById('rlAredlOnly');
+  const hideLevel   = document.getElementById('rlHideLevel');
+  const heroCta     = document.getElementById('rlHeroCta');
 
   if (spinBtn) {
-    spinBtn.disabled = RL.spinning || !!RL.current;
+    spinBtn.disabled = ended || RL.spinning || !!RL.current;
     spinBtn.classList.toggle('spinning', RL.spinning);
-    spinBtn.querySelector('.spin-text').textContent = RL.spinning ? 'Girando...' : 'Girar';
+    spinBtn.querySelector('.spin-text').textContent = ended ? 'Sesión terminada' : (RL.spinning ? 'Girando...' : 'Girar');
   }
-  if (skipBtn)     skipBtn.disabled     = RL.spinning || !RL.current;
-  if (completeBtn) completeBtn.disabled = RL.spinning || !RL.current;
-  if (failBtn)     failBtn.disabled     = RL.spinning || !RL.current;
+  if (skipBtn)     skipBtn.disabled     = ended || RL.spinning || !RL.current;
+  if (completeBtn) completeBtn.disabled = ended || RL.spinning || !RL.current;
+  if (failBtn)     failBtn.disabled     = ended || RL.spinning || !RL.current;
+  if (goalSlider)  goalSlider.disabled  = ended;
+  if (rangeMax)    rangeMax.disabled    = ended;
+  if (aredlOnly)   aredlOnly.disabled   = ended;
+  if (hideLevel)   hideLevel.disabled   = ended;
+  if (heroCta)     heroCta.disabled     = ended;
 }
 
 // ─── FINISH MODAL ───

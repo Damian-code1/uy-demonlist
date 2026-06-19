@@ -67,6 +67,7 @@ function renderUserWidget(user) {
   const widget   = document.getElementById('userWidget');
   const loginBtn = document.getElementById('loginBtn');
   const adminBtn = document.getElementById('navAdminBtn');
+  const ownerBtn = document.getElementById('navOwnerBtn');
 
   if (!widget) return;
 
@@ -74,6 +75,7 @@ function renderUserWidget(user) {
     widget.classList.remove('visible');
     if (loginBtn)  loginBtn.style.display = 'flex';
     if (adminBtn)  adminBtn.style.display = 'none';
+    if (ownerBtn)  ownerBtn.style.display = 'none';
     return;
   }
 
@@ -82,6 +84,9 @@ function renderUserWidget(user) {
 
   if (adminBtn) {
     adminBtn.style.display = ['owner','admin','list_mod'].includes(user.role) ? 'flex' : 'none';
+  }
+  if (ownerBtn) {
+    ownerBtn.style.display = user.role === 'owner' ? 'flex' : 'none';
   }
 
   const avatarHtml = user.image
@@ -158,6 +163,11 @@ if (drop) {
         <button class="wdd-action-btn wdd-action-admin" onclick="openAdminPanel();closeUserDropdown()">
           <i class="fas fa-shield-alt"></i>
           <span>Admin</span>
+        </button>` : ''}
+        ${user.role === 'owner' ? `
+        <button class="wdd-action-btn wdd-action-owner" onclick="openOwnerPanel();closeUserDropdown()">
+          <i class="fas fa-crown"></i>
+          <span>Owner</span>
         </button>` : ''}
       </div>
 
@@ -241,3 +251,5 @@ window.logout           = logout;
 window.loginWithDiscord = loginWithDiscord;
 window.showToast        = showToast;
 window.isAdminUser      = isAdminUser;
+window.checkSession     = checkSession;
+window.renderUserWidget = renderUserWidget;

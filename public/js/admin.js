@@ -1011,10 +1011,13 @@ window.closeSubDetailModal = closeSubDetailModal;
 
 async function approveSubmission(id) {
   try {
-    await adminApproveSubmission(id);
+    const result = await adminApproveSubmission(id);
     showToast('Aprobada ✓', 'success');
     loadAdminSubmissions();
-    refreshPublicData();
+    await refreshPublicData({
+      levelId: result.levelId,
+      scrollToLevelId: result.newLevel ? result.levelId : null,
+    });
   } catch (e) { showToast('Error: ' + e.message, 'error'); }
 }
 

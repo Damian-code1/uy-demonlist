@@ -27,32 +27,35 @@ export async function PUT(request, { params }) {
       [status, status === 'rejected' ? (rejection_reason?.trim() || null) : null, params.id]
     );
 
+    let levelId = null;
+    let newLevel = false;
+    let victorAdded = false;
+
     if (status === 'approved') {
       console.log('========================');
       console.log('APPROVING SUBMISSION:', params.id, sub.level_name, '→', sub.username);
       console.log('========================');
 
-      let [levelRows] = await query(
+      const [levelRows] = await query(
         'SELECT id FROM levels WHERE LOWER(name) = LOWER(?) LIMIT 1',
         [sub.level_name]
       );
-
-      let levelId;
 
       if (levelRows.length) {
         levelId = levelRows[0].id;
         console.log(`[submissions] Nivel existente id=${levelId}`);
       } else {
-        // Nivel nuevo — calcular posición en base a AREDL
+        newLevel = true;
         const [[maxRow]]  = await query('SELECT MAX(position) as maxPos FROM levels');
         const totalLevels = maxRow?.maxPos || 0;
 
-        let targetPos    = totalLevels + 1; // fallback: al final
+        let targetPos    = totalLevels + 1;
         let ytId         = extractYouTubeId(sub.youtube_url);
-        let aredlVideoId = null; // video_id del showcase de AREDL (para thumbnail)
+        let aredlVideoId = null;
 
         try {
-          const baseUrl  = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+          const baseUrl = process.env.NEXTAUTH_URL
+            || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
           const aredlRes = await fetch(`${baseUrl}/api/aredl`, {
             headers: { 'User-Agent': 'UY-Demonlist-Internal/2.0' },
           });
@@ -63,13 +66,11 @@ export async function PUT(request, { params }) {
             const match     = aredlLevels.find(e => e.name?.toLowerCase().trim() === nameLower);
 
             if (match?.position) {
-              // Mapear nombre → posición AREDL
               const aredlPosMap = {};
               aredlLevels.forEach(e => {
                 if (e.name) aredlPosMap[e.name.toLowerCase().trim()] = e.position;
               });
 
-              // Contar cuántos niveles de nuestra lista están por encima en AREDL
               const [ourLevels] = await query('SELECT name FROM levels');
               let countAbove = 0;
               ourLevels.forEach(l => {
@@ -79,16 +80,13 @@ export async function PUT(request, { params }) {
 
               targetPos    = countAbove + 1;
               aredlVideoId = match.video_id || null;
-              console.log(`[submissions] AREDL #${match.position} → ${countAbove} niveles nuestros lo superan → pos ${targetPos}, aredl_video_id: ${aredlVideoId}`);
-            } else {
-              console.log(`[submissions] "${sub.level_name}" no está en AREDL, se inserta al final`);
+              console.log(`[submissions] AREDL #${match.position} → pos ${targetPos}`);
             }
           }
         } catch (e) {
           console.warn('[submissions] Error consultando AREDL:', e.message);
         }
 
-        // Desplazar niveles existentes para hacer espacio
         if (targetPos <= totalLevels) {
           await query(
             'UPDATE levels SET position = position + 1 WHERE position >= ?',
@@ -96,18 +94,20 @@ export async function PUT(request, { params }) {
           );
         }
 
-        // Si el submission tiene YT propio usarlo, sino usar el showcase de AREDL
         const thumbId = ytId || aredlVideoId || null;
-
         const [insertResult] = await query(
           'INSERT INTO levels (name, position, youtube_url, youtube_id) VALUES (?, ?, ?, ?)',
           [sub.level_name, targetPos, sub.youtube_url || null, thumbId]
         );
         levelId = insertResult.insertId;
-        console.log(`[submissions] Nivel "${sub.level_name}" insertado en pos ${targetPos}, thumbnail: ${thumbId}`);
+        console.log(`[submissions] Nivel "${sub.level_name}" insertado en pos ${targetPos}`);
+
+        const [allLevels] = await query('SELECT id FROM levels ORDER BY position ASC, id ASC');
+        for (let i = 0; i < allLevels.length; i++) {
+          await query('UPDATE levels SET position = ? WHERE id = ?', [i + 1, allLevels[i].id]);
+        }
       }
 
-      // Crear victor si no existe ya
       const [existing] = await query(
         'SELECT id FROM victors WHERE level_id = ? AND LOWER(player_name) = LOWER(?) LIMIT 1',
         [levelId, sub.username]
@@ -118,14 +118,13 @@ export async function PUT(request, { params }) {
           'INSERT INTO victors (level_id, player_name, video_url) VALUES (?, ?, ?)',
           [levelId, sub.username, sub.youtube_url || null]
         );
+        victorAdded = true;
         console.log(`[submissions] Victor creado: ${sub.username} en level ${levelId}`);
-      } else {
-        console.log(`[submissions] Victor ya existía`);
       }
     }
 
     console.log('[submissions] FINISHED OK');
-    return Response.json({ success: true });
+    return Response.json({ success: true, levelId, newLevel, victorAdded });
   } catch (error) {
     console.error('[submissions] ERROR:', error);
     return Response.json({ error: error.message }, { status: 500 });

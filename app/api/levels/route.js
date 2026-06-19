@@ -1,5 +1,8 @@
 import { query } from '../../../lib/db.js';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET() {
   try {
     const [dbLevels] = await query(
@@ -34,7 +37,14 @@ level.thumb_url_fallback = null;
       level.completionCount = victors.length;
     }
 
-    return Response.json({ levels: dbLevels });
+    return Response.json(
+  { levels: dbLevels },
+  {
+    headers: {
+      'Cache-Control': 'no-store, no-cache, must-revalidate'
+    }
+  }
+);
   } catch (error) {
     console.error('[/api/levels] Error:', error);
     return Response.json({ levels: [], error: error.message }, { status: 500 });

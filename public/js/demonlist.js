@@ -359,6 +359,24 @@ function closeLevelDetailModal() {
   activeModalLevel = null;
 }
 
+function refreshOpenLevelModal(levelId) {
+  const modal = document.getElementById('levelDetailModal');
+  if (!modal?.classList.contains('active') && !levelId) return;
+
+  const targetId = levelId || activeModalLevel?.id;
+  if (!targetId) return;
+
+  const fresh = getLevelsData().find(l => l.id === targetId || l.id === parseInt(targetId, 10));
+  if (!fresh) return;
+
+  activeModalLevel = fresh;
+  if (activeVictorIdx >= (fresh.victors?.length || 0)) {
+    activeVictorIdx = Math.max(0, (fresh.victors?.length || 1) - 1);
+  }
+  renderModalContent(fresh);
+}
+window.refreshOpenLevelModal = refreshOpenLevelModal;
+
 // ─── SEARCH ───
 function setupSearch() {
   const input    = document.getElementById('searchInput');

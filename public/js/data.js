@@ -15,43 +15,76 @@ let dataLoaded  = false;
 async function loadData(force = false) {
   if (dataLoaded && !force) return;
   try {
-const [lvlRes, plrRes] = await Promise.all([
-  fetch(`${API_BASE}/levels`, { cache: 'no-store' }),
-  fetch(`${API_BASE}/players`, { cache: 'no-store' })
-]);
+    const bust = force ? `?_=${Date.now()}` : '';
+    const [lvlRes, plrRes] = await Promise.all([
+      fetch(`${API_BASE}/levels${bust}`, { cache: 'no-store' }),
+      fetch(`${API_BASE}/players${bust}`, { cache: 'no-store' })
+    ]);
     if (!lvlRes.ok || !plrRes.ok) throw new Error('API error');
 
     const lvlJson = await lvlRes.json();
     const plrJson = await plrRes.json();
 
-    levelsData  = lvlJson.levels  || [];
+    levelsData  = (lvlJson.levels || []).sort((a, b) => (a.position || 999) - (b.position || 999));
     playersData = plrJson.players || [];
     dataLoaded  = true;
 
-    // Re-aplicar posiciones AREDL si ya las teníamos cargadas
-    if (Object.keys(aredlMap).length) {
-      levelsData.forEach(l => {
-        const key = l.name?.toLowerCase().trim();
-        if (key && aredlMap[key]) l.aredl_position = aredlMap[key].position;
-      });
-    }
+    applyAredlToLevels();
 
     console.log(`✅ Loaded from DB: ${levelsData.length} niveles, ${playersData.length} jugadores`);
   } catch (e) {
+    if (force) {
+      console.error('⚠️ DB API refresh failed:', e.message);
+      throw e;
+    }
     console.warn('⚠️ DB API not available, falling back to levels.json:', e.message);
     await loadFromJSON();
   }
 }
 
+function applyAredlToLevels() {
+  if (!Object.keys(aredlMap).length) return;
+  levelsData.forEach(l => {
+    const key = l.name?.toLowerCase().trim();
+    if (key && aredlMap[key]) {
+      l.aredl_position  = aredlMap[key].position;
+      l.aredl_level_id  = aredlMap[key].level_id;
+      l.aredl_video_id  = aredlMap[key].video_id || null;
+    }
+  });
+}
+
 // ─── Refresca datos públicos y re-pinta lista + leaderboard sin F5 ───
-async function refreshPublicData() {
+async function refreshPublicData(opts = {}) {
+  dataLoaded = false;
   await loadData(true);
+  await loadAredlMap();
+  applyAredlToLevels();
+
+  const searchInput = document.getElementById('searchInput');
+  const searchQ = (searchInput?.value || '').trim().toLowerCase();
+  const allLevels = getLevelsData();
+
   if (typeof renderLevels === 'function') {
-    filteredLevels = [...getLevelsData()];
+    filteredLevels = searchQ
+      ? allLevels.filter(l => l.name?.toLowerCase().includes(searchQ))
+      : [...allLevels];
     paintCards(filteredLevels, false);
   }
   if (typeof renderLeaderboard === 'function') renderLeaderboard();
   if (typeof syncHeroStats === 'function') syncHeroStats();
+  if (typeof refreshOpenLevelModal === 'function') refreshOpenLevelModal(opts.levelId);
+
+  if (opts.scrollToLevelId) {
+    setTimeout(() => {
+      const card = document.querySelector(`.level-card[data-id="${opts.scrollToLevelId}"]`);
+      if (card) {
+        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        card.classList.add('lc-highlight-new');
+        setTimeout(() => card.classList.remove('lc-highlight-new'), 2500);
+      }
+    }, 120);
+  }
 }
 window.refreshPublicData = refreshPublicData;
 
@@ -83,14 +116,7 @@ async function loadAredlMap() {
     (data.levels || []).forEach(e => {
       if (e.name) aredlMap[e.name.toLowerCase().trim()] = { position: e.position, level_id: e.level_id, video_id: e.video_id || null, originalName: e.name.trim() };
     });
-    levelsData.forEach(l => {
-      const key = l.name?.toLowerCase().trim();
-      if (key && aredlMap[key]) {
-        l.aredl_position = aredlMap[key].position;
-        l.aredl_level_id = aredlMap[key].level_id;
-        l.aredl_video_id = aredlMap[key].video_id || null;
-      }
-    });
+    applyAredlToLevels();
     window.aredlMap = aredlMap;
     console.log(`✅ AREDL: ${Object.keys(aredlMap).length} niveles mapeados`);
   } catch (e) {
@@ -278,6 +304,9 @@ async function adminDeleteSubmission(id)     { return adminFetch(`/submissions/$
 async function adminApproveSubmission(id)    { return adminUpdateSubmission(id, { status: 'approved' }); }
 async function adminRejectSubmission(id)     { return adminUpdateSubmission(id, { status: 'rejected' }); }
 async function adminSyncPositions()          { return adminFetch('/sync-positions', { method: 'POST' }); }
+
+async function ownerGetUsers()               { return adminFetch('/users'); }
+async function ownerUpdateUser(id, data)     { return adminFetch(`/users/${id}`, { method: 'PUT', body: JSON.stringify(data) }); }
 
 function esc(s) {
   if (!s) return '';
