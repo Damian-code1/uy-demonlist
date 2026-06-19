@@ -1215,7 +1215,7 @@ function loadAdminSyncTab() {
         </div>
         <div class="sync-hero-text">
           <h2>Sincronizar con AREDL</h2>
-          <p>Reordena todos los niveles según su posición actual en la Argentina Extreme Demon List.</p>
+          <p>Reordena todos los niveles según su posición actual en la All Rated Extreme Demon List.</p>
         </div>
       </div>
 
