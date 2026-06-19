@@ -111,29 +111,33 @@ export async function PUT(request, { params }) {
       }
       let victorName = sub.username;
 
-try {
-  const [linkedRows] = await query(
-    `
-    SELECT
-      u.linked_player_name
-    FROM users u
-    WHERE LOWER(u.gd_username) = LOWER(?)
-       OR LOWER(u.discord_username) = LOWER(?)
-       OR LOWER(u.discord_display_name) = LOWER(?)
-    LIMIT 1
-    `,
-    [sub.username, sub.username, sub.username]
-  );
-
-  if (
-    linkedRows.length &&
-    linkedRows[0].linked_player_name
-  ) {
-    victorName = linkedRows[0].linked_player_name;
-  }
-} catch (e) {
-  console.warn('[submissions] link lookup failed', e);
-}
+      try {
+        // 1) Buscar si el username ya existe en victors con ese nombre (preservar case exacto)
+        const [existingVictor] = await query(
+          'SELECT player_name FROM victors WHERE LOWER(player_name) = LOWER(?) LIMIT 1',
+          [sub.username]
+        );
+        if (existingVictor.length) {
+          victorName = existingVictor[0].player_name; // usar nombre exacto ya existente
+        } else {
+          // 2) Buscar si hay un usuario de Discord con este gd_username o linked_player_name
+          const [linkedRows] = await query(
+            `SELECT COALESCE(u.linked_player_name, u.gd_username) AS resolved_name
+             FROM users u
+             WHERE (LOWER(u.gd_username) = LOWER(?)
+                OR LOWER(u.discord_username) = LOWER(?)
+                OR LOWER(u.discord_display_name) = LOWER(?))
+               AND (u.linked_player_name IS NOT NULL OR u.gd_username IS NOT NULL)
+             LIMIT 1`,
+            [sub.username, sub.username, sub.username]
+          );
+          if (linkedRows.length && linkedRows[0].resolved_name) {
+            victorName = linkedRows[0].resolved_name;
+          }
+        }
+      } catch (e) {
+        console.warn('[submissions] link lookup failed', e);
+      }
       const [existing] = await query(
   'SELECT id FROM victors WHERE level_id = ? AND LOWER(player_name) = LOWER(?) LIMIT 1',
   [levelId, victorName]

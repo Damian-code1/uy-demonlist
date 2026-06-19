@@ -71,6 +71,21 @@ async function refreshPublicData(opts = {}) {
   await loadAredlMap();
   applyAredlToLevels();
 
+  // Refrescar el widget del usuario (puntos/completions pueden haber cambiado)
+  if (typeof checkSession === 'function' && typeof renderUserWidget === 'function') {
+    const discordId = localStorage.getItem('uy_discord_id');
+    if (discordId) {
+      try {
+        const res  = await fetch(`${API_BASE}/auth/session?uid=${discordId}&bust=1`);
+        const data = await res.json();
+        if (data.user) {
+          window.currentUser = data.user;
+          renderUserWidget(data.user);
+        }
+      } catch {}
+    }
+  }
+
   const searchInput = document.getElementById('searchInput');
   const searchQ = (searchInput?.value || '').trim().toLowerCase();
   const allLevels = getLevelsData();
@@ -100,7 +115,7 @@ window.refreshPublicData = refreshPublicData;
 
 // ─── Polling de cambios en tiempo real (todos los usuarios, no solo admin) ───
 let _lastKnownChange = null;
-const REALTIME_POLL_MS = 8000;
+const REALTIME_POLL_MS = 25000; // 25 segundos — suficiente para no spamear
 
 async function pollForRealtimeChanges() {
   try {
@@ -116,7 +131,7 @@ async function pollForRealtimeChanges() {
     if (lastChange !== _lastKnownChange) {
       _lastKnownChange = lastChange;
       await refreshPublicData();
-      if (typeof showToast === 'function') showToast('La lista se actualizó ✓', 'info');
+      // No mostrar toast en auto-refresh silencioso — solo el admin que hizo el cambio ve el toast
     }
   } catch (e) {
     console.warn('Realtime poll falló:', e.message);

@@ -223,11 +223,12 @@ function renderModalContent(level) {
   const isAdmin  = typeof isAdminUser === 'function' && isAdminUser();
 
   const current  = victors[activeVictorIdx] || victors[0] || null;
-  const videoUrl = current?.videoUrl || level.youtube_url || null;
-  const videoId  = extractYTId(current?.videoUrl)
-    || extractYTId(level.youtube_url)
-    || level.youtube_id
-    || null;
+  // Usar SOLO el video del victor actual — NO hacer fallback al video del nivel
+  // ya que puede ser el video de otro victor distinto
+  const currentVideoUrl = current?.videoUrl || null;
+  const videoId  = currentVideoUrl ? extractYTId(currentVideoUrl) : null;
+  // Solo si no hay ningún victor seleccionado (nivel sin victors), usar video del nivel
+  const videoUrl = currentVideoUrl || (victors.length === 0 ? (level.youtube_url || null) : null);
 
   box.innerHTML = `
     <button class="modal-close" id="levelModalClose"><i class="fas fa-times"></i></button>

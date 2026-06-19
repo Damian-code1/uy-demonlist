@@ -251,7 +251,13 @@ async function loadAdminVictors() {
     const q = searchInput.value.trim();
     clearBtn.style.display = q ? '' : 'none';
     clearTimeout(debounce);
-    debounce = setTimeout(() => renderVictorLevelSuggestions(q, levels, sugg, searchInput, clearBtn, dropdown), 120);
+    // Siempre usar getLevelsData() fresco en cada búsqueda
+    debounce = setTimeout(() => renderVictorLevelSuggestions(q, getLevelsData(), sugg, searchInput, clearBtn, dropdown), 120);
+  });
+
+  searchInput.addEventListener('focus', () => {
+    const q = searchInput.value.trim();
+    if (q.length >= 1) renderVictorLevelSuggestions(q, getLevelsData(), sugg, searchInput, clearBtn, dropdown);
   });
 
   clearBtn.addEventListener('click', () => {
@@ -259,12 +265,15 @@ async function loadAdminVictors() {
     clearBtn.style.display = 'none';
     sugg.classList.remove('open');
     sugg.innerHTML = '';
+    dropdown.value = '';
+    adminVictorLevelId = null;
+    document.getElementById('adminVictorsTableInner').innerHTML = '';
   });
 
+  // Cerrar sugerencias al hacer click fuera
   document.addEventListener('click', e => {
     if (!e.target.closest('#victorLevelSearchWrap')) {
       sugg.classList.remove('open');
-      sugg.innerHTML = '';
     }
   });
 }
