@@ -44,6 +44,13 @@ async function loadOwnerUsers() {
   }
 }
 
+const ROLE_META = {
+  owner:    { label: 'Owner',    icon: 'fa-crown',      color: '#f59e0b' },
+  admin:    { label: 'Admin',    icon: 'fa-shield-alt', color: '#ef4444' },
+  list_mod: { label: 'Mod',      icon: 'fa-shield',     color: '#8b5cf6' },
+  usuario:  { label: 'Usuario',  icon: 'fa-user',       color: '#64748b' },
+};
+
 function renderOwnerUsers(filterQ) {
   const container = document.getElementById('owner-users-table');
   if (!container) return;
@@ -58,74 +65,86 @@ function renderOwnerUsers(filterQ) {
     : ownerUsers;
 
   if (!filtered.length) {
-    container.innerHTML = `<div class="admin-empty"><i class="fas fa-users"></i>Sin usuarios</div>`;
+    container.innerHTML = `<div class="admin-empty"><i class="fas fa-users"></i><span>Sin usuarios encontrados</span></div>`;
     return;
   }
 
   const roleOptions = ['usuario', 'list_mod', 'admin', 'owner'];
 
   container.innerHTML = `
-    <p class="text-dim" style="font-size:.78rem;margin-bottom:.85rem">
+    <div class="ou-hint">
       <i class="fas fa-info-circle"></i>
-      Vinculá cada cuenta Discord con un nombre del leaderboard para que sus completions y stats aparezcan correctamente.
-    </p>
-    <div class="admin-table-wrap">
-      <table class="admin-table owner-users-table">
-        <thead><tr>
-          <th>Usuario Discord</th>
-          <th>GD</th>
-          <th>Vinculado al leaderboard</th>
-          <th>Rol</th>
-          <th>Acciones</th>
-        </tr></thead>
-        <tbody>
-          ${filtered.map(u => {
-            const lbOptions = ownerLeaderboardNames.map(n =>
-              `<option value="${esc(n)}"${u.linked_player_name === n ? ' selected' : ''}>${esc(n)}</option>`
-            ).join('');
-            const roleOpts = roleOptions.map(r =>
-              `<option value="${r}"${u.role === r ? ' selected' : ''}>${r}</option>`
-            ).join('');
-            const avatar = u.avatar_url
-              ? `<img src="${esc(u.avatar_url)}" alt="" class="owner-user-avatar">`
-              : `<div class="owner-user-avatar-ph">${(u.display_label || '?')[0]}</div>`;
-            return `<tr data-user-id="${u.id}">
-              <td>
-                <div class="owner-user-cell">
-                  ${avatar}
-                  <div>
-                    <div class="td-name">${esc(u.display_label)}</div>
-                    <div class="text-dim" style="font-size:.72rem">@${esc(u.discord_username)}</div>
-                  </div>
-                </div>
-              </td>
-              <td class="text-sub">${esc(u.gd_username || '—')}</td>
-              <td>
-                <select class="owner-link-select" data-user-id="${u.id}">
+      <span>Vinculá cada cuenta Discord con un nombre del leaderboard para que sus completions y stats aparezcan correctamente.</span>
+    </div>
+    <div class="ou-list">
+      ${filtered.map(u => {
+        const lbOptions = ownerLeaderboardNames.map(n =>
+          `<option value="${esc(n)}"${u.linked_player_name === n ? ' selected' : ''}>${esc(n)}</option>`
+        ).join('');
+        const roleOpts = roleOptions.map(r => {
+          const m = ROLE_META[r] || ROLE_META.usuario;
+          return `<option value="${r}"${u.role === r ? ' selected' : ''}>${m.label}</option>`;
+        }).join('');
+        const avatar = u.avatar_url
+          ? `<img src="${esc(u.avatar_url)}" alt="" class="ou-avatar">`
+          : `<div class="ou-avatar ou-avatar-ph">${(u.display_label || '?')[0].toUpperCase()}</div>`;
+        const rm = ROLE_META[u.role] || ROLE_META.usuario;
+        const isLinked = !!u.linked_player_name;
+        const isOwner  = u.role === 'owner';
+
+        return `
+        <div class="ou-card" data-user-id="${u.id}">
+          <div class="ou-card-header">
+            <div class="ou-avatar-wrap">
+              ${avatar}
+              <span class="ou-role-dot" style="background:${rm.color}" title="${rm.label}"></span>
+            </div>
+            <div class="ou-user-info">
+              <div class="ou-display-name">${esc(u.display_label)}</div>
+              <div class="ou-discord-handle">@${esc(u.discord_username)}</div>
+            </div>
+            ${u.gd_username ? `
+            <div class="ou-gd-badge">
+              <i class="fas fa-gamepad"></i>
+              <span>${esc(u.gd_username)}</span>
+            </div>` : ''}
+          </div>
+
+          <div class="ou-card-fields">
+            <div class="ou-field">
+              <label class="ou-field-label"><i class="fas fa-link"></i> Leaderboard</label>
+              <div class="ou-select-wrap">
+                <select class="ou-select owner-link-select" data-user-id="${u.id}">
                   <option value="">— Sin vincular —</option>
                   ${lbOptions}
                 </select>
-              </td>
-              <td>
-                <select class="owner-role-select" data-user-id="${u.id}"${u.role === 'owner' ? ' disabled' : ''}>
+                <i class="fas fa-chevron-down ou-select-arrow"></i>
+              </div>
+            </div>
+            <div class="ou-field">
+              <label class="ou-field-label"><i class="fas fa-${rm.icon}"></i> Rol</label>
+              <div class="ou-select-wrap">
+                <select class="ou-select owner-role-select" data-user-id="${u.id}"${isOwner ? ' disabled' : ''}>
                   ${roleOpts}
                 </select>
-              </td>
-              <td>
-                <button class="btn-icon btn-edit" title="Guardar cambios"
-                  onclick="saveOwnerUser(${u.id})">
-                  <i class="fas fa-save"></i>
-                </button>
-                ${u.linked_player_name ? `
-                <button class="btn-icon btn-delete" title="Desvincular"
-                  onclick="unlinkOwnerUser(${u.id})">
-                  <i class="fas fa-unlink"></i>
-                </button>` : ''}
-              </td>
-            </tr>`;
-          }).join('')}
-        </tbody>
-      </table>
+                <i class="fas fa-chevron-down ou-select-arrow"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="ou-card-actions">
+            ${isLinked ? `
+            <button class="ou-btn ou-btn-unlink" onclick="unlinkOwnerUser(${u.id})" title="Quitar vinculación al leaderboard">
+              <i class="fas fa-unlink"></i>
+              <span>Desvincular</span>
+            </button>` : `<div></div>`}
+            <button class="ou-btn ou-btn-save" onclick="saveOwnerUser(${u.id})">
+              <i class="fas fa-save"></i>
+              <span>Guardar</span>
+            </button>
+          </div>
+        </div>`;
+      }).join('')}
     </div>`;
 }
 
