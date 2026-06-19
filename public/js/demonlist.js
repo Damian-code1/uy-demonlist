@@ -358,6 +358,10 @@ function closeLevelDetailModal() {
   document.getElementById('levelDetailModal')?.classList.remove('active');
   document.body.style.overflow = '';
   activeModalLevel = null;
+
+  // Destruir el iframe del player para que el video/audio deje de reproducirse en segundo plano
+  const playerWrap = document.querySelector('#levelDetailModal .lm-player-wrap');
+  if (playerWrap) playerWrap.innerHTML = '';
 }
 
 function refreshOpenLevelModal(levelId) {

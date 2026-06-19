@@ -1,5 +1,7 @@
 import { query } from '../../../../../../lib/db.js';
 import { requireAdmin } from '../../../../../../lib/auth.js';
+import { invalidateLevelsCache } from '../../../../levels/route.js';
+import { invalidatePlayersCache } from '../../../../players/route.js';
 
 // PUT renames a player across every victor record they have
 export async function PUT(request, { params }) {
@@ -12,6 +14,9 @@ export async function PUT(request, { params }) {
     if (!newName?.trim()) return Response.json({ error: 'newName requerido' }, { status: 400 });
 
     await query('UPDATE victors SET player_name = ? WHERE player_name = ?', [newName.trim(), oldName]);
+
+    invalidateLevelsCache();
+    invalidatePlayersCache();
     return Response.json({ success: true });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
@@ -26,6 +31,9 @@ export async function DELETE(request, { params }) {
   try {
     const name = decodeURIComponent(params.name);
     await query('DELETE FROM victors WHERE player_name = ?', [name]);
+
+    invalidateLevelsCache();
+    invalidatePlayersCache();
     return Response.json({ success: true });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });

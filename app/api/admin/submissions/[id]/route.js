@@ -117,11 +117,12 @@ try {
     SELECT
       u.linked_player_name
     FROM users u
-    WHERE LOWER(u.discord_username) = LOWER(?)
+    WHERE LOWER(u.gd_username) = LOWER(?)
+       OR LOWER(u.discord_username) = LOWER(?)
        OR LOWER(u.discord_display_name) = LOWER(?)
     LIMIT 1
     `,
-    [sub.username, sub.username]
+    [sub.username, sub.username, sub.username]
   );
 
   if (

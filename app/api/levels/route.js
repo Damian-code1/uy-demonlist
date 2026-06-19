@@ -141,9 +141,12 @@ if (!thumb_url) {
   }
 }
 
+export let lastDataChange = Date.now();
+
 export function invalidateLevelsCache() {
   serverCache = null;
   cacheTime   = 0;
+  lastDataChange = Date.now();
 }
 
 function extractYTId(url) {

@@ -187,7 +187,14 @@ async function saveLevelForm() {
 }
 
 async function deleteLevel(id) {
-  if (!confirm('¿Eliminar este nivel? Se eliminarán todos sus victors también.')) return;
+  const ok = await uiConfirm({
+    title: '¿Eliminar este nivel?',
+    message: 'Se eliminarán todos sus victors también. Esta acción no se puede deshacer.',
+    type: 'warning',
+    confirmText: 'Eliminar',
+    cancelText: 'Cancelar'
+  });
+  if (!ok) return;
   try {
     await adminDeleteLevel(id);
     showToast('Nivel eliminado', 'success');
@@ -404,11 +411,22 @@ refreshPublicData();
 }
 
 async function deleteVictor(id) {
-  if (!confirm('¿Eliminar este victor?')) return;
+  const ok = await uiConfirm({
+    title: '¿Eliminar este victor?',
+    message: 'Si el nivel se queda sin victors, se eliminará automáticamente.',
+    type: 'warning',
+    confirmText: 'Eliminar',
+    cancelText: 'Cancelar'
+  });
+  if (!ok) return;
   try {
-    await adminDeleteVictor(id);
+    const result = await adminDeleteVictor(id);
     showToast('Victor eliminado', 'success');
+    if (result?.levelDeleted) {
+      showToast('El nivel se quedó sin victors y fue eliminado', 'info');
+    }
     if (adminVictorLevelId) loadVictorsForLevel(adminVictorLevelId);
+    if (adminCurrentTab === 'levels') loadAdminLevels();
     refreshPublicData();
   } catch (e) {
     showToast('Error: ' + e.message, 'error');
@@ -566,7 +584,14 @@ async function savePlayerForm() {
 }
 
 async function deletePlayer(name) {
-  if (!confirm(`¿Eliminar a "${name}" y todos sus victors? Esta acción no se puede deshacer.`)) return;
+  const ok = await uiConfirm({
+    title: `¿Eliminar a "${name}"?`,
+    message: 'Se eliminarán todos sus victors también. Esta acción no se puede deshacer.',
+    type: 'warning',
+    confirmText: 'Eliminar',
+    cancelText: 'Cancelar'
+  });
+  if (!ok) return;
   try {
     await adminDeletePlayer(name);
     showToast('Jugador eliminado', 'success');
@@ -1012,26 +1037,37 @@ window.closeSubDetailModal = closeSubDetailModal;
 async function approveSubmission(id) {
   try {
     const result = await adminApproveSubmission(id);
-    showToast('Aprobada ✓', 'success');
-    loadAdminSubmissions();
+    showToast('Aprobada ✓ — sumada al perfil del jugador', 'success');
+    await loadAdminSubmissions();
     await refreshPublicData({
       levelId: result.levelId,
       scrollToLevelId: result.newLevel ? result.levelId : null,
     });
-  } catch (e) { showToast('Error: ' + e.message, 'error'); }
+  } catch (e) {
+    showToast('Error: ' + e.message, 'error');
+  }
 }
 
 async function rejectSubmission(id) {
   try {
     await adminRejectSubmission(id);
     showToast('Rechazada', 'info');
-    loadAdminSubmissions();
-    refreshPublicData();
-  } catch (e) { showToast('Error: ' + e.message, 'error'); }
+    await loadAdminSubmissions();
+    await refreshPublicData();
+  } catch (e) {
+    showToast('Error: ' + e.message, 'error');
+  }
 }
 
 async function deleteSubmission(id) {
-  if (!confirm('¿Eliminar esta submission?')) return;
+  const ok = await uiConfirm({
+    title: '¿Eliminar esta submission?',
+    message: 'Esta acción no se puede deshacer.',
+    type: 'warning',
+    confirmText: 'Eliminar',
+    cancelText: 'Cancelar'
+  });
+  if (!ok) return;
   try {
     await adminDeleteSubmission(id);
     showToast('Eliminada', 'success');
@@ -1096,6 +1132,12 @@ function loadAdminSyncTab() {
 // THUMBNAILS
 // =============================================
 
+function extractYTIdClient(url) {
+  if (!url) return null;
+  const m = url.match(/(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/\s]{11})/);
+  return m ? m[1] : null;
+}
+
 async function loadAdminThumbnails() {
   const container = document.getElementById('admin-thumbnails-table');
   if (!container) return;
@@ -1104,125 +1146,157 @@ async function loadAdminThumbnails() {
 
   try {
     const data = await adminGetLevels();
-
-    const levels = data.levels || [];
-
-    container.innerHTML = `
-      <div class="admin-table-wrap">
-        <table class="admin-table">
-          <thead>
-            <tr>
-              <th>Nivel</th>
-              <th>Thumbnail actual</th>
-              <th>Video YouTube</th>
-              <th>Acción</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${levels.map(level => `
-              <tr>
-                <td>${esc(level.name)}</td>
-
-                <td>
-                  ${
-                    level.custom_thumbnail_youtube_id
-                      ? `<img
-                          src="https://img.youtube.com/vi/${level.custom_thumbnail_youtube_id}/mqdefault.jpg"
-                          style="width:120px;border-radius:8px">`
-                      : '<span class="text-dim">Automática</span>'
-                  }
-                </td>
-
-                <td>
-                  <div style="display:flex;gap:8px;align-items:center">
-                    <input
-                      id="thumb-input-${level.id}"
-                      type="text"
-                      placeholder="https://youtube.com/watch?v=..."
-                      value="${esc(level.custom_thumbnail_url || '')}"
-                      style="width:100%"
-                      oninput="previewThumbInput(${level.id}, this.value)">
-                    <img
-                      id="thumb-preview-${level.id}"
-                      src="${level.custom_thumbnail_youtube_id ? `https://img.youtube.com/vi/${level.custom_thumbnail_youtube_id}/default.jpg` : ''}"
-                      style="width:80px;border-radius:6px;flex-shrink:0;${level.custom_thumbnail_youtube_id ? '' : 'display:none'}">
-                  </div>
-                </td>
-
-                <td>
-                  <button
-                    class="btn-icon btn-edit"
-                    onclick="saveLevelThumbnail(${level.id})">
-                    <i class="fas fa-save"></i>
-                  </button>
-
-                  ${
-                    level.custom_thumbnail_youtube_id
-                      ? `
-                      <button
-                        class="btn-icon btn-delete"
-                        onclick="resetLevelThumbnail(${level.id})">
-                        <i class="fas fa-undo"></i>
-                      </button>
-                      `
-                      : ''
-                  }
-                </td>
-              </tr>
-            `).join('')}
-          </tbody>
-        </table>
-      </div>
-    `;
+    window._adminAllThumbLevels = data.levels || [];
+    renderAdminThumbnailsFiltered('');
   }
   catch (e) {
     container.innerHTML = adminError(e.message);
   }
 }
 
-function previewThumbInput(levelId, url) {
-  const img = document.getElementById(`thumb-preview-${levelId}`);
-  if (!img) return;
-  const m = url.match(/(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/\s]{11})/);
-  if (m) {
-    img.src = `https://img.youtube.com/vi/${m[1]}/default.jpg`;
-    img.style.display = '';
-  } else {
-    img.style.display = 'none';
-  }
+function filterAdminThumbnails(q) {
+  const clearBtn = document.getElementById('adminThumbClear');
+  if (clearBtn) clearBtn.style.display = q ? '' : 'none';
+  renderAdminThumbnailsFiltered(q);
 }
 
-async function saveLevelThumbnail(levelId) {
-  const input = document.getElementById(`thumb-input-${levelId}`);
+function renderAdminThumbnailsFiltered(q) {
+  const container = document.getElementById('admin-thumbnails-table');
+  if (!container) return;
 
-  const youtubeUrl = input?.value?.trim();
+  const levels  = window._adminAllThumbLevels || [];
+  const ql      = q.trim().toLowerCase();
+  const filtered = ql ? levels.filter(l => l.name?.toLowerCase().includes(ql)) : levels;
+
+  if (!filtered.length) {
+    container.innerHTML = `<div class="admin-empty"><i class="fas fa-image"></i>Sin resultados</div>`;
+    return;
+  }
+
+  container.innerHTML = `
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Nivel</th>
+            <th>Thumbnail actual</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${filtered.map(level => `
+            <tr>
+              <td class="td-name">${esc(level.name)}</td>
+              <td>
+                ${
+                  level.thumbnail_youtube_id
+                    ? `<img src="https://img.youtube.com/vi/${level.thumbnail_youtube_id}/mqdefault.jpg" style="width:120px;border-radius:8px">`
+                    : '<span class="text-dim">Automática</span>'
+                }
+              </td>
+              <td>
+                <button class="btn-icon btn-edit" title="Editar thumbnail"
+                  onclick="openThumbModal(${level.id},'${esc(level.name)}','${esc(level.thumbnail_url || '')}',${level.thumbnail_youtube_id ? 1 : 0})">
+                  <i class="fas fa-pen"></i>
+                </button>
+              </td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+// ─── Popup dedicado de thumbnail ───
+function openThumbModal(levelId, levelName, currentUrl, hasCustom) {
+  const modal = document.getElementById('thumbFormModal');
+  if (!modal) return;
+
+  document.getElementById('thumbFormTitle').textContent = `Thumbnail — ${levelName}`;
+  document.getElementById('thumbFormLevelId').value = levelId;
+  document.getElementById('thumbFormUrl').value = currentUrl || '';
+  document.getElementById('thumbFormError').style.display = 'none';
+  document.getElementById('thumbFormResetBtn').style.display = hasCustom ? '' : 'none';
+
+  previewThumbModalInput(currentUrl || '');
+  modal.classList.add('open');
+  document.getElementById('thumbFormUrl').focus();
+}
+
+function closeThumbModal() {
+  document.getElementById('thumbFormModal')?.classList.remove('open');
+}
+
+function previewThumbModalInput(url) {
+  const errorEl = document.getElementById('thumbFormError');
+  const wrap    = document.getElementById('thumbFormPreviewWrap');
+  const empty   = document.getElementById('thumbFormPreviewEmpty');
+  const img     = document.getElementById('thumbFormPreview');
+
+  const trimmed = (url || '').trim();
+  if (!trimmed) {
+    errorEl.style.display = 'none';
+    wrap.style.display = 'none';
+    empty.style.display = '';
+    return;
+  }
+
+  const ytId = extractYTIdClient(trimmed);
+  if (!ytId) {
+    errorEl.style.display = '';
+    wrap.style.display = 'none';
+    empty.style.display = 'none';
+    return;
+  }
+
+  errorEl.style.display = 'none';
+  empty.style.display = 'none';
+  wrap.style.display = '';
+  img.src = `https://img.youtube.com/vi/${ytId}/mqdefault.jpg`;
+}
+
+async function saveLevelThumbnailFromModal() {
+  const levelId = document.getElementById('thumbFormLevelId')?.value;
+  const url     = document.getElementById('thumbFormUrl')?.value.trim();
+  const errorEl = document.getElementById('thumbFormError');
+
+  if (!url) return showToast('Pegá un link de YouTube', 'error');
+  if (!extractYTIdClient(url)) {
+    errorEl.style.display = '';
+    return showToast('Link inválido: no es de YouTube', 'error');
+  }
 
   try {
-    await adminUpdateLevelThumbnail(levelId, youtubeUrl);
-
+    await adminUpdateLevelThumbnail(levelId, url);
     showToast('Thumbnail actualizada ✓', 'success');
-
+    closeThumbModal();
     loadAdminThumbnails();
     refreshPublicData();
-  }
-  catch (e) {
+  } catch (e) {
     showToast(e.message, 'error');
   }
 }
 
-async function resetLevelThumbnail(levelId) {
+async function resetLevelThumbnailFromModal() {
+  const levelId = document.getElementById('thumbFormLevelId')?.value;
   try {
     await adminUpdateLevelThumbnail(levelId, null);
-
     showToast('Thumbnail restaurada ✓', 'success');
-
+    closeThumbModal();
     loadAdminThumbnails();
     refreshPublicData();
-  }
-  catch (e) {
+  } catch (e) {
     showToast(e.message, 'error');
   }
 }
+
+window.openThumbModal       = openThumbModal;
+window.closeThumbModal      = closeThumbModal;
+window.previewThumbModalInput = previewThumbModalInput;
+window.saveLevelThumbnailFromModal  = saveLevelThumbnailFromModal;
+window.resetLevelThumbnailFromModal = resetLevelThumbnailFromModal;
+window.filterAdminThumbnails = filterAdminThumbnails;
 
 // ─── Globals ───
 window.openAdminPanel      = openAdminPanel;

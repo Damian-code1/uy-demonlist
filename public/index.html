@@ -457,6 +457,11 @@
       </div>
       <div id="admin-submissions-table"></div>
     </div>
+
+    <script>
+      // Marca de tiempo del último refresh, usada por el polling de refresco en tiempo real
+      window._lastRefreshCheck = Date.now();
+    </script>
     
     <!-- ── Sync AREDL ── -->
     <div class="admin-section" id="admin-sync">
@@ -465,6 +470,16 @@
 
     <!-- ── Thumbnails ── -->
     <div class="admin-section" id="admin-thumbnails">
+      <div class="admin-toolbar">
+        <div class="search-box enhanced-search" style="flex:1">
+          <i class="fas fa-search search-icon-left"></i>
+          <input type="text" id="adminThumbSearchInput" placeholder="Buscar nivel…" autocomplete="off"
+            oninput="filterAdminThumbnails(this.value)">
+          <button type="button" class="search-clear-btn" id="adminThumbClear" style="display:none" title="Limpiar">
+            <i class="fas fa-times-circle"></i>
+          </button>
+        </div>
+      </div>
       <div id="admin-thumbnails-table"></div>
     </div>
   </div>
@@ -575,6 +590,39 @@
     <div class="admin-form-actions">
       <button class="btn-cancel" onclick="closePlayerModal()">Cancelar</button>
       <button class="btn-save" onclick="savePlayerForm()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Thumbnail Form Modal ── -->
+<div class="admin-form-modal" id="thumbFormModal">
+  <div class="modal-backdrop" onclick="closeThumbModal()"></div>
+  <div class="admin-form-box" style="max-width:480px">
+    <h3 class="admin-form-title" id="thumbFormTitle">Editar Thumbnail</h3>
+    <input type="hidden" id="thumbFormLevelId">
+    <div class="admin-form-row form-field">
+      <label>Link de YouTube</label>
+      <input type="text" id="thumbFormUrl" placeholder="https://youtube.com/watch?v=..."
+        oninput="previewThumbModalInput(this.value)">
+      <p class="text-dim" id="thumbFormError" style="font-size:.78rem;margin-top:.4rem;color:var(--danger);display:none">
+        <i class="fas fa-exclamation-circle"></i> Link inválido: no es de YouTube
+      </p>
+    </div>
+    <div class="admin-form-row form-field">
+      <label>Vista previa</label>
+      <div id="thumbFormPreviewWrap" style="display:none;border-radius:var(--r-sm);overflow:hidden;border:1px solid var(--border-s)">
+        <img id="thumbFormPreview" style="width:100%;display:block">
+      </div>
+      <div id="thumbFormPreviewEmpty" class="admin-empty" style="padding:1.5rem">
+        <i class="fas fa-image"></i>Pegá un link de YouTube para ver la preview
+      </div>
+    </div>
+    <div class="admin-form-actions">
+      <button class="btn-cancel" onclick="closeThumbModal()">Cancelar</button>
+      <button class="btn-icon btn-delete" id="thumbFormResetBtn" style="width:auto;padding:.6rem 1rem" onclick="resetLevelThumbnailFromModal()">
+        <i class="fas fa-undo"></i> Restaurar automática
+      </button>
+      <button class="btn-save" onclick="saveLevelThumbnailFromModal()">Guardar</button>
     </div>
   </div>
 </div>

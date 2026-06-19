@@ -1,5 +1,7 @@
 import { query } from '../../../../../lib/db.js';
 import { requireAdmin } from '../../../../../lib/auth.js';
+import { invalidateLevelsCache } from '../../../levels/route.js';
+import { invalidatePlayersCache } from '../../../players/route.js';
 
 export async function PUT(request, { params }) {
   const admin = await requireAdmin(request);
@@ -19,6 +21,9 @@ export async function PUT(request, { params }) {
       'UPDATE levels SET name = ?, position = ?, youtube_url = ?, points = ?, gd_id = ?, updated_at = NOW() WHERE id = ?',
       [name || old[0].name, position || old[0].position, youtube_url || old[0].youtube_url, newPoints, newGdId, params.id]
     );
+
+    invalidateLevelsCache();
+    invalidatePlayersCache();
     return Response.json({ success: true });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
@@ -34,6 +39,9 @@ export async function DELETE(request, { params }) {
     if (!old.length) return Response.json({ error: 'No encontrado' }, { status: 404 });
     await query('DELETE FROM levels WHERE id = ?', [params.id]);
     await query('UPDATE levels SET position = position - 1 WHERE position > ?', [old[0].position]);
+
+    invalidateLevelsCache();
+    invalidatePlayersCache();
     return Response.json({ success: true });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });

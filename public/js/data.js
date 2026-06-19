@@ -98,6 +98,40 @@ async function refreshPublicData(opts = {}) {
 }
 window.refreshPublicData = refreshPublicData;
 
+// ─── Polling de cambios en tiempo real (todos los usuarios, no solo admin) ───
+let _lastKnownChange = null;
+const REALTIME_POLL_MS = 8000;
+
+async function pollForRealtimeChanges() {
+  try {
+    const res = await fetch(`${API_BASE}/heartbeat`, { cache: 'no-store' });
+    if (!res.ok) return;
+    const { lastChange } = await res.json();
+
+    if (_lastKnownChange === null) {
+      _lastKnownChange = lastChange; // primera vez: solo establece la marca, no refresca
+      return;
+    }
+
+    if (lastChange !== _lastKnownChange) {
+      _lastKnownChange = lastChange;
+      await refreshPublicData();
+      if (typeof showToast === 'function') showToast('La lista se actualizó ✓', 'info');
+    }
+  } catch (e) {
+    console.warn('Realtime poll falló:', e.message);
+  }
+}
+
+function startRealtimePolling() {
+  pollForRealtimeChanges();
+  setInterval(pollForRealtimeChanges, REALTIME_POLL_MS);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(startRealtimePolling, 1500);
+});
+
 async function loadFromJSON() {
   try {
     const res  = await fetch('data/levels.json');
