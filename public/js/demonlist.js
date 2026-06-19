@@ -2,19 +2,52 @@
 // DEMONLIST.JS — UY Demonlist v2
 // =============================================
 
-let filteredLevels  = [];
-let currentView     = localStorage.getItem('preferredView') || 'list';
+let filteredLevels   = [];
+let currentView      = localStorage.getItem('preferredView') || 'list';
 let activeModalLevel = null;
 let activeVictorIdx  = 0;
+let favoritesView    = false;
+let userFavorites    = JSON.parse(localStorage.getItem('favorites') || '[]');
+
+async function syncFavoritesWithDB() {
+  if (!window.currentUser) return;
+  try {
+    const res  = await fetch('/api/users/favorites');
+    const data = await res.json();
+    if (Array.isArray(data.favorites)) {
+      userFavorites = data.favorites;
+      localStorage.setItem('favorites', JSON.stringify(userFavorites));
+    }
+  } catch {}
+}
+
+async function toggleFavoriteDB(levelId) {
+  const idx    = userFavorites.indexOf(levelId);
+  const action = idx >= 0 ? 'remove' : 'add';
+  if (idx >= 0) userFavorites.splice(idx, 1); else userFavorites.push(levelId);
+  localStorage.setItem('favorites', JSON.stringify(userFavorites));
+
+  if (window.currentUser) {
+    try {
+      await fetch('/api/users/favorites', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ levelId, action })
+      });
+    } catch {}
+  }
+}
 
 document.addEventListener('DOMContentLoaded', async () => {
   showLevelsLoader();
   await loadData();
   await loadAredlMap();
   syncHeroStats();
+  await syncFavoritesWithDB();
   renderLevels();
   setupSearch();
   setupViewToggles();
+  setupFavoritesToggle();
   setupLevelModal();
   renderLeaderboard();
   setupPlayerSearch();
@@ -73,8 +106,7 @@ function buildCard(level, index) {
   const thumb = level.thumb_url || null;
   const pts      = levelPoints(level);
 
-  const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
-  const isFav     = favorites.includes(level.id);
+  const isFav = userFavorites.includes(level.id);
   const isNew     = !!level.isNew;
 
   const card = document.createElement('div');
@@ -158,13 +190,12 @@ function buildCard(level, index) {
     </div>
   `;
 
-  card.querySelector('.lc-fav-btn')?.addEventListener('click', e => {
+  card.querySelector('.lc-fav-btn')?.addEventListener('click', async e => {
     e.stopPropagation();
-    const favs = JSON.parse(localStorage.getItem('favorites') || '[]');
-    const idx  = favs.indexOf(level.id);
-    if (idx >= 0) favs.splice(idx, 1); else favs.push(level.id);
-    localStorage.setItem('favorites', JSON.stringify(favs));
-    renderLevels();
+    await toggleFavoriteDB(level.id);
+    paintCards(favoritesView
+      ? getLevelsData().filter(l => userFavorites.includes(l.id))
+      : filteredLevels, false);
   });
 
   card.addEventListener('click', () => openLevelModal(level));
@@ -451,8 +482,30 @@ function setupViewToggles() {
       currentView = btn.dataset.view;
       localStorage.setItem('preferredView', currentView);
       document.querySelectorAll('.view-btn').forEach(b => b.classList.toggle('active', b === btn));
-      paintCards(filteredLevels, false);
+      const toShow = favoritesView
+        ? getLevelsData().filter(l => userFavorites.includes(l.id))
+        : filteredLevels;
+      paintCards(toShow, false);
     });
+  });
+}
+
+// ─── FAVORITES TOGGLE ───
+function setupFavoritesToggle() {
+  const btn = document.getElementById('favViewBtn');
+  if (!btn) return;
+  btn.addEventListener('click', () => {
+    favoritesView = !favoritesView;
+    btn.classList.toggle('active', favoritesView);
+    btn.title = favoritesView ? 'Ver todos los niveles' : 'Ver favoritos';
+    btn.querySelector('i').className = favoritesView ? 'fas fa-star' : 'far fa-star';
+
+    if (favoritesView) {
+      const favLevels = getLevelsData().filter(l => userFavorites.includes(l.id));
+      paintCards(favLevels, true);
+    } else {
+      paintCards(filteredLevels, true);
+    }
   });
 }
 
@@ -905,14 +958,43 @@ const avatarUrl = player.discord_id && player.discord_avatar
 
 // Detectar videos privados de YT: thumbnail de 120x90 = placeholder "no disponible"
   modal.querySelectorAll('a[data-ytid]').forEach(link => {
+    const ytid = link.dataset.ytid;
+    if (!ytid) return;
+    // Fix: usar hqdefault (320x180) — mqdefault (120x90) es el placeholder de "no disponible"
+    // pero algunos videos legítimos también devuelven esa resolución. Usamos maxresdefault
+    // y si falla intentamos hqdefault antes de marcar como privado.
     const img = new Image();
-    img.onload = function() {
-      if (this.naturalWidth === 120 && this.naturalHeight === 90) {
-        link.innerHTML = '<i class="fas fa-lock"></i> Privado';
-        link.style.cssText += ';opacity:.5;pointer-events:none;filter:grayscale(1);cursor:default';
+    let tried = 0;
+    const sizes = ['maxresdefault', 'hqdefault', 'mqdefault'];
+    function tryNext() {
+      if (tried >= sizes.length) {
+        // No se pudo cargar ninguna miniatura — marcar como sin video
+        link.innerHTML = '<i class="fas fa-video-slash"></i> Sin video';
+        link.style.cssText += ';opacity:.5;pointer-events:none;cursor:default';
+        return;
       }
+      img.src = `https://img.youtube.com/vi/${ytid}/${sizes[tried]}.jpg`;
+      tried++;
+    }
+    img.onload = function() {
+      // mqdefault 120x90 = placeholder de YT = video privado/borrado
+      if (sizes[tried-1] === 'mqdefault' && this.naturalWidth === 120 && this.naturalHeight === 90) {
+        // Verificar si tiene videoUrl directa antes de marcar como privado
+        const directHref = link.href;
+        if (directHref && directHref !== '#') {
+          // Tiene URL directa válida, mostrar link aunque no haya miniatura
+          link.innerHTML = '<i class="fab fa-youtube"></i> Ver video';
+          link.style.opacity = '1';
+          link.style.pointerEvents = '';
+        } else {
+          link.innerHTML = '<i class="fas fa-lock"></i> Privado';
+          link.style.cssText += ';opacity:.5;pointer-events:none;filter:grayscale(1);cursor:default';
+        }
+      }
+      // Si cargó bien, no hacer nada — el link ya tiene el texto correcto
     };
-    img.src = `https://img.youtube.com/vi/${link.dataset.ytid}/mqdefault.jpg`;
+    img.onerror = tryNext;
+    tryNext();
   });
 
 modal.classList.add('active');

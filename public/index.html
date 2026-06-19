@@ -132,20 +132,26 @@
     </div>
 
     <div class="list-controls" data-aos="fade-up" data-aos-delay="80">
-<div class="search-box enhanced-search" id="listSearchWrap">
+      <div class="search-box enhanced-search" id="listSearchWrap">
         <i class="fas fa-search search-icon-left"></i>
-        <input type="text" id="searchInput" placeholder="Buscar nivel o jugador…" autocomplete="off">
+        <input type="text" id="searchInput" placeholder="Buscar nivel…" autocomplete="off">
         <button type="button" class="search-clear-btn" id="listSearchClear" style="display:none" title="Limpiar búsqueda">
           <i class="fas fa-times-circle"></i>
         </button>
       </div>
-      <div class="view-toggle-group">
-        <button class="view-btn active" data-view="list" title="Vista lista">
-          <i class="fas fa-bars"></i>
+      <div class="list-controls-right">
+        <button class="fav-view-btn" id="favViewBtn" title="Ver favoritos">
+          <i class="far fa-star"></i>
+          <span>Favoritos</span>
         </button>
-        <button class="view-btn" data-view="grid" title="Vista grilla">
-          <i class="fas fa-th-large"></i>
-        </button>
+        <div class="view-toggle-group">
+          <button class="view-btn active" data-view="list" title="Vista lista">
+            <i class="fas fa-bars"></i>
+          </button>
+          <button class="view-btn" data-view="grid" title="Vista grilla">
+            <i class="fas fa-th-large"></i>
+          </button>
+        </div>
       </div>
     </div>
 
@@ -367,7 +373,7 @@
   </div>
   <div class="footer-bottom">
     <div class="footer-credit">
-      <span class="footer-credit-label">Made by</span>
+      <span class="footer-credit-label">Hecho por</span>
       <img class="footer-credit-avatar" alt="" loading="lazy">
       <span class="footer-credit-name">evosen</span>
       <span class="footer-credit-role">Owner</span>
@@ -495,25 +501,34 @@
 <div class="admin-overlay" id="ownerOverlay"></div>
 
 <aside class="admin-panel owner-panel" id="ownerPanel">
-  <div class="admin-header owner-header">
-    <h2 class="admin-title"><i class="fas fa-crown"></i> PANEL OWNER</h2>
-    <button class="admin-close" id="ownerClose" onclick="closeOwnerPanel()">
+  <div class="owner-panel-header">
+    <div class="owner-panel-header-bg"></div>
+    <div class="owner-panel-header-content">
+      <div class="owner-panel-crown-wrap">
+        <i class="fas fa-crown"></i>
+      </div>
+      <div>
+        <h2 class="owner-panel-title">Panel Owner</h2>
+        <p class="owner-panel-subtitle">Gestión de usuarios y roles</p>
+      </div>
+    </div>
+    <button class="owner-panel-close" onclick="closeOwnerPanel()" title="Cerrar">
       <i class="fas fa-times"></i>
     </button>
   </div>
-  <div class="admin-body">
-    <div class="admin-toolbar" style="margin-bottom:.9rem">
+  <div class="owner-panel-body">
+    <div class="owner-panel-toolbar">
       <div class="search-box enhanced-search" style="flex:1">
         <i class="fas fa-search search-icon-left"></i>
         <input type="text" id="ownerUserSearch" class="adm-search-input"
-          placeholder="Buscar usuario…" autocomplete="off"
+          placeholder="Buscar usuario o cuenta GD…" autocomplete="off"
           oninput="filterOwnerUsers(this.value)">
         <button type="button" class="search-clear-btn" id="ownerUserClear" style="display:none">
           <i class="fas fa-times-circle"></i>
         </button>
       </div>
-      <button class="btn-admin-add" onclick="loadOwnerUsers()">
-        <i class="fas fa-sync"></i> Actualizar
+      <button class="owner-refresh-btn" onclick="loadOwnerUsers()" title="Actualizar lista">
+        <i class="fas fa-sync-alt"></i>
       </button>
     </div>
     <div id="owner-users-table"></div>

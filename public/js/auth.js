@@ -110,7 +110,9 @@ function renderUserWidget(user) {
     card.onclick = toggleUserDropdown;
   }
 
-if (drop) {
+const isRoulettePage = window.location.pathname.includes('roulette');
+
+  if (drop) {
     const gdSection = user.gdUsername
       ? `<div class="wdd-gd-linked">
            <div class="wdd-gd-icon">
@@ -141,6 +143,7 @@ if (drop) {
          </div>`;
 
     drop.innerHTML = `
+      ${!isRoulettePage ? `
       <div class="wdd-stats-row">
         <div class="wdd-stat">
           <span class="wdd-stat-val">${(user.points || 0).toLocaleString()}</span>
@@ -151,23 +154,24 @@ if (drop) {
           <span class="wdd-stat-val">${user.completions || 0}</span>
           <span class="wdd-stat-lbl"><i class="fas fa-flag-checkered"></i> Completions</span>
         </div>
-      </div>
+      </div>` : ''}
 
       <div class="wdd-gd-section">
         ${gdSection}
       </div>
 
       <div class="wdd-actions">
+        ${!isRoulettePage ? `
         <button class="wdd-action-btn" onclick="goToMyRanking()">
           <i class="fas fa-list-ol"></i>
           <span>Mi ranking</span>
-        </button>
-        ${isAdminUser() ? `
+        </button>` : ''}
+        ${isAdminUser() && !isRoulettePage ? `
         <button class="wdd-action-btn wdd-action-admin" onclick="openAdminPanel();closeUserDropdown()">
           <i class="fas fa-shield-alt"></i>
           <span>Admin</span>
         </button>` : ''}
-        ${user.role === 'owner' ? `
+        ${user.role === 'owner' && !isRoulettePage ? `
         <button class="wdd-action-btn wdd-action-owner" onclick="openOwnerPanel();closeUserDropdown()">
           <i class="fas fa-crown"></i>
           <span>Owner</span>
