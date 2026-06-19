@@ -116,6 +116,14 @@
       if (!e.target.closest('#subLevelSearchWrap') && !e.target.closest('#levelSuggestions')) hideSuggestions();
     });
 
+    // Cerrar también al hacer scroll o al navegar con la navbar — evita que el
+    // dropdown de sugerencias quede "flotando" sobre otras secciones de la página
+    // si el usuario navega mientras está abierto.
+    window.addEventListener('scroll', () => hideSuggestions(), { passive: true });
+    document.querySelectorAll('.navbar a[href^="#"], .nav-link').forEach(link => {
+      link.addEventListener('click', () => hideSuggestions());
+    });
+
     function scoreMatch(name, ql) {
       if (name === ql) return 1000;
       if (name.startsWith(ql)) return 900;
