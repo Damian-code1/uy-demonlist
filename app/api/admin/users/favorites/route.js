@@ -1,5 +1,5 @@
-import { query } from '../../../../lib/db.js';
-import { getUserFromRequest } from '../../../../lib/auth.js';
+import { query } from '../../../../../lib/db.js';
+import { getUserFromRequest } from '../../../../../lib/auth.js';
 
 export async function GET(req) {
   const user = await getUserFromRequest(req);
