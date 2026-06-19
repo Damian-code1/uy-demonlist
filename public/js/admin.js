@@ -1134,12 +1134,19 @@ async function loadAdminThumbnails() {
                 </td>
 
                 <td>
-                  <input
-                    id="thumb-input-${level.id}"
-                    type="text"
-                    placeholder="https://youtube.com/watch?v=..."
-                    value="${esc(level.custom_thumbnail_url || '')}"
-                    style="width:100%">
+                  <div style="display:flex;gap:8px;align-items:center">
+                    <input
+                      id="thumb-input-${level.id}"
+                      type="text"
+                      placeholder="https://youtube.com/watch?v=..."
+                      value="${esc(level.custom_thumbnail_url || '')}"
+                      style="width:100%"
+                      oninput="previewThumbInput(${level.id}, this.value)">
+                    <img
+                      id="thumb-preview-${level.id}"
+                      src="${level.custom_thumbnail_youtube_id ? `https://img.youtube.com/vi/${level.custom_thumbnail_youtube_id}/default.jpg` : ''}"
+                      style="width:80px;border-radius:6px;flex-shrink:0;${level.custom_thumbnail_youtube_id ? '' : 'display:none'}">
+                  </div>
                 </td>
 
                 <td>
@@ -1170,6 +1177,18 @@ async function loadAdminThumbnails() {
   }
   catch (e) {
     container.innerHTML = adminError(e.message);
+  }
+}
+
+function previewThumbInput(levelId, url) {
+  const img = document.getElementById(`thumb-preview-${levelId}`);
+  if (!img) return;
+  const m = url.match(/(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/\s]{11})/);
+  if (m) {
+    img.src = `https://img.youtube.com/vi/${m[1]}/default.jpg`;
+    img.style.display = '';
+  } else {
+    img.style.display = 'none';
   }
 }
 

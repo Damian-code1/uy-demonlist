@@ -304,6 +304,10 @@ async function adminDeleteSubmission(id)     { return adminFetch(`/submissions/$
 async function adminApproveSubmission(id)    { return adminUpdateSubmission(id, { status: 'approved' }); }
 async function adminRejectSubmission(id)     { return adminUpdateSubmission(id, { status: 'rejected' }); }
 async function adminSyncPositions()          { return adminFetch('/sync-positions', { method: 'POST' }); }
+async function adminUpdateLevelThumbnail(id, url) {
+  if (!url) return adminFetch(`/levels/${id}/thumbnail`, { method: 'DELETE' });
+  return adminFetch(`/levels/${id}/thumbnail`, { method: 'PUT', body: JSON.stringify({ youtube_url: url }) });
+}
 
 async function ownerGetUsers()               { return adminFetch('/users'); }
 async function ownerUpdateUser(id, data)     { return adminFetch(`/users/${id}`, { method: 'PUT', body: JSON.stringify(data) }); }
