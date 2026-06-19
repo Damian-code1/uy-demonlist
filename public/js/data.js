@@ -343,7 +343,21 @@ async function adminFetch(path, opts = {}) {
   return res.json();
 }
 
-async function adminGetLevels()              { return adminFetch('/levels'); }
+let _adminLevelsCache = null;
+let _adminLevelsCacheTs = 0;
+async function adminGetLevels({ force = false } = {}) {
+  const now = Date.now();
+  if (!force && _adminLevelsCache && (now - _adminLevelsCacheTs) < 30_000) {
+    return _adminLevelsCache;
+  }
+  const data = await adminFetch('/levels');
+  _adminLevelsCache = data;
+  _adminLevelsCacheTs = now;
+  return data;
+}
+function invalidateAdminLevelsCache() {
+  _adminLevelsCache = null;
+}
 async function adminAddLevel(data)           { return adminFetch('/levels', { method: 'POST', body: JSON.stringify(data) }); }
 async function adminUpdateLevel(id, data)    { return adminFetch(`/levels/${id}`, { method: 'PUT', body: JSON.stringify(data) }); }
 async function adminDeleteLevel(id)          { return adminFetch(`/levels/${id}`, { method: 'DELETE' }); }
@@ -357,7 +371,8 @@ async function adminGetPlayers()             { return adminFetch('/players'); }
 async function adminRenamePlayer(name, newName) { return adminFetch(`/players/by-name/${encodeURIComponent(name)}`, { method: 'PUT', body: JSON.stringify({ newName }) }); }
 async function adminDeletePlayer(name)       { return adminFetch(`/players/by-name/${encodeURIComponent(name)}`, { method: 'DELETE' }); }
 
-async function adminGetSubmissions()         { return adminFetch('/submissions'); }
+async function adminGetSubmissions()                { return adminFetch('/submissions'); }
+async function adminDeleteAllSubmissions(filter)    { return adminFetch(`/submissions?filter=${filter}`, { method: 'DELETE' }); }
 async function adminUpdateSubmission(id, d)  { return adminFetch(`/submissions/${id}`, { method: 'PUT', body: JSON.stringify(d) }); }
 async function adminDeleteSubmission(id)     { return adminFetch(`/submissions/${id}`, { method: 'DELETE' }); }
 async function adminApproveSubmission(id)    { return adminUpdateSubmission(id, { status: 'approved' }); }

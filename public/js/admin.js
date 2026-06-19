@@ -179,6 +179,7 @@ async function saveLevelForm() {
     }
     closeLevelModal();
     showToast('Nivel guardado ✓', 'success');
+    invalidateAdminLevelsCache();
     loadAdminLevels();
     refreshPublicData();
   } catch (e) {
@@ -198,8 +199,9 @@ async function deleteLevel(id) {
   try {
     await adminDeleteLevel(id);
     showToast('Nivel eliminado', 'success');
+    invalidateAdminLevelsCache();
     loadAdminLevels();
-refreshPublicData();
+    refreshPublicData();
   } catch (e) {
     showToast('Error: ' + e.message, 'error');
   }
@@ -850,6 +852,9 @@ function renderAdminSubmissions(subs) {
       <button class="adm-filter-clear-all" onclick="clearSubFilters()">
         <i class="fas fa-times"></i> Limpiar
       </button>
+      <button class="adm-filter-clear-all" style="background:rgba(220,50,50,.15);color:#ff6b6b;border-color:rgba(220,50,50,.3)" onclick="deleteAllSubmissions()">
+        <i class="fas fa-trash"></i> Eliminar
+      </button>
     </div>
 
     <div id="adminSubsList"></div>`;
@@ -1086,8 +1091,9 @@ window.closeSubDetailModal = closeSubDetailModal;
 async function approveSubmission(id) {
   try {
     const result = await adminApproveSubmission(id);
-    showToast('Aprobada ✓ — sumada al perfil del jugador', 'success');
-    await loadAdminSubmissions();
+    showToast('✓ Submission aprobada — sumada al perfil del jugador', 'success');
+    _updateSubmissionStatusInTable(id, 'approved');
+    closeSubDetailModal();
     await refreshPublicData({
       levelId: result.levelId,
       scrollToLevelId: result.newLevel ? result.levelId : null,
@@ -1100,8 +1106,9 @@ async function approveSubmission(id) {
 async function rejectSubmission(id) {
   try {
     await adminRejectSubmission(id);
-    showToast('Rechazada', 'info');
-    await loadAdminSubmissions();
+    showToast('Submission rechazada', 'info');
+    _updateSubmissionStatusInTable(id, 'rejected');
+    closeSubDetailModal();
     await refreshPublicData();
   } catch (e) {
     showToast('Error: ' + e.message, 'error');
@@ -1119,10 +1126,48 @@ async function deleteSubmission(id) {
   if (!ok) return;
   try {
     await adminDeleteSubmission(id);
-    showToast('Eliminada', 'success');
-    loadAdminSubmissions();
-    refreshPublicData();
+    showToast('Submission eliminada', 'success');
+    closeSubDetailModal();
+    // Quitar la fila de la tabla sin recargar todo
+    _removeSubmissionFromTable(id);
   } catch (e) { showToast('Error: ' + e.message, 'error'); }
+}
+
+async function deleteAllSubmissions() {
+  const ok = await uiConfirm({
+    title: '¿Eliminar submissions?',
+    message: '¿Qué submissions querés eliminar?',
+    type: 'warning',
+    confirmText: 'Todas',
+    cancelText: 'Cancelar',
+    extraButtons: [
+      { text: 'Solo aprobadas',  value: 'approved' },
+      { text: 'Solo rechazadas', value: 'rejected' },
+    ],
+  });
+  if (!ok) return;
+  const filter = ok === true ? 'all' : ok;
+  try {
+    const result = await adminDeleteAllSubmissions(filter);
+    showToast(`${result.deleted} submission${result.deleted !== 1 ? 's' : ''} eliminada${result.deleted !== 1 ? 's' : ''} ✓`, 'success');
+    loadAdminSubmissions();
+  } catch (e) {
+    showToast('Error: ' + e.message, 'error');
+  }
+}
+
+// Actualiza el estado de una submission en la tabla sin recargar todo
+function _updateSubmissionStatusInTable(id, newStatus) {
+  const subs = window._adminAllSubs || [];
+  const sub  = subs.find(s => s.id === id);
+  if (sub) sub.status = newStatus;
+  renderSubsFiltered();
+}
+
+// Quita una submission de la lista local y re-renderiza
+function _removeSubmissionFromTable(id) {
+  window._adminAllSubs = (window._adminAllSubs || []).filter(s => s.id !== id);
+  renderSubsFiltered();
 }
 
 // Clear del buscador de niveles en admin
@@ -1370,6 +1415,7 @@ window.rejectSubmission    = rejectSubmission;
 window.deleteSubmission    = deleteSubmission;
 window.clearSubFilters         = clearSubFilters;
 window.renderSubsFiltered      = renderSubsFiltered;
+window.deleteAllSubmissions    = deleteAllSubmissions;
 window.syncPositionsWithAredl  = syncPositionsWithAredl;
 window.saveLevelThumbnail      = saveLevelThumbnail;
 window.resetLevelThumbnail     = resetLevelThumbnail;
