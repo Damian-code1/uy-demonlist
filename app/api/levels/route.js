@@ -28,9 +28,9 @@ export async function GET(request) {
         l.points,
         l.youtube_id,
         l.youtube_url,
-l.custom_thumbnail_url,
-l.custom_thumbnail_youtube_id,
-l.created_at,
+        l.thumbnail_url,
+l.thumbnail_youtube_id,
+        l.created_at,
         l.created_from_submission,
         v.id         AS victor_id,
         v.player_name,
@@ -52,8 +52,8 @@ l.created_at,
           points:      row.points,
           youtube_id:  row.youtube_id,
           youtube_url: row.youtube_url,
-          custom_thumbnail_url: row.custom_thumbnail_url,
-          custom_thumbnail_youtube_id: row.custom_thumbnail_youtube_id,
+          thumbnail_url: row.thumbnail_url,
+          thumbnail_youtube_id: row.thumbnail_youtube_id,
           created_from_submission: row.created_from_submission,
           created_at:  row.created_at,
           victors:     [],
@@ -77,12 +77,12 @@ l.created_at,
 let thumb_url_fallback = null;
 
 // thumbnail manual tiene prioridad
-if (level.custom_thumbnail_youtube_id) {
+if (level.thumbnail_youtube_id) {
   thumb_url =
-    `https://img.youtube.com/vi/${level.custom_thumbnail_youtube_id}/hqdefault.jpg`;
+    `https://img.youtube.com/vi/${level.thumbnail_youtube_id}/hqdefault.jpg`;
 
   thumb_url_fallback =
-    `https://img.youtube.com/vi/${level.custom_thumbnail_youtube_id}/mqdefault.jpg`;
+    `https://img.youtube.com/vi/${level.thumbnail_youtube_id}/mqdefault.jpg`;
 }
 
 // si no hay thumbnail manual, usar victors
