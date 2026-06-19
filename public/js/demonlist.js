@@ -393,9 +393,11 @@ function setupSearch() {
       const ql = q.toLowerCase().trim();
       const qlNorm = ql.replace(/\s+/g, '');
       // Normaliza fullwidth (２１１ → 211) y halfwidth
-      const normalize = s => s.replace(/[\uff01-\uff5e]/g, c =>
-        String.fromCharCode(c.charCodeAt(0) - 0xfee0)
-      ).replace(/\u3000/g, ' ').toLowerCase().trim();
+      const normalize = typeof normalizeForSearch === 'function'
+        ? normalizeForSearch
+        : s => s.replace(/[\uff01-\uff5e]/g, c =>
+            String.fromCharCode(c.charCodeAt(0) - 0xfee0)
+          ).replace(/\u3000/g, ' ').toLowerCase().trim();
       const qlFull = normalize(ql);
       filteredLevels = !ql
         ? [...getLevelsData()]

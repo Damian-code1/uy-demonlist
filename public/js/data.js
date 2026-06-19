@@ -42,15 +42,24 @@ async function loadData(force = false) {
   }
 }
 
+function normalizeForSearch(s) {
+  return (s || '').replace(/[\uff01-\uff5e]/g, c =>
+    String.fromCharCode(c.charCodeAt(0) - 0xfee0)
+  ).replace(/\u3000/g, ' ').toLowerCase().trim();
+}
+window.normalizeForSearch = normalizeForSearch;
+
 function applyAredlToLevels() {
+  if (!Object.keys(aredlMap).length) return;
   levelsData.forEach(l => {
-    const key = l.name?.toLowerCase().trim();
-    if (key && aredlMap[key]) {
-      l.aredl_position  = aredlMap[key].position;
-      l.aredl_level_id  = aredlMap[key].level_id;
-      l.aredl_video_id  = aredlMap[key].video_id || null;
+    const key     = l.name?.toLowerCase().trim();
+    const keyNorm = normalizeForSearch(l.name);
+    const match   = aredlMap[key] || aredlMap[keyNorm];
+    if (match) {
+      l.aredl_position = match.position;
+      l.aredl_level_id = match.level_id;
+      l.aredl_video_id = match.video_id || null;
     }
-    // gd_id manual del admin SIEMPRE prevalece; si no hay, usar el de AREDL
     l.gd_level_id = l.gd_id || l.aredl_level_id || null;
   });
 }
