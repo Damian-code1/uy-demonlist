@@ -46,7 +46,7 @@ async function checkSession() {
 }
 
 function loginWithDiscord() {
-  window.location.href = 'https://discord.com/oauth2/authorize?client_id=1503353668941123684&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A3001%2Fapi%2Fauth%2Fcallback%2Fdiscord&scope=identify+email';
+  window.location.href = 'https://discord.com/oauth2/authorize?client_id=1503353668941123684&response_type=code&redirect_uri=https%3A%2F%2Fuy-demonlist.vercel.app%2Fapi%2Fauth%2Fcallback%2Fdiscord&scope=identify+email';
 }
 
 async function logout() {
