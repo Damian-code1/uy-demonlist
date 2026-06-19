@@ -422,38 +422,7 @@ function setupViewToggles() {
 }
 
 // ─── SUBMISSION AUTOCOMPLETE ───
-function setupSubmissionAutocomplete() {
-  const input   = document.getElementById('levelName');
-  const suggest = document.getElementById('levelSuggestions');
-  if (!input || !suggest) return;
-
-  input.addEventListener('input', () => {
-    const q = input.value.trim().toLowerCase();
-    if (!q || q.length < 2) { suggest.innerHTML = ''; suggest.style.display = 'none'; return; }
-    const matches = getLevelsData().filter(l => l.name?.toLowerCase().includes(q)).slice(0, 8);
-    if (!matches.length) { suggest.style.display = 'none'; return; }
-    suggest.innerHTML = matches.map(l => {
-      const aredlPos = l.aredl_position || window.aredlMap?.[l.name?.toLowerCase()]?.position;
-      return `<div class="suggestion-item" data-name="${esc(l.name)}">
-        <span class="sug-name">${esc(l.name)}</span>
-        ${aredlPos ? `<span class="sug-aredl">AREDL #${aredlPos}</span>` : ''}
-      </div>`;
-    }).join('');
-    suggest.style.display = 'block';
-  });
-
-  suggest.addEventListener('click', e => {
-    const item = e.target.closest('.suggestion-item');
-    if (!item) return;
-    input.value = item.dataset.name;
-    suggest.style.display = 'none';
-    input.dispatchEvent(new Event('input'));
-  });
-
-  document.addEventListener('click', e => {
-    if (!input.contains(e.target) && !suggest.contains(e.target)) suggest.style.display = 'none';
-  });
-}
+function setupSubmissionAutocomplete() {}
 
 // ─── SCROLL TO SUBMISSIONS ───
 function scrollToSubmissions(levelName) {
