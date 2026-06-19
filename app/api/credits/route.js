@@ -14,7 +14,7 @@ export async function GET() {
   try {
     const [rows] = await query(
       `SELECT discord_id, discord_username, discord_display_name, discord_avatar, role
-       FROM users WHERE role = 'owner' ORDER BY id ASC LIMIT 1`
+       FROM users WHERE discord_id = '1407737422732853331' LIMIT 1`
     );
     const u = rows[0] || null;
 
