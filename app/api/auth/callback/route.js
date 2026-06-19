@@ -49,23 +49,56 @@ export async function GET(request) {
     }
 
     // Upsert user in DB
-    await query(
-      `INSERT INTO users (discord_id, discord_username, discord_display_name, discord_avatar, discord_email)
-       VALUES (?, ?, ?, ?, ?)
-       ON DUPLICATE KEY UPDATE
-         discord_username     = VALUES(discord_username),
-         discord_display_name = VALUES(discord_display_name),
-         discord_avatar       = VALUES(discord_avatar),
-         discord_email        = VALUES(discord_email),
-         updated_at           = NOW()`,
-      [
-        discordUser.id,
-        discordUser.username,
-        discordUser.global_name || discordUser.username,
-        discordUser.avatar || null,
-        discordUser.email || null,
-      ]
+    // Primero intentar encontrar un usuario vacío (sin discord_id) que ya tenga linked_player_name o gd_username
+    // para no duplicar cuando el owner pre-vinculó al jugador antes de que hiciera login
+    const [[emptyUser]] = await query(
+      `SELECT id FROM users
+       WHERE discord_id IS NULL
+         AND (
+           gd_username IS NOT NULL
+           OR linked_player_name IS NOT NULL
+         )
+       LIMIT 1`
     );
+
+    if (emptyUser) {
+      await query(
+        `UPDATE users SET
+           discord_id           = ?,
+           discord_username     = ?,
+           discord_display_name = ?,
+           discord_avatar       = ?,
+           discord_email        = ?,
+           updated_at           = NOW()
+         WHERE id = ?`,
+        [
+          discordUser.id,
+          discordUser.username,
+          discordUser.global_name || discordUser.username,
+          discordUser.avatar || null,
+          discordUser.email || null,
+          emptyUser.id,
+        ]
+      );
+    } else {
+      await query(
+        `INSERT INTO users (discord_id, discord_username, discord_display_name, discord_avatar, discord_email)
+         VALUES (?, ?, ?, ?, ?)
+         ON DUPLICATE KEY UPDATE
+           discord_username     = VALUES(discord_username),
+           discord_display_name = VALUES(discord_display_name),
+           discord_avatar       = VALUES(discord_avatar),
+           discord_email        = VALUES(discord_email),
+           updated_at           = NOW()`,
+        [
+          discordUser.id,
+          discordUser.username,
+          discordUser.global_name || discordUser.username,
+          discordUser.avatar || null,
+          discordUser.email || null,
+        ]
+      );
+    }
 
     // Set session cookie (use discord_id as session token — simple approach)
     const cookieStore = cookies();
