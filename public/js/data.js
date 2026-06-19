@@ -50,12 +50,8 @@ function applyAredlToLevels() {
       l.aredl_level_id  = aredlMap[key].level_id;
       l.aredl_video_id  = aredlMap[key].video_id || null;
     }
-    // gd_id manual del admin siempre prevalece como ID canónico del nivel
-    if (l.gd_id) {
-      l.gd_level_id = l.gd_id;
-    } else if (l.aredl_level_id) {
-      l.gd_level_id = l.aredl_level_id;
-    }
+    // gd_id manual del admin SIEMPRE prevalece; si no hay, usar el de AREDL
+    l.gd_level_id = l.gd_id || l.aredl_level_id || null;
   });
 }
 

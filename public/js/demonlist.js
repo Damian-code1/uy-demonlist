@@ -237,11 +237,15 @@ function renderModalContent(level) {
         ? `<iframe src="https://www.youtube.com/embed/${videoId}?rel=0" frameborder="0"
              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`
         : videoUrl
-          ? `<div class="lm-external-video">
-               <a href="${esc(videoUrl)}" target="_blank" rel="noopener" class="lm-external-btn" style="font-size:1rem;padding:14px 28px">
-                 <i class="fas fa-play-circle"></i> Ver video
-               </a>
-             </div>`
+          ? (() => {
+              const plat = typeof detectVideoPlatform === 'function' ? detectVideoPlatform(videoUrl) : null;
+              return `<div class="lm-external-video" style="background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;min-height:200px">
+                <i class="${plat?.icon || 'fas fa-play-circle'}" style="font-size:2.5rem;color:${plat?.color || 'var(--violet)'}"></i>
+                <a href="${esc(videoUrl)}" target="_blank" rel="noopener" class="lm-external-btn" style="font-size:.95rem;padding:12px 24px;background:${plat?.color || 'var(--violet)'};color:#fff;border-radius:8px;text-decoration:none;display:flex;align-items:center;gap:8px;font-weight:600">
+                  <i class="fas fa-external-link-alt"></i> Ver en ${plat?.label || 'video'}
+                </a>
+              </div>`;
+            })()
           : `<div class="lm-no-video"><i class="fas fa-video-slash"></i><p>Sin video disponible</p></div>`}
     </div>
 
@@ -386,12 +390,17 @@ function setupSearch() {
     if (clearBtn) clearBtn.style.display = q ? '' : 'none';
     clearTimeout(debounce);
     debounce = setTimeout(() => {
-      const ql = q.toLowerCase();
+      const ql = q.toLowerCase().trim();
+      const qlNorm = ql.replace(/\s+/g, ''); // "2 1 1" → "211" para comparar sin espacios
       filteredLevels = !ql
         ? [...getLevelsData()]
-        : getLevelsData().filter(l =>
-            l.name?.toLowerCase().includes(ql) ||
-            (l.victors||[]).some(v => v.name?.toLowerCase().includes(ql)));
+        : getLevelsData().filter(l => {
+            const name = l.name?.toLowerCase() || '';
+            const nameNorm = name.replace(/\s+/g, '');
+            return name.includes(ql) ||
+              nameNorm.includes(qlNorm) ||
+              (l.victors||[]).some(v => v.name?.toLowerCase().includes(ql));
+          });
       paintCards(filteredLevels, false);
     }, 200);
   });
