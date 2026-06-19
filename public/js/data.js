@@ -233,6 +233,41 @@ function addDiscordLinks() {
   document.querySelectorAll('.footer-discord-link').forEach(l => { l.href = inviteUrl; });
 }
 
+// ─── Footer: ícono del server de Discord ───
+function setFooterDiscordIcon(iconUrl) {
+  document.querySelectorAll('.footer-discord-link').forEach(l => {
+    const img = l.querySelector('.footer-discord-icon');
+    if (img && iconUrl) { img.src = iconUrl; img.style.display = 'block'; l.querySelector('i')?.style.setProperty('display', 'none'); }
+  });
+}
+
+// ─── Footer: créditos (made by) ───
+const ROLE_LABELS = { owner: 'Owner', admin: 'Admin', list_mod: 'List Mod', usuario: 'Usuario' };
+
+async function loadFooterCredits() {
+  const yearEl = document.getElementById('year');
+  if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+  const wraps = document.querySelectorAll('.footer-credit');
+  if (!wraps.length) return;
+  try {
+    const res  = await fetch(`${API_BASE}/credits`);
+    if (!res.ok) return;
+    const data = await res.json();
+    const c = data?.credits;
+    if (!c) return;
+
+    wraps.forEach(wrap => {
+      const avatar = wrap.querySelector('.footer-credit-avatar');
+      const name   = wrap.querySelector('.footer-credit-name');
+      const role   = wrap.querySelector('.footer-credit-role');
+      if (avatar && c.avatar_url) avatar.src = c.avatar_url;
+      if (name) name.textContent = c.name;
+      if (role) role.textContent = ROLE_LABELS[c.role] || c.role;
+    });
+  } catch {}
+}
+
 async function loadDiscordWidget() {
   const card = document.getElementById('discordCard');
   if (!card) return;
@@ -273,6 +308,7 @@ async function loadDiscordWidget() {
     const logoFlag = document.getElementById('logoFlag');
     if (logoImg)  { logoImg.src = iconUrl; logoImg.style.display = 'block'; }
     if (logoFlag) logoFlag.style.display = 'none';
+    setFooterDiscordIcon(iconUrl);
   }
 
   card.innerHTML = `

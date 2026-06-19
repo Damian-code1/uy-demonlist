@@ -293,6 +293,20 @@
     </div>
   </div>
 
+  <!-- DISCORD -->
+  <div class="rl-discord-section">
+    <div class="rl-progress-header" style="margin-bottom:1.25rem">
+      <div class="rl-progress-title">
+        <i class="fab fa-discord"></i> Comunidad
+      </div>
+    </div>
+    <div style="display:flex;justify-content:center">
+      <div class="discord-card" id="discordCard">
+        <div class="dc-loading"><i class="fas fa-spinner fa-spin"></i><span>Cargando…</span></div>
+      </div>
+    </div>
+  </div>
+
 </main>
 
 <!-- ─── FOOTER ─── -->
@@ -308,10 +322,21 @@
       <a href="index.html#leaderboard">Jugadores</a>
       <a href="roulette.html">Ruleta</a>
     </nav>
+    <div class="footer-social">
+      <a href="#" class="footer-discord-link" aria-label="Discord" target="_blank" rel="noopener">
+        <img class="footer-discord-icon" alt="" style="display:none">
+        <i class="fab fa-discord"></i>
+      </a>
+    </div>
   </div>
   <div class="footer-bottom">
-    <span>Hecho con <i class="fas fa-heart" style="color:var(--red)"></i> para la comunidad de GD Uruguay</span>
-    <span>&copy; <span id="year"></span> UY Demonlist</span>
+    <div class="footer-credit">
+      <span class="footer-credit-label">Made by</span>
+      <img class="footer-credit-avatar" alt="" loading="lazy">
+      <span class="footer-credit-name">evosen</span>
+      <span class="footer-credit-role">Owner</span>
+    </div>
+    <span class="footer-copy">&copy; <span id="year"></span> UY Demonlist</span>
   </div>
 </footer>
 

@@ -29,6 +29,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   buildEmbers();
   if (typeof loadDiscordWidget === 'function') loadDiscordWidget();
   if (typeof addDiscordLinks === 'function') addDiscordLinks();
+  if (typeof loadFooterCredits === 'function') loadFooterCredits();
   await fetchLevels();
 loadSession();
 initControls();

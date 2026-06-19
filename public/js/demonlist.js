@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   setupPlayerSearch();
   loadDiscordWidget();
   addDiscordLinks();
+  loadFooterCredits();
   setupSubmissionAutocomplete();
 });
 
