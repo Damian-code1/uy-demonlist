@@ -33,10 +33,10 @@ function loadAdminTab(tab) {
     case 'victors':     loadAdminVictors();     break;
     case 'players':     loadAdminPlayers();     break;
     case 'points':      loadAdminPoints();      break;
-    case 'points':      loadAdminPoints();           break;
-    case 'submissions': loadAdminSubmissions();      break;
-    case 'sync':        loadAdminSyncTab();          break;
-  }
+    case 'submissions': loadAdminSubmissions(); break;
+    case 'thumbnails':  loadAdminThumbnails();  break;
+    case 'sync':        loadAdminSyncTab();     break;
+}
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -1092,6 +1092,119 @@ function loadAdminSyncTab() {
     </div>`;
 }
 
+// =============================================
+// THUMBNAILS
+// =============================================
+
+async function loadAdminThumbnails() {
+  const container = document.getElementById('admin-thumbnails-table');
+  if (!container) return;
+
+  container.innerHTML = adminLoading();
+
+  try {
+    const data = await adminGetLevels();
+
+    const levels = data.levels || [];
+
+    container.innerHTML = `
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Nivel</th>
+              <th>Thumbnail actual</th>
+              <th>Video YouTube</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${levels.map(level => `
+              <tr>
+                <td>${esc(level.name)}</td>
+
+                <td>
+                  ${
+                    level.custom_thumbnail_youtube_id
+                      ? `<img
+                          src="https://img.youtube.com/vi/${level.custom_thumbnail_youtube_id}/mqdefault.jpg"
+                          style="width:120px;border-radius:8px">`
+                      : '<span class="text-dim">Automática</span>'
+                  }
+                </td>
+
+                <td>
+                  <input
+                    id="thumb-input-${level.id}"
+                    type="text"
+                    placeholder="https://youtube.com/watch?v=..."
+                    value="${esc(level.custom_thumbnail_url || '')}"
+                    style="width:100%">
+                </td>
+
+                <td>
+                  <button
+                    class="btn-icon btn-edit"
+                    onclick="saveLevelThumbnail(${level.id})">
+                    <i class="fas fa-save"></i>
+                  </button>
+
+                  ${
+                    level.custom_thumbnail_youtube_id
+                      ? `
+                      <button
+                        class="btn-icon btn-delete"
+                        onclick="resetLevelThumbnail(${level.id})">
+                        <i class="fas fa-undo"></i>
+                      </button>
+                      `
+                      : ''
+                  }
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+  }
+  catch (e) {
+    container.innerHTML = adminError(e.message);
+  }
+}
+
+async function saveLevelThumbnail(levelId) {
+  const input = document.getElementById(`thumb-input-${levelId}`);
+
+  const youtubeUrl = input?.value?.trim();
+
+  try {
+    await adminUpdateLevelThumbnail(levelId, youtubeUrl);
+
+    showToast('Thumbnail actualizada ✓', 'success');
+
+    loadAdminThumbnails();
+    refreshPublicData();
+  }
+  catch (e) {
+    showToast(e.message, 'error');
+  }
+}
+
+async function resetLevelThumbnail(levelId) {
+  try {
+    await adminUpdateLevelThumbnail(levelId, null);
+
+    showToast('Thumbnail restaurada ✓', 'success');
+
+    loadAdminThumbnails();
+    refreshPublicData();
+  }
+  catch (e) {
+    showToast(e.message, 'error');
+  }
+}
+
 // ─── Globals ───
 window.openAdminPanel      = openAdminPanel;
 window.closeAdminPanel     = closeAdminPanel;
@@ -1116,6 +1229,8 @@ window.deleteSubmission    = deleteSubmission;
 window.clearSubFilters         = clearSubFilters;
 window.renderSubsFiltered      = renderSubsFiltered;
 window.syncPositionsWithAredl  = syncPositionsWithAredl;
+window.saveLevelThumbnail      = saveLevelThumbnail;
+window.resetLevelThumbnail     = resetLevelThumbnail;
 
 // ESC limpia filtros activos en submissions
 document.addEventListener('keydown', e => {

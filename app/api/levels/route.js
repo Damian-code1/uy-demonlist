@@ -28,9 +28,10 @@ export async function GET(request) {
         l.points,
         l.youtube_id,
         l.youtube_url,
-        l.custom_thumbnail,
+l.custom_thumbnail_url,
+l.custom_thumbnail_youtube_id,
+l.created_at,
         l.created_from_submission,
-        l.created_at,
         v.id         AS victor_id,
         v.player_name,
         v.video_url
@@ -51,7 +52,8 @@ export async function GET(request) {
           points:      row.points,
           youtube_id:  row.youtube_id,
           youtube_url: row.youtube_url,
-          custom_thumbnail: row.custom_thumbnail,
+          custom_thumbnail_url: row.custom_thumbnail_url,
+          custom_thumbnail_youtube_id: row.custom_thumbnail_youtube_id,
           created_from_submission: row.created_from_submission,
           created_at:  row.created_at,
           victors:     [],
@@ -71,15 +73,25 @@ export async function GET(request) {
 
     const levels = Array.from(levelMap.values()).map(level => {
       // Thumbnail: primer victor con video de YouTube. Sin YouTube = null (correcto para Twitch etc.)
-      let thumb_url          = null;
-      let thumb_url_fallback = null;
+      let thumb_url = null;
+let thumb_url_fallback = null;
 
-      if (!thumb_url) {
-        for (const v of level.victors) {
-          const ytId = extractYTId(v.videoUrl);
+// thumbnail manual tiene prioridad
+if (level.custom_thumbnail_youtube_id) {
+  thumb_url =
+    `https://img.youtube.com/vi/${level.custom_thumbnail_youtube_id}/hqdefault.jpg`;
 
-          if (ytId) {
-            thumb_url =
+  thumb_url_fallback =
+    `https://img.youtube.com/vi/${level.custom_thumbnail_youtube_id}/mqdefault.jpg`;
+}
+
+// si no hay thumbnail manual, usar victors
+if (!thumb_url) {
+  for (const v of level.victors) {
+    const ytId = extractYTId(v.videoUrl);
+
+    if (ytId) {
+      thumb_url =
         `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
 
       thumb_url_fallback =
@@ -90,14 +102,18 @@ export async function GET(request) {
   }
 }
 
+// fallback final
 if (!thumb_url) {
-        // Sin victors: usar el video del nivel como showcase
-        const ytId = extractYTId(level.youtube_url);
-        if (ytId) {
-          thumb_url          = `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
-          thumb_url_fallback = `https://img.youtube.com/vi/${ytId}/mqdefault.jpg`;
-        }
-      }
+  const ytId = extractYTId(level.youtube_url);
+
+  if (ytId) {
+    thumb_url =
+      `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
+
+    thumb_url_fallback =
+      `https://img.youtube.com/vi/${ytId}/mqdefault.jpg`;
+  }
+}
 
       return {
   ...level,
