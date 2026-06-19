@@ -118,19 +118,15 @@ if (!thumb_url) {
 }
 
       return {
-  ...level,
-  thumb_url,
-  thumb_url_fallback,
-  completionCount: level.victors.length,
-
-  isNew:
-    level.created_from_submission &&
-    (
-      Date.now() -
-      new Date(level.created_at).getTime()
-    ) <
-    (3 * 24 * 60 * 60 * 1000)
-};
+        ...level,
+        thumb_url,
+        thumb_url_fallback,
+        completionCount: level.victors.length,
+        isNew:
+          !!level.created_from_submission &&
+          !!level.created_at &&
+          (Date.now() - new Date(level.created_at).getTime()) < (3 * 24 * 60 * 60 * 1000),
+      };
     });
 
     serverCache = levels;

@@ -228,21 +228,18 @@ function renderModalContent(level) {
   const current  = victors[activeVictorIdx] || victors[0] || null;
   const videoUrl = current?.videoUrl || level.youtube_url || null;
   const videoId = current ? extractYTId(current.videoUrl) : (level.youtube_id || extractYTId(level.youtube_url) || null);
-  const platform = (!videoId && videoUrl) ? detectVideoPlatform(videoUrl) : null;
 
   box.innerHTML = `
     <button class="modal-close" id="levelModalClose"><i class="fas fa-times"></i></button>
 
     <div class="lm-player-wrap">
       ${videoId
-        ? `<iframe src="https://www.youtube.com/embed/${videoId}" frameborder="0"
+        ? `<iframe src="https://www.youtube.com/embed/${videoId}?rel=0" frameborder="0"
              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`
-        : platform
-          ? `<div class="lm-external-video" style="--platform-color:${platform.color}">
-               <i class="${platform.icon}"></i>
-               <p>Este video está en <strong>${platform.label}</strong></p>
-               <a href="${esc(videoUrl)}" target="_blank" rel="noopener" class="lm-external-btn">
-                 <i class="fas fa-external-link-alt"></i> Ver en ${platform.label}
+        : videoUrl
+          ? `<div class="lm-external-video">
+               <a href="${esc(videoUrl)}" target="_blank" rel="noopener" class="lm-external-btn" style="font-size:1rem;padding:14px 28px">
+                 <i class="fas fa-play-circle"></i> Ver video
                </a>
              </div>`
           : `<div class="lm-no-video"><i class="fas fa-video-slash"></i><p>Sin video disponible</p></div>`}
