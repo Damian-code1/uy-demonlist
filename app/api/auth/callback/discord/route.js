@@ -59,9 +59,9 @@ export async function GET(request) {
       ]
     );
 
-    return Response.redirect(`${process.env.NEXTAUTH_URL}/?auth=success&uid=${discordUser.id}`);
+    return Response.redirect(`${process.env.NEXTAUTH_URL}/?auth=success&uid=${discordUser.id}`, 302);
   } catch (error) {
     console.error('[OAuth callback] Error:', error);
-    return Response.redirect(`${process.env.NEXTAUTH_URL}/?auth=error`);
+    return Response.redirect(`${process.env.NEXTAUTH_URL}/?auth=error`, 302);
   }
 }
