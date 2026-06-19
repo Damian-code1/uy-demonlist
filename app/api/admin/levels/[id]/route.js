@@ -6,16 +6,18 @@ export async function PUT(request, { params }) {
   if (!admin) return Response.json({ error: 'No autorizado' }, { status: 401 });
 
   try {
-    const { name, position, youtube_url, points } = await request.json();
+    const { name, position, youtube_url, points, gd_id } = await request.json();
     const [old] = await query('SELECT * FROM levels WHERE id = ? LIMIT 1', [params.id]);
     if (!old.length) return Response.json({ error: 'No encontrado' }, { status: 404 });
 
     // points: null = usar fórmula automática, número = override manual
     const newPoints = points !== undefined ? (points === null || points === '' ? null : parseInt(points)) : old[0].points;
+    // gd_id: undefined = no tocar, null/'' = borrar, string = setear
+    const newGdId = gd_id !== undefined ? (gd_id === null || gd_id === '' ? null : String(gd_id).trim()) : old[0].gd_id;
 
     await query(
-      'UPDATE levels SET name = ?, position = ?, youtube_url = ?, points = ?, updated_at = NOW() WHERE id = ?',
-      [name || old[0].name, position || old[0].position, youtube_url || old[0].youtube_url, newPoints, params.id]
+      'UPDATE levels SET name = ?, position = ?, youtube_url = ?, points = ?, gd_id = ?, updated_at = NOW() WHERE id = ?',
+      [name || old[0].name, position || old[0].position, youtube_url || old[0].youtube_url, newPoints, newGdId, params.id]
     );
     return Response.json({ success: true });
   } catch (error) {

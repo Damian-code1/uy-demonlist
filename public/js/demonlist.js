@@ -265,11 +265,11 @@ function renderModalContent(level) {
       </div>
 
       <div class="lm-gd-stats" id="lmGdStats" style="display:none"></div>
-      ${level.aredl_level_id ? `
+      ${level.gd_level_id ? `
       <div class="lm-level-id-row">
         <span class="lm-level-id-label"><i class="fas fa-hashtag"></i> ID del Nivel GD</span>
-        <button class="lm-level-id-btn" id="copyLevelIdBtn" data-id="${level.aredl_level_id}" title="Copiar ID al portapapeles">
-          <span class="lm-level-id-num">${level.aredl_level_id}</span>
+        <button class="lm-level-id-btn" id="copyLevelIdBtn" data-id="${level.gd_level_id}" title="Copiar ID al portapapeles">
+          <span class="lm-level-id-num">${level.gd_level_id}</span>
           <i class="fas fa-copy"></i>
         </button>
       </div>` : ''}
