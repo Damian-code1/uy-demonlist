@@ -1,42 +1,98 @@
 import { query } from '../../../lib/db.js';
 
-export async function GET() {
+let serverCache = null;
+let cacheTime   = 0;
+const CACHE_TTL = 1000 * 30;
+
+export async function GET(request) {
+  const { searchParams } = new URL(request.url);
+  const bust = searchParams.get('bust');
+
+  if (!bust && serverCache && (Date.now() - cacheTime) < CACHE_TTL) {
+    return Response.json({ players: serverCache, cached: true }, {
+      headers: { 'Cache-Control': 'public, max-age=15, stale-while-revalidate=30' }
+    });
+  }
+
   try {
-    const [players] = await query(`
+    // Traer todo en 2 queries planas y joinear en JS para evitar subqueries correlacionadas
+    const [victorRows] = await query(`
       SELECT
-        v.player_name                                    AS name,
-        COUNT(v.id)                                      AS completions,
-        SUM(COALESCE(l.points, GREATEST(1, 1000 - (l.position - 1) * 5))) AS points,
-        (
-          SELECT l2.name FROM levels l2
-          INNER JOIN victors v2 ON v2.level_id = l2.id
-          WHERE v2.player_name = v.player_name
-          ORDER BY l2.position ASC LIMIT 1
-        ) AS hardest_level,
-        (
-          SELECT l3.position FROM levels l3
-          INNER JOIN victors v3 ON v3.level_id = l3.id
-          WHERE v3.player_name = v.player_name
-          ORDER BY l3.position ASC LIMIT 1
-        ) AS hardest_position,
-u.discord_id,
-        u.discord_avatar,
-        u.gd_username
+        v.player_name,
+        l.position,
+        l.name AS level_name,
+        COALESCE(l.points, GREATEST(1, 1000 - (l.position - 1) * 5)) AS pts
       FROM victors v
       JOIN levels l ON v.level_id = l.id
-      LEFT JOIN users u ON (
-        LOWER(u.linked_player_name)     = LOWER(v.player_name)
-        OR LOWER(u.gd_username)            = LOWER(v.player_name)
-        OR LOWER(u.discord_display_name) = LOWER(v.player_name)
-        OR LOWER(u.discord_username)     = LOWER(v.player_name)
-      )
-      GROUP BY v.player_name, u.discord_id, u.discord_avatar, u.gd_username
-      ORDER BY points DESC
+      ORDER BY v.player_name, l.position ASC
     `);
 
+    const [userRows] = await query(`
+      SELECT
+        discord_id,
+        discord_avatar,
+        gd_username,
+        discord_display_name,
+        discord_username
+      FROM users
+      WHERE gd_username IS NOT NULL
+         OR discord_display_name IS NOT NULL
+    `);
+
+    // Construir mapa de usuario por posibles nombres en minúsculas
+    const userMap = new Map();
+    for (const u of userRows) {
+      const keys = [
+        u.gd_username?.toLowerCase(),
+        u.discord_display_name?.toLowerCase(),
+        u.discord_username?.toLowerCase(),
+      ].filter(Boolean);
+      for (const k of keys) {
+        if (!userMap.has(k)) userMap.set(k, u);
+      }
+    }
+
+    // Agregar stats por jugador en JS
+    const playerMap = new Map();
+    for (const row of victorRows) {
+      const key = row.player_name.toLowerCase();
+      if (!playerMap.has(key)) {
+        playerMap.set(key, {
+          name:            row.player_name,
+          completions:     0,
+          points:          0,
+          hardest_level:   row.level_name,
+          hardest_position: row.position,
+        });
+      }
+      const p = playerMap.get(key);
+      p.completions++;
+      p.points += Number(row.pts);
+      // hardest = nivel de menor posición (ya viene ORDER BY position ASC)
+      if (row.position < p.hardest_position) {
+        p.hardest_level    = row.level_name;
+        p.hardest_position = row.position;
+      }
+    }
+
+    const players = Array.from(playerMap.values())
+      .map(p => {
+        const u = userMap.get(p.name.toLowerCase());
+        return {
+          ...p,
+          discord_id:     u?.discord_id     || null,
+          discord_avatar: u?.discord_avatar || null,
+          gd_username:    u?.gd_username    || null,
+        };
+      })
+      .sort((a, b) => b.points - a.points);
+
+    serverCache = players;
+    cacheTime   = Date.now();
+
     return Response.json({ players }, {
-  headers: { 'Cache-Control': 'no-store' }
-});
+      headers: { 'Cache-Control': 'public, max-age=15, stale-while-revalidate=30' }
+    });
   } catch (error) {
     console.error('[/api/players] Error:', error);
     return Response.json({ players: [], error: error.message }, { status: 500 });

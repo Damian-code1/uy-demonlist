@@ -1,54 +1,111 @@
 import { query } from '../../../lib/db.js';
 
-export const dynamic = 'force-dynamic';
+export const dynamic   = 'force-dynamic';
 export const revalidate = 0;
 
-export async function GET() {
+// Cache en memoria del servidor — se invalida solo cuando el admin modifica datos
+let serverCache = null;
+let cacheTime   = 0;
+const CACHE_TTL = 1000 * 30; // 30 segundos — balance entre frescura y velocidad
+
+export async function GET(request) {
+  const { searchParams } = new URL(request.url);
+  const bust = searchParams.get('bust'); // ?bust=1 fuerza revalidación
+
+  if (!bust && serverCache && (Date.now() - cacheTime) < CACHE_TTL) {
+    return Response.json({ levels: serverCache, cached: true }, {
+      headers: { 'Cache-Control': 'public, max-age=15, stale-while-revalidate=30' }
+    });
+  }
+
   try {
-    const [dbLevels] = await query(
-  'SELECT id, name, position, points, youtube_id, youtube_url FROM levels ORDER BY position ASC'
-);
+    // 1 sola query trae levels + victors en una sola roundtrip con JOIN
+    const [rows] = await query(`
+      SELECT
+        l.id,
+        l.name,
+        l.position,
+        l.points,
+        l.youtube_id,
+        l.youtube_url,
+        l.created_at,
+        v.id         AS victor_id,
+        v.player_name,
+        v.video_url
+      FROM levels l
+      LEFT JOIN victors v ON v.level_id = l.id
+      ORDER BY l.position ASC, v.id ASC
+    `);
 
-    for (const level of dbLevels) {
-      const ytId = extractYTId(level.youtube_url);
+    // Agrupar los victors dentro de cada nivel en JS (mucho más rápido que N+1 queries)
+    const levelMap = new Map();
 
-level.thumb_url = ytId
-  ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`
-  : null;
+    for (const row of rows) {
+      if (!levelMap.has(row.id)) {
+        levelMap.set(row.id, {
+          id:          row.id,
+          name:        row.name,
+          position:    row.position,
+          points:      row.points,
+          youtube_id:  row.youtube_id,
+          youtube_url: row.youtube_url,
+          created_at:  row.created_at,
+          victors:     [],
+        });
+      }
 
-level.thumb_url_fallback = null;
-
-
-      const [victors] = await query(
-        'SELECT id, player_name, video_url FROM victors WHERE level_id = ? ORDER BY id ASC',
-        [level.id]
-      );
-
-      level.victors = victors.map(v => {
-        const videoUrl = v.video_url || level.youtube_url || null;
-        return {
-          id:       v.id,
-          name:     v.player_name,
+      if (row.victor_id) {
+        const videoUrl = row.video_url || null;
+        levelMap.get(row.id).victors.push({
+          id:       row.victor_id,
+          name:     row.player_name,
           videoUrl: videoUrl,
           videoId:  extractYTId(videoUrl),
-        };
-      });
-
-      level.completionCount = victors.length;
+        });
+      }
     }
 
-    return Response.json(
-  { levels: dbLevels },
-  {
-    headers: {
-      'Cache-Control': 'no-store, no-cache, must-revalidate'
-    }
-  }
-);
+    const levels = Array.from(levelMap.values()).map(level => {
+      // Thumbnail: primer victor con video de YouTube. Sin YouTube = null (correcto para Twitch etc.)
+      let thumb_url          = null;
+      let thumb_url_fallback = null;
+
+      if (level.victors.length > 0) {
+        for (const v of level.victors) {
+          const ytId = extractYTId(v.videoUrl);
+          if (ytId) {
+            thumb_url          = `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
+            thumb_url_fallback = `https://img.youtube.com/vi/${ytId}/mqdefault.jpg`;
+            break;
+          }
+        }
+      } else {
+        // Sin victors: usar el video del nivel como showcase
+        const ytId = extractYTId(level.youtube_url);
+        if (ytId) {
+          thumb_url          = `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
+          thumb_url_fallback = `https://img.youtube.com/vi/${ytId}/mqdefault.jpg`;
+        }
+      }
+
+      return { ...level, thumb_url, thumb_url_fallback, completionCount: level.victors.length };
+    });
+
+    serverCache = levels;
+    cacheTime   = Date.now();
+
+    return Response.json({ levels }, {
+      headers: { 'Cache-Control': 'public, max-age=15, stale-while-revalidate=30' }
+    });
   } catch (error) {
     console.error('[/api/levels] Error:', error);
     return Response.json({ levels: [], error: error.message }, { status: 500 });
   }
+}
+
+export function invalidateLevelsCache() {
+  serverCache = null;
+  cacheTime   = 0;
 }
 
 function extractYTId(url) {

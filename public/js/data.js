@@ -15,10 +15,10 @@ let dataLoaded  = false;
 async function loadData(force = false) {
   if (dataLoaded && !force) return;
   try {
-    const bust = force ? `?_=${Date.now()}` : '';
+    const bust = force ? `?bust=1` : '';
     const [lvlRes, plrRes] = await Promise.all([
-      fetch(`${API_BASE}/levels${bust}`, { cache: 'no-store' }),
-      fetch(`${API_BASE}/players${bust}`, { cache: 'no-store' })
+      fetch(`${API_BASE}/levels${bust}`),
+      fetch(`${API_BASE}/players${bust}`)
     ]);
     if (!lvlRes.ok || !plrRes.ok) throw new Error('API error');
 

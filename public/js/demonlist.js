@@ -486,9 +486,9 @@ function renderLeaderboard() {
     const pos = i + 1;
     const pct = ((player.points||0) / maxPts * 100).toFixed(1);
     const initials = (player.name||'?').slice(0,2).toUpperCase();
-const avatarUrl = player.discord_id && player.discord_avatar
-  ? `https://cdn.discordapp.com/avatars/${player.discord_id}/${player.discord_avatar}.png?size=128`
-  : null;
+    const avatarUrl = player.discord_id && player.discord_avatar
+    ? `https://cdn.discordapp.com/avatars/${player.discord_id}/${player.discord_avatar}.png?size=128`
+    : null;
     const medalColors = ['#f59e0b','#cbd5e1','#c2722a'];
     const rankColors  = ['rgba(245,158,11,.15)','rgba(203,213,225,.1)','rgba(194,114,42,.1)'];
 
