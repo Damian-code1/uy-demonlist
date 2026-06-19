@@ -74,10 +74,7 @@ function buildCard(level, index) {
 
   const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
   const isFav     = favorites.includes(level.id);
-  const createdAt = level.created_at || level.createdAt || level.date_added || null;
-  const isNew     = createdAt
-    ? (Date.now() - new Date(createdAt).getTime()) < (7 * 24 * 60 * 60 * 1000)
-    : false;
+  const isNew     = !!level.isNew;
 
   const card = document.createElement('div');
   card.className = `level-card${pos <= 3 ? ' top-3' : ''}`;
@@ -227,7 +224,10 @@ function renderModalContent(level) {
 
   const current  = victors[activeVictorIdx] || victors[0] || null;
   const videoUrl = current?.videoUrl || level.youtube_url || null;
-  const videoId = current ? extractYTId(current.videoUrl) : (level.youtube_id || extractYTId(level.youtube_url) || null);
+  const videoId  = extractYTId(current?.videoUrl)
+    || extractYTId(level.youtube_url)
+    || level.youtube_id
+    || null;
 
   box.innerHTML = `
     <button class="modal-close" id="levelModalClose"><i class="fas fa-times"></i></button>
@@ -391,14 +391,23 @@ function setupSearch() {
     clearTimeout(debounce);
     debounce = setTimeout(() => {
       const ql = q.toLowerCase().trim();
-      const qlNorm = ql.replace(/\s+/g, ''); // "2 1 1" → "211" para comparar sin espacios
+      const qlNorm = ql.replace(/\s+/g, '');
+      // Normaliza fullwidth (２１１ → 211) y halfwidth
+      const normalize = s => s.replace(/[\uff01-\uff5e]/g, c =>
+        String.fromCharCode(c.charCodeAt(0) - 0xfee0)
+      ).replace(/\u3000/g, ' ').toLowerCase().trim();
+      const qlFull = normalize(ql);
       filteredLevels = !ql
         ? [...getLevelsData()]
         : getLevelsData().filter(l => {
             const name = l.name?.toLowerCase() || '';
             const nameNorm = name.replace(/\s+/g, '');
+            const nameFull = normalize(l.name || '');
+            const nameFullNorm = nameFull.replace(/\s+/g, '');
             return name.includes(ql) ||
               nameNorm.includes(qlNorm) ||
+              nameFull.includes(qlFull) ||
+              nameFullNorm.includes(qlFull.replace(/\s+/g, '')) ||
               (l.victors||[]).some(v => v.name?.toLowerCase().includes(ql));
           });
       paintCards(filteredLevels, false);
