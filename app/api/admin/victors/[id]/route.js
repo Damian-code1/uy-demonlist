@@ -1,7 +1,7 @@
 import { query } from '../../../../../lib/db.js';
 import { requireAdmin } from '../../../../../lib/auth.js';
-import { invalidateLevelsCache } from '../../../../levels/route.js';
-import { invalidatePlayersCache } from '../../../../players/route.js';
+import { invalidateLevelsCache } from '../../../levels/route.js';
+import { invalidatePlayersCache } from '../../../players/route.js';
 
 export async function PUT(request, { params }) {
   const admin = await requireAdmin(request);
