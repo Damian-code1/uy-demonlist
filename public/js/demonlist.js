@@ -222,13 +222,18 @@ function renderModalContent(level) {
   const aredlPos = level.aredl_position || null;
   const isAdmin  = typeof isAdminUser === 'function' && isAdminUser();
 
-  const current  = victors[activeVictorIdx] || victors[0] || null;
-  // Usar SOLO el video del victor actual — NO hacer fallback al video del nivel
-  // ya que puede ser el video de otro victor distinto
+  const idx      = victors[activeVictorIdx] ? activeVictorIdx : 0;
+  const current  = victors[idx] || null;
+  // Usar el video propio del victor actual. Si el victor activo es el PRIMERO de la
+  // lista (idx 0) y no tiene video propio cargado, hacer fallback al video de
+  // Showcase del nivel — en la práctica ese campo casi siempre corresponde al primer
+  // completion. Para el resto de los victors (idx > 0) NO se hace fallback, ya que
+  // el showcase pertenecería a otro jugador distinto y mostraríamos el video equivocado.
   const currentVideoUrl = current?.videoUrl || null;
-  const videoId  = currentVideoUrl ? extractYTId(currentVideoUrl) : null;
-  // Solo si no hay ningún victor seleccionado (nivel sin victors), usar video del nivel
-  const videoUrl = currentVideoUrl || (victors.length === 0 ? (level.youtube_url || null) : null);
+  const isFirstVictor   = idx === 0;
+  const videoUrl = currentVideoUrl
+    || ((victors.length === 0 || isFirstVictor) ? (level.youtube_url || null) : null);
+  const videoId  = videoUrl ? extractYTId(videoUrl) : null;
 
   box.innerHTML = `
     <button class="modal-close" id="levelModalClose"><i class="fas fa-times"></i></button>

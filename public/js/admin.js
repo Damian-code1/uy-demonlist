@@ -208,6 +208,8 @@ refreshPublicData();
 // =============================================
 // VICTORS
 // =============================================
+let _victorOutsideClickHandler = null;
+
 async function loadAdminVictors() {
   const container = document.getElementById('admin-victors-table');
   if (!container) return;
@@ -219,7 +221,7 @@ async function loadAdminVictors() {
       <select id="victorLevelSelect"
         style="padding:.55rem .9rem;background:var(--bg3);border:1px solid var(--border-s);border-radius:var(--r-sm);color:var(--text);outline:none;min-width:200px;flex:1"
         onchange="onVictorLevelChange(this.value)">
-        <option value="">— Seleccionar nivel —</option>
+        <option value="">— Todos los niveles —</option>
         ${levels.map(l => `<option value="${l.id}">${l.position}. ${esc(l.name)}</option>`).join('')}
       </select>
 
@@ -227,7 +229,7 @@ async function loadAdminVictors() {
       <div class="adm-search-wrap" id="victorLevelSearchWrap" style="position:relative;flex:2;min-width:200px">
         <i class="fas fa-search adm-search-icon"></i>
         <input type="text" id="victorLevelSearch" class="adm-search-input"
-          placeholder="O escribí el nombre del nivel…" autocomplete="off">
+          placeholder="Buscar nivel… (vacío = todos)" autocomplete="off">
         <button type="button" class="adm-search-clear" id="victorLevelClear" style="display:none">
           <i class="fas fa-times-circle"></i>
         </button>
@@ -267,15 +269,37 @@ async function loadAdminVictors() {
     sugg.innerHTML = '';
     dropdown.value = '';
     adminVictorLevelId = null;
-    document.getElementById('adminVictorsTableInner').innerHTML = '';
+    loadAllAdminVictors();
   });
 
-  // Cerrar sugerencias al hacer click fuera
-  document.addEventListener('click', e => {
+  // Cerrar sugerencias al hacer click fuera (se limpia el listener anterior para no acumular)
+  if (_victorOutsideClickHandler) {
+    document.removeEventListener('click', _victorOutsideClickHandler);
+  }
+  _victorOutsideClickHandler = e => {
     if (!e.target.closest('#victorLevelSearchWrap')) {
       sugg.classList.remove('open');
     }
-  });
+  };
+  document.addEventListener('click', _victorOutsideClickHandler);
+
+  // Vista por defecto: todos los victors de todos los niveles, con loading
+  adminVictorLevelId = null;
+  loadAllAdminVictors();
+}
+
+async function loadAllAdminVictors() {
+  const container = document.getElementById('adminVictorsTableInner');
+  if (!container) return;
+  container.innerHTML = adminLoading();
+
+  try {
+    const data    = await adminGetVictors(); // sin level_id → trae todos
+    const victors = data.victors || [];
+    renderVictorsTable(victors, { showLevel: true });
+  } catch (e) {
+    container.innerHTML = adminError('Error: ' + e.message);
+  }
 }
 
 function renderVictorLevelSuggestions(q, levels, sugg, input, clearBtn, dropdown) {
@@ -322,8 +346,8 @@ function renderVictorLevelSuggestions(q, levels, sugg, input, clearBtn, dropdown
 }
 
 function onVictorLevelChange(val) {
-  adminVictorLevelId = val;
-  if (!val) { document.getElementById('adminVictorsTableInner').innerHTML = ''; return; }
+  adminVictorLevelId = val || null;
+  if (!val) { loadAllAdminVictors(); return; }
   loadVictorsForLevel(val);
 }
 
@@ -341,19 +365,21 @@ async function loadVictorsForLevel(levelId) {
   }
 }
 
-function renderVictorsTable(victors) {
+function renderVictorsTable(victors, opts = {}) {
   const container = document.getElementById('adminVictorsTableInner');
   if (!container) return;
 
+  const showLevel = !!opts.showLevel;
+
   if (!victors.length) {
-    container.innerHTML = `<div class="admin-empty"><i class="fas fa-trophy"></i>Sin victors en este nivel</div>`;
+    container.innerHTML = `<div class="admin-empty"><i class="fas fa-trophy"></i>Sin victors${showLevel ? '' : ' en este nivel'}</div>`;
     return;
   }
 
   container.innerHTML = `
     <div class="admin-table-wrap">
       <table class="admin-table">
-        <thead><tr><th>Jugador</th><th>Video</th><th>Acciones</th></tr></thead>
+        <thead><tr>${showLevel ? '<th>Nivel</th>' : ''}<th>Jugador</th><th>Video</th><th>Acciones</th></tr></thead>
         <tbody id="adminVictorsBody"></tbody>
       </table>
     </div>`;
@@ -364,6 +390,7 @@ function renderVictorsTable(victors) {
     const videoUrl = v.video_url   || '';
     const tr = document.createElement('tr');
     tr.innerHTML = `
+      ${showLevel ? `<td class="text-dim" style="font-size:.82rem">${esc(v.level_name || '—')}</td>` : ''}
       <td class="td-name">${esc(name)}</td>
       <td>${videoUrl
         ? `<a href="${esc(videoUrl)}" target="_blank" style="color:var(--red);font-size:.8rem"><i class="fab fa-youtube"></i> Ver</a>`
@@ -434,7 +461,11 @@ async function deleteVictor(id) {
     if (result?.levelDeleted) {
       showToast('El nivel se quedó sin victors y fue eliminado', 'info');
     }
-    if (adminVictorLevelId) loadVictorsForLevel(adminVictorLevelId);
+    if (adminVictorLevelId) {
+      loadVictorsForLevel(adminVictorLevelId);
+    } else if (adminCurrentTab === 'victors') {
+      loadAllAdminVictors();
+    }
     if (adminCurrentTab === 'levels') loadAdminLevels();
     refreshPublicData();
   } catch (e) {
