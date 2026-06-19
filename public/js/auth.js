@@ -123,6 +123,9 @@ if (drop) {
              <span class="wdd-gd-nick">${esc(user.gdUsername)}</span>
            </div>
            <span class="wdd-gd-check"><i class="fas fa-circle-check"></i></span>
+           <button class="wdd-gd-unlink-btn" title="Desvincular cuenta de GD" onclick="unlinkGdUsername()">
+             <i class="fas fa-link-slash"></i>
+           </button>
          </div>`
       : `<div class="wdd-gd-unlinked">
            <div class="wdd-gd-icon wdd-gd-icon-empty">
@@ -214,6 +217,32 @@ async function promptLinkGdUsername() {
   }
 }
 window.promptLinkGdUsername = promptLinkGdUsername;
+
+async function unlinkGdUsername() {
+  const ok = await uiConfirm({
+    title:       '¿Desvincular cuenta de GD?',
+    message:     'Vas a dejar de ver tus stats vinculadas a tu cuenta de Discord. Podés volver a vincularla cuando quieras.',
+    type:        'warning',
+    confirmText: 'Desvincular',
+    cancelText:  'Cancelar',
+  });
+  if (!ok) return;
+
+  try {
+    const discordId = localStorage.getItem('uy_discord_id');
+    const res = await fetch('/api/users/link-gd', {
+      method:  'DELETE',
+      headers: { 'Content-Type': 'application/json', 'x-discord-id': discordId || '' },
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Error al desvincular');
+    showToast('Cuenta de GD desvinculada', 'success');
+    location.reload();
+  } catch (e) {
+    await uiAlert({ title: 'ERROR', message: e.message, type: 'error' });
+  }
+}
+window.unlinkGdUsername = unlinkGdUsername;
 
 function toggleUserDropdown() {
   const card = document.querySelector('.user-widget-card');

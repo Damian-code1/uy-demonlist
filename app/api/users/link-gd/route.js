@@ -1,6 +1,18 @@
 import { query } from '../../../../lib/db.js';
 import { requireAuth } from '../../../../lib/auth.js';
 
+export async function DELETE(request) {
+  const user = await requireAuth(request);
+  if (!user) return Response.json({ error: 'No autorizado' }, { status: 401 });
+
+  await query(
+    'UPDATE users SET gd_username = NULL WHERE discord_id = ?',
+    [user.discord_id]
+  );
+
+  return Response.json({ ok: true });
+}
+
 export async function POST(request) {
   const user = await requireAuth(request);
   if (!user) return Response.json({ error: 'No autorizado' }, { status: 401 });
