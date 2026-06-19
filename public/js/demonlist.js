@@ -732,10 +732,11 @@ function openPlayerProfile(playerName) {
   if (!player) return;
 
   // Buscar todas las completions del jugador en levelsData
+  const normName = s => (s||'').trim().toLowerCase();
   const completions = getLevelsData()
-    .filter(l => (l.victors||[]).some(v => v.name === playerName))
+    .filter(l => (l.victors||[]).some(v => normName(v.name) === normName(playerName)))
     .map(l => {
-      const victor = (l.victors||[]).find(v => v.name === playerName);
+      const victor = (l.victors||[]).find(v => normName(v.name) === normName(playerName));
       return { level: l, victor };
     })
     .sort((a, b) => (a.level.position||999) - (b.level.position||999));
@@ -874,7 +875,7 @@ const avatarUrl = player.discord_id && player.discord_avatar
                       <span class="pm-comp-pos">${posLabel} en la lista</span>
                     </div>
                     ${(() => {
-                      const vUrl = victor?.videoUrl || null;
+                      const vUrl = (victor?.videoUrl || '').trim() || null;
                       if (ytId) {
                         const uid = 'pmv-' + (victor?.id || Math.random().toString(36).slice(2));
                         return `<a class="pm-comp-video" href="https://youtube.com/watch?v=${ytId}"
@@ -885,13 +886,12 @@ const avatarUrl = player.discord_id && player.discord_avatar
                       }
                       if (vUrl) {
                         const plat = typeof detectVideoPlatform === 'function' ? detectVideoPlatform(vUrl) : null;
-                        if (plat) {
-                          return `<a class="pm-comp-video pm-comp-video-ext" href="${esc(vUrl)}"
-                              target="_blank" rel="noopener" onclick="event.stopPropagation()"
-                              style="--plat-color:${plat.color}">
-                              <i class="${plat.icon}"></i> ${plat.label}
-                            </a>`;
-                        }
+                        const safePlat = plat || { icon: 'fas fa-external-link-alt', label: 'Ver video', color: 'var(--violet)' };
+                        return `<a class="pm-comp-video pm-comp-video-ext" href="${esc(vUrl)}"
+                            target="_blank" rel="noopener" onclick="event.stopPropagation()"
+                            style="--plat-color:${safePlat.color}">
+                            <i class="${safePlat.icon}"></i> ${safePlat.label}
+                          </a>`;
                       }
                       return `<span class="pm-comp-novideo" title="Sin video"><i class="fas fa-video-slash"></i></span>`;
                     })()}

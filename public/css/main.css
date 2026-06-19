@@ -2327,9 +2327,16 @@ body {
 .sub-level-suggestions {
   position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 200;
   background: var(--bg3); border: 1px solid var(--border-s);
-  border-radius: var(--r-sm); overflow: hidden; display: none; box-shadow: 0 8px 24px rgba(0,0,0,.3);
+  border-radius: var(--r-sm); display: none; box-shadow: 0 8px 24px rgba(0,0,0,.3);
+  max-height: 340px; overflow-y: auto; overscroll-behavior: contain;
+  scrollbar-width: thin; scrollbar-color: var(--border-s) transparent;
 }
+.sub-level-suggestions::-webkit-scrollbar { width: 8px; }
+.sub-level-suggestions::-webkit-scrollbar-track { background: transparent; }
+.sub-level-suggestions::-webkit-scrollbar-thumb { background: var(--border-s); border-radius: 4px; }
+.sub-level-suggestions::-webkit-scrollbar-thumb:hover { background: var(--border-h); }
 .sub-level-suggestions.open { display: block; }
+.sub-sug-item.active { background: var(--bg2); }
 .sub-sug-item {
   display: flex; align-items: center; gap: .7rem;
   padding: .6rem .9rem; cursor: pointer; transition: background .12s;
@@ -2419,8 +2426,14 @@ body {
 .adm-level-suggestions {
   position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 2200;
   background: var(--bg3); border: 1px solid var(--border-s); border-radius: var(--r-sm);
-  box-shadow: 0 8px 24px rgba(0,0,0,.35); display: none; overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0,0,0,.35); display: none;
+  max-height: 340px; overflow-y: auto; overscroll-behavior: contain;
+  scrollbar-width: thin; scrollbar-color: var(--border-s) transparent;
 }
+.adm-level-suggestions::-webkit-scrollbar { width: 8px; }
+.adm-level-suggestions::-webkit-scrollbar-track { background: transparent; }
+.adm-level-suggestions::-webkit-scrollbar-thumb { background: var(--border-s); border-radius: 4px; }
+.adm-level-suggestions::-webkit-scrollbar-thumb:hover { background: var(--border-h); }
 .adm-level-suggestions.open { display: block; }
 .adm-sug-item {
   padding: .6rem .9rem; cursor: pointer; transition: background .12s;

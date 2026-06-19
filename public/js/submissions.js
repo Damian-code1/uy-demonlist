@@ -95,6 +95,13 @@
       debounce = setTimeout(() => renderLevelSuggestions(q), 120);
     });
 
+    // QOL: si el usuario clickea afuera por error y vuelve a enfocar el input
+    // con texto ya escrito, reaparecen las sugerencias sin tener que reescribir.
+    levelInput?.addEventListener('focus', () => {
+      const q = levelInput.value.trim();
+      if (q.length >= 1 && !selectedLevel) renderLevelSuggestions(q);
+    });
+
     levelClear?.addEventListener('click', () => {
       levelInput.value = '';
       levelClear.style.display = 'none';
@@ -116,12 +123,33 @@
       if (!e.target.closest('#subLevelSearchWrap') && !e.target.closest('#levelSuggestions')) hideSuggestions();
     });
 
-    // Cerrar también al hacer scroll o al navegar con la navbar — evita que el
-    // dropdown de sugerencias quede "flotando" sobre otras secciones de la página
-    // si el usuario navega mientras está abierto.
-    window.addEventListener('scroll', () => hideSuggestions(), { passive: true });
-    document.querySelectorAll('.navbar a[href^="#"], .nav-link').forEach(link => {
-      link.addEventListener('click', () => hideSuggestions());
+    // Cerrar con Escape (sin tocar el scroll: el dropdown ahora tiene su propio
+    // scroll interno y debe permanecer visible mientras el usuario scrollea la página).
+    levelInput?.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        hideSuggestions();
+        return;
+      }
+      const items = Array.from(suggestions.querySelectorAll('.sub-sug-item'));
+      if (!items.length || !suggestions.classList.contains('open')) return;
+
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        let idx = items.findIndex(it => it.classList.contains('active'));
+        idx = e.key === 'ArrowDown'
+          ? Math.min(idx + 1, items.length - 1)
+          : Math.max(idx - 1, 0);
+        items.forEach(it => it.classList.remove('active'));
+        const target = items[idx];
+        target.classList.add('active');
+        target.scrollIntoView({ block: 'nearest' });
+      } else if (e.key === 'Enter') {
+        const active = items.find(it => it.classList.contains('active')) || items[0];
+        if (active) {
+          e.preventDefault();
+          active.dispatchEvent(new Event('click'));
+        }
+      }
     });
 
     function scoreMatch(name, ql) {
@@ -200,9 +228,15 @@
 
       suggestions.innerHTML = listHtml + aredlHtml;
       suggestions.classList.add('open');
+      suggestions.scrollTop = 0;
+      suggestions.querySelector('.sub-sug-item')?.classList.add('active');
 
       suggestions.querySelectorAll('.sub-sug-item').forEach(item => {
         item.addEventListener('mousedown', e => { e.preventDefault(); }); // evita que el blur cierre antes del click
+        item.addEventListener('mouseenter', () => {
+          suggestions.querySelectorAll('.sub-sug-item.active').forEach(it => it.classList.remove('active'));
+          item.classList.add('active');
+        });
         item.addEventListener('click', () => selectLevel({
           name:           item.dataset.name,
           position:       item.dataset.pos ? parseInt(item.dataset.pos) : null,
