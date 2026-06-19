@@ -386,18 +386,27 @@ function renderVictorsTable(victors, opts = {}) {
 
   const tbody = document.getElementById('adminVictorsBody');
   victors.forEach(v => {
-    const name     = v.player_name || '';
-    const videoUrl = v.video_url   || '';
+    const name        = v.player_name || '';
+    const ownVideoUrl = v.video_url   || ''; // SOLO el propio del victor — esto es lo que se edita
+    const effectiveUrl = v.effective_video_url || ownVideoUrl || '';
+    const isShowcase  = !!v.is_showcase_fallback;
+
+    const videoCell = effectiveUrl
+      ? `<a href="${esc(effectiveUrl)}" target="_blank" style="color:var(--red);font-size:.8rem">
+           <i class="fab fa-youtube"></i> Ver
+         </a>${isShowcase
+            ? `<span class="text-dim" title="Heredado del Video de Showcase del nivel — este victor no tiene video propio cargado" style="font-size:.68rem;margin-left:.4rem;cursor:help"><i class="fas fa-circle-info"></i> showcase</span>`
+            : ''}`
+      : '<span class="text-dim">Sin video</span>';
+
     const tr = document.createElement('tr');
     tr.innerHTML = `
       ${showLevel ? `<td class="text-dim" style="font-size:.82rem">${esc(v.level_name || '—')}</td>` : ''}
       <td class="td-name">${esc(name)}</td>
-      <td>${videoUrl
-        ? `<a href="${esc(videoUrl)}" target="_blank" style="color:var(--red);font-size:.8rem"><i class="fab fa-youtube"></i> Ver</a>`
-        : '<span class="text-dim">Sin video</span>'}</td>
+      <td>${videoCell}</td>
       <td>
         <button class="btn-icon btn-edit"
-          onclick="openVictorModal(${v.id},'${esc(name)}','${esc(videoUrl)}')">
+          onclick="openVictorModal(${v.id},'${esc(name)}','${esc(ownVideoUrl)}')">
           <i class="fas fa-pen"></i>
         </button>
         <button class="btn-icon btn-delete" onclick="deleteVictor(${v.id})">

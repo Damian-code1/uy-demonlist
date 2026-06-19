@@ -1,6 +1,22 @@
 import { query } from '../../../../lib/db.js';
 import { requireAdmin } from '../../../../lib/auth.js';
 
+// Marca, dentro de cada level_id, cuál victor es el "primero" (menor id) —
+// solo ese hereda visualmente el video de Showcase del nivel si no tiene
+// video_url propio, igual que ya hace el modal público.
+function markFirstVictorPerLevel(victors) {
+  const seenLevels = new Set();
+  return victors.map(v => {
+    const isFirst = !seenLevels.has(v.level_id);
+    seenLevels.add(v.level_id);
+    return {
+      ...v,
+      effective_video_url: v.video_url || (isFirst ? (v.level_youtube_url || null) : null),
+      is_showcase_fallback: !v.video_url && isFirst && !!v.level_youtube_url,
+    };
+  });
+}
+
 export async function GET(request) {
   const admin = await requireAdmin(request);
   if (!admin) return Response.json({ error: 'No autorizado' }, { status: 401 });
@@ -9,9 +25,23 @@ export async function GET(request) {
   const levelId = searchParams.get('level_id');
 
   try {
-    const [victors] = levelId
-      ? await query('SELECT * FROM victors WHERE level_id = ? ORDER BY id ASC', [levelId])
-      : await query('SELECT v.*, l.name as level_name FROM victors v JOIN levels l ON v.level_id = l.id ORDER BY l.position ASC');
+    const [rows] = levelId
+      ? await query(
+          `SELECT v.*, l.youtube_url AS level_youtube_url
+           FROM victors v
+           JOIN levels l ON v.level_id = l.id
+           WHERE v.level_id = ?
+           ORDER BY v.id ASC`,
+          [levelId]
+        )
+      : await query(
+          `SELECT v.*, l.name AS level_name, l.youtube_url AS level_youtube_url
+           FROM victors v
+           JOIN levels l ON v.level_id = l.id
+           ORDER BY l.position ASC, v.id ASC`
+        );
+
+    const victors = markFirstVictorPerLevel(rows);
     return Response.json({ victors });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
