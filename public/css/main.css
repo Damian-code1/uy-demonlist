@@ -2453,22 +2453,30 @@ body {
 
 .submissions-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
-  gap: 1.5rem;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: .9rem;
   align-items: start;
+  max-width: 920px;
+  margin: 0 auto;
 }
 
 @media (max-width: 900px) {
   .submissions-layout {
     grid-template-columns: 1fr;
+    max-width: 520px;
   }
+}
+
+.submissions-layout .sub-card {
+  width: 100%;
 }
 
 .my-subs-card {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  max-height: 720px;
+  gap: .9rem;
+  height: 100%;
+  min-height: 100%;
 }
 
 .my-subs-header {
@@ -2528,12 +2536,16 @@ body {
   display: flex;
   align-items: center;
   gap: .75rem;
-  padding: .75rem .9rem;
+  padding: .9rem 1rem;
   border-radius: var(--r-sm, 10px);
   background: var(--bg-elevated, rgba(255,255,255,.03));
   border: 1px solid var(--border, rgba(255,255,255,.06));
   cursor: pointer;
   transition: border-color .15s ease, transform .15s ease;
+}
+
+.my-subs-list {
+  flex: 1;
 }
 
 .my-sub-item:hover {
