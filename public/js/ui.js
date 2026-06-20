@@ -121,3 +121,39 @@ function uiPrompt({ title, message, placeholder = '', value = '', confirmText = 
 window.uiAlert   = uiAlert;
 window.uiConfirm = uiConfirm;
 window.uiPrompt  = uiPrompt;
+
+// =============================================
+// TOAST NOTIFICATIONS
+// =============================================
+function showToast(message, type = 'info') {
+  const colors = {
+    success: 'linear-gradient(135deg, #16a34a, #22c55e)',
+    error:   'linear-gradient(135deg, #dc2626, #f43f5e)',
+    warning: 'linear-gradient(135deg, #d97706, #f59e0b)',
+    info:    'linear-gradient(135deg, #7c3aed, #8b5cf6)',
+  };
+  const icons = {
+    success: '✓',
+    error:   '✕',
+    warning: '⚠',
+    info:    'ℹ',
+  };
+  Toastify({
+    text: `${icons[type] || icons.info} ${message}`,
+    duration: type === 'error' ? 5000 : 3500,
+    gravity: 'top',
+    position: 'right',
+    stopOnFocus: true,
+    style: {
+      background: colors[type] || colors.info,
+      borderRadius: '10px',
+      padding: '12px 20px',
+      fontWeight: '600',
+      fontSize: '.88rem',
+      boxShadow: '0 8px 32px rgba(0,0,0,.4)',
+      maxWidth: '360px',
+    },
+  }).showToast();
+}
+
+window.showToast = showToast;
