@@ -2491,8 +2491,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: .9rem;
-  height: 100%;
-  min-height: 100%;
+  height: auto;
 }
 
 .my-subs-header {
@@ -2561,7 +2560,7 @@ body {
 }
 
 .my-subs-list {
-  flex: 1;
+  flex: none;
 }
 
 .sub-reviewer-card {
