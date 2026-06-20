@@ -384,6 +384,17 @@ function renderVictorsTable(victors, opts = {}) {
   }
 
   container.innerHTML = `
+    <div style="margin-bottom:.6rem;display:flex;align-items:center;gap:.5rem">
+      <div class="adm-search-wrap" style="flex:1;max-width:340px">
+        <i class="fas fa-search adm-search-icon"></i>
+        <input type="text" id="victorsTableSearch" class="adm-search-input"
+          placeholder="Filtrar por jugador${showLevel ? ' o nivel' : ''}…" autocomplete="off">
+        <button type="button" class="adm-search-clear" id="victorsTableClear" style="display:none">
+          <i class="fas fa-times-circle"></i>
+        </button>
+      </div>
+      <span class="text-dim" id="victorsTableCount" style="font-size:.78rem"></span>
+    </div>
     <div class="admin-table-wrap">
       <table class="admin-table">
         <thead><tr>${showLevel ? '<th>Nivel</th>' : ''}<th>Jugador</th><th>Video</th><th>Acciones</th></tr></thead>
@@ -391,37 +402,79 @@ function renderVictorsTable(victors, opts = {}) {
       </table>
     </div>`;
 
-  const tbody = document.getElementById('adminVictorsBody');
-  victors.forEach(v => {
-    const name        = v.player_name || '';
-    const ownVideoUrl = v.video_url   || ''; // SOLO el propio del victor — esto es lo que se edita
-    const effectiveUrl = v.effective_video_url || ownVideoUrl || '';
-    const isShowcase  = !!v.is_showcase_fallback;
+  const tbody     = document.getElementById('adminVictorsBody');
+  const searchEl  = document.getElementById('victorsTableSearch');
+  const clearEl   = document.getElementById('victorsTableClear');
+  const countEl   = document.getElementById('victorsTableCount');
 
-    const videoCell = effectiveUrl
-      ? `<a href="${esc(effectiveUrl)}" target="_blank" style="color:var(--red);font-size:.8rem">
-           <i class="fab fa-youtube"></i> Ver
-         </a>${isShowcase
-            ? `<span class="text-dim" title="Heredado del Video de Showcase del nivel — este victor no tiene video propio cargado" style="font-size:.68rem;margin-left:.4rem;cursor:help"><i class="fas fa-circle-info"></i> showcase</span>`
-            : ''}`
-      : '<span class="text-dim">Sin video</span>';
+  // Renderizar filas
+  function buildRows(list) {
+    tbody.innerHTML = '';
+    if (countEl) countEl.textContent = `${list.length} resultado${list.length !== 1 ? 's' : ''}`;
+    if (!list.length) {
+      tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:1.2rem;color:var(--text-dim)"><i class="fas fa-search"></i> Sin resultados</td></tr>`;
+      return;
+    }
+    list.forEach(v => {
+      const name        = v.player_name || '';
+      const ownVideoUrl = v.video_url   || '';
+      const effectiveUrl = v.effective_video_url || ownVideoUrl || '';
+      const isShowcase  = !!v.is_showcase_fallback;
 
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      ${showLevel ? `<td class="text-dim" style="font-size:.82rem">${esc(v.level_name || '—')}</td>` : ''}
-      <td class="td-name">${esc(name)}</td>
-      <td>${videoCell}</td>
-      <td>
-        <button class="btn-icon btn-edit"
-          onclick="openVictorModal(${v.id},'${esc(name)}','${esc(effectiveUrl)}')">
-          <i class="fas fa-pen"></i>
-        </button>
-        <button class="btn-icon btn-delete" onclick="deleteVictor(${v.id})">
-          <i class="fas fa-trash"></i>
-        </button>
-      </td>`;
-    tbody.appendChild(tr);
+      const videoCell = effectiveUrl
+        ? `<a href="${esc(effectiveUrl)}" target="_blank" style="color:var(--red);font-size:.8rem">
+             <i class="fab fa-youtube"></i> Ver
+           </a>${isShowcase
+              ? `<span class="text-dim" title="Heredado del Video de Showcase del nivel — este victor no tiene video propio cargado" style="font-size:.68rem;margin-left:.4rem;cursor:help"><i class="fas fa-circle-info"></i> showcase</span>`
+              : ''}`
+        : '<span class="text-dim">Sin video</span>';
+
+      const tr = document.createElement('tr');
+      tr.dataset.player = name.toLowerCase();
+      tr.dataset.level  = (v.level_name || '').toLowerCase();
+      tr.innerHTML = `
+        ${showLevel ? `<td class="text-dim" style="font-size:.82rem">${esc(v.level_name || '—')}</td>` : ''}
+        <td class="td-name">${esc(name)}</td>
+        <td>${videoCell}</td>
+        <td>
+          <button class="btn-icon btn-edit"
+            onclick="openVictorModal(${v.id},'${esc(name)}','${esc(effectiveUrl)}')">
+            <i class="fas fa-pen"></i>
+          </button>
+          <button class="btn-icon btn-delete" onclick="deleteVictor(${v.id})">
+            <i class="fas fa-trash"></i>
+          </button>
+        </td>`;
+      tbody.appendChild(tr);
+    });
+  }
+
+  buildRows(victors);
+
+  // Buscador inline
+  let debounce;
+  searchEl?.addEventListener('input', () => {
+    const q = searchEl.value.trim().toLowerCase();
+    if (clearEl) clearEl.style.display = q ? '' : 'none';
+    clearTimeout(debounce);
+    debounce = setTimeout(() => {
+      const filtered = !q ? victors : victors.filter(v =>
+        (v.player_name || '').toLowerCase().includes(q) ||
+        (showLevel && (v.level_name || '').toLowerCase().includes(q))
+      );
+      buildRows(filtered);
+    }, 150);
   });
+
+  clearEl?.addEventListener('click', () => {
+    searchEl.value = '';
+    clearEl.style.display = 'none';
+    buildRows(victors);
+    searchEl.focus();
+  });
+
+  // Inicializar contador
+  if (countEl) countEl.textContent = `${victors.length} resultado${victors.length !== 1 ? 's' : ''}`;
 }
 
 function openVictorModal(id='', name='', videoUrl='') {
