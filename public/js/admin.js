@@ -216,79 +216,24 @@ async function loadAdminVictors() {
   const container = document.getElementById('admin-victors-table');
   if (!container) return;
 
-  const levels = getLevelsData();
   container.innerHTML = `
     <div class="admin-toolbar" style="margin-bottom:1rem;gap:.6rem;flex-wrap:wrap">
-      <!-- Dropdown original -->
       <select id="victorLevelSelect"
         style="padding:.55rem .9rem;background:var(--bg3);border:1px solid var(--border-s);border-radius:var(--r-sm);color:var(--text);outline:none;min-width:200px;flex:1"
         onchange="onVictorLevelChange(this.value)">
         <option value="">— Todos los niveles —</option>
-        ${levels.map(l => `<option value="${l.id}">${l.position}. ${esc(l.name)}</option>`).join('')}
+        ${getLevelsData().map(l => `<option value="${l.id}">${l.position}. ${esc(l.name)}</option>`).join('')}
       </select>
-
-      <!-- Buscador con autocomplete -->
-      <div class="adm-search-wrap" id="victorLevelSearchWrap" style="position:relative;flex:2;min-width:200px">
-        <i class="fas fa-search adm-search-icon"></i>
-        <input type="text" id="victorLevelSearch" class="adm-search-input"
-          placeholder="Buscar nivel… (vacío = todos)" autocomplete="off">
-        <button type="button" class="adm-search-clear" id="victorLevelClear" style="display:none">
-          <i class="fas fa-times-circle"></i>
-        </button>
-        <div class="adm-level-suggestions" id="victorLevelSuggestions"></div>
-      </div>
-
       <button class="btn-admin-add" onclick="openVictorModal()">
         <i class="fas fa-plus"></i> Agregar Victor
       </button>
     </div>
     <div id="adminVictorsTableInner"></div>`;
 
-  // Lógica del buscador
-  const searchInput = document.getElementById('victorLevelSearch');
-  const clearBtn    = document.getElementById('victorLevelClear');
-  const sugg        = document.getElementById('victorLevelSuggestions');
-  const dropdown    = document.getElementById('victorLevelSelect');
-
-  let debounce;
-  searchInput.addEventListener('input', () => {
-    const q = searchInput.value.trim();
-    clearBtn.style.display = q ? '' : 'none';
-    clearTimeout(debounce);
-    debounce = setTimeout(() => {
-      const freshLevels = typeof getLevelsData === 'function' ? getLevelsData() : [];
-      renderVictorLevelSuggestions(q, freshLevels, sugg, searchInput, clearBtn, dropdown);
-    }, 120);
-  });
-
-  searchInput.addEventListener('focus', () => {
-    const q = searchInput.value.trim();
-    if (q.length >= 1) {
-      const freshLevels = typeof getLevelsData === 'function' ? getLevelsData() : [];
-      renderVictorLevelSuggestions(q, freshLevels, sugg, searchInput, clearBtn, dropdown);
-    }
-  });
-
-  clearBtn.addEventListener('click', () => {
-    searchInput.value = '';
-    clearBtn.style.display = 'none';
-    sugg.classList.remove('open');
-    sugg.innerHTML = '';
-    dropdown.value = '';
-    adminVictorLevelId = null;
-    loadAllAdminVictors();
-  });
-
-  // Cerrar sugerencias al hacer click fuera (se limpia el listener anterior para no acumular)
   if (_victorOutsideClickHandler) {
     document.removeEventListener('click', _victorOutsideClickHandler);
+    _victorOutsideClickHandler = null;
   }
-  _victorOutsideClickHandler = e => {
-    if (!e.target.closest('#victorLevelSearchWrap')) {
-      sugg.classList.remove('open');
-    }
-  };
-  document.addEventListener('click', _victorOutsideClickHandler);
 
   // Vista por defecto: todos los victors de todos los niveles, con loading
   adminVictorLevelId = null;
