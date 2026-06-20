@@ -2069,11 +2069,11 @@ body {
 /* Paneles internos: sin scrollbar nativa */
 .admin-body, .lm-body, .level-modal-box,
 .admin-form-box, .admin-table-wrap, .player-modal-box,
-.sub-detail-box { scrollbar-width: none; -ms-overflow-style: none; }
+.sub-detail-box, .my-subs-list { scrollbar-width: none; -ms-overflow-style: none; }
 .admin-body::-webkit-scrollbar, .lm-body::-webkit-scrollbar,
 .level-modal-box::-webkit-scrollbar, .admin-form-box::-webkit-scrollbar,
 .admin-table-wrap::-webkit-scrollbar, .player-modal-box::-webkit-scrollbar,
-.sub-detail-box::-webkit-scrollbar { display: none; }
+.sub-detail-box::-webkit-scrollbar, .my-subs-list::-webkit-scrollbar { display: none; }
 
 /* =============================================
    QOL extras
@@ -2553,9 +2553,12 @@ body {
   display: flex;
   flex-direction: column;
   gap: .6rem;
-  overflow: visible;
   padding-top: 2px;
   margin-top: -2px;
+  /* Más de ~6 items: scroll en vez de crecer infinitamente */
+  max-height: 500px;
+  overflow-y: auto;
+  overflow-x: visible;
 }
 
 .my-sub-item {
