@@ -1060,6 +1060,22 @@ function openSubDetailModal(sub) {
       <div class="sub-detail-label"><i class="fas fa-comment-alt" style="margin-right:.35rem"></i>Notas del jugador</div>
       <div class="sub-detail-value" style="white-space:pre-wrap;line-height:1.6;color:var(--text-sub)">${esc(sub.notes.trim())}</div>
     </div>` : ''}
+
+    ${sub.status === 'approved' ? `
+    <div class="sub-detail-row" style="border-left:3px solid #22c55e;padding-left:.75rem;margin-top:.25rem">
+      <div class="sub-detail-label"><i class="fas fa-comment-dots" style="color:#22c55e;margin-right:.35rem"></i>Nota del staff</div>
+      <div class="sub-detail-value" style="white-space:pre-wrap;line-height:1.6;color:#86efac">
+        ${sub.approval_note?.trim() ? esc(sub.approval_note.trim()) : '<span style="opacity:.5;font-style:italic">Sin nota</span>'}
+      </div>
+    </div>` : ''}
+
+    ${sub.status === 'rejected' ? `
+    <div class="sub-detail-row" style="border-left:3px solid var(--red);padding-left:.75rem;margin-top:.25rem">
+      <div class="sub-detail-label"><i class="fas fa-times-circle" style="color:var(--red);margin-right:.35rem"></i>Razón del rechazo</div>
+      <div class="sub-detail-value" style="white-space:pre-wrap;line-height:1.6;color:#fca5a5">
+        ${sub.rejection_reason?.trim() ? esc(sub.rejection_reason.trim()) : '<span style="opacity:.5;font-style:italic">Sin razón registrada</span>'}
+      </div>
+    </div>` : ''}
   `;
 
   // Acciones
@@ -1100,7 +1116,7 @@ async function approveSubmission(id) {
   try {
     const result = await adminApproveSubmission(id, note || null);
     showToast('✓ Submission aprobada — sumada al perfil del jugador', 'success');
-    _updateSubmissionStatusInTable(id, 'approved');
+    _updateSubmissionStatusInTable(id, 'approved', { approval_note: note || null });
     closeSubDetailModal();
     await refreshPublicData({
       levelId: result.levelId,
@@ -1123,7 +1139,7 @@ async function rejectSubmission(id) {
   try {
     await adminRejectSubmission(id, reason);
     showToast('Submission rechazada', 'info');
-    _updateSubmissionStatusInTable(id, 'rejected');
+    _updateSubmissionStatusInTable(id, 'rejected', { rejection_reason: reason });
     closeSubDetailModal();
     await refreshPublicData();
   } catch (e) {
@@ -1172,10 +1188,14 @@ async function deleteAllSubmissions() {
 }
 
 // Actualiza el estado de una submission en la tabla sin recargar todo
-function _updateSubmissionStatusInTable(id, newStatus) {
+function _updateSubmissionStatusInTable(id, newStatus, extra = {}) {
   const subs = window._adminAllSubs || [];
   const sub  = subs.find(s => s.id === id);
-  if (sub) sub.status = newStatus;
+  if (sub) {
+    sub.status = newStatus;
+    if (extra.approval_note   !== undefined) sub.approval_note   = extra.approval_note;
+    if (extra.rejection_reason !== undefined) sub.rejection_reason = extra.rejection_reason;
+  }
   renderSubsFiltered();
 }
 
