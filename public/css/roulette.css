@@ -244,16 +244,16 @@
   gap: .5rem;
 }
 .rl-config-label {
-  font-size: .68rem;
+  font-size: .76rem;
   font-weight: 700;
   letter-spacing: 1.2px;
   text-transform: uppercase;
-  color: var(--text-dim);
+  color: var(--text-sub);
   display: flex;
   align-items: center;
   gap: .4rem;
 }
-.rl-config-label i { color: var(--violet); font-size: .72rem; }
+.rl-config-label i { color: var(--violet); font-size: .8rem; }
 
 .rl-select {
   appearance: none;
@@ -275,22 +275,24 @@
 .rl-range-wrap {
   display: flex;
   flex-direction: column;
-  gap: .55rem;
-  padding-top: .35rem;
+  gap: .65rem;
+  padding-top: .5rem;
 }
 .rl-range-labels {
   display: flex;
   justify-content: space-between;
-  font-size: .68rem;
-  color: var(--text-dim);
+  font-size: .82rem;
+  font-weight: 600;
+  color: var(--text-sub);
 }
 .rl-range-val {
   font-family: var(--font-mono);
   color: var(--violet);
-  font-weight: 700;
-  font-size: .82rem;
+  font-weight: 800;
+  font-size: 1.15rem;
+  letter-spacing: .5px;
   text-align: center;
-  margin-top: .2rem;
+  margin-top: .25rem;
 }
 
 input[type="range"] {
@@ -299,9 +301,9 @@ input[type="range"] {
   -moz-appearance: none;
   display: block;
   width: 100%;
-  height: 4px;
+  height: 6px;
   background: var(--bg5);
-  border-radius: 2px;
+  border-radius: 3px;
   outline: none;
   padding: 0;
   margin: 0;
@@ -311,50 +313,51 @@ input[type="range"] {
 /* Margen lateral en el track para que el thumb nunca quede pegado/superpuesto
    al texto de los extremos en .rl-range-labels (ej. "Full lista", "100") */
 .rl-range-wrap input[type="range"] {
-  width: calc(100% - 18px);
-  margin: 0 9px;
+  width: calc(100% - 20px);
+  margin: 0 10px;
 }
 input[type="range"]::-webkit-slider-container { overflow: visible; }
 input[type="range"]::-webkit-slider-runnable-track {
-  height: 4px;
-  border-radius: 2px;
+  height: 6px;
+  border-radius: 3px;
   background: var(--bg5);
 }
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 18px;
-  height: 18px;
-  margin-top: 0;
+  width: 20px;
+  height: 20px;
+  /* Centra el thumb sobre el track de 6px: -(20-6)/2 */
+  margin-top: -7px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--violet), var(--roulette-fire));
   border: 2px solid var(--bg2);
   cursor: pointer;
-  box-shadow: 0 0 8px rgba(124,58,237,.5);
+  box-shadow: 0 0 10px rgba(124,58,237,.6);
   transition: transform .15s;
 }
-input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.18); }
 
-/* Firefox */
+/* Firefox: el track y el thumb se centran automáticamente entre sí, no requiere margin-top */
 input[type="range"]::-moz-range-track {
-  height: 4px;
-  border-radius: 2px;
+  height: 6px;
+  border-radius: 3px;
   background: var(--bg5);
   border: none;
 }
 input[type="range"]::-moz-range-thumb {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--violet), var(--roulette-fire));
   border: 2px solid var(--bg2);
   cursor: pointer;
-  box-shadow: 0 0 8px rgba(124,58,237,.5);
+  box-shadow: 0 0 10px rgba(124,58,237,.6);
   transition: transform .15s;
 }
-input[type="range"]::-moz-range-thumb:hover { transform: scale(1.2); }
+input[type="range"]::-moz-range-thumb:hover { transform: scale(1.18); }
 input[type="range"]::-moz-range-progress {
-  height: 4px;
-  border-radius: 2px;
+  height: 6px;
+  border-radius: 3px;
   background: linear-gradient(90deg, var(--violet), var(--roulette-fire));
 }
 

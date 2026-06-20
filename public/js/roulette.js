@@ -145,10 +145,16 @@ function getLastRecordedPercentage() {
   return null;
 }
 
-function validatePercentage(value) {
+function validatePercentage(value, mode) {
   const num = parseInt(value, 10);
-  if (isNaN(num) || num < 1 || num > 100) {
-    return { ok: false, msg: 'Ingresá un porcentaje válido entre 1 y 100.' };
+  if (isNaN(num) || num < 0 || num > 100) {
+    return { ok: false, msg: 'Ingresá un porcentaje válido entre 0 y 100.' };
+  }
+  // Al rendirse/abandonar, el porcentaje es un intento nuevo e independiente:
+  // no tiene por qué ser mayor al de un nivel anterior (ej. llegaste al 35% en
+  // un nivel y te rendiste al 26% en otro). Solo se exige que esté en [0, 100].
+  if (mode === 'fail') {
+    return { ok: true, value: num };
   }
   const last = getLastRecordedPercentage();
   if (last != null && num <= last) {
@@ -203,14 +209,19 @@ function openPctModal(mode) {
 
   const last = getLastRecordedPercentage();
   if (hint) {
-    hint.textContent = last != null
-      ? `Debe ser mayor que ${last}%`
-      : 'Primer nivel: podés ingresar cualquier porcentaje del 1 al 100.';
+    if (mode === 'fail') {
+      hint.textContent = 'Podés ingresar cualquier porcentaje del 0 al 100, sin importar tus intentos anteriores.';
+    } else {
+      hint.textContent = last != null
+        ? `Debe ser mayor que ${last}%`
+        : 'Primer nivel: podés ingresar cualquier porcentaje del 1 al 100.';
+    }
   }
 
   if (input) {
     input.value = '';
-    input.min   = last != null ? last : 1;
+    input.min = mode === 'fail' ? 0 : (last != null ? last : 1);
+    input.max = 100;
   }
 
   modal?.classList.add('open');
@@ -227,7 +238,7 @@ function closePctModal() {
 function submitPctModal() {
   const input = document.getElementById('rlPctInput');
   const errEl = document.getElementById('rlPctError');
-  const result = validatePercentage(input?.value);
+  const result = validatePercentage(input?.value, RL.pctModalMode);
 
   if (!result.ok) {
     if (errEl) errEl.textContent = result.msg;
