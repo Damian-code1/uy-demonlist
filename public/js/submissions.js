@@ -352,11 +352,14 @@
           method:  'POST',
           headers: { 'Content-Type': 'application/json' },
           body:    JSON.stringify({
-            userId:      user.id,
-            levelName:   selectedLevel.name,
-            youtubeLink: ytUrl,
-            rawLink:     rawInput?.value.trim() || null,
-            notes:       document.getElementById('notes')?.value.trim() || null,
+            userId:        user.id,
+            levelName:     selectedLevel.name,
+            youtubeLink:   ytUrl,
+            rawLink:       rawInput?.value.trim() || null,
+            notes:         document.getElementById('notes')?.value.trim() || null,
+            levelPosition: selectedLevel.isNew ? null : selectedLevel.position,
+            aredlPosition: selectedLevel.aredl_position || null,
+            isNewLevel:    !!selectedLevel.isNew,
           }),
         });
 

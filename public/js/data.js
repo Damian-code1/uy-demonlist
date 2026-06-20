@@ -213,6 +213,20 @@ function getGlobalStats() {
   };
 }
 
+// ─── Favicon: usa el ícono del server de Discord en la pestaña ───
+function setFavicon(iconUrl) {
+  if (!iconUrl) return;
+  const link = document.getElementById('faviconLink') || (() => {
+    const l = document.createElement('link');
+    l.id  = 'faviconLink';
+    l.rel = 'icon';
+    document.head.appendChild(l);
+    return l;
+  })();
+  link.type = 'image/png';
+  link.href = iconUrl;
+}
+
 // ─── Discord: logo + community card ───
 async function updateDiscordLogo() {
   try {
@@ -224,6 +238,7 @@ async function updateDiscordLogo() {
       const logoFlag = document.getElementById('logoFlag');
       if (logoImg)  { logoImg.src = iconUrl; logoImg.style.display = 'block'; }
       if (logoFlag) logoFlag.style.display = 'none';
+      setFavicon(iconUrl);
     }
   } catch {}
 }
@@ -309,6 +324,7 @@ async function loadDiscordWidget() {
     if (logoImg)  { logoImg.src = iconUrl; logoImg.style.display = 'block'; }
     if (logoFlag) logoFlag.style.display = 'none';
     setFooterDiscordIcon(iconUrl);
+    setFavicon(iconUrl);
   }
 
   card.innerHTML = `
