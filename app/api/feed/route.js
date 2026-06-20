@@ -80,25 +80,31 @@ export async function GET(request) {
 
     const [rows] = await query(sql, params);
 
-    const feed = rows.map(r => ({
-      id:        r.id,
-      player:    r.player_name,
-      level:     r.level_name,
-      levelId:   r.level_id,
-      position:  r.position,
-      videoUrl:  r.video_url || r.youtube_url || null,
-      thumbnail: r.thumbnail_url
-                  || (r.thumbnail_youtube_id
-                      ? `https://img.youtube.com/vi/${r.thumbnail_youtube_id}/hqdefault.jpg`
-                      : null)
-                  || (r.youtube_url
-                      ? `https://img.youtube.com/vi/${extractYtId(r.youtube_url)}/hqdefault.jpg`
-                      : null)
-                  || (r.video_url
-                      ? `https://img.youtube.com/vi/${extractYtId(r.video_url)}/hqdefault.jpg`
-                      : null),
-      createdAt: r.created_at || null,
-    }));
+    const feed = rows.map(r => {
+      // Prioridad: video propio del victor → video del nivel → thumbnail guardada
+      const victorYtId = extractYtId(r.video_url);
+      const levelYtId  = extractYtId(r.youtube_url);
+      const thumbYtId  = r.thumbnail_youtube_id || null;
+
+      const thumbnail = victorYtId
+        ? `https://img.youtube.com/vi/${victorYtId}/hqdefault.jpg`
+        : levelYtId
+          ? `https://img.youtube.com/vi/${levelYtId}/hqdefault.jpg`
+          : thumbYtId
+            ? `https://img.youtube.com/vi/${thumbYtId}/hqdefault.jpg`
+            : r.thumbnail_url || null;
+
+      return {
+        id:        r.id,
+        player:    r.player_name,
+        level:     r.level_name,
+        levelId:   r.level_id,
+        position:  r.position,
+        videoUrl:  r.video_url || r.youtube_url || null,
+        thumbnail,
+        createdAt: r.created_at || null,
+      };
+    });
 
     return Response.json({ feed });
   } catch (error) {
