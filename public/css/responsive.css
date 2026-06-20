@@ -52,14 +52,22 @@
   /* Sections */
   .page-section { padding: 4rem 0; }
 
-  /* Level cards */
-  .level-card { flex-direction: column; }
-  .level-rank-stripe {
-    width: 100%; height: 36px; min-width: unset;
-    flex-direction: row; padding: 0 .85rem; gap: .5rem;
-    border-right: none; border-bottom: 1px solid var(--border-s);
+  /* Level cards — mobile */
+  .level-card {
+    height: 80px;
+    padding-left: 130px;
   }
-  .level-info { padding: .65rem .85rem; }
+  .lc-thumb, .lc-thumb-ph { width: 130px; }
+  .lc-thumb-fade           { width: 170px; }
+  .lc-color-bg             { left: 130px; }
+  .lc-rank                 { padding: 0 .55rem; font-size: 1.25rem; }
+  .lc-rank-num             { font-size: 1rem; }
+  .lc-name                 { font-size: .92rem; }
+  .lc-meta-row             { font-size: .72rem; gap: .4rem; }
+  .lc-victor-count         { font-size: .68rem; padding: .12rem .42rem; }
+  .lc-pts-badge            { font-size: .68rem; padding: .12rem .42rem; }
+  /* Favorito siempre visible en mobile (no hay hover) */
+  .lc-fav-btn              { opacity: 1; }
 
   /* Leaderboard — la card es flex (no grid), así que ajustamos los
      elementos flex directamente en vez de grid-template-columns. */
@@ -103,12 +111,13 @@
   .lb-stat-pill { padding: .22rem .42rem; font-size: .62rem; }
   .lb-stat-pill i { font-size: .58rem; }
 
-  .level-card  { height: 72px; padding-left: 96px; }
-  .lc-thumb, .lc-thumb-ph { width: 110px; }
-  .lc-thumb-fade { width: 150px; }
-  .lc-color-bg   { left: 110px; }
-  .lc-name       { font-size: .85rem; }
-  .lc-rank       { padding: 0 .5rem; font-size: 1.2rem; }
+  .level-card  { height: 72px; padding-left: 100px; }
+  .lc-thumb, .lc-thumb-ph { width: 100px; }
+  .lc-thumb-fade { width: 140px; }
+  .lc-color-bg   { left: 100px; }
+  .lc-name       { font-size: .8rem; }
+  .lc-rank       { padding: 0 .4rem; font-size: 1rem; }
+  .lc-pts-badge  { display: none; }
 
   .hero-title  { font-size: clamp(3rem, 16vw, 4.4rem); }
   .stat-num    { font-size: 1.5rem; }
