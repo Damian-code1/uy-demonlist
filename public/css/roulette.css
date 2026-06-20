@@ -468,45 +468,23 @@ input[type="range"]::-moz-range-progress {
 }
 
 /* Efecto "spinning" sobre el thumb */
-.rl-slot-spin-overlay {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity .2s;
+/* Strip de scroll eliminado — se usa fade directo */
+.rl-slot-spin-overlay { display: none; }
+
+/* Reveal del nivel: aparece con scale + fade */
+.rl-slot-machine.revealed .rl-slot-info {
+  animation: level-reveal .35s cubic-bezier(.34,1.4,.64,1) both;
 }
-.rl-slot-machine.spinning .rl-slot-spin-overlay { opacity: 1; }
-.rl-spin-strip {
-  display: flex;
-  flex-direction: column;
-  animation: strip-scroll .12s linear infinite;
-  gap: 0;
+.rl-slot-machine.revealed .rl-slot-thumb-wrap {
+  animation: thumb-reveal .4s ease both;
 }
-@keyframes strip-scroll {
-  0%   { transform: translateY(0); }
-  100% { transform: translateY(-50%); }
+@keyframes level-reveal {
+  from { opacity: 0; transform: translateY(10px) scale(.97); }
+  to   { opacity: 1; transform: none; }
 }
-.rl-spin-item {
-  height: 60px;
-  display: flex;
-  align-items: center;
-  padding: 0 1.5rem;
-  font-family: var(--font-title);
-  font-size: 1.5rem;
-  letter-spacing: 2px;
-  color: rgba(255,255,255,.5);
-  border-bottom: 1px solid rgba(255,255,255,.04);
-  background: rgba(7,7,13,.7);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.rl-spin-item.highlight {
-  color: var(--violet);
-  background: rgba(124,58,237,.15);
+@keyframes thumb-reveal {
+  from { opacity: 0; filter: blur(8px) brightness(.5); }
+  to   { opacity: 1; filter: none; }
 }
 
 /* Info encima del thumb */

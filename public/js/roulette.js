@@ -515,16 +515,18 @@ if (RL.current) {
 }
 
 async function animateSlotMachine(target) {
-  const strip = document.getElementById('rlSpinStrip');
-  if (!strip) return;
-
-  const names = RL.levels.map(l => l.name).sort(() => Math.random() - .5);
-  const items = [...names, ...names, target.name].slice(0, 40);
-  strip.innerHTML = items.map((n, i) => `
-    <div class="rl-spin-item${i === items.length - 1 ? ' highlight' : ''}">${n}</div>
-  `).join('');
-
-  return new Promise(r => setTimeout(r, RL.spinDuration || 1200));
+  // Animación simple: flash de carga y reveal directo, sin scroll de nombres
+  const machine = document.getElementById('rlSlotMachine');
+  if (machine) {
+    machine.style.transition = 'opacity .15s ease';
+    machine.style.opacity = '0.3';
+  }
+  return new Promise(r => setTimeout(() => {
+    if (machine) {
+      machine.style.opacity = '1';
+    }
+    r();
+  }, 420));
 }
 
 function renderCurrentLevel(level) {
@@ -587,7 +589,7 @@ function resetSlotDisplay() {
   const infoEl = document.getElementById('rlSlotInfo');
   if (infoEl) infoEl.innerHTML = `
     <div class="rl-slot-pos-badge"><i class="fas fa-dice"></i> ¿Qué nivel te toca?</div>
-    <div class="rl-slot-name">Presioná GIRAR</div>
+    <div class="rl-slot-name">Presioná ELEGIR NIVEL</div>
     <div class="rl-slot-meta"></div>
   `;
   const thumbEl = document.getElementById('rlSlotThumb');
