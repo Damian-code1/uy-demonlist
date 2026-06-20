@@ -440,7 +440,14 @@ window.openPlayerSanctionsModal  = openPlayerSanctionsModal;
 window.closePlayerSanctionsModal = closePlayerSanctionsModal;
 
 async function deleteSanctionLog(logId, closeModalAfter) {
-  if (!confirm('¿Eliminar esta sanción del log? Esta acción no se puede deshacer.')) return;
+  const ok = await uiConfirm({
+    title: '¿Eliminar sanción?',
+    message: 'Esta sanción se va a borrar del log. Esta acción no se puede deshacer.',
+    type: 'warning',
+    confirmText: 'Eliminar',
+    cancelText: 'Cancelar',
+  });
+  if (!ok) return;
   try {
     await sanctionsFetch(`?logId=${logId}`, { method: 'DELETE' });
     showToast('Sanción eliminada del log ✓', 'success');
@@ -454,7 +461,14 @@ async function deleteSanctionLog(logId, closeModalAfter) {
 
 async function confirmClearAllSanctions() {
   if (window.currentUser?.role !== 'owner') return;
-  if (!confirm('¿Limpiar TODO el log de sanciones? Esta acción no se puede deshacer.')) return;
+  const ok = await uiConfirm({
+    title: '¿Limpiar todo el log?',
+    message: 'Se va a borrar TODO el historial de sanciones. Esta acción no se puede deshacer.',
+    type: 'error',
+    confirmText: 'Limpiar todo',
+    cancelText: 'Cancelar',
+  });
+  if (!ok) return;
   try {
     await sanctionsFetch(`?clearAll=1`, { method: 'DELETE' });
     showToast('Log de sanciones limpiado ✓', 'success');
