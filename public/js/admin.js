@@ -1111,8 +1111,9 @@ async function approveSubmission(id) {
     placeholder: 'Nota opcional...',
     confirmText: 'Aprobar',
     cancelText: 'Cancelar',
+    allowEmpty: true,
   });
-  if (note === null) return; // canceló con el botón cancelar
+  if (note === null) return; // canceló con el botón cancelar o clic afuera
 
   console.log('[admin] Aprobando submission', id);
 
@@ -1510,8 +1511,6 @@ window.clearSubFilters         = clearSubFilters;
 window.renderSubsFiltered      = renderSubsFiltered;
 window.deleteAllSubmissions    = deleteAllSubmissions;
 window.syncPositionsWithAredl  = syncPositionsWithAredl;
-window.saveLevelThumbnail      = saveLevelThumbnail;
-window.resetLevelThumbnail     = resetLevelThumbnail;
 
 // ESC limpia filtros activos en submissions
 document.addEventListener('keydown', e => {

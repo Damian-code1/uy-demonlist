@@ -205,7 +205,7 @@ export async function PUT(request, { params }) {
         youtubeLink:     sub.youtube_url || null,
         rejectionReason: status === 'rejected' ? (rejection_reason?.trim() || null) : null,
         approvalNote:    status === 'approved'  ? (approval_note?.trim()   || null) : null,
-        isNewLevel,
+        isNewLevel:      newLevel,
         levelPosition:   finalLevelPosition,
         aredlPosition:   finalAredlPosition,
         victorNumber,

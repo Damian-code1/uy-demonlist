@@ -64,7 +64,7 @@ function uiConfirm({ title, message, type = 'warning', confirmText = 'Confirmar'
   });
 }
 
-function uiPrompt({ title, message, placeholder = '', value = '', confirmText = 'Confirmar', cancelText = 'Cancelar', suggestions = [] }) {
+function uiPrompt({ title, message, placeholder = '', value = '', confirmText = 'Confirmar', cancelText = 'Cancelar', suggestions = [], allowEmpty = false }) {
   return new Promise(resolve => {
     const el = document.createElement('div');
     el.className = 'ui-modal-overlay';
@@ -108,11 +108,12 @@ function uiPrompt({ title, message, placeholder = '', value = '', confirmText = 
       setTimeout(() => el.remove(), 220);
       resolve(val);
     };
-    el.querySelector('.ui-btn-confirm').onclick = () => close(input.value.trim() || null);
+    const emptyVal = allowEmpty ? '' : null;
+    el.querySelector('.ui-btn-confirm').onclick = () => close(input.value.trim() || emptyVal);
     el.querySelector('.ui-btn-cancel').onclick  = () => close(null);
     el.addEventListener('click', e => { if (e.target === el) close(null); });
     input.addEventListener('keydown', e => {
-      if (e.key === 'Enter')  close(input.value.trim() || null);
+      if (e.key === 'Enter')  close(input.value.trim() || emptyVal);
       if (e.key === 'Escape') close(null);
     });
   });

@@ -1,10 +1,10 @@
 import { query } from '../../../../lib/db.js';
-import { requireOwner } from '../../../../lib/auth.js';
+import { requireManager } from '../../../../lib/auth.js';
 import { ensureSchema } from '../../../../lib/schema.js';
 
 export async function GET(request) {
-  const owner = await requireOwner(request);
-  if (!owner) return Response.json({ error: 'Solo el owner puede acceder' }, { status: 401 });
+  const owner = await requireManager(request);
+  if (!owner) return Response.json({ error: 'No tenés permiso para acceder' }, { status: 401 });
 
   try {
     await ensureSchema();
