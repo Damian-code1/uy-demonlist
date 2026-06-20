@@ -2908,6 +2908,7 @@ body {
 .adm-search-input {
   flex: 1; background: transparent; border: none; outline: none;
   color: var(--text); padding: .6rem .3rem; font-size: .88rem; min-width: 0;
+  width: 100%;
 }
 .adm-search-clear {
   background: none; border: none; cursor: pointer; padding: 0 .65rem;

@@ -37,6 +37,12 @@
 
   .admin-table { font-size: .76rem; }
   .admin-table th, .admin-table td { padding: .55rem .6rem; }
+
+  /* La fila de "Filtrar por jugador o nivel..." + contador de resultados
+     usa max-width:340px inline en el HTML — lo pisamos para que también
+     se achique con la pantalla. */
+  .adm-search-wrap { max-width: none !important; width: 100%; }
+  #victorsTableCount { white-space: nowrap; flex-shrink: 0; font-size: .72rem !important; }
 }
 
 /* ─── Mobile ─── */
@@ -129,12 +135,27 @@
   #victorLevelSelect { width: 100% !important; flex: none !important; }
   .btn-admin-add { width: 100%; justify-content: center; }
 
+/* Buscador de la tabla de victors/jugadores: apila en vez de
+     apretarse al lado del contador "X resultados" */
+  div[style*="margin-bottom:.6rem"][style*="display:flex"] {
+    flex-wrap: wrap !important;
+  }
+  .adm-search-wrap { width: 100% !important; }
+  #victorsTableCount { width: 100%; text-align: right; }
+
   /* Tabla: fuente y paddings más chicos + scroll horizontal garantizado */
   .admin-table { font-size: .7rem; }
   .admin-table th, .admin-table td { padding: .5rem .55rem; }
   .admin-table th { font-size: .58rem; letter-spacing: 1px; }
   .btn-icon { width: 24px; height: 24px; font-size: .7rem; }
 
+  /* La columna NIVEL es redundante en mobile: ya existe el dropdown
+     "Todos los niveles" arriba que filtra. La ocultamos para darle
+     más aire a JUGADOR y VIDEO, que son las columnas importantes. */
+  .admin-table th:first-child,
+  .admin-table td:first-child:has(+ td.td-name) {
+    display: none;
+  }
   .admin-form-box { padding: 1.1rem; max-height: 92vh; }
   .admin-form-title { font-size: 1.2rem; margin-bottom: 1.1rem; }
 
@@ -163,6 +184,10 @@
   .lc-name       { font-size: .8rem; }
   .lc-rank       { padding: 0 .4rem; font-size: 1rem; }
   .lc-pts-badge  { display: none; }
+
+  .admin-table { font-size: .64rem; }
+  .admin-table th, .admin-table td { padding: .4rem .4rem; }
+  .btn-icon { width: 22px; height: 22px; font-size: .65rem; }
 
   .hero-title  { font-size: clamp(3rem, 16vw, 4.4rem); }
   .stat-num    { font-size: 1.5rem; }
