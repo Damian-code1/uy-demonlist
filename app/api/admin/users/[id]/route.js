@@ -1,12 +1,12 @@
 import { query } from '../../../../../lib/db.js';
-import { requireOwner } from '../../../../../lib/auth.js';
+import { requireOwner, requireManager } from '../../../../../lib/auth.js';
 import { ensureSchema } from '../../../../../lib/schema.js';
 
-const ALLOWED_ROLES = ['owner', 'admin', 'list_mod', 'usuario'];
+const ALLOWED_ROLES = ['owner', 'manager', 'admin', 'list_mod', 'usuario'];
 
 export async function PUT(request, { params }) {
-  const owner = await requireOwner(request);
-  if (!owner) return Response.json({ error: 'Solo el owner puede modificar usuarios' }, { status: 401 });
+  const owner = await requireManager(request);
+  if (!owner) return Response.json({ error: 'No tenés permiso para modificar usuarios' }, { status: 401 });
 
   try {
     await ensureSchema();
@@ -21,6 +21,11 @@ export async function PUT(request, { params }) {
 
     if (target.role === 'owner' && role && role !== 'owner' && target.id !== owner.id) {
       return Response.json({ error: 'No podés quitar el rol owner a otro owner' }, { status: 400 });
+    }
+
+    // Un manager no puede degradar a otro manager — solo el owner puede hacerlo.
+    if (target.role === 'manager' && role && role !== 'manager' && owner.role !== 'owner') {
+      return Response.json({ error: 'No podés modificar el rol de otro manager' }, { status: 403 });
     }
 
     const updates = [];
@@ -52,6 +57,10 @@ export async function PUT(request, { params }) {
       }
       if (target.id === owner.id && role !== 'owner') {
         return Response.json({ error: 'No podés quitarte el rol owner a vos mismo' }, { status: 400 });
+      }
+      // Defensa en profundidad: solo un owner puede otorgar 'owner' o 'manager'.
+      if ((role === 'owner' || role === 'manager') && owner.role !== 'owner') {
+        return Response.json({ error: 'Solo el owner puede otorgar el rol owner o manager' }, { status: 403 });
       }
       updates.push('role = ?');
       values.push(role);

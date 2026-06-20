@@ -14,7 +14,8 @@ export async function GET(request) {
 
     const [rows] = await query(
       `SELECT u.id, u.discord_username as name, u.discord_display_name as display_name,
-              u.discord_avatar as avatar, u.discord_id, u.role, u.gd_username, u.linked_player_name
+              u.discord_avatar as avatar, u.discord_id, u.role, u.gd_username, u.linked_player_name,
+              u.banned_until, u.ban_reason
        FROM users u WHERE u.discord_id = ? LIMIT 1`,
       [discordId]
     );
@@ -44,6 +45,8 @@ export async function GET(request) {
     );
     const stats = statsRows[0] || { completions: 0, points: 0, hardest_level: null };
 
+    const isBanned = !!(u.banned_until && new Date(u.banned_until) > new Date());
+
     return Response.json({
       user: {
         id:          u.id,
@@ -56,6 +59,9 @@ export async function GET(request) {
         points:      stats.points || 0,
         completions: stats.completions || 0,
         hardest:     stats.hardest_level || null,
+        isBanned:    isBanned,
+        bannedUntil: isBanned ? u.banned_until : null,
+        banReason:   isBanned ? (u.ban_reason || null) : null,
       }
     });
   } catch (error) {

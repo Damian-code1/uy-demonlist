@@ -223,12 +223,23 @@ function setupLevelModal() {
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLevelDetailModal(); });
 }
 
-async function openLevelModal(level) {
+async function openLevelModal(level, opts = {}) {
   const modal = document.getElementById('levelDetailModal');
   if (!modal) return;
 
   activeModalLevel = level;
   activeVictorIdx  = 0;
+
+  // Deep-link a un victor específico (usado desde el perfil de jugador en el leaderboard)
+  if (opts.targetVictorName) {
+    const norm = s => (s || '').trim().toLowerCase();
+    const foundIdx = (level.victors || []).findIndex(v => norm(v.name) === norm(opts.targetVictorName));
+    if (foundIdx !== -1) activeVictorIdx = foundIdx;
+  }
+
+  // Abrir siempre re-renderiza el player desde cero (no es un refresh silencioso)
+  _lmCurrentVideoId  = null;
+  _lmCurrentVideoUrl = null;
 
   renderModalContent(level);
   modal.classList.add('active');
@@ -256,7 +267,29 @@ function buildGdStatsHtml(gd) {
   return parts.join('');
 }
 
-function renderModalContent(level) {
+let _lmCurrentVideoId  = null;
+let _lmCurrentVideoUrl = null;
+
+function renderLmPlayer(videoId, videoUrl) {
+  const wrap = document.querySelector('#levelDetailModal .lm-player-wrap');
+  if (!wrap) return;
+  wrap.innerHTML = videoId
+    ? `<iframe src="https://www.youtube.com/embed/${videoId}?rel=0" frameborder="0"
+         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`
+    : videoUrl
+      ? (() => {
+          const plat = typeof detectVideoPlatform === 'function' ? detectVideoPlatform(videoUrl) : null;
+          return `<div class="lm-external-video" style="background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;min-height:200px">
+            <i class="${plat?.icon || 'fas fa-play-circle'}" style="font-size:2.5rem;color:${plat?.color || 'var(--violet)'}"></i>
+            <a href="${esc(videoUrl)}" target="_blank" rel="noopener" class="lm-external-btn" style="font-size:.95rem;padding:12px 24px;background:${plat?.color || 'var(--violet)'};color:#fff;border-radius:8px;text-decoration:none;display:flex;align-items:center;gap:8px;font-weight:600">
+              <i class="fas fa-external-link-alt"></i> Ver en ${plat?.label || 'video'}
+            </a>
+          </div>`;
+        })()
+      : `<div class="lm-no-video"><i class="fas fa-video-slash"></i><p>Sin video disponible</p></div>`;
+}
+
+function renderModalContent(level, opts = {}) {
   const modal = document.getElementById('levelDetailModal');
   const box   = modal.querySelector('.level-modal-box');
   const pos      = level.position;
@@ -277,25 +310,27 @@ function renderModalContent(level) {
     || ((victors.length === 0 || isFirstVictor) ? (level.youtube_url || null) : null);
   const videoId  = videoUrl ? extractYTId(videoUrl) : null;
 
+  // Si es un refresh silencioso en background (opts.preservePlayer) y el video
+  // activo es el mismo que ya se está reproduciendo, NO tocamos el player wrap
+  // para no interrumpir la reproducción. El resto del modal (víctores, stats, etc.)
+  // sí se actualiza siempre.
+  const samePlayer = videoId === _lmCurrentVideoId && videoUrl === _lmCurrentVideoUrl;
+  const skipPlayerRerender = !!(opts.preservePlayer && samePlayer);
+
+  // Guardamos el wrap actual del player ANTES de pisar el innerHTML del box,
+  // para poder reinsertarlo intacto (con su iframe reproduciendo) si corresponde.
+  const existingPlayerWrap = skipPlayerRerender
+    ? box.querySelector('.lm-player-wrap')
+    : null;
+  if (existingPlayerWrap) existingPlayerWrap.remove(); // lo sacamos del DOM temporalmente, no lo destruimos
+
+  _lmCurrentVideoId  = videoId;
+  _lmCurrentVideoUrl = videoUrl;
+
   box.innerHTML = `
     <button class="modal-close" id="levelModalClose"><i class="fas fa-times"></i></button>
 
-    <div class="lm-player-wrap">
-      ${videoId
-        ? `<iframe src="https://www.youtube.com/embed/${videoId}?rel=0" frameborder="0"
-             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`
-        : videoUrl
-          ? (() => {
-              const plat = typeof detectVideoPlatform === 'function' ? detectVideoPlatform(videoUrl) : null;
-              return `<div class="lm-external-video" style="background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;min-height:200px">
-                <i class="${plat?.icon || 'fas fa-play-circle'}" style="font-size:2.5rem;color:${plat?.color || 'var(--violet)'}"></i>
-                <a href="${esc(videoUrl)}" target="_blank" rel="noopener" class="lm-external-btn" style="font-size:.95rem;padding:12px 24px;background:${plat?.color || 'var(--violet)'};color:#fff;border-radius:8px;text-decoration:none;display:flex;align-items:center;gap:8px;font-weight:600">
-                  <i class="fas fa-external-link-alt"></i> Ver en ${plat?.label || 'video'}
-                </a>
-              </div>`;
-            })()
-          : `<div class="lm-no-video"><i class="fas fa-video-slash"></i><p>Sin video disponible</p></div>`}
-    </div>
+    <div class="lm-player-wrap"></div>
 
     <div class="lm-body">
       <div class="lm-header-row">
@@ -356,6 +391,28 @@ function renderModalContent(level) {
       </div>
     </div>`;
 
+  if (skipPlayerRerender) {
+    // Reinsertar el player wrap existente (con su iframe vivo) en vez de recrearlo,
+    // así el video sigue reproduciéndose sin interrupción.
+    const oldWrap = modal.querySelector('.lm-player-wrap-preserved');
+    const newWrap = box.querySelector('.lm-player-wrap');
+    if (oldWrap && newWrap) {
+      newWrap.replaceWith(oldWrap);
+      oldWrap.classList.remove('lm-player-wrap-preserved');
+    } else {
+      renderLmPlayer(videoId, videoUrl);
+    }
+  } else {
+    renderLmPlayer(videoId, videoUrl);
+  }
+
+  if (existingPlayerWrap) {
+    // Reinsertamos el wrap original (con el iframe vivo) en el lugar del nuevo placeholder vacío.
+    box.querySelector('.lm-player-wrap')?.replaceWith(existingPlayerWrap);
+  } else {
+    renderLmPlayer(videoId, videoUrl);
+  }
+
   box.querySelector('#levelModalClose')?.addEventListener('click', closeLevelDetailModal);
 
   box.querySelector('#copyLevelIdBtn')?.addEventListener('click', function() {
@@ -413,6 +470,8 @@ function closeLevelDetailModal() {
   document.getElementById('levelDetailModal')?.classList.remove('active');
   document.body.style.overflow = '';
   activeModalLevel = null;
+  _lmCurrentVideoId  = null;
+  _lmCurrentVideoUrl = null;
 
   // Destruir el iframe del player para que el video/audio deje de reproducirse en segundo plano
   const playerWrap = document.querySelector('#levelDetailModal .lm-player-wrap');
@@ -433,7 +492,9 @@ function refreshOpenLevelModal(levelId) {
   if (activeVictorIdx >= (fresh.victors?.length || 0)) {
     activeVictorIdx = Math.max(0, (fresh.victors?.length || 1) - 1);
   }
-  renderModalContent(fresh);
+  // preservePlayer: true → esto viene de un refresh silencioso en background (polling),
+  // no de una acción explícita del usuario, así que no debe interrumpir el video activo.
+  renderModalContent(fresh, { preservePlayer: true });
 }
 window.refreshOpenLevelModal = refreshOpenLevelModal;
 
@@ -864,6 +925,12 @@ const avatarUrl = player.discord_id && player.discord_avatar
           <h2 class="pm-name">${esc(player.gd_username || player.name)}</h2>
           <div class="pm-badges-row">
             <span class="pm-rank-badge">${rankLabel} en Uruguay</span>
+            ${player.role && player.role !== 'usuario'
+              ? `<span class="pm-role-badge role-${esc(player.role)}">
+                   <i class="fas ${getRoleMeta(player.role).icon}"></i> ${esc(getRoleMeta(player.role).label)}
+                 </span>`
+              : ''
+            }
             ${player.hardest_level
               ? `<span class="pm-hardest-badge">
                    <i class="fas fa-skull"></i> ${esc(player.hardest_level)}
@@ -929,7 +996,7 @@ const avatarUrl = player.discord_id && player.discord_avatar
                 ];
                 const posLabel = pos <= 3 ? posIcons[pos-1] : `#${pos}`;
                 return `
-                  <div class="pm-completion-row" onclick="closePlayerProfile();openLevelModal(${JSON.stringify(level).replace(/"/g,'&quot;')})">
+                  <div class="pm-completion-row" onclick="closePlayerProfile();openLevelModal(${JSON.stringify(level).replace(/"/g,'&quot;')},{targetVictorName:${JSON.stringify(playerName).replace(/"/g,'&quot;')}})">
                     ${thumb
                       ? `<img class="pm-comp-thumb" src="${thumb}" alt="" onerror="this.src='${fallbackThumb||''}';this.onerror=null">`
                       : `<div class="pm-comp-thumb pm-comp-thumb-ph"></div>`

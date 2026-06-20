@@ -23,6 +23,9 @@
   --text-sub:    #9090b0;
   --text-dim:    #55556a;
   --gold:        #f59e0b;
+  --pink:        #ec4899;
+  --pink-dark:   #db2777;
+  --pink-glow:   rgba(236,72,153,.3);
   --silver:      #cbd5e1;
   --bronze:      #c2722a;
   --success:     #22c55e;
@@ -264,10 +267,47 @@ ul { list-style: none; }
   animation: uwGlowPulse 2.2s ease-in-out infinite;
 }
 .user-widget-role.role-owner  { color: var(--gold); }
+.user-widget-role.role-manager { color: var(--pink); }
 .user-widget-role.role-admin  { color: var(--red); }
 .user-widget-role.role-list_mod { color: var(--violet); }
 .user-widget-role.role-usuario  { color: var(--text-sub); }
 .user-widget-role.role-usuario::before { animation: none; box-shadow: none; }
+
+/* ─── Badge de rol en el perfil de jugador (pm-badges-row) ─── */
+.pm-role-badge {
+  display: inline-flex; align-items: center; gap: .4rem;
+  padding: .3rem .7rem;
+  border-radius: 999px;
+  font-size: .72rem; font-weight: 700;
+  letter-spacing: .3px;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+.pm-role-badge i { font-size: .85em; }
+.pm-role-badge.role-owner {
+  color: var(--gold);
+  background: rgba(245,158,11,.12);
+  border-color: rgba(245,158,11,.3);
+  text-shadow: 0 0 12px rgba(245,158,11,.5);
+}
+.pm-role-badge.role-manager {
+  color: var(--pink);
+  background: rgba(236,72,153,.12);
+  border-color: rgba(236,72,153,.3);
+  text-shadow: 0 0 12px rgba(236,72,153,.5);
+}
+.pm-role-badge.role-admin {
+  color: var(--red);
+  background: rgba(244,63,94,.12);
+  border-color: rgba(244,63,94,.3);
+  text-shadow: 0 0 12px rgba(244,63,94,.5);
+}
+.pm-role-badge.role-list_mod {
+  color: var(--violet);
+  background: rgba(139,92,246,.12);
+  border-color: rgba(139,92,246,.3);
+  text-shadow: 0 0 12px rgba(139,92,246,.5);
+}
 .user-widget-chevron {
   font-size: .72rem; color: var(--text-dim);
   transition: transform .3s cubic-bezier(.34,1.56,.64,1), color .2s ease;
@@ -3673,6 +3713,215 @@ body {
 .ou-btn-unlink i { font-size: .78rem; }
 
 /* Estado de guardado en la card */
+/* ═══════════════════════════════════════
+   PANEL DE SANCIONES (sa-)
+   ═══════════════════════════════════════ */
+.sa-hint {
+  display: flex; align-items: flex-start; gap: .6rem;
+  padding: .75rem 1rem; margin-bottom: 1.1rem;
+  background: rgba(244,63,94,.07);
+  border: 1px solid rgba(244,63,94,.18);
+  border-radius: var(--r-sm);
+  font-size: .78rem; color: var(--text-sub); line-height: 1.5;
+}
+.sa-hint i { color: var(--red); flex-shrink: 0; margin-top: .15rem; }
+
+.sa-list { display: flex; flex-direction: column; gap: .75rem; }
+
+.sa-card {
+  background: var(--bg3);
+  border: 1px solid var(--border-s);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: border-color .2s, box-shadow .2s;
+}
+.sa-card:hover { border-color: rgba(244,63,94,.3); box-shadow: 0 4px 20px rgba(0,0,0,.25); }
+.sa-card-banned { border-color: rgba(244,63,94,.4); }
+
+.sa-card-header {
+  display: flex; align-items: center; gap: .85rem;
+  padding: .9rem 1.1rem .75rem;
+}
+.sa-avatar-wrap { position: relative; flex-shrink: 0; }
+.sa-avatar {
+  width: 40px; height: 40px; border-radius: 50%;
+  object-fit: cover; display: block;
+  border: 2px solid rgba(255,255,255,.1);
+}
+.sa-avatar-ph {
+  background: linear-gradient(135deg, var(--violet-dark), var(--red-dark));
+  display: flex; align-items: center; justify-content: center;
+  font-size: .9rem; font-weight: 800; color: #fff;
+}
+.sa-ban-dot {
+  position: absolute; bottom: -1px; right: -1px;
+  width: 11px; height: 11px; border-radius: 50%;
+  background: var(--red); border: 2px solid var(--bg3);
+  box-shadow: 0 0 6px var(--red);
+}
+.sa-user-info { flex: 1; min-width: 0; }
+.sa-display-name {
+  font-size: .92rem; font-weight: 700; color: var(--text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.sa-discord-handle { font-size: .7rem; color: var(--text-dim); margin-top: .1rem; }
+
+.sa-status-badge {
+  display: flex; align-items: center; gap: .35rem;
+  padding: .3rem .7rem; border-radius: 50px;
+  font-size: .7rem; font-weight: 700;
+  flex-shrink: 0; white-space: nowrap;
+}
+.sa-status-ok     { background: rgba(34,197,94,.1);  border: 1px solid rgba(34,197,94,.25);  color: var(--success); }
+.sa-status-banned { background: rgba(244,63,94,.12); border: 1px solid rgba(244,63,94,.3);   color: var(--red); }
+
+.sa-ban-reason {
+  margin: 0 1.1rem .85rem; padding: .6rem .8rem;
+  background: rgba(244,63,94,.06); border: 1px solid rgba(244,63,94,.15);
+  border-radius: var(--r-sm);
+  font-size: .78rem; color: var(--text-sub); line-height: 1.5;
+}
+.sa-ban-reason i { color: var(--red); margin-right: .3rem; }
+.sa-ban-by { color: var(--text-dim); font-style: italic; }
+
+.sa-card-actions { padding: 0 1.1rem 1rem; display: flex; }
+.sa-owner-protected {
+  display: flex; align-items: center; gap: .4rem;
+  font-size: .78rem; color: var(--gold); font-weight: 600;
+}
+.sa-btn {
+  display: inline-flex; align-items: center; gap: .45rem;
+  padding: .55rem 1rem; border-radius: var(--r-sm);
+  font-size: .8rem; font-weight: 700; cursor: pointer;
+  border: 1px solid transparent; transition: all .2s ease;
+}
+.sa-btn-ban {
+  background: rgba(244,63,94,.12); border-color: rgba(244,63,94,.3); color: var(--red);
+}
+.sa-btn-ban:hover { background: rgba(244,63,94,.2); transform: translateY(-1px); }
+.sa-btn-lift {
+  background: rgba(34,197,94,.12); border-color: rgba(34,197,94,.3); color: var(--success);
+}
+.sa-btn-lift:hover { background: rgba(34,197,94,.2); transform: translateY(-1px); }
+
+.sa-modal-target { font-size: .88rem; color: var(--text-sub); margin-bottom: 1.2rem; }
+.sa-modal-target strong { color: var(--text); }
+
+/* ─── Log de sanciones ─── */
+.sa-log-list { display: flex; flex-direction: column; gap: .6rem; }
+.sa-log-row {
+  display: flex; align-items: center; gap: .85rem;
+  padding: .8rem 1rem;
+  background: var(--bg3);
+  border: 1px solid var(--border-s);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: border-color .2s, transform .15s, box-shadow .2s;
+}
+.sa-log-row:hover {
+  border-color: rgba(244,63,94,.35);
+  transform: translateX(2px);
+  box-shadow: 0 4px 16px rgba(0,0,0,.25);
+}
+.sa-log-row.sa-log-active {
+  border-color: rgba(244,63,94,.5);
+  background: rgba(244,63,94,.05);
+}
+.sa-log-icon {
+  width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(244,63,94,.1); color: var(--red); font-size: .95rem;
+}
+.sa-log-icon.sa-log-lifted { background: rgba(34,197,94,.1); color: var(--success); }
+.sa-log-main { flex: 1; min-width: 0; }
+.sa-log-target {
+  font-size: .86rem; font-weight: 700; color: var(--text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.sa-log-meta { font-size: .72rem; color: var(--text-dim); margin-top: .15rem; }
+.sa-log-meta strong { color: var(--text-sub); font-weight: 600; }
+.sa-log-side { text-align: right; flex-shrink: 0; }
+.sa-log-date { font-size: .72rem; color: var(--text-dim); }
+.sa-log-status {
+  font-size: .68rem; font-weight: 700; margin-top: .25rem;
+  display: inline-block; padding: .15rem .55rem; border-radius: 50px;
+}
+.sa-log-status.sa-status-active  { background: rgba(244,63,94,.15); color: var(--red); }
+.sa-log-status.sa-status-expired { background: rgba(144,144,176,.15); color: var(--text-dim); }
+.sa-log-status.sa-status-lifted  { background: rgba(34,197,94,.15); color: var(--success); }
+.sa-log-delete {
+  flex-shrink: 0; width: 32px; height: 32px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  background: transparent; border: 1px solid var(--border-s);
+  color: var(--text-dim); cursor: pointer; transition: all .2s ease;
+}
+.sa-log-delete:hover { background: rgba(244,63,94,.15); border-color: rgba(244,63,94,.35); color: var(--red); }
+
+.sa-btn-clearall {
+  background: rgba(244,63,94,.1); border: 1px solid rgba(244,63,94,.3); color: var(--red);
+}
+.sa-btn-clearall:hover { background: rgba(244,63,94,.2); }
+
+/* ─── Modal de detalle de sanción ─── */
+.sa-detail-box { max-width: 460px; }
+.sa-detail-header {
+  display: flex; align-items: center; gap: .5rem;
+  font-size: 1.1rem; font-weight: 800; color: var(--text);
+  margin-bottom: 1.4rem;
+}
+.sa-detail-header i { color: var(--red); }
+
+.sa-detail-section { margin-bottom: 1.1rem; }
+.sa-detail-label {
+  font-size: .68rem; font-weight: 700; letter-spacing: .8px; text-transform: uppercase;
+  color: var(--text-dim); margin-bottom: .5rem; display: flex; align-items: center; gap: .35rem;
+}
+
+.sa-detail-staff {
+  display: flex; align-items: center; gap: .75rem;
+  padding: .7rem .85rem;
+  background: var(--bg3); border: 1px solid var(--border-s); border-radius: 10px;
+}
+.sa-detail-staff-info { flex: 1; min-width: 0; }
+.sa-detail-staff-name {
+  font-size: .88rem; font-weight: 700; color: var(--text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.sa-detail-staff-handle { font-size: .72rem; color: var(--text-dim); margin-top: .1rem; }
+
+.sa-detail-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: .7rem;
+}
+.sa-detail-stat {
+  background: var(--bg3); border: 1px solid var(--border-s); border-radius: 10px;
+  padding: .65rem .8rem;
+}
+.sa-detail-stat-label { font-size: .66rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: .5px; }
+.sa-detail-stat-val { font-size: .9rem; font-weight: 700; color: var(--text); margin-top: .2rem; }
+
+.sa-detail-reason {
+  background: rgba(244,63,94,.06); border: 1px solid rgba(244,63,94,.15);
+  border-radius: 10px; padding: .75rem .9rem;
+  font-size: .85rem; color: var(--text-sub); line-height: 1.55;
+}
+
+.sa-detail-actions {
+  display: flex; gap: .6rem; margin-top: 1.4rem; padding-top: 1.1rem;
+  border-top: 1px solid var(--border-s);
+}
+.sa-detail-delete-btn {
+  flex: 1; display: flex; align-items: center; justify-content: center; gap: .5rem;
+  padding: .65rem 1rem; border-radius: var(--r-sm);
+  background: rgba(244,63,94,.12); border: 1px solid rgba(244,63,94,.3); color: var(--red);
+  font-size: .82rem; font-weight: 700; cursor: pointer; transition: all .2s ease;
+}
+.sa-detail-delete-btn:hover { background: rgba(244,63,94,.2); }
+.sa-detail-owner-only {
+  display: flex; align-items: center; justify-content: center; gap: .4rem;
+  font-size: .76rem; color: var(--text-dim); font-style: italic; flex: 1;
+}
+.sa-detail-owner-only i { color: var(--gold); }
+
 .ou-card.saving { opacity: .7; pointer-events: none; }
 .ou-card.saved .ou-btn-save {
   background: linear-gradient(135deg, #16a34a, #22c55e);

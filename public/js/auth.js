@@ -27,6 +27,10 @@ async function initAuth() {
   window.currentUser = currentUser;
   renderUserWidget(currentUser);
 
+  if (currentUser?.isBanned && typeof showBanCountdown === 'function') {
+    showBanCountdown(currentUser.bannedUntil, currentUser.banReason);
+  }
+
   document.getElementById('loginBtn')?.addEventListener('click', loginWithDiscord);
 
   document.addEventListener('click', e => {
@@ -59,7 +63,7 @@ async function logout() {
 }
 
 function isAdminUser() {
-  return currentUser && ['owner', 'admin', 'list_mod'].includes(currentUser.role);
+  return currentUser && typeof isAdminRole === 'function' && isAdminRole(currentUser.role);
 }
 
 // ─── Floating Widget ───
@@ -83,10 +87,21 @@ function renderUserWidget(user) {
   widget.classList.add('visible');
 
   if (adminBtn) {
-    adminBtn.style.display = ['owner','admin','list_mod'].includes(user.role) ? 'flex' : 'none';
+    adminBtn.style.display = isAdminRole(user.role) ? 'flex' : 'none';
+  }
+
+  const sanctionsBtn = document.getElementById('navSanctionsBtn');
+  if (sanctionsBtn) {
+    sanctionsBtn.style.display = ['owner','admin','list_mod'].includes(user.role) ? 'flex' : 'none';
+  }
+
+  if (user.isBanned && typeof showBanCountdown === 'function') {
+    showBanCountdown(user.bannedUntil, user.banReason);
+  } else if (typeof hideBanCountdown === 'function') {
+    hideBanCountdown();
   }
   if (ownerBtn) {
-    ownerBtn.style.display = user.role === 'owner' ? 'flex' : 'none';
+    ownerBtn.style.display = isManagerRole(user.role) ? 'flex' : 'none';
   }
 
   const avatarHtml = user.image
@@ -171,7 +186,7 @@ const isRoulettePage = window.location.pathname.includes('roulette');
           <i class="fas fa-shield-alt"></i>
           <span>Admin</span>
         </button>` : ''}
-        ${user.role === 'owner' && !isRoulettePage ? `
+        ${isManagerRole(user.role) && !isRoulettePage ? `
         <button class="wdd-action-btn wdd-action-owner" onclick="openOwnerPanel();closeUserDropdown()">
           <i class="fas fa-crown"></i>
           <span>Owner</span>

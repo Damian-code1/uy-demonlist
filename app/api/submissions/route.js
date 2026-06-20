@@ -27,12 +27,21 @@ export async function POST(request) {
 
     // Obtener el gd_username del user autenticado
     const [userRows] = await query(
-      `SELECT gd_username, discord_display_name, discord_username FROM users WHERE id = ?`,
+      `SELECT gd_username, discord_display_name, discord_username, banned_until, ban_reason FROM users WHERE id = ?`,
       [userId]
     );
     if (!userRows.length) return Response.json({ error: 'Usuario no encontrado' }, { status: 404 });
 
     const u = userRows[0];
+
+    if (u.banned_until && new Date(u.banned_until) > new Date()) {
+      return Response.json({
+        error: 'sanctioned',
+        message: 'No podés enviar submissions mientras estás sancionado.',
+        bannedUntil: u.banned_until,
+        reason: u.ban_reason || null,
+      }, { status: 403 });
+    }
     const username = u.gd_username || u.discord_display_name || u.discord_username;
 
     const [result] = await query(

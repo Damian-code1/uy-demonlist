@@ -1,18 +1,19 @@
 // =============================================
-// OWNER.JS — Panel exclusivo del owner
-// Vincular usuarios Discord ↔ nombres del leaderboard
+// MANAGER.JS — Panel Manager (antes "owner panel")
+// Vincular usuarios Discord ↔ nombres del leaderboard, gestión de roles
+// Accesible para manager+ (manager, owner)
 // =============================================
 
 let ownerUsers = [];
 let ownerLeaderboardNames = [];
 
 function isOwnerUser() {
-  return window.currentUser?.role === 'owner';
+  return window.currentUser && typeof isManagerRole === 'function' && isManagerRole(window.currentUser.role);
 }
 
 function openOwnerPanel() {
   if (!isOwnerUser()) {
-    showToast('Solo el owner puede acceder a este panel', 'error');
+    showToast('No tenés permiso para acceder a este panel', 'error');
     return;
   }
   document.getElementById('ownerPanel')?.classList.add('open');
@@ -44,12 +45,7 @@ async function loadOwnerUsers() {
   }
 }
 
-const ROLE_META = {
-  owner:    { label: 'Owner',    icon: 'fa-crown',      color: '#f59e0b' },
-  admin:    { label: 'Admin',    icon: 'fa-shield-alt', color: '#ef4444' },
-  list_mod: { label: 'Mod',      icon: 'fa-shield',     color: '#8b5cf6' },
-  usuario:  { label: 'Usuario',  icon: 'fa-user',       color: '#64748b' },
-};
+// ROLE_META ahora vive en roles.js — se usa window.ROLE_META directamente
 
 function renderOwnerUsers(filterQ) {
   const container = document.getElementById('owner-users-table');
@@ -69,7 +65,11 @@ function renderOwnerUsers(filterQ) {
     return;
   }
 
-  const roleOptions = ['usuario', 'list_mod', 'admin', 'owner'];
+  // Lista de roles asignables — manager solo puede asignar hasta 'admin' (no puede crear otro owner/manager)
+  const isCurrentUserOwner = window.currentUser?.role === 'owner';
+  const roleOptions = isCurrentUserOwner
+    ? window.ROLE_ORDER
+    : window.ROLE_ORDER.filter(r => r !== 'owner' && r !== 'manager');
 
   container.innerHTML = `
     <div class="ou-hint">
@@ -82,13 +82,13 @@ function renderOwnerUsers(filterQ) {
           `<option value="${esc(n)}"${u.linked_player_name === n ? ' selected' : ''}>${esc(n)}</option>`
         ).join('');
         const roleOpts = roleOptions.map(r => {
-          const m = ROLE_META[r] || ROLE_META.usuario;
+          const m = getRoleMeta(r);
           return `<option value="${r}"${u.role === r ? ' selected' : ''}>${m.label}</option>`;
         }).join('');
         const avatar = u.avatar_url
           ? `<img src="${esc(u.avatar_url)}" alt="" class="ou-avatar">`
           : `<div class="ou-avatar ou-avatar-ph">${(u.display_label || '?')[0].toUpperCase()}</div>`;
-        const rm = ROLE_META[u.role] || ROLE_META.usuario;
+        const rm = getRoleMeta(u.role);
         const isLinked = !!u.linked_player_name;
         const isOwner  = u.role === 'owner';
 
@@ -149,7 +149,7 @@ function renderOwnerUsers(filterQ) {
 }
 
 async function saveOwnerUser(userId) {
-  const row = document.querySelector(`tr[data-user-id="${userId}"]`);
+  const row = document.querySelector(`.ou-card[data-user-id="${userId}"]`);
   if (!row) return;
 
   const linked = row.querySelector('.owner-link-select')?.value || null;

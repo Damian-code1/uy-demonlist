@@ -34,7 +34,8 @@ export async function GET(request) {
     gd_username,
     discord_display_name,
     discord_username,
-    linked_player_name
+    linked_player_name,
+    role
   FROM users
       WHERE gd_username IS NOT NULL
          OR discord_display_name IS NOT NULL
@@ -86,6 +87,7 @@ export async function GET(request) {
           discord_avatar: u?.discord_avatar || null,
           gd_username:    u?.gd_username    || null,
           linked_player_name: u?.linked_player_name || null,
+          role:           u?.role           || 'usuario',
         };
       })
       .sort((a, b) => b.points - a.points);
