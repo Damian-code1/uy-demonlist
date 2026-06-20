@@ -135,17 +135,26 @@
     const ytId   = ytUrl.match(/(?:v=|youtu\.be\/)([^&\s]{11})/)?.[1] || null;
 
     const reviewer = sub.reviewer;
-    const reviewerHtml = reviewer ? `
-      <div class="sub-detail-row" style="display:flex;align-items:center;gap:.65rem;border-left:3px solid var(--violet);padding-left:.75rem;margin-top:.25rem">
-        ${reviewer.avatarUrl
-          ? `<img src="${escHtml(reviewer.avatarUrl)}" alt="" style="width:38px;height:38px;border-radius:50%;flex-shrink:0">`
-          : `<div style="width:38px;height:38px;border-radius:50%;background:var(--violet);display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0">${escHtml((reviewer.displayName||'?')[0].toUpperCase())}</div>`}
-        <div style="min-width:0">
-          <div style="font-size:.7rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:.04em">Revisado por</div>
-          <div style="font-weight:700;font-size:.9rem">${escHtml(reviewer.displayName)}</div>
-          <div style="font-size:.78rem;color:var(--text-sub)">@${escHtml(reviewer.username)}</div>
-        </div>
-      </div>` : '';
+
+    // Tarjeta del staff responsable — mismo estilo visual que el panel manager
+    // (avatar circular, displayname, @username). Se muestra DENTRO del bloque
+    // de nota de éxito/rechazo, justo debajo de la nota, para que quede claro
+    // quién fue el responsable de esa decisión puntual.
+    function reviewerCardHtml() {
+      if (!reviewer) return '';
+      const avatarHtml = reviewer.avatarUrl
+        ? `<img src="${escHtml(reviewer.avatarUrl)}" alt="" class="sub-reviewer-avatar">`
+        : `<div class="sub-reviewer-avatar sub-reviewer-avatar-ph">${escHtml((reviewer.displayName || '?')[0].toUpperCase())}</div>`;
+      return `
+        <div class="sub-reviewer-card">
+          ${avatarHtml}
+          <div class="sub-reviewer-info">
+            <span class="sub-reviewer-label">Responsable</span>
+            <span class="sub-reviewer-name">${escHtml(reviewer.displayName)}</span>
+            <span class="sub-reviewer-handle">@${escHtml(reviewer.username)}</span>
+          </div>
+        </div>`;
+    }
 
     document.getElementById('mySubDetailBody').innerHTML = `
       ${ytUrl ? `
@@ -183,6 +192,7 @@
         <div class="sub-detail-value" style="white-space:pre-wrap;line-height:1.6;color:#86efac">
           ${sub.approval_note?.trim() ? escHtml(sub.approval_note.trim()) : '<span style="opacity:.5;font-style:italic">Sin nota</span>'}
         </div>
+        ${reviewerCardHtml()}
       </div>` : ''}
 
       ${sub.status === 'rejected' ? `
@@ -191,9 +201,8 @@
         <div class="sub-detail-value" style="white-space:pre-wrap;line-height:1.6;color:#fca5a5">
           ${sub.rejection_reason?.trim() ? escHtml(sub.rejection_reason.trim()) : '<span style="opacity:.5;font-style:italic">Sin razón registrada</span>'}
         </div>
+        ${reviewerCardHtml()}
       </div>` : ''}
-
-      ${reviewerHtml}
     `;
 
     modal.classList.add('open');
