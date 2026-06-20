@@ -18,35 +18,66 @@ export async function GET(request) {
     );
     const hasCreatedAt = cols.length > 0;
 
+    const limitSafe = parseInt(limit, 10) || 50;
     let sql;
+    let params;
+
     if (hasCreatedAt) {
-      sql = `
-        SELECT v.id, v.player_name, v.video_url,
-               v.created_at,
-               l.id AS level_id, l.name AS level_name, l.position,
-               l.youtube_url, l.thumbnail_url, l.thumbnail_youtube_id
-        FROM victors v
-        JOIN levels l ON v.level_id = l.id
-        ${player ? 'WHERE LOWER(v.player_name) = LOWER(?)' : ''}
-        ORDER BY v.created_at DESC, v.id DESC
-        LIMIT ?
-      `;
+      if (player) {
+        sql = `
+          SELECT v.id, v.player_name, v.video_url,
+                 v.created_at,
+                 l.id AS level_id, l.name AS level_name, l.position,
+                 l.youtube_url, l.thumbnail_url, l.thumbnail_youtube_id
+          FROM victors v
+          JOIN levels l ON v.level_id = l.id
+          WHERE LOWER(v.player_name) = LOWER(?)
+          ORDER BY v.created_at DESC, v.id DESC
+          LIMIT ${limitSafe}
+        `;
+        params = [player];
+      } else {
+        sql = `
+          SELECT v.id, v.player_name, v.video_url,
+                 v.created_at,
+                 l.id AS level_id, l.name AS level_name, l.position,
+                 l.youtube_url, l.thumbnail_url, l.thumbnail_youtube_id
+          FROM victors v
+          JOIN levels l ON v.level_id = l.id
+          ORDER BY v.created_at DESC, v.id DESC
+          LIMIT ${limitSafe}
+        `;
+        params = [];
+      }
     } else {
-      // Fallback: ordenar por id si created_at no existe todavía
-      sql = `
-        SELECT v.id, v.player_name, v.video_url,
-               NULL AS created_at,
-               l.id AS level_id, l.name AS level_name, l.position,
-               l.youtube_url, l.thumbnail_url, l.thumbnail_youtube_id
-        FROM victors v
-        JOIN levels l ON v.level_id = l.id
-        ${player ? 'WHERE LOWER(v.player_name) = LOWER(?)' : ''}
-        ORDER BY v.id DESC
-        LIMIT ?
-      `;
+      if (player) {
+        sql = `
+          SELECT v.id, v.player_name, v.video_url,
+                 NULL AS created_at,
+                 l.id AS level_id, l.name AS level_name, l.position,
+                 l.youtube_url, l.thumbnail_url, l.thumbnail_youtube_id
+          FROM victors v
+          JOIN levels l ON v.level_id = l.id
+          WHERE LOWER(v.player_name) = LOWER(?)
+          ORDER BY v.id DESC
+          LIMIT ${limitSafe}
+        `;
+        params = [player];
+      } else {
+        sql = `
+          SELECT v.id, v.player_name, v.video_url,
+                 NULL AS created_at,
+                 l.id AS level_id, l.name AS level_name, l.position,
+                 l.youtube_url, l.thumbnail_url, l.thumbnail_youtube_id
+          FROM victors v
+          JOIN levels l ON v.level_id = l.id
+          ORDER BY v.id DESC
+          LIMIT ${limitSafe}
+        `;
+        params = [];
+      }
     }
 
-    const params = player ? [player, limit] : [limit];
     const [rows] = await query(sql, params);
 
     const feed = rows.map(r => ({

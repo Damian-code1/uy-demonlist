@@ -479,7 +479,9 @@ function openBanModal(discordId, label) {
   banTargetId = discordId;
   document.getElementById('banModalTarget').textContent = label;
   document.getElementById('banModalReason').value = '';
-  document.getElementById('banModalDuration').value = '60';
+  document.getElementById('banModalDays').value    = '';
+  document.getElementById('banModalHours').value   = '';
+  document.getElementById('banModalMinutes').value = '';
   document.getElementById('banModal')?.classList.add('open');
 }
 
@@ -497,10 +499,13 @@ async function confirmBanUser() {
     return;
   }
 
-  const duration = parseInt(document.getElementById('banModalDuration').value) || 0;
+  const days    = parseInt(document.getElementById('banModalDays').value)    || 0;
+  const hours   = parseInt(document.getElementById('banModalHours').value)   || 0;
+  const minutes = parseInt(document.getElementById('banModalMinutes').value) || 0;
+  const duration = days * 1440 + hours * 60 + minutes;
   const reason   = document.getElementById('banModalReason').value.trim();
 
-  if (duration <= 0) { showToast('Duración inválida', 'error'); return; }
+  if (duration <= 0) { showToast('La duración no puede ser cero — completá al menos un campo', 'error'); document.getElementById('banModalDays').focus(); return; }
   if (!reason) { showToast('El motivo es obligatorio', 'error'); document.getElementById('banModalReason').focus(); return; }
 
   try {

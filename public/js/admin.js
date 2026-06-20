@@ -255,13 +255,18 @@ async function loadAdminVictors() {
     const q = searchInput.value.trim();
     clearBtn.style.display = q ? '' : 'none';
     clearTimeout(debounce);
-    // Siempre usar getLevelsData() fresco en cada búsqueda
-    debounce = setTimeout(() => renderVictorLevelSuggestions(q, getLevelsData(), sugg, searchInput, clearBtn, dropdown), 120);
+    debounce = setTimeout(() => {
+      const freshLevels = typeof getLevelsData === 'function' ? getLevelsData() : [];
+      renderVictorLevelSuggestions(q, freshLevels, sugg, searchInput, clearBtn, dropdown);
+    }, 120);
   });
 
   searchInput.addEventListener('focus', () => {
     const q = searchInput.value.trim();
-    if (q.length >= 1) renderVictorLevelSuggestions(q, getLevelsData(), sugg, searchInput, clearBtn, dropdown);
+    if (q.length >= 1) {
+      const freshLevels = typeof getLevelsData === 'function' ? getLevelsData() : [];
+      renderVictorLevelSuggestions(q, freshLevels, sugg, searchInput, clearBtn, dropdown);
+    }
   });
 
   clearBtn.addEventListener('click', () => {

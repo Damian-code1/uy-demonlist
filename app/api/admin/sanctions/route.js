@@ -1,6 +1,7 @@
 import { query } from '../../../../lib/db.js';
 import { requireSanctionsAdmin, requireOwner } from '../../../../lib/auth.js';
 import { ensureSchema } from '../../../../lib/schema.js';
+import { notifySanction } from '../../../../lib/discordWebhook.js';
 
 export async function GET(request) {
   const admin = await requireSanctionsAdmin(request);
@@ -108,6 +109,20 @@ export async function POST(request) {
       ]
     );
 
+    // Webhook de Discord
+    notifySanction({
+      action:          'ban',
+      targetName:      target.discord_display_name || target.discord_username,
+      targetDiscordId: target.discord_id,
+      targetAvatar:    target.discord_avatar || null,
+      staffName:       admin.discord_display_name || admin.discord_username,
+      staffDiscordId:  admin.discord_id,
+      staffAvatar:     admin.discord_avatar || null,
+      reason:          reason?.trim() || null,
+      durationMinutes: durationMinutes,
+      expiresAt:       expiresAt,
+    }).catch(() => {});
+
     return Response.json({ success: true, expiresAt });
   } catch (error) {
     console.error('[/api/admin/sanctions] POST Error:', error);
@@ -146,6 +161,13 @@ export async function DELETE(request) {
     // ─── Levantar sanción activa de un usuario (list_mod+, comportamiento original) ───
     if (!discordId) return Response.json({ error: 'discordId requerido' }, { status: 400 });
 
+    // Obtener datos del usuario para el webhook antes de limpiar
+    const [targetRows2] = await query(
+      'SELECT discord_id, discord_username, discord_display_name, discord_avatar FROM users WHERE discord_id = ? LIMIT 1',
+      [discordId]
+    );
+    const target2 = targetRows2[0] || null;
+
     await query(
       'UPDATE users SET banned_until = NULL, ban_reason = NULL, banned_by = NULL WHERE discord_id = ?',
       [discordId]
@@ -154,6 +176,22 @@ export async function DELETE(request) {
       'UPDATE sanctions_log SET lifted_early = 1 WHERE discord_id = ? AND expires_at > NOW()',
       [discordId]
     );
+
+    // Webhook de Discord
+    if (target2) {
+      notifySanction({
+        action:          'lift',
+        targetName:      target2.discord_display_name || target2.discord_username,
+        targetDiscordId: target2.discord_id,
+        targetAvatar:    target2.discord_avatar || null,
+        staffName:       admin.discord_display_name || admin.discord_username,
+        staffDiscordId:  admin.discord_id,
+        staffAvatar:     admin.discord_avatar || null,
+        reason:          null,
+        durationMinutes: null,
+        expiresAt:       null,
+      }).catch(() => {});
+    }
 
     return Response.json({ success: true });
   } catch (error) {

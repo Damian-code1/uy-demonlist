@@ -554,8 +554,21 @@
     <h3 class="admin-form-title"><i class="fas fa-gavel"></i> Sancionar usuario</h3>
     <p class="sa-modal-target">Vas a sancionar a: <strong id="banModalTarget"></strong></p>
     <div class="admin-form-row">
-      <label class="ou-field-label">Duración (minutos)</label>
-      <input type="number" id="banModalDuration" class="ou-select" value="60" min="1">
+      <label class="ou-field-label">Duración</label>
+      <div class="ban-duration-fields">
+        <div class="ban-duration-field">
+          <input type="number" id="banModalDays" class="ou-select" value="" min="0" placeholder="0">
+          <span class="ban-duration-label">días</span>
+        </div>
+        <div class="ban-duration-field">
+          <input type="number" id="banModalHours" class="ou-select" value="" min="0" max="23" placeholder="0">
+          <span class="ban-duration-label">horas</span>
+        </div>
+        <div class="ban-duration-field">
+          <input type="number" id="banModalMinutes" class="ou-select" value="" min="0" max="59" placeholder="0">
+          <span class="ban-duration-label">minutos</span>
+        </div>
+      </div>
     </div>
     <div class="admin-form-row">
       <label class="ou-field-label">Motivo</label>
