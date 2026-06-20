@@ -1709,7 +1709,7 @@ ul { list-style: none; }
 .level-detail-modal.active { opacity: 1; pointer-events: auto; }
 .level-detail-modal .modal-backdrop {
   position: absolute; inset: 0;
-  background: rgba(0,0,0,.85); backdrop-filter: blur(10px);
+  background: rgba(0,0,0,.88);
 }
 .level-modal-box {
   position: relative; z-index: 1;
@@ -1727,6 +1727,8 @@ ul { list-style: none; }
   position: relative; width: 100%; aspect-ratio: 16/9;
   background: #000; border-radius: var(--r-lg) var(--r-lg) 0 0;
   overflow: hidden; flex-shrink: 0;
+  will-change: transform;
+  isolation: isolate;
 }
 .lm-player-wrap iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: none; }
 .lm-no-video {
@@ -1864,7 +1866,7 @@ ul { list-style: none; }
 .level-detail-modal.active { opacity: 1; pointer-events: auto; }
 .level-detail-modal .modal-backdrop {
   position: absolute; inset: 0;
-  background: rgba(0,0,0,.85); backdrop-filter: blur(10px);
+  background: rgba(0,0,0,.88);
 }
 .level-modal-box {
   position: relative; z-index: 1;
@@ -1882,6 +1884,8 @@ ul { list-style: none; }
   position: relative; width: 100%; aspect-ratio: 16/9;
   background: #000; border-radius: var(--r-lg) var(--r-lg) 0 0;
   overflow: hidden; flex-shrink: 0;
+  will-change: transform;
+  isolation: isolate;
 }
 .lm-player-wrap iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: none; }
 .lm-no-video {
