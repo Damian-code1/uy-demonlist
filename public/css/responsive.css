@@ -133,3 +133,25 @@
   .user-widget-info { display: none; }
   .user-widget-card { padding: .38rem .42rem; }
 }
+
+/* ─── Player profile modal — mobile ─── */
+@media (max-width: 640px) {
+  .player-modal { padding: .5rem; }
+
+  .pm-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: .55rem;
+  }
+  .pm-stat-val  { font-size: 1.3rem; }
+  .pm-stat-lbl  { font-size: .58rem; }
+  .pm-stat-card { padding: .7rem .4rem; }
+
+  .pm-name { font-size: 1.4rem; }
+
+  .pm-comp-thumb, .pm-comp-thumb-ph { width: 72px; height: 44px; }
+  .pm-comp-name  { font-size: .82rem; }
+  .pm-comp-video { padding: .28rem .55rem; font-size: .65rem; margin-right: .4rem; }
+
+  .pm-content { padding: 0 1rem 1.25rem; }
+  .pm-header  { gap: .75rem; margin-bottom: 1rem; }
+}

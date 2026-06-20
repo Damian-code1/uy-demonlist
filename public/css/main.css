@@ -2040,23 +2040,25 @@ body {
    ============================================= */
 .player-modal {
   position: fixed; inset: 0; z-index: 2100;
-  display: flex; align-items: center; justify-content: center;
+  display: flex; align-items: flex-start; justify-content: center;
   padding: 1rem;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   opacity: 0; pointer-events: none;
   transition: opacity .25s;
 }
 .player-modal.active { opacity: 1; pointer-events: auto; }
 
 .player-modal-backdrop {
-  position: absolute; inset: 0;
-  background: rgba(0,0,0,.88); backdrop-filter: blur(10px);
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.88);
 }
 
 .player-modal-box {
   position: relative; z-index: 1;
   background: var(--bg2); border: 1px solid var(--border);
   border-radius: var(--r-lg); width: 100%; max-width: 620px;
-  max-height: 90vh; overflow-y: auto;
+  margin: auto;
   box-shadow: 0 32px 96px rgba(0,0,0,.8), 0 0 60px rgba(139,92,246,.08);
   transform: scale(.95) translateY(16px);
   transition: transform .25s;
