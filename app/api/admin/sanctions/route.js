@@ -59,14 +59,29 @@ export async function POST(request) {
       return Response.json({ error: 'Duración inválida' }, { status: 400 });
 
     const [targetRows] = await query(
-      'SELECT id, discord_username, discord_display_name, role FROM users WHERE discord_id = ? LIMIT 1',
+      'SELECT id, discord_id, discord_username, discord_display_name, role FROM users WHERE discord_id = ? LIMIT 1',
       [discordId]
     );
     if (!targetRows.length) return Response.json({ error: 'Usuario no encontrado' }, { status: 404 });
     const target = targetRows[0];
 
+    if (target.discord_id === admin.discord_id) {
+      return Response.json({ error: 'No podés sancionarte a vos mismo' }, { status: 400 });
+    }
+
     if (target.role === 'owner') {
       return Response.json({ error: 'No se puede sancionar al owner' }, { status: 403 });
+    }
+
+    // Jerarquía: no podés sancionar a alguien con rango igual o mayor al tuyo.
+    // Usamos el mismo orden de roles que el resto del sistema (usuario < list_mod < admin < manager < owner).
+    const ROLE_LEVELS = { usuario: 0, list_mod: 1, admin: 2, manager: 3, owner: 4 };
+    const adminLevel  = ROLE_LEVELS[admin.role]  ?? 0;
+    const targetLevel = ROLE_LEVELS[target.role] ?? 0;
+    if (targetLevel >= adminLevel) {
+      return Response.json({
+        error: 'No podés sancionar a alguien con tu mismo rango o uno mayor',
+      }, { status: 403 });
     }
 
     const expiresAt = new Date(Date.now() + durationMinutes * 60 * 1000);

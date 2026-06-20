@@ -296,6 +296,7 @@ function toggleUserDropdown() {
   if (!drop) return;
   const isOpen = drop.classList.toggle('open');
   card?.classList.toggle('open', isOpen);
+  if (typeof repositionBanCountdown === 'function') repositionBanCountdown();
 }
 
 function closeUserDropdown() {

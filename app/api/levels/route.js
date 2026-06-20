@@ -113,33 +113,39 @@ if (level.thumbnail_youtube_id) {
     `https://img.youtube.com/vi/${level.thumbnail_youtube_id}/mqdefault.jpg`;
 }
 
-// si no hay thumbnail manual, usar victors
+// Si no hay thumbnail manual: usar el video del PRIMER victor (menor id,
+// ya viene ordenado así desde el SQL). Si el primer victor no tiene video
+// propio cargado, usar el Showcase del nivel (level.youtube_url) — NO saltar
+// al segundo victor. El campo showcase guarda justamente el video del primer
+// completion de cada nivel, así que es el fallback correcto antes de mirar
+// a otros victors que ni siquiera son el primero en completar el nivel.
 if (!thumb_url) {
-  for (const v of level.victors) {
-    const ytId = extractYTId(v.videoUrl);
+  const firstVictor   = level.victors[0] || null;
+  const firstVictorYt = firstVictor ? extractYTId(firstVictor.videoUrl) : null;
 
-    if (ytId) {
-      thumb_url =
-        `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
-
-      thumb_url_fallback =
-        `https://img.youtube.com/vi/${ytId}/mqdefault.jpg`;
-
-      break;
+  if (firstVictorYt) {
+    thumb_url = `https://img.youtube.com/vi/${firstVictorYt}/hqdefault.jpg`;
+    thumb_url_fallback = `https://img.youtube.com/vi/${firstVictorYt}/mqdefault.jpg`;
+  } else {
+    const showcaseYt = extractYTId(level.youtube_url);
+    if (showcaseYt) {
+      thumb_url = `https://img.youtube.com/vi/${showcaseYt}/hqdefault.jpg`;
+      thumb_url_fallback = `https://img.youtube.com/vi/${showcaseYt}/mqdefault.jpg`;
     }
   }
 }
 
-// fallback final
+// Último fallback: si el primer victor no tiene video Y el showcase del nivel
+// tampoco, recién ahí buscar en el resto de los victors (2do, 3ro, etc.) por
+// si alguno sí tiene video propio cargado — mejor mostrar algo que nada.
 if (!thumb_url) {
-  const ytId = extractYTId(level.youtube_url);
-
-  if (ytId) {
-    thumb_url =
-      `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
-
-    thumb_url_fallback =
-      `https://img.youtube.com/vi/${ytId}/mqdefault.jpg`;
+  for (const v of level.victors) {
+    const ytId = extractYTId(v.videoUrl);
+    if (ytId) {
+      thumb_url = `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
+      thumb_url_fallback = `https://img.youtube.com/vi/${ytId}/mqdefault.jpg`;
+      break;
+    }
   }
 }
 

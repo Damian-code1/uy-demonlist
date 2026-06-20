@@ -81,6 +81,8 @@ function fmtRemaining(expiresAt) {
   return `${m}m restantes`;
 }
 
+const SANCTIONS_ROLE_LEVELS = { usuario: 0, list_mod: 1, admin: 2, manager: 3, owner: 4 };
+
 function renderSanctionsUsers(filterQ) {
   const container = document.getElementById('sanctions-users-table');
   if (!container) return;
@@ -98,6 +100,9 @@ function renderSanctionsUsers(filterQ) {
     return;
   }
 
+  const myDiscordId = window.currentUser?.discordId || null;
+  const myLevel = SANCTIONS_ROLE_LEVELS[window.currentUser?.role] ?? 0;
+
   container.innerHTML = `
     <div class="sa-hint">
       <i class="fas fa-info-circle"></i>
@@ -109,6 +114,26 @@ function renderSanctionsUsers(filterQ) {
           ? `<img src="${esc(u.avatar_url)}" alt="" class="sa-avatar">`
           : `<div class="sa-avatar sa-avatar-ph">${(u.display_label || '?')[0].toUpperCase()}</div>`;
         const isOwner = u.role === 'owner';
+        const isSelf  = myDiscordId && u.discord_id === myDiscordId;
+        const targetLevel = SANCTIONS_ROLE_LEVELS[u.role] ?? 0;
+        const isHigherOrEqualRank = targetLevel >= myLevel;
+
+        let actionsHtml;
+        if (isOwner) {
+          actionsHtml = `<div class="sa-owner-protected"><i class="fas fa-crown"></i> Owner protegido</div>`;
+        } else if (isSelf) {
+          actionsHtml = `<div class="sa-owner-protected" title="No podés sancionarte a vos mismo"><i class="fas fa-ban"></i> No podés sancionarte a vos mismo</div>`;
+        } else if (u.is_banned) {
+          actionsHtml = `<button class="sa-btn sa-btn-lift" onclick="liftSanction('${esc(u.discord_id)}')">
+                           <i class="fas fa-unlock"></i><span>Levantar sanción</span>
+                         </button>`;
+        } else if (isHigherOrEqualRank) {
+          actionsHtml = `<div class="sa-owner-protected" title="No podés sancionar a alguien de tu mismo rango o superior"><i class="fas fa-lock"></i> Rango protegido</div>`;
+        } else {
+          actionsHtml = `<button class="sa-btn sa-btn-ban" onclick="openBanModal('${esc(u.discord_id)}','${esc(u.display_label)}')">
+                           <i class="fas fa-gavel"></i><span>Sancionar</span>
+                         </button>`;
+        }
 
         return `
         <div class="sa-card${u.is_banned ? ' sa-card-banned' : ''}" data-discord-id="${esc(u.discord_id)}" onclick="openPlayerSanctionsModal('${esc(u.discord_id)}')">
@@ -118,7 +143,7 @@ function renderSanctionsUsers(filterQ) {
               ${u.is_banned ? `<span class="sa-ban-dot" title="Sancionado"></span>` : ''}
             </div>
             <div class="sa-user-info">
-              <div class="sa-display-name">${esc(u.display_label)}</div>
+              <div class="sa-display-name">${esc(u.display_label)}${isSelf ? ' <span class="text-dim" style="font-size:.7rem">(vos)</span>' : ''}</div>
               <div class="sa-discord-handle">@${esc(u.discord_username)}</div>
             </div>
             ${u.is_banned
@@ -140,16 +165,7 @@ function renderSanctionsUsers(filterQ) {
           </div>` : ''}
 
           <div class="sa-card-actions" onclick="event.stopPropagation()">
-            ${isOwner
-              ? `<div class="sa-owner-protected"><i class="fas fa-crown"></i> Owner protegido</div>`
-              : u.is_banned
-                ? `<button class="sa-btn sa-btn-lift" onclick="liftSanction('${esc(u.discord_id)}')">
-                     <i class="fas fa-unlock"></i><span>Levantar sanción</span>
-                   </button>`
-                : `<button class="sa-btn sa-btn-ban" onclick="openBanModal('${esc(u.discord_id)}','${esc(u.display_label)}')">
-                     <i class="fas fa-gavel"></i><span>Sancionar</span>
-                   </button>`
-            }
+            ${actionsHtml}
           </div>
         </div>`;
       }).join('')}
@@ -474,6 +490,13 @@ function closeBanModal() {
 
 async function confirmBanUser() {
   if (!banTargetId) return;
+
+  if (banTargetId === window.currentUser?.discordId) {
+    showToast('No podés sancionarte a vos mismo', 'error');
+    closeBanModal();
+    return;
+  }
+
   const duration = parseInt(document.getElementById('banModalDuration').value) || 0;
   const reason   = document.getElementById('banModalReason').value.trim();
 
@@ -552,7 +575,44 @@ window.canManageSanctions   = canManageSanctions;
 // =============================================
 let _banCountdownInterval = null;
 
+let _banCountdownBannedUntil = null;
+let _banCountdownReason      = null;
+let _banCountdownReposObserver = null;
+
+// Recalcula la posición del countdown para que quede SIEMPRE pegado debajo
+// del widget de usuario real, sin importar si el dropdown está abierto o
+// cerrado — evita que ambos elementos floten de forma independiente y se
+// solapen quien dispare primero.
+function repositionBanCountdown() {
+  const el     = document.getElementById('banCountdownFloat');
+  const widget = document.getElementById('userWidget');
+  if (!el || !widget) return;
+
+  const dropOpen = widget.querySelector('.user-widget-dropdown')?.classList.contains('open');
+
+  // Si el dropdown del perfil está abierto, el countdown se oculta temporalmente
+  // (no tiene sentido mostrarlo flotando atrás/encima del dropdown) y reaparece
+  // automáticamente al cerrar el dropdown.
+  if (dropOpen) {
+    el.classList.add('hidden-by-dropdown');
+    return;
+  }
+  el.classList.remove('hidden-by-dropdown');
+
+  const cardRect = widget.querySelector('.user-widget-card')?.getBoundingClientRect();
+  if (!cardRect) return;
+
+  el.style.position = 'fixed';
+  el.style.top   = `${cardRect.bottom + 10}px`;
+  el.style.right = `${window.innerWidth - cardRect.right}px`;
+  el.style.left  = 'auto';
+}
+window.repositionBanCountdown = repositionBanCountdown;
+
 function showBanCountdown(bannedUntil, reason) {
+  _banCountdownBannedUntil = bannedUntil;
+  _banCountdownReason      = reason;
+
   let el = document.getElementById('banCountdownFloat');
   if (!el) {
     el = document.createElement('div');
@@ -573,6 +633,17 @@ function showBanCountdown(bannedUntil, reason) {
     ${reason ? `<div class="ban-countdown-reason"><i class="fas fa-comment-dots"></i> ${esc(reason)}</div>` : ''}
   `;
   el.classList.add('visible');
+  repositionBanCountdown();
+
+  // Reposicionar en cada resize/scroll y cada vez que el dropdown del perfil
+  // se abre o cierra (detectado vía MutationObserver sobre su clase 'open'),
+  // así nunca quedan desincronizados ni superpuestos.
+  window.addEventListener('resize', repositionBanCountdown);
+  const dropdownEl = document.querySelector('.user-widget-dropdown');
+  if (dropdownEl && !_banCountdownReposObserver) {
+    _banCountdownReposObserver = new MutationObserver(repositionBanCountdown);
+    _banCountdownReposObserver.observe(dropdownEl, { attributes: true, attributeFilter: ['class'] });
+  }
 
   clearInterval(_banCountdownInterval);
   _banCountdownInterval = setInterval(() => {
@@ -597,6 +668,11 @@ function showBanCountdown(bannedUntil, reason) {
 function hideBanCountdown() {
   document.getElementById('banCountdownFloat')?.classList.remove('visible');
   clearInterval(_banCountdownInterval);
+  window.removeEventListener('resize', repositionBanCountdown);
+  _banCountdownReposObserver?.disconnect();
+  _banCountdownReposObserver = null;
+  _banCountdownBannedUntil = null;
+  _banCountdownReason      = null;
 }
 
 window.showBanCountdown = showBanCountdown;

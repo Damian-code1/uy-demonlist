@@ -3460,6 +3460,17 @@ body {
   width: 100%;
 }
 
+/* Countdown de sanción: se oculta suavemente mientras el dropdown del perfil
+   está abierto, para que nunca queden solapados visualmente. */
+.ban-countdown-float {
+  transition: opacity .18s ease, transform .18s ease;
+}
+.ban-countdown-float.hidden-by-dropdown {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-6px);
+}
+
 /* =============================================
    USER WIDGET DROPDOWN v2 — rediseño completo
    ============================================= */
