@@ -1259,3 +1259,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }, 1200);
 });
+
+// ─── Helper: rol meta para player profile ───
+function getRoleMeta(role) {
+  const map = {
+    owner:    { icon: 'fa-crown',       label: 'Owner'   },
+    manager:  { icon: 'fa-chess-queen', label: 'Manager' },
+    admin:    { icon: 'fa-shield-alt',  label: 'Admin'   },
+    list_mod: { icon: 'fa-shield',      label: 'Mod'     },
+  };
+  return map[role] || { icon: 'fa-user', label: role };
+}

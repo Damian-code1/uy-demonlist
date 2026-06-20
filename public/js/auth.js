@@ -32,6 +32,9 @@ async function initAuth() {
     showBanCountdown(currentUser.bannedUntil, currentUser.banReason);
   }
 
+  // Polling cada 30s para detectar cambios de sanción sin necesitar F5
+  startSanctionPolling();
+
   document.getElementById('loginBtn')?.addEventListener('click', loginWithDiscord);
 
   document.addEventListener('click', e => {
@@ -329,3 +332,42 @@ window.showToast        = showToast;
 window.isAdminUser      = isAdminUser;
 window.checkSession     = checkSession;
 window.renderUserWidget = renderUserWidget;
+
+let _sanctionPollInterval = null;
+let _lastBanState = null;
+
+function startSanctionPolling() {
+  if (_sanctionPollInterval) clearInterval(_sanctionPollInterval);
+  _sanctionPollInterval = setInterval(async () => {
+    const discordId = localStorage.getItem('uy_discord_id');
+    if (!discordId) return;
+    try {
+      const res  = await fetch(`/api/auth/session?uid=${discordId}`);
+      const data = await res.json();
+      const user = data.user || null;
+      if (!user) return;
+
+      const nowBanned = !!user.isBanned;
+      const wasBanned = !!_lastBanState;
+
+      // Se acaba de sancionar → recargar para mostrar ban
+      if (nowBanned && !wasBanned) {
+        location.reload();
+        return;
+      }
+
+      // Se levantó la sanción → recargar para quitar ban
+      if (!nowBanned && wasBanned) {
+        location.reload();
+        return;
+      }
+
+      _lastBanState = nowBanned;
+      window.currentUser = user;
+    } catch {}
+  }, 30000);
+
+  // Inicializar estado
+  if (currentUser) _lastBanState = !!currentUser.isBanned;
+}
+window.startSanctionPolling = startSanctionPolling;

@@ -127,6 +127,54 @@
   </div>
 </section>
 
+<!-- ─── FEED DE COMPLETIONS ─── -->
+<section class="page-section" id="feed-section">
+  <div class="section-wrap">
+    <div class="section-head" data-aos="fade-up">
+      <span class="section-tag">En vivo</span>
+      <h2 class="section-h2">ÚLTIMAS COMPLETIONS</h2>
+      <p class="section-sub">Lo que la comunidad se está pasando, en tiempo real.</p>
+    </div>
+    <div class="feed-widget" data-aos="fade-up" data-aos-delay="80">
+      <div class="feed-live-bar">
+        <span class="feed-live-dot"></span>
+        <span class="feed-live-label">EN VIVO</span>
+        <span class="feed-live-count" id="feedLiveCount">—</span>
+        <button class="feed-expand-btn" onclick="openFeedModal()">
+          <i class="fas fa-expand-alt"></i> Ver todo
+        </button>
+      </div>
+      <div class="feed-scroll-track" id="feedScrollTrack">
+        <div class="feed-scroll-inner" id="feedScrollInner">
+          <!-- populated by JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── MODAL FEED FULLSCREEN ─── -->
+<div class="feed-modal" id="feedModal">
+  <div class="feed-modal-backdrop" onclick="closeFeedModal()"></div>
+  <div class="feed-modal-box">
+    <div class="feed-modal-header">
+      <div class="feed-modal-title">
+        <span class="feed-live-dot"></span>
+        <span>COMPLETIONS</span>
+      </div>
+      <div class="feed-modal-search">
+        <i class="fas fa-search"></i>
+        <input type="text" id="feedPlayerFilter" placeholder="Filtrar por jugador…" oninput="filterFeedModal(this.value)">
+        <button onclick="document.getElementById('feedPlayerFilter').value='';filterFeedModal('')" title="Limpiar"><i class="fas fa-times"></i></button>
+      </div>
+      <button class="feed-modal-close" onclick="closeFeedModal()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="feed-modal-list" id="feedModalList">
+      <!-- populated by JS -->
+    </div>
+  </div>
+</div>
+
 <!-- ─── LISTA ─── -->
 <section class="page-section" id="lista">
   <div class="section-wrap">
@@ -511,7 +559,7 @@
     </div>
     <div class="admin-form-row">
       <label class="ou-field-label">Motivo</label>
-      <input type="text" id="banModalReason" class="ou-select" placeholder="Motivo de la sanción (opcional)">
+      <input type="text" id="banModalReason" class="ou-select" placeholder="Motivo de la sanción (obligatorio)" required>
     </div>
     <div class="admin-form-actions">
       <button class="ou-btn ou-btn-unlink" id="banModalCancel">Cancelar</button>
@@ -854,6 +902,7 @@
 <script src="js/auth.js"></script>
 <script src="js/admin.js"></script><script src="js/owner.js"></script>
 <script src="js/sanctions.js"></script>
+  <script src="js/feed.js"></script>
 
 <script>
   // Admin level filter

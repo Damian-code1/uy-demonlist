@@ -501,6 +501,7 @@ async function confirmBanUser() {
   const reason   = document.getElementById('banModalReason').value.trim();
 
   if (duration <= 0) { showToast('Duración inválida', 'error'); return; }
+  if (!reason) { showToast('El motivo es obligatorio', 'error'); document.getElementById('banModalReason').focus(); return; }
 
   try {
     await sanctionsFetch('', {
@@ -621,16 +622,25 @@ function showBanCountdown(bannedUntil, reason) {
     document.body.appendChild(el);
   }
 
+  const user = window.currentUser;
+  const avatarHtml = user?.image
+    ? `<img src="${esc(user.image)}" alt="" class="bcd-avatar">`
+    : `<div class="bcd-avatar bcd-avatar-placeholder">${(user?.name || 'U')[0].toUpperCase()}</div>`;
+
   el.innerHTML = `
-    <div class="ban-countdown-glow"></div>
-    <div class="ban-countdown-inner">
-      <div class="ban-countdown-icon"><i class="fas fa-gavel"></i></div>
-      <div class="ban-countdown-text">
-        <span class="ban-countdown-label">SANCIONADO</span>
-        <span class="ban-countdown-timer" id="banCountdownTimer">--:--:--</span>
+    <div class="bcd-gradient-border"></div>
+    <div class="bcd-header">
+      ${avatarHtml}
+      <div class="bcd-header-info">
+        <span class="bcd-username">${esc(user?.name || 'Usuario')}</span>
+        <span class="bcd-badge"><i class="fas fa-gavel"></i> SANCIONADO</span>
       </div>
     </div>
-    ${reason ? `<div class="ban-countdown-reason"><i class="fas fa-comment-dots"></i> ${esc(reason)}</div>` : ''}
+    <div class="bcd-timer-row">
+      <i class="fas fa-hourglass-half bcd-timer-icon"></i>
+      <span class="ban-countdown-timer" id="banCountdownTimer">--:--:--</span>
+    </div>
+    ${reason ? `<div class="bcd-reason"><i class="fas fa-comment-dots"></i> ${esc(reason)}</div>` : ''}
   `;
   el.classList.add('visible');
   repositionBanCountdown();
