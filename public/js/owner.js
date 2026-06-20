@@ -91,6 +91,7 @@ function renderOwnerUsers(filterQ) {
         const rm = getRoleMeta(u.role);
         const isLinked = !!u.linked_player_name;
         const isOwner  = u.role === 'owner';
+        const isSelf   = window.currentUser && u.id === window.currentUser.id;
 
         return `
         <div class="ou-card" data-user-id="${u.id}">
@@ -124,7 +125,7 @@ function renderOwnerUsers(filterQ) {
             <div class="ou-field">
               <label class="ou-field-label"><i class="fas fa-${rm.icon}"></i> Rol</label>
               <div class="ou-select-wrap">
-                <select class="ou-select owner-role-select" data-user-id="${u.id}"${isOwner ? ' disabled' : ''}>
+                <select class="ou-select owner-role-select" data-user-id="${u.id}"${isSelf ? ' disabled title="No podés cambiar tu propio rol"' : ''}>
                   ${roleOpts}
                 </select>
                 <i class="fas fa-chevron-down ou-select-arrow"></i>

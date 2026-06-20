@@ -533,7 +533,7 @@ function renderCurrentLevel(level) {
   const thumb    = level.thumb_url || null;
   const pos      = level.position || '?';
   const aredlPos = level.aredl_position || null;
-  const pts      = level.points != null ? level.points : Math.max(1, 1000 - ((pos || 1) - 1) * 5);
+  const pts      = level.points != null ? level.points : (typeof computeAutoPoints === 'function' ? computeAutoPoints(pos) : 1);
   const ytId     = level.youtube_id || extractYoutubeId(level.youtube_url);
 
   const thumbEl = document.getElementById('rlSlotThumb');
@@ -809,7 +809,7 @@ function renderHistory() {
     const thumb  = level.thumb_url || null;
     const ytId   = level.youtube_id || extractYoutubeId(level.youtube_url);
     const pos    = level.position || '?';
-    const pts    = level.points != null ? level.points : Math.max(1, 1000 - ((pos || 1) - 1) * 5);
+    const pts    = level.points != null ? level.points : (typeof computeAutoPoints === 'function' ? computeAutoPoints(pos) : 1);
     const num    = RL.session.length - i;
 
     let statusHtml;
@@ -1110,7 +1110,7 @@ function downloadSessionPdf() {
 
     const level  = entry.level;
     const pos    = level.position || '?';
-    const pts    = level.points != null ? level.points : Math.max(1, 1000 - ((pos || 1) - 1) * 5);
+    const pts    = level.points != null ? level.points : (typeof computeAutoPoints === 'function' ? computeAutoPoints(pos) : 1);
     const num    = visibleEntries.length - idx;
     const name   = (level.name || '—').substring(0, 32);
     const pctStr = entry.percentage != null ? `${entry.percentage}%` : '—';

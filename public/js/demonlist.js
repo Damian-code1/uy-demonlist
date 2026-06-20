@@ -104,9 +104,25 @@ function paintCards(levels, animated = true) {
   });
 }
 
+// Curva de puntos tipo potencia (no lineal): el valor cae lento en el
+// top de la lista y se desploma hacia la cola, para que el esfuerzo
+// marginal de subir puestos cerca del #1 valga muchísimo más que
+// "farmear" la franja media (ver MAX_POSITION_REF/EXPONENT abajo).
+const POINTS_MAX           = 1000;
+const POINTS_MIN           = 1;
+const POINTS_MAX_POSITION_REF = 250; // techo de referencia fijo (no recalibra puntos si la lista crece/encoge)
+const POINTS_EXPONENT       = 3;
+
+function computeAutoPoints(position) {
+  const pos  = Math.min(position || 1, POINTS_MAX_POSITION_REF);
+  const frac = (POINTS_MAX_POSITION_REF - pos) / (POINTS_MAX_POSITION_REF - 1);
+  return Math.max(POINTS_MIN, Math.round(POINTS_MIN + (POINTS_MAX - POINTS_MIN) * Math.pow(frac, POINTS_EXPONENT)));
+}
+window.computeAutoPoints = computeAutoPoints;
+
 function levelPoints(level) {
   if (level.points != null) return level.points;
-  return Math.max(1, 1000 - ((level.position || 1) - 1) * 5);
+  return computeAutoPoints(level.position || 1);
 }
 
 // ─── BUILD COMPACT CARD ───

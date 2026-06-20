@@ -21,7 +21,7 @@ export async function GET(request) {
         v.player_name,
         l.position,
         l.name AS level_name,
-        COALESCE(l.points, GREATEST(1, 1000 - (l.position - 1) * 5)) AS pts
+        COALESCE(l.points, GREATEST(1, ROUND(1 + 999 * POWER((250 - LEAST(l.position, 250)) / 249, 3)))) AS pts
       FROM victors v
       JOIN levels l ON v.level_id = l.id
       ORDER BY v.player_name, l.position ASC

@@ -2451,6 +2451,126 @@ body {
    SUBMISSIONS — Nuevo diseño
    ============================================= */
 
+.submissions-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .submissions-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.my-subs-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-height: 720px;
+}
+
+.my-subs-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.my-subs-header h3 {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  font-size: 1.05rem;
+  margin: 0;
+}
+
+.my-subs-live {
+  display: flex;
+  align-items: center;
+  gap: .35rem;
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  color: var(--success, #22c55e);
+}
+
+.my-subs-live i { font-size: .5rem; animation: my-subs-pulse 1.6s ease-in-out infinite; }
+
+@keyframes my-subs-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: .25; }
+}
+
+.my-subs-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: .6rem;
+  padding: 2.5rem 1rem;
+  text-align: center;
+  color: var(--text-sub, #94a3b8);
+  font-size: .9rem;
+}
+
+.my-subs-empty i { font-size: 1.8rem; opacity: .5; }
+
+.my-subs-list {
+  display: flex;
+  flex-direction: column;
+  gap: .6rem;
+  overflow-y: auto;
+}
+
+.my-sub-item {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: .75rem .9rem;
+  border-radius: var(--r-sm, 10px);
+  background: var(--bg-elevated, rgba(255,255,255,.03));
+  border: 1px solid var(--border, rgba(255,255,255,.06));
+  cursor: pointer;
+  transition: border-color .15s ease, transform .15s ease;
+}
+
+.my-sub-item:hover {
+  border-color: var(--violet, #8b5cf6);
+  transform: translateY(-1px);
+}
+
+.my-sub-item-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: .15rem;
+}
+
+.my-sub-item-level {
+  font-weight: 700;
+  font-size: .9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.my-sub-item-date {
+  font-size: .72rem;
+  color: var(--text-dim, #64748b);
+}
+
+.my-sub-item-note {
+  font-size: .72rem;
+  color: var(--text-sub, #94a3b8);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
 .sub-card { max-width: 680px; margin: 0 auto; }
 
 .sub-login-prompt {

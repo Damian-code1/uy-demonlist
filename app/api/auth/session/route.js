@@ -34,7 +34,7 @@ export async function GET(request) {
     const [statsRows] = await query(
       `SELECT
         COUNT(v.id) AS completions,
-        COALESCE(SUM(COALESCE(l.points, GREATEST(1, 1000 - (l.position - 1) * 5))), 0) AS points,
+        COALESCE(SUM(COALESCE(l.points, GREATEST(1, ROUND(1 + 999 * POWER((250 - LEAST(l.position, 250)) / 249, 3))))), 0) AS points,
         (SELECT l2.name FROM levels l2 JOIN victors v2 ON v2.level_id = l2.id
          WHERE LOWER(v2.player_name) IN (LOWER(?), LOWER(COALESCE(?,'')), LOWER(COALESCE(?,'')))
          ORDER BY l2.position ASC LIMIT 1) AS hardest_level

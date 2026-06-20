@@ -374,6 +374,15 @@
             });
             return;
           }
+          if (err.error === 'already_victor') {
+            await uiAlert({
+              title: 'Ya completaste este nivel',
+              message: err.message,
+              type: 'warning',
+              confirmText: 'Entendido',
+            });
+            return;
+          }
           throw new Error(err.error || 'Error del servidor');
         }
 

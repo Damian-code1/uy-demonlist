@@ -6,7 +6,7 @@ let sanctionsUsers = [];
 let sanctionsLog    = [];
 
 function canManageSanctions() {
-  return window.currentUser && typeof isAdminRole === 'function' && isAdminRole(window.currentUser.role);
+  return window.currentUser && typeof isSanctionsStaffRole === 'function' && isSanctionsStaffRole(window.currentUser.role);
 }
 
 function openSanctionsPanel() {

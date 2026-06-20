@@ -28,6 +28,14 @@ export async function PUT(request, { params }) {
       return Response.json({ error: 'No podés modificar el rol de otro manager' }, { status: 403 });
     }
 
+    // Nadie puede cambiar su PROPIO rol — ni el owner ni el manager pueden
+    // demotearse (ni "ascenderse") a sí mismos. Solo otro usuario con permisos
+    // puede modificar el rol de uno. Esto reemplaza la validación vieja que solo
+    // bloqueaba auto-demote cuando target.role === 'owner'.
+    if (target.id === owner.id && role !== undefined && role !== target.role) {
+      return Response.json({ error: 'No podés cambiar tu propio rol' }, { status: 400 });
+    }
+
     const updates = [];
     const values  = [];
 
@@ -54,9 +62,6 @@ export async function PUT(request, { params }) {
     if (role !== undefined) {
       if (!ALLOWED_ROLES.includes(role)) {
         return Response.json({ error: 'Rol inválido' }, { status: 400 });
-      }
-      if (target.id === owner.id && role !== 'owner') {
-        return Response.json({ error: 'No podés quitarte el rol owner a vos mismo' }, { status: 400 });
       }
       // Defensa en profundidad: solo un owner puede otorgar 'owner' o 'manager'.
       if ((role === 'owner' || role === 'manager') && owner.role !== 'owner') {

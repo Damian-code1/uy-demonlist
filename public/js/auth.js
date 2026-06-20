@@ -26,6 +26,7 @@ async function initAuth() {
   currentUser = await checkSession();
   window.currentUser = currentUser;
   renderUserWidget(currentUser);
+  if (typeof refreshMySubmissions === 'function') refreshMySubmissions();
 
   if (currentUser?.isBanned && typeof showBanCountdown === 'function') {
     showBanCountdown(currentUser.bannedUntil, currentUser.banReason);
@@ -59,6 +60,7 @@ async function logout() {
   window.currentUser = null;
   renderUserWidget(null);
   closeUserDropdown();
+  if (typeof refreshMySubmissions === 'function') refreshMySubmissions();
   showToast('Sesión cerrada', 'info');
 }
 
@@ -92,7 +94,10 @@ function renderUserWidget(user) {
 
   const sanctionsBtn = document.getElementById('navSanctionsBtn');
   if (sanctionsBtn) {
-    sanctionsBtn.style.display = ['owner','admin','list_mod'].includes(user.role) ? 'flex' : 'none';
+    const canSeeSanctions = typeof isSanctionsStaffRole === 'function'
+      ? isSanctionsStaffRole(user.role)
+      : ['owner','admin','manager'].includes(user.role);
+    sanctionsBtn.style.display = canSeeSanctions ? 'flex' : 'none';
   }
 
   if (user.isBanned && typeof showBanCountdown === 'function') {
@@ -109,7 +114,13 @@ function renderUserWidget(user) {
     : `<div class="user-widget-avatar-placeholder">${(user.name || 'U')[0].toUpperCase()}</div>`;
 
   const roleClass = `role-${user.role || 'usuario'}`;
-  const roleLabel = { owner: '👑 OWNER', admin: '⚡ ADMIN', list_mod: '🛡 MOD', usuario: 'USUARIO' }[user.role] || 'USUARIO';
+  const roleLabel = {
+    owner:    '👑 OWNER',
+    manager:  '🔱 MANAGER',
+    admin:    '⚡ ADMIN',
+    list_mod: '🛡 MOD',
+    usuario:  'USUARIO',
+  }[user.role] || 'USUARIO';
 
   const card = widget.querySelector('.user-widget-card');
   const drop = widget.querySelector('.user-widget-dropdown');
@@ -126,6 +137,22 @@ function renderUserWidget(user) {
   }
 
 const isRoulettePage = window.location.pathname.includes('roulette');
+
+  // ─── Ruleta: perfil flotante de solo lectura, sin dropdown ───
+  // Solo usuario, avatar y rango — sin stats, sin GD, sin acciones, sin logout.
+  if (isRoulettePage) {
+    if (card) {
+      card.innerHTML = `
+        ${avatarHtml}
+        <div class="user-widget-info">
+          <div class="user-widget-name">${esc(user.name || 'Usuario')}</div>
+          <div class="user-widget-role ${roleClass}">${roleLabel}</div>
+        </div>`;
+      card.onclick = null;
+    }
+    if (drop) drop.innerHTML = '';
+    return;
+  }
 
   if (drop) {
     const gdSection = user.gdUsername

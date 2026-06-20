@@ -10,7 +10,7 @@ export async function GET(request) {
       SELECT
         v.player_name AS name,
         COUNT(v.id)   AS completions,
-        SUM(GREATEST(1, 1000 - (l.position - 1) * 5)) AS points,
+        SUM(COALESCE(l.points, GREATEST(1, ROUND(1 + 999 * POWER((250 - LEAST(l.position, 250)) / 249, 3))))) AS points,
         (SELECT l2.name FROM levels l2 JOIN victors v2 ON v2.level_id = l2.id
          WHERE v2.player_name = v.player_name ORDER BY l2.position ASC LIMIT 1) AS hardest_level
       FROM victors v

@@ -2,14 +2,44 @@
 import { query } from '../../../lib/db.js';
 import { notifySubmission } from '../../../lib/discordWebhook.js';
 
-export async function GET() {
+export async function GET(request) {
   try {
-    const [submissions] = await query(
-      `SELECT s.*, u.discord_username as submitted_by_name
-       FROM submissions s
-       LEFT JOIN users u ON s.submitted_by = u.id
-       ORDER BY s.created_at DESC`
-    );
+    const { searchParams } = new URL(request.url);
+    const userId = searchParams.get('userId');
+
+    const baseQuery = `
+      SELECT
+        s.*,
+        u.discord_username as submitted_by_name,
+        r.id               as reviewer_id,
+        r.discord_id        as reviewer_discord_id,
+        r.discord_username  as reviewer_username,
+        r.discord_display_name as reviewer_display_name,
+        r.discord_avatar    as reviewer_avatar
+      FROM submissions s
+      LEFT JOIN users u ON s.submitted_by = u.id
+      LEFT JOIN users r ON s.reviewed_by  = r.id
+      ${userId ? 'WHERE s.submitted_by = ?' : ''}
+      ORDER BY s.created_at DESC
+    `;
+
+    const [rows] = userId
+      ? await query(baseQuery, [userId])
+      : await query(baseQuery);
+
+    const submissions = rows.map(s => ({
+      ...s,
+      reviewer: s.reviewer_id ? {
+        id:           s.reviewer_id,
+        discordId:    s.reviewer_discord_id,
+        username:     s.reviewer_username,
+        displayName:  s.reviewer_display_name || s.reviewer_username,
+        avatarUrl:    s.reviewer_avatar
+          ? `https://cdn.discordapp.com/avatars/${s.reviewer_discord_id}/${s.reviewer_avatar}.png`
+          : null,
+      } : null,
+    }));
+
     return Response.json({ submissions });
   } catch (error) {
     console.error('[/api/submissions GET] Error:', error);
@@ -55,6 +85,26 @@ export async function POST(request) {
         error: 'duplicate_pending',
         message: `Ya tenés una submission pendiente para "${levelName.trim()}". Esperá a que sea revisada antes de enviar otra.`,
       }, { status: 409 });
+    }
+
+    // Verificar que el usuario NO sea ya victor de este nivel (no se puede volver
+    // a enviar un nivel que ya está completado y aprobado en su nombre).
+    const possibleNames = [u.gd_username, u.discord_display_name, u.discord_username].filter(Boolean);
+    if (possibleNames.length) {
+      const placeholders = possibleNames.map(() => 'LOWER(?)').join(',');
+      const [victorRows] = await query(
+        `SELECT v.id FROM victors v
+         JOIN levels l ON v.level_id = l.id
+         WHERE LOWER(l.name) = LOWER(?) AND LOWER(v.player_name) IN (${placeholders})
+         LIMIT 1`,
+        [levelName.trim(), ...possibleNames]
+      );
+      if (victorRows.length) {
+        return Response.json({
+          error: 'already_victor',
+          message: `Ya estás registrado como victor de "${levelName.trim()}". No podés volver a enviar este nivel.`,
+        }, { status: 409 });
+      }
     }
 
     const [result] = await query(

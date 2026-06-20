@@ -739,7 +739,7 @@ function renderAdminPointsFiltered(q) {
   }
 
   filtered.forEach(l => {
-    const autoPoints   = Math.max(1, 1000 - (l.position - 1) * 5);
+    const autoPoints   = typeof computeAutoPoints === 'function' ? computeAutoPoints(l.position) : 1;
     const customPoints = l.points != null ? l.points : '';
     const tr           = document.createElement('tr');
     tr.id = `pts-row-${l.id}`;

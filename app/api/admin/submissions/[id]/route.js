@@ -1,5 +1,6 @@
 import { query } from '../../../../../lib/db.js';
 import { requireAdmin } from '../../../../../lib/auth.js';
+import { ensureSchema } from '../../../../../lib/schema.js';
 import { invalidateLevelsCache } from '../../../levels/route.js';
 import { invalidatePlayersCache } from '../../../players/route.js';
 import { notifyDecision } from '../../../../../lib/discordWebhook.js';
@@ -17,6 +18,8 @@ export async function PUT(request, { params }) {
   if (!admin) return Response.json({ error: 'No autorizado' }, { status: 401 });
 
   try {
+    await ensureSchema();
+
     const { status, rejection_reason, approval_note } = await request.json();
     if (!['pending','approved','rejected'].includes(status))
       return Response.json({ error: 'Status inválido' }, { status: 400 });
@@ -26,8 +29,14 @@ export async function PUT(request, { params }) {
     const sub = subRows[0];
 
     await query(
-      'UPDATE submissions SET status = ?, rejection_reason = ?, updated_at = NOW() WHERE id = ?',
-      [status, status === 'rejected' ? (rejection_reason?.trim() || null) : null, params.id]
+      'UPDATE submissions SET status = ?, rejection_reason = ?, approval_note = ?, reviewed_by = ?, updated_at = NOW() WHERE id = ?',
+      [
+        status,
+        status === 'rejected' ? (rejection_reason?.trim() || null) : null,
+        status === 'approved' ? (approval_note?.trim()   || null) : null,
+        status === 'pending'  ? null : admin.id,
+        params.id,
+      ]
     );
 
     let levelId = null;

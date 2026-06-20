@@ -181,6 +181,7 @@
       <p class="section-sub">¿Completaste un nivel en la lista? Mandanos tu completion para revisión</p>
     </div>
 
+    <div class="submissions-layout" id="submissionsLayout">
     <div class="form-card sub-card" data-aos="fade-up" data-aos-delay="80" id="submissionsFormWrap">
       <!-- Estado: no logueado -->
       <div id="subNotLoggedIn" style="display:none">
@@ -286,6 +287,24 @@
           <i class="fas fa-paper-plane"></i> Enviar Submission
         </button>
       </form>
+    </div>
+
+    <!-- Historial de submissions del usuario -->
+    <div class="form-card my-subs-card" data-aos="fade-up" data-aos-delay="120" id="mySubsCard">
+      <div class="my-subs-header">
+        <h3><i class="fas fa-history"></i> Tu historial</h3>
+        <span class="my-subs-live"><i class="fas fa-circle"></i> En vivo</span>
+      </div>
+      <div id="mySubsLoggedOut" class="my-subs-empty" style="display:none">
+        <i class="fas fa-user-clock"></i>
+        <span>Iniciá sesión para ver tu historial de submissions.</span>
+      </div>
+      <div id="mySubsEmpty" class="my-subs-empty" style="display:none">
+        <i class="fas fa-inbox"></i>
+        <span>Todavía no enviaste ninguna submission.</span>
+      </div>
+      <div id="mySubsList" class="my-subs-list"></div>
+    </div>
     </div>
   </div>
 </section>
@@ -746,6 +765,23 @@
   </div>
 </div>
 
+<!-- ── My Submission Detail Modal (usuario) ── -->
+<div class="sub-detail-modal" id="mySubDetailModal">
+  <div class="modal-backdrop" onclick="closeMySubDetailModal()"></div>
+  <div class="sub-detail-box">
+    <div class="sub-detail-header">
+      <div class="sub-detail-avatar" id="mySubDetailLevelIcon"><i class="fas fa-skull"></i></div>
+      <div style="flex:1;min-width:0">
+        <div class="sub-detail-title" id="mySubDetailLevel">—</div>
+        <div class="sub-detail-sub" id="mySubDetailDate"></div>
+      </div>
+      <span class="status-badge" id="mySubDetailStatus"></span>
+      <button class="admin-close" onclick="closeMySubDetailModal()" style="margin-left:.5rem"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="sub-detail-body" id="mySubDetailBody"></div>
+  </div>
+</div>
+
 <!-- ── Submission Detail Modal ── -->
 <div class="sub-detail-modal" id="subDetailModal">
   <div class="modal-backdrop" onclick="closeSubDetailModal()"></div>
@@ -783,9 +819,9 @@
 <script src="js/main.js"></script>
 <script src="js/demonlist.js"></script>
 <script src="js/submissions.js"></script>
+<script src="js/my-submissions.js"></script>
 <script src="js/auth.js"></script>
-<script src="js/admin.js"></script>
-<script src="js/owner.js"></script>
+<script src="js/admin.js"></script><script src="js/owner.js"></script>
 <script src="js/sanctions.js"></script>
 
 <script>
