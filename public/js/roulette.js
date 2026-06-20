@@ -476,7 +476,7 @@ async function handleSpin() {
 
 if (RL.current) {
   showRlToast(
-    'Debés completar, rendirte o saltear el nivel actual antes de volver a girar.',
+    'Debés completar, rendirte o saltear el nivel actual antes de volver a elegir nivel.',
     'error'
   );
   return;
