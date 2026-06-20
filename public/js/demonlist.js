@@ -274,8 +274,13 @@ function renderLmPlayer(videoId, videoUrl) {
   const wrap = document.querySelector('#levelDetailModal .lm-player-wrap');
   if (!wrap) return;
   wrap.innerHTML = videoId
-    ? `<iframe src="https://www.youtube.com/embed/${videoId}?rel=0" frameborder="0"
-         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`
+    ? `<iframe
+         src="https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&enablejsapi=1&origin=${encodeURIComponent(location.origin)}"
+         frameborder="0"
+         loading="lazy"
+         allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+         allowfullscreen
+         title="Video del nivel"></iframe>`
     : videoUrl
       ? (() => {
           const plat = typeof detectVideoPlatform === 'function' ? detectVideoPlatform(videoUrl) : null;
@@ -314,7 +319,10 @@ function renderModalContent(level, opts = {}) {
   // activo es el mismo que ya se está reproduciendo, NO tocamos el player wrap
   // para no interrumpir la reproducción. El resto del modal (víctores, stats, etc.)
   // sí se actualiza siempre.
-  const samePlayer = videoId === _lmCurrentVideoId && videoUrl === _lmCurrentVideoUrl;
+  // Comparar normalizando null/undefined para evitar race conditions en el polling
+  const normId  = videoId  || null;
+  const normUrl = videoUrl || null;
+  const samePlayer = normId === _lmCurrentVideoId && normUrl === _lmCurrentVideoUrl;
   const skipPlayerRerender = !!(opts.preservePlayer && samePlayer);
 
   // Guardamos el wrap actual del player ANTES de pisar el innerHTML del box,
