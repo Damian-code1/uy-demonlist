@@ -111,7 +111,7 @@ function renderSanctionsUsers(filterQ) {
         const isOwner = u.role === 'owner';
 
         return `
-        <div class="sa-card${u.is_banned ? ' sa-card-banned' : ''}" data-discord-id="${esc(u.discord_id)}">
+        <div class="sa-card${u.is_banned ? ' sa-card-banned' : ''}" data-discord-id="${esc(u.discord_id)}" onclick="openPlayerSanctionsModal('${esc(u.discord_id)}')">
           <div class="sa-card-header">
             <div class="sa-avatar-wrap">
               ${avatar}
@@ -139,7 +139,7 @@ function renderSanctionsUsers(filterQ) {
             ${u.banned_by ? ` <span class="sa-ban-by">— ${esc(u.banned_by)}</span>` : ''}
           </div>` : ''}
 
-          <div class="sa-card-actions">
+          <div class="sa-card-actions" onclick="event.stopPropagation()">
             ${isOwner
               ? `<div class="sa-owner-protected"><i class="fas fa-crown"></i> Owner protegido</div>`
               : u.is_banned
@@ -310,6 +310,119 @@ function closeSanctionDetail() {
   document.getElementById('sanctionDetailModal')?.classList.remove('open');
 }
 
+// ─── Modal: detalle de un jugador (stats + historial completo de sanciones) ───
+function openPlayerSanctionsModal(discordId) {
+  const user = sanctionsUsers.find(u => u.discord_id === discordId);
+  if (!user) return;
+
+  const history = sanctionsLog
+    .filter(l => (l.target_discord_id || l.discord_id) === discordId)
+    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+  // Stats del jugador: cruzamos con playersData (cargado globalmente en data.js),
+  // probando los mismos campos de fallback que usa el backend en /api/players.
+  const candidateNames = [
+    user.linked_player_name,
+    user.gd_username,
+    user.discord_display_name,
+    user.discord_username,
+  ].filter(Boolean).map(n => n.toLowerCase());
+  const playerStats = candidateNames.length
+    ? (window.playersData || []).find(p => candidateNames.includes(p.name.toLowerCase()))
+    : null;
+
+  const avatar = user.avatar_url
+    ? `<img src="${esc(user.avatar_url)}" alt="" class="psm-avatar">`
+    : `<div class="psm-avatar psm-avatar-ph">${(user.display_label || '?')[0].toUpperCase()}</div>`;
+
+  const statsHtml = playerStats ? `
+    <div class="psm-stats-grid">
+      <div class="psm-stat">
+        <div class="psm-stat-val">${playerStats.completions}</div>
+        <div class="psm-stat-label">Completions</div>
+      </div>
+      <div class="psm-stat">
+        <div class="psm-stat-val">${playerStats.points.toLocaleString('es-UY')}</div>
+        <div class="psm-stat-label">Puntos</div>
+      </div>
+      <div class="psm-stat psm-stat-hardest">
+        <div class="psm-stat-val">${esc(playerStats.hardest_level)}</div>
+        <div class="psm-stat-label">Nivel más difícil</div>
+      </div>
+    </div>` : '';
+
+  const currentBanHtml = user.is_banned ? `
+    <div class="psm-current-ban">
+      <i class="fas fa-gavel"></i>
+      <div>
+        <div class="psm-current-ban-title">Sanción activa — ${fmtRemaining(user.banned_until)}</div>
+        <div class="psm-current-ban-meta">
+          ${user.ban_reason ? esc(user.ban_reason) : 'Sin motivo especificado'}
+          ${user.banned_by ? ` — por <strong>${esc(user.banned_by)}</strong>` : ''}
+        </div>
+      </div>
+    </div>` : '';
+
+  const historyHtml = history.length ? `
+    <h4 class="psm-section-title"><i class="fas fa-scroll"></i> Historial de sanciones (${history.length})</h4>
+    <div class="psm-history-list">
+      ${history.map(l => {
+        const status = sanctionLogStatus(l);
+        return `
+        <div class="psm-history-row" onclick="closePlayerSanctionsModal();openSanctionDetail(${l.id})">
+          <div class="psm-history-icon${status.key === 'lifted' ? ' psm-history-lifted' : ''}">
+            <i class="fas ${status.key === 'lifted' ? 'fa-unlock' : 'fa-gavel'}"></i>
+          </div>
+          <div class="psm-history-main">
+            <div class="psm-history-reason">${esc(l.reason || 'Sin motivo especificado')}</div>
+            <div class="psm-history-meta">Por <strong>${esc(l.staff_label || 'Desconocido')}</strong> · ${l.duration_minutes} min</div>
+          </div>
+          <div class="psm-history-side">
+            <div class="psm-history-date">${fmtLogDate(l.created_at)}</div>
+            <span class="psm-history-badge ${status.cls}">${status.label}</span>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>` : `
+    <div class="psm-empty">
+      <i class="fas fa-shield-alt"></i>
+      <span>Este jugador no tiene sanciones registradas</span>
+    </div>`;
+
+  const box = document.getElementById('playerSanctionsBox');
+  box.innerHTML = `
+    <div class="psm-header">
+      <button class="psm-close" onclick="closePlayerSanctionsModal()"><i class="fas fa-times"></i></button>
+      <div class="psm-header-content">
+        ${avatar}
+        <div class="psm-title-wrap">
+          <div class="psm-name">${esc(user.display_label)}</div>
+          <div class="psm-handle">@${esc(user.discord_username)}</div>
+        </div>
+      </div>
+      <div class="psm-status-row">
+        ${user.is_banned
+          ? `<span class="psm-status psm-status-banned"><i class="fas fa-ban"></i> Sancionado actualmente</span>`
+          : `<span class="psm-status psm-status-ok"><i class="fas fa-check-circle"></i> Sin sanciones activas</span>`
+        }
+      </div>
+    </div>
+    <div class="psm-body">
+      ${statsHtml}
+      ${currentBanHtml}
+      ${historyHtml}
+    </div>`;
+
+  document.getElementById('playerSanctionsModal')?.classList.add('open');
+}
+
+function closePlayerSanctionsModal() {
+  document.getElementById('playerSanctionsModal')?.classList.remove('open');
+}
+
+window.openPlayerSanctionsModal  = openPlayerSanctionsModal;
+window.closePlayerSanctionsModal = closePlayerSanctionsModal;
+
 async function deleteSanctionLog(logId, closeModalAfter) {
   if (!confirm('¿Eliminar esta sanción del log? Esta acción no se puede deshacer.')) return;
   try {
@@ -422,6 +535,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelector('#banModal .modal-backdrop')?.addEventListener('click', closeBanModal);
 
   document.querySelector('#sanctionDetailModal .modal-backdrop')?.addEventListener('click', closeSanctionDetail);
+  document.querySelector('#playerSanctionsModal .modal-backdrop')?.addEventListener('click', closePlayerSanctionsModal);
 });
 
 window.openSanctionsPanel   = openSanctionsPanel;

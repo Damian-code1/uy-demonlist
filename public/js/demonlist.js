@@ -391,23 +391,7 @@ function renderModalContent(level, opts = {}) {
       </div>
     </div>`;
 
-  if (skipPlayerRerender) {
-    // Reinsertar el player wrap existente (con su iframe vivo) en vez de recrearlo,
-    // así el video sigue reproduciéndose sin interrupción.
-    const oldWrap = modal.querySelector('.lm-player-wrap-preserved');
-    const newWrap = box.querySelector('.lm-player-wrap');
-    if (oldWrap && newWrap) {
-      newWrap.replaceWith(oldWrap);
-      oldWrap.classList.remove('lm-player-wrap-preserved');
-    } else {
-      renderLmPlayer(videoId, videoUrl);
-    }
-  } else {
-    renderLmPlayer(videoId, videoUrl);
-  }
-
   if (existingPlayerWrap) {
-    // Reinsertamos el wrap original (con el iframe vivo) en el lugar del nuevo placeholder vacío.
     box.querySelector('.lm-player-wrap')?.replaceWith(existingPlayerWrap);
   } else {
     renderLmPlayer(videoId, videoUrl);
