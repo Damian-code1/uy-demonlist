@@ -2,6 +2,7 @@ import { query } from '../../../../../lib/db.js';
 import { requireAdmin } from '../../../../../lib/auth.js';
 import { invalidateLevelsCache } from '../../../levels/route.js';
 import { invalidatePlayersCache } from '../../../players/route.js';
+import { notifyDecision } from '../../../../../lib/discordWebhook.js';
 
 function extractYouTubeId(url) {
   if (!url) return null;
@@ -16,7 +17,7 @@ export async function PUT(request, { params }) {
   if (!admin) return Response.json({ error: 'No autorizado' }, { status: 401 });
 
   try {
-    const { status, rejection_reason } = await request.json();
+    const { status, rejection_reason, approval_note } = await request.json();
     if (!['pending','approved','rejected'].includes(status))
       return Response.json({ error: 'Status inválido' }, { status: 400 });
 
@@ -156,6 +157,20 @@ export async function PUT(request, { params }) {
     invalidateLevelsCache();
     invalidatePlayersCache();
     console.log('[submissions] FINISHED OK');
+
+    // Notificar la decisión en el canal de staff
+    const staffName = admin.discord_display_name || admin.discord_username || admin.gd_username || 'Staff';
+    notifyDecision({
+      decision:        status,
+      submissionId:    Number(params.id),
+      levelName:       sub.level_name,
+      playerName:      sub.username,
+      staffName,
+      youtubeLink:     sub.youtube_url || null,
+      rejectionReason: status === 'rejected' ? (rejection_reason?.trim() || null) : null,
+      approvalNote:    status === 'approved'  ? (approval_note?.trim()   || null) : null,
+    }).catch(e => console.error('[submissions] Error notificando decisión:', e.message));
+
     return Response.json({ success: true, levelId, newLevel, victorAdded });
   } catch (error) {
     console.error('[submissions] ERROR:', error);

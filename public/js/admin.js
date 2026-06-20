@@ -1089,8 +1089,16 @@ window.openSubDetailModal  = openSubDetailModal;
 window.closeSubDetailModal = closeSubDetailModal;
 
 async function approveSubmission(id) {
+  const note = await uiPrompt({
+    title: 'Aprobar submission',
+    message: 'Podés dejar una nota opcional para el jugador (ej: "¡Buen trabajo!"). Si no querés dejar nada, presioná Aprobar directamente.',
+    placeholder: 'Nota opcional...',
+    confirmText: 'Aprobar',
+    cancelText: 'Cancelar',
+  });
+  if (note === null) return; // canceló con el botón cancelar
   try {
-    const result = await adminApproveSubmission(id);
+    const result = await adminApproveSubmission(id, note || null);
     showToast('✓ Submission aprobada — sumada al perfil del jugador', 'success');
     _updateSubmissionStatusInTable(id, 'approved');
     closeSubDetailModal();
@@ -1104,8 +1112,16 @@ async function approveSubmission(id) {
 }
 
 async function rejectSubmission(id) {
+  const reason = await uiPrompt({
+    title: 'Razón de rechazo',
+    message: 'Es obligatorio indicar por qué se rechaza esta submission. El jugador será notificado.',
+    placeholder: 'Ej: El video no muestra el completion completo...',
+    confirmText: 'Rechazar',
+    cancelText: 'Cancelar',
+  });
+  if (!reason) return; // canceló o dejó vacío
   try {
-    await adminRejectSubmission(id);
+    await adminRejectSubmission(id, reason);
     showToast('Submission rechazada', 'info');
     _updateSubmissionStatusInTable(id, 'rejected');
     closeSubDetailModal();
@@ -1114,7 +1130,6 @@ async function rejectSubmission(id) {
     showToast('Error: ' + e.message, 'error');
   }
 }
-
 async function deleteSubmission(id) {
   const ok = await uiConfirm({
     title: '¿Eliminar esta submission?',

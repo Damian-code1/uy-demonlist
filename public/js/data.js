@@ -427,8 +427,8 @@ async function adminGetSubmissions()                { return adminFetch('/submis
 async function adminDeleteAllSubmissions(filter)    { return adminFetch(`/submissions?filter=${filter}`, { method: 'DELETE' }); }
 async function adminUpdateSubmission(id, d)  { return adminFetch(`/submissions/${id}`, { method: 'PUT', body: JSON.stringify(d) }); }
 async function adminDeleteSubmission(id)     { return adminFetch(`/submissions/${id}`, { method: 'DELETE' }); }
-async function adminApproveSubmission(id)    { return adminUpdateSubmission(id, { status: 'approved' }); }
-async function adminRejectSubmission(id)     { return adminUpdateSubmission(id, { status: 'rejected' }); }
+async function adminApproveSubmission(id, note) { return adminUpdateSubmission(id, { status: 'approved', approval_note: note || null }); }
+async function adminRejectSubmission(id, reason) { return adminUpdateSubmission(id, { status: 'rejected', rejection_reason: reason }); }
 async function adminSyncPositions()          { return adminFetch('/sync-positions', { method: 'POST' }); }
 async function adminUpdateLevelThumbnail(id, url) {
   if (!url) return adminFetch(`/levels/${id}/thumbnail`, { method: 'DELETE' });
