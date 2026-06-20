@@ -3375,11 +3375,45 @@ body {
 /* Owner panel */
 .owner-panel .owner-header { border-bottom-color: rgba(245,158,11,.3); }
 .owner-panel .admin-title { color: var(--gold); }
+
+/* ─── Botones de navbar: Manager (dorado) y Sanciones (rojo) ───
+   Mismo layout robusto que #navAdminBtn (que faltaba por completo aquí,
+   por eso se veían como texto plano sin cápsula/ícono). */
+#navOwnerBtn,
+#navSanctionsBtn {
+  display: none;
+  align-items: center; gap: .4rem;
+  padding: .42rem .85rem;
+  border-radius: var(--r-sm);
+  font-size: .72rem; font-weight: 700; letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: all .18s;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+#navOwnerBtn i,
+#navSanctionsBtn i { font-size: .8rem; }
+
 #navOwnerBtn {
   background: linear-gradient(135deg, rgba(245,158,11,.2), rgba(234,179,8,.1));
   border-color: rgba(245,158,11,.4);
   color: var(--gold);
 }
+#navOwnerBtn:hover {
+  background: linear-gradient(135deg, rgba(245,158,11,.3), rgba(234,179,8,.18));
+  border-color: rgba(245,158,11,.6);
+}
+
+#navSanctionsBtn {
+  background: rgba(244,63,94,.1);
+  border-color: rgba(244,63,94,.3);
+  color: var(--red);
+}
+#navSanctionsBtn:hover {
+  background: rgba(244,63,94,.2);
+  border-color: rgba(244,63,94,.55);
+}
+
 .owner-user-cell { display: flex; align-items: center; gap: .6rem; }
 .owner-user-avatar, .owner-user-avatar-ph {
   width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
