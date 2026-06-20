@@ -1,5 +1,6 @@
 import { query } from '../../../../lib/db.js';
 import { requireAdmin } from '../../../../lib/auth.js';
+import { pushFeedLog } from '../../../../lib/schema.js';
 
 // Marca, dentro de cada level_id, cuál victor es el "primero" (menor id) —
 // solo ese hereda visualmente el video de Showcase del nivel si no tiene
@@ -61,6 +62,14 @@ export async function POST(request) {
       'INSERT INTO victors (level_id, player_name, video_url) VALUES (?, ?, ?)',
       [level_id, player_name.trim(), video_url?.trim() || null]
     );
+
+    await pushFeedLog({
+      victorId:   result.insertId,
+      levelId:    level_id,
+      playerName: player_name.trim(),
+      videoUrl:   video_url?.trim() || null,
+    });
+
     return Response.json({ id: result.insertId, success: true }, { status: 201 });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });

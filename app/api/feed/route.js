@@ -3,79 +3,49 @@ import { ensureSchema } from '../../../lib/schema.js';
 
 export const dynamic = 'force-dynamic';
 
+// El feed de noticias muestra máximo 50 completions. Se lee de feed_log
+// (no de victors directamente) — feed_log se poda sola a 50 entradas
+// cada vez que se crea un victor nuevo, sin tocar el historial real
+// de records en la tabla victors.
+const FEED_HARD_MAX = 50;
+
 export async function GET(request) {
   try {
     await ensureSchema();
 
     const { searchParams } = new URL(request.url);
     const player = searchParams.get('player') || null;
-    const limit  = Math.min(parseInt(searchParams.get('limit') || '50'), 200);
+    const limit  = Math.min(parseInt(searchParams.get('limit') || '50'), FEED_HARD_MAX);
+    const limitSafe = parseInt(limit, 10) || FEED_HARD_MAX;
 
-    // Verificar si created_at existe en victors
-    const [cols] = await query(
-      `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS
-       WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'victors' AND COLUMN_NAME = 'created_at'`
-    );
-    const hasCreatedAt = cols.length > 0;
-
-    const limitSafe = parseInt(limit, 10) || 50;
     let sql;
     let params;
 
-    if (hasCreatedAt) {
-      if (player) {
-        sql = `
-          SELECT v.id, v.player_name, v.video_url,
-                 v.created_at,
-                 l.id AS level_id, l.name AS level_name, l.position,
-                 l.youtube_url, l.thumbnail_url, l.thumbnail_youtube_id
-          FROM victors v
-          JOIN levels l ON v.level_id = l.id
-          WHERE LOWER(v.player_name) = LOWER(?)
-          ORDER BY v.created_at DESC, v.id DESC
-          LIMIT ${limitSafe}
-        `;
-        params = [player];
-      } else {
-        sql = `
-          SELECT v.id, v.player_name, v.video_url,
-                 v.created_at,
-                 l.id AS level_id, l.name AS level_name, l.position,
-                 l.youtube_url, l.thumbnail_url, l.thumbnail_youtube_id
-          FROM victors v
-          JOIN levels l ON v.level_id = l.id
-          ORDER BY v.created_at DESC, v.id DESC
-          LIMIT ${limitSafe}
-        `;
-        params = [];
-      }
+    if (player) {
+      sql = `
+        SELECT f.id, f.player_name, f.video_url,
+               f.created_at,
+               l.id AS level_id, l.name AS level_name, l.position,
+               l.youtube_url, l.thumbnail_url, l.thumbnail_youtube_id
+        FROM feed_log f
+        JOIN levels l ON f.level_id = l.id
+        WHERE LOWER(f.player_name) = LOWER(?)
+        ORDER BY f.created_at DESC, f.id DESC
+        LIMIT ${limitSafe}
+      `;
+      params = [player];
     } else {
-      if (player) {
-        sql = `
-          SELECT v.id, v.player_name, v.video_url,
-                 NULL AS created_at,
-                 l.id AS level_id, l.name AS level_name, l.position,
-                 l.youtube_url, l.thumbnail_url, l.thumbnail_youtube_id
-          FROM victors v
-          JOIN levels l ON v.level_id = l.id
-          WHERE LOWER(v.player_name) = LOWER(?)
-          ORDER BY v.id DESC
-          LIMIT ${limitSafe}
-        `;
-        params = [player];
-      } else {
-        sql = `
-          SELECT v.id, v.player_name, v.video_url,
-                 NULL AS created_at,
-                 l.id AS level_id, l.name AS level_name, l.position,
-                 l.youtube_url, l.thumbnail_url, l.thumbnail_youtube_id
-          FROM victors v
-          JOIN levels l ON v.level_id = l.id
-          ORDER BY v.id DESC
-          LIMIT ${limitSafe}
-        `;
-        params = [];
-      }
+      sql = `
+        SELECT f.id, f.player_name, f.video_url,
+               f.created_at,
+               l.id AS level_id, l.name AS level_name, l.position,
+               l.youtube_url, l.thumbnail_url, l.thumbnail_youtube_id
+        FROM feed_log f
+        JOIN levels l ON f.level_id = l.id
+        ORDER BY f.created_at DESC, f.id DESC
+        LIMIT ${limitSafe}
+      `;
+      params = [];
     }
 
     const [rows] = await query(sql, params);

@@ -1,6 +1,6 @@
 import { query } from '../../../../../lib/db.js';
 import { requireAdmin } from '../../../../../lib/auth.js';
-import { ensureSchema } from '../../../../../lib/schema.js';
+import { ensureSchema, pushFeedLog } from '../../../../../lib/schema.js';
 import { invalidateLevelsCache } from '../../../levels/route.js';
 import { invalidatePlayersCache } from '../../../players/route.js';
 import { notifyDecision } from '../../../../../lib/discordWebhook.js';
@@ -164,12 +164,19 @@ export async function PUT(request, { params }) {
       );
 
       if (!existing.length) {
-        await query(
+        const [victorInsert] = await query(
           'INSERT INTO victors (level_id, player_name, video_url) VALUES (?, ?, ?)',
           [levelId, victorName, sub.youtube_url || null]
         );
         victorAdded = true;
         console.log(`[submissions] Victor creado: ${victorName} en level ${levelId}`);
+
+        await pushFeedLog({
+          victorId:   victorInsert.insertId,
+          levelId:    levelId,
+          playerName: victorName,
+          videoUrl:   sub.youtube_url || null,
+        });
       }
     }
 

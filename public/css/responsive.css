@@ -16,6 +16,27 @@
 
   .form-grid-2 { grid-template-columns: 1fr; }
   .admin-form-grid2 { grid-template-columns: 1fr; }
+
+  /* Admin panel — empieza a angostarse antes de llegar a mobile */
+  .admin-panel { max-width: 100%; }
+  .admin-header { padding: 1rem 1.1rem; }
+  .admin-title  { font-size: 1.35rem; letter-spacing: 2px; }
+  .admin-body   { padding: 1.1rem; }
+  .admin-tab    { padding: .7rem .9rem; font-size: .7rem; }
+  .admin-form-box { padding: 1.4rem; }
+}
+
+/* ─── Admin: franja intermedia donde toolbar/select empiezan a apretar ─── */
+@media (max-width: 760px) {
+  .admin-toolbar { gap: .5rem; }
+  .admin-toolbar .search-box { min-width: 140px; }
+  .btn-admin-add { padding: .5rem .85rem; font-size: .72rem; white-space: nowrap; }
+
+  #victorLevelSelect { min-width: 0 !important; flex-basis: 100%; }
+  .admin-toolbar .btn-admin-add { flex-shrink: 0; }
+
+  .admin-table { font-size: .76rem; }
+  .admin-table th, .admin-table td { padding: .55rem .6rem; }
 }
 
 /* ─── Mobile ─── */
@@ -92,6 +113,30 @@
 
   /* Admin panel full screen */
   .admin-panel { max-width: 100%; }
+  .admin-header { padding: .85rem 1rem; }
+  .admin-title  { font-size: 1.1rem; letter-spacing: 1.5px; }
+  .admin-close  { width: 30px; height: 30px; font-size: .8rem; }
+
+  /* Tabs: se mantienen scrolleables horizontalmente, pero más compactas */
+  .admin-tab { padding: .65rem .75rem; font-size: .64rem; gap: .3rem; }
+  .admin-tab i { font-size: .7rem; }
+
+  .admin-body { padding: .85rem; }
+
+  /* Toolbar: todo apila en columna y ocupa el 100% del ancho */
+  .admin-toolbar { flex-direction: column; align-items: stretch; gap: .5rem; }
+  .admin-toolbar .search-box { width: 100%; min-width: 0; }
+  #victorLevelSelect { width: 100% !important; flex: none !important; }
+  .btn-admin-add { width: 100%; justify-content: center; }
+
+  /* Tabla: fuente y paddings más chicos + scroll horizontal garantizado */
+  .admin-table { font-size: .7rem; }
+  .admin-table th, .admin-table td { padding: .5rem .55rem; }
+  .admin-table th { font-size: .58rem; letter-spacing: 1px; }
+  .btn-icon { width: 24px; height: 24px; font-size: .7rem; }
+
+  .admin-form-box { padding: 1.1rem; max-height: 92vh; }
+  .admin-form-title { font-size: 1.2rem; margin-bottom: 1.1rem; }
 
   /* Footer */
   .footer-inner { flex-direction: column; align-items: flex-start; gap: 1.25rem; }
@@ -132,6 +177,12 @@
 @media (max-width: 380px) {
   .user-widget-info { display: none; }
   .user-widget-card { padding: .38rem .42rem; }
+
+  .admin-title { font-size: .95rem; letter-spacing: 1px; }
+  .admin-tab   { padding: .55rem .6rem; font-size: .6rem; }
+  .admin-table { font-size: .65rem; }
+  .admin-table th, .admin-table td { padding: .42rem .45rem; }
+  .btn-admin-add { font-size: .68rem; padding: .5rem .7rem; }
 }
 
 /* ─── Player profile modal — mobile ─── */
