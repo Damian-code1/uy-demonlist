@@ -968,7 +968,18 @@ const avatarUrl = player.discord_id && player.discord_avatar
           ? `<p class="pm-empty">Sin completions en la lista aún</p>`
           : `<div class="pm-completions-list">
               ${completions.map(({ level, victor }) => {
-                const ytId  = victor?.videoId || extractYTId(victor?.videoUrl);
+                // Si el victor es el PRIMERO registrado para este nivel y no tiene
+                // video propio cargado en la tabla victors, hacemos fallback al video
+                // de Showcase del nivel (level.youtube_url) — igual que en el modal
+                // de nivel. Es el mismo caso: el primer completion casi siempre es
+                // el que se usó como showcase, pero el campo victor.videoUrl puede
+                // haber quedado vacío.
+                const isFirstVictor   = (level.victors||[])[0]?.id === victor?.id;
+                const ownVideoUrl     = (victor?.videoUrl || '').trim() || null;
+                const effectiveVideoUrl = ownVideoUrl
+                  || (isFirstVictor ? (level.youtube_url || null) : null);
+
+                const ytId  = victor?.videoId || extractYTId(effectiveVideoUrl);
                 const victorThumb = ytId ? `https://img.youtube.com/vi/${ytId}/mqdefault.jpg` : null;
                 const fallbackThumb = level.thumb_url || null;
                 const thumb = victorThumb || fallbackThumb;
@@ -990,7 +1001,7 @@ const avatarUrl = player.discord_id && player.discord_avatar
                       <span class="pm-comp-pos">${posLabel} en la lista</span>
                     </div>
                     ${(() => {
-                      const vUrl = (victor?.videoUrl || '').trim() || null;
+                      const vUrl = effectiveVideoUrl;
                       if (ytId) {
                         const uid = 'pmv-' + (victor?.id || Math.random().toString(36).slice(2));
                         return `<a class="pm-comp-video" href="https://youtube.com/watch?v=${ytId}"
