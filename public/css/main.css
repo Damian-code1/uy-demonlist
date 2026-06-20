@@ -2483,8 +2483,19 @@ body {
 
 .submissions-layout .sub-card {
   width: 100%;
+  max-width: none;
 }
 
+.submissions-layout > .form-card {
+  width: 100%;
+  max-width: none;
+  box-sizing: border-box;
+}
+
+#submissionsFormWrap {
+  width: 100%;
+  max-width: none;
+}
 .my-subs-card {
   display: flex;
   flex-direction: column;

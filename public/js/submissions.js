@@ -279,7 +279,7 @@
     }
 
     function updateRawRequirement(level) {
-      rawRequired = level?.aredl_position && level.aredl_position <= 400;
+      rawRequired = level?.aredl_position && level.aredl_position <= 250;
       rawHint.style.display   = rawRequired ? '' : 'none';
       rawReqLabel.style.display = rawRequired ? '' : 'none';
       rawOptLabel.style.display = rawRequired ? 'none' : '';
