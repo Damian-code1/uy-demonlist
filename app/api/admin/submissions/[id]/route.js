@@ -140,9 +140,9 @@ export async function PUT(request, { params }) {
         console.warn('[submissions] link lookup failed', e);
       }
       const [existing] = await query(
-  'SELECT id FROM victors WHERE level_id = ? AND LOWER(player_name) = LOWER(?) LIMIT 1',
-  [levelId, victorName]
-);
+        'SELECT id FROM victors WHERE level_id = ? AND LOWER(player_name) = LOWER(?) LIMIT 1',
+        [levelId, victorName]
+      );
 
       if (!existing.length) {
         await query(
@@ -154,24 +154,68 @@ export async function PUT(request, { params }) {
       }
     }
 
+    // Datos completos del nivel para el embed de Discord (posición final + número de victor)
+    let finalLevelPosition = null;
+    let finalAredlPosition = null;
+    let victorNumber       = null;
+    let totalVictors       = null;
+
+    if (status === 'approved' && levelId) {
+      try {
+        const [levelInfo] = await query('SELECT position FROM levels WHERE id = ? LIMIT 1', [levelId]);
+        finalLevelPosition = levelInfo[0]?.position ?? null;
+
+        const [allVictors] = await query(
+          'SELECT player_name FROM victors WHERE level_id = ? ORDER BY id ASC',
+          [levelId]
+        );
+        totalVictors = allVictors.length;
+        const idx = allVictors.findIndex(v => v.player_name.toLowerCase() === victorName.toLowerCase());
+        victorNumber = idx >= 0 ? idx + 1 : totalVictors;
+
+        // Buscar posición en AREDL si está mapeada
+        try {
+          const baseUrl = process.env.NEXTAUTH_URL
+            || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
+          const aredlRes = await fetch(`${baseUrl}/api/aredl`, { headers: { 'User-Agent': 'UY-Demonlist-Internal/2.0' } });
+          if (aredlRes.ok) {
+            const { levels: aredlLevels = [] } = await aredlRes.json();
+            const match = aredlLevels.find(e => e.name?.toLowerCase().trim() === sub.level_name?.toLowerCase().trim());
+            finalAredlPosition = match?.position ?? null;
+          }
+        } catch {}
+      } catch (e) {
+        console.warn('[submissions] No se pudo armar info final del embed:', e.message);
+      }
+    }
+
     invalidateLevelsCache();
     invalidatePlayersCache();
     console.log('[submissions] FINISHED OK');
 
-    // Notificar la decisión en el canal de staff
+    // Notificar la decisión en el canal de staff (nunca debe romper la respuesta al admin)
     const staffName = admin.discord_display_name || admin.discord_username || admin.gd_username || 'Staff';
-    notifyDecision({
-      decision:        status,
-      submissionId:    Number(params.id),
-      levelName:       sub.level_name,
-      playerName:      sub.username,
-      staffName,
-      youtubeLink:     sub.youtube_url || null,
-      rejectionReason: status === 'rejected' ? (rejection_reason?.trim() || null) : null,
-      approvalNote:    status === 'approved'  ? (approval_note?.trim()   || null) : null,
-    }).catch(e => console.error('[submissions] Error notificando decisión:', e.message));
+    try {
+      await notifyDecision({
+        decision:        status,
+        submissionId:    Number(params.id),
+        levelName:       sub.level_name,
+        playerName:      sub.username,
+        staffName,
+        youtubeLink:     sub.youtube_url || null,
+        rejectionReason: status === 'rejected' ? (rejection_reason?.trim() || null) : null,
+        approvalNote:    status === 'approved'  ? (approval_note?.trim()   || null) : null,
+        isNewLevel,
+        levelPosition:   finalLevelPosition,
+        aredlPosition:   finalAredlPosition,
+        victorNumber,
+        totalVictors,
+      });
+    } catch (e) {
+      console.error('[submissions] Error notificando decisión (no crítico):', e.message);
+    }
 
-    return Response.json({ success: true, levelId, newLevel, victorAdded });
+    return Response.json({ success: true, levelId, newLevel, victorAdded, levelPosition: finalLevelPosition });
   } catch (error) {
     console.error('[submissions] ERROR:', error);
     return Response.json({ error: error.message }, { status: 500 });

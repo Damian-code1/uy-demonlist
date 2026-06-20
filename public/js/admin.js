@@ -1113,37 +1113,64 @@ async function approveSubmission(id) {
     cancelText: 'Cancelar',
   });
   if (note === null) return; // canceló con el botón cancelar
+
+  console.log('[admin] Aprobando submission', id);
+
+  // 1) Cerrar modal y actualizar la tabla SIEMPRE primero, así el usuario ve feedback inmediato
+  closeSubDetailModal();
+  _updateSubmissionStatusInTable(id, 'approved', { approval_note: note || null });
+
   try {
     const result = await adminApproveSubmission(id, note || null);
-    showToast('✓ Submission aprobada — sumada al perfil del jugador', 'success');
-    _updateSubmissionStatusInTable(id, 'approved', { approval_note: note || null });
-    closeSubDetailModal();
-    await refreshPublicData({
-      levelId: result.levelId,
-      scrollToLevelId: result.newLevel ? result.levelId : null,
-    });
+    console.log('[admin] Submission aprobada, resultado:', result);
+    showToast('Submission aprobada — sumada al perfil del jugador', 'success');
   } catch (e) {
-    showToast('Error: ' + e.message, 'error');
+    console.error('[admin] Error aprobando submission:', e);
+    showToast('Error al aprobar: ' + e.message, 'error');
+    // Revertir el estado visual si falló de verdad
+    loadAdminSubmissions();
+    return;
+  }
+
+  // 2) Refrescar datos públicos SIEMPRE, en un try aparte para que un fallo acá
+  //    no se confunda con un fallo en la aprobación misma
+  try {
+    await refreshPublicData();
+  } catch (e) {
+    console.error('[admin] Error refrescando datos públicos tras aprobar:', e);
+    showToast('Aprobada, pero no se pudo refrescar la lista automáticamente', 'warning');
   }
 }
 
 async function rejectSubmission(id) {
   const reason = await uiPrompt({
     title: 'Razón de rechazo',
-    message: 'Es obligatorio indicar por qué se rechaza esta submission. El jugador será notificado.',
+    message: 'Podés indicar opcionalmente por qué se rechaza esta submission. El jugador será notificado igual.',
     placeholder: 'Ej: El video no muestra el completion completo...',
     confirmText: 'Rechazar',
     cancelText: 'Cancelar',
   });
-  if (!reason) return; // canceló o dejó vacío
+  if (reason === null) return; // canceló con el botón cancelar
+
+  console.log('[admin] Rechazando submission', id);
+
+  closeSubDetailModal();
+  _updateSubmissionStatusInTable(id, 'rejected', { rejection_reason: reason || null });
+
   try {
-    await adminRejectSubmission(id, reason);
+    await adminRejectSubmission(id, reason || null);
     showToast('Submission rechazada', 'info');
-    _updateSubmissionStatusInTable(id, 'rejected', { rejection_reason: reason });
-    closeSubDetailModal();
+  } catch (e) {
+    console.error('[admin] Error rechazando submission:', e);
+    showToast('Error al rechazar: ' + e.message, 'error');
+    loadAdminSubmissions();
+    return;
+  }
+
+  try {
     await refreshPublicData();
   } catch (e) {
-    showToast('Error: ' + e.message, 'error');
+    console.error('[admin] Error refrescando datos públicos tras rechazar:', e);
   }
 }
 async function deleteSubmission(id) {
