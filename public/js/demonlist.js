@@ -6,6 +6,7 @@ let filteredLevels   = [];
 let currentView      = localStorage.getItem('preferredView') || 'list';
 let activeModalLevel = null;
 let activeVictorIdx  = 0;
+let _lmGdStatsCache   = {}; // { [levelId]: gdData } — persiste entre re-renders del modal (cambio de victor, refresh)
 let favoritesView    = false;
 let userFavorites    = JSON.parse(localStorage.getItem('favorites') || '[]');
 
@@ -118,6 +119,7 @@ function buildCard(level, index) {
 
   const isFav = userFavorites.includes(level.id);
   const isNew     = !!level.isNew;
+  const isNewTop1 = !!level.isNewTop1;
 
   const card = document.createElement('div');
   card.className = `level-card${pos <= 3 ? ' top-3' : ''}`;
@@ -178,7 +180,9 @@ function buildCard(level, index) {
         <h3 class="lc-name">${esc(level.name)}</h3>
         <div class="lc-badges">
           ${aredlPos ? `<span class="aredl-pos" title="Posición en AREDL (lista global)"><i class="fas fa-globe"></i>#${aredlPos}</span>` : ''}
-          ${isNew    ? `<span class="lc-new-badge">NUEVO</span>` : ''}
+          ${isNewTop1
+            ? `<span class="lc-top1-badge"><i class="fas fa-fire"></i><span class="lc-top1-label">TOP 1</span><span class="lc-top1-spark"></span><span class="lc-top1-spark"></span><span class="lc-top1-spark"></span><span class="lc-top1-spark"></span><span class="lc-top1-spark"></span></span>`
+            : (isNew ? `<span class="lc-new-badge">NUEVO</span>` : '')}
         </div>
       </div>
 
@@ -245,17 +249,26 @@ async function openLevelModal(level, opts = {}) {
   modal.classList.add('active');
   document.body.style.overflow = 'hidden';
 
+  // Si ya tenemos stats cacheadas para este nivel (de una apertura previa), pintarlas de inmediato
+  if (_lmGdStatsCache[level.id]) {
+    paintGdStats(_lmGdStatsCache[level.id]);
+  }
+
   // Enrich with GDBrowser data — usar ID de AREDL si existe (más preciso)
   const gd = level.gd_level_id
     ? await fetchGdBrowserInfoById(level.gd_level_id)
     : await fetchGdBrowserInfo(level.name);
   if (gd && activeModalLevel === level) {
-    const statsEl = document.getElementById('lmGdStats');
-    if (statsEl) {
-      statsEl.innerHTML = buildGdStatsHtml(gd);
-      statsEl.style.display = 'flex';
-    }
+    _lmGdStatsCache[level.id] = gd; // cachear: sobrevive a cambios de victor y refreshes del modal
+    paintGdStats(gd);
   }
+}
+
+function paintGdStats(gd) {
+  const statsEl = document.getElementById('lmGdStats');
+  if (!statsEl) return;
+  statsEl.innerHTML = buildGdStatsHtml(gd);
+  statsEl.style.display = 'flex';
 }
 
 function buildGdStatsHtml(gd) {
@@ -405,6 +418,13 @@ function renderModalContent(level, opts = {}) {
     renderLmPlayer(videoId, videoUrl);
   }
 
+  // Repintar stats de GDBrowser desde caché — el innerHTML de arriba acaba de
+  // recrear #lmGdStats vacío; sin esto, cambiar de victor o refrescar la lista
+  // hace que las stats desaparezcan aunque ya las tengamos cargadas.
+  if (_lmGdStatsCache[level.id]) {
+    paintGdStats(_lmGdStatsCache[level.id]);
+  }
+
   box.querySelector('#levelModalClose')?.addEventListener('click', closeLevelDetailModal);
 
   box.querySelector('#copyLevelIdBtn')?.addEventListener('click', function() {
@@ -464,6 +484,7 @@ function closeLevelDetailModal() {
   activeModalLevel = null;
   _lmCurrentVideoId  = null;
   _lmCurrentVideoUrl = null;
+  _lmGdStatsCache    = {}; // limpiar caché de stats al cerrar, no tiene sentido mantenerlo entre sesiones de modal
 
   // Destruir el iframe del player para que el video/audio deje de reproducirse en segundo plano
   const playerWrap = document.querySelector('#levelDetailModal .lm-player-wrap');

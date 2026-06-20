@@ -1,4 +1,5 @@
 import { query } from '../../../lib/db.js';
+import { ensureSchema } from '../../../lib/schema.js';
 
 export const dynamic   = 'force-dynamic';
 export const revalidate = 0;
@@ -18,7 +19,31 @@ export async function GET(request) {
     });
   }
 
-  try {
+try {
+    await ensureSchema();
+
+    // ─── Detectar cambio de TOP 1 ───
+    // Si el nivel en posición 1 cambió respecto al que tiene el became_top1_at más
+    // reciente, le asignamos el timestamp ahora. Cubre TODOS los caminos por los que
+    // un nivel puede llegar a la cima (edición manual, sync con AREDL, aprobar
+    // submission, borrado de otro nivel que recorre posiciones) sin tener que tocar
+    // cada endpoint de escritura — se deriva acá, igual que `isNew`.
+    try {
+      const [[currentTop1]] = await query(
+        'SELECT id, became_top1_at FROM levels WHERE position = 1 LIMIT 1'
+      );
+      if (currentTop1) {
+        const [[lastKnownTop1]] = await query(
+          'SELECT id FROM levels WHERE became_top1_at IS NOT NULL ORDER BY became_top1_at DESC LIMIT 1'
+        );
+        if (!lastKnownTop1 || lastKnownTop1.id !== currentTop1.id) {
+          await query('UPDATE levels SET became_top1_at = NOW() WHERE id = ?', [currentTop1.id]);
+        }
+      }
+    } catch (e) {
+      console.warn('[/api/levels] No se pudo actualizar became_top1_at:', e.message);
+    }
+
     // 1 sola query trae levels + victors en una sola roundtrip con JOIN
     const [rows] = await query(`
       SELECT
@@ -33,6 +58,7 @@ export async function GET(request) {
         l.gd_id,
         l.created_at,
         l.created_from_submission,
+        l.became_top1_at,
         v.id         AS victor_id,
         v.player_name,
         v.video_url
@@ -40,7 +66,6 @@ export async function GET(request) {
       LEFT JOIN victors v ON v.level_id = l.id
       ORDER BY l.position ASC, v.id ASC
     `);
-
     // Agrupar los victors dentro de cada nivel en JS (mucho más rápido que N+1 queries)
     const levelMap = new Map();
 
@@ -58,6 +83,7 @@ export async function GET(request) {
           gd_id:       row.gd_id || null,
           created_from_submission: row.created_from_submission,
           created_at:  row.created_at,
+          became_top1_at: row.became_top1_at,
           victors:     [],
         });
       }
@@ -126,6 +152,10 @@ if (!thumb_url) {
           !!level.created_from_submission &&
           !!level.created_at &&
           (Date.now() - new Date(level.created_at).getTime()) < (3 * 24 * 60 * 60 * 1000),
+        isNewTop1:
+          level.position === 1 &&
+          !!level.became_top1_at &&
+          (Date.now() - new Date(level.became_top1_at).getTime()) < (7 * 24 * 60 * 60 * 1000),
       };
     });
 

@@ -1635,6 +1635,61 @@ ul { list-style: none; }
   color: #86efac; flex-shrink: 0;
 }
 
+/* Badge TOP 1 — nuevo hardest del país, congrats con fuego + partículas */
+.lc-top1-badge {
+  position: relative;
+  display: inline-flex; align-items: center; gap: .3rem;
+  padding: .15rem .55rem; border-radius: 50px;
+  font-size: .62rem; font-weight: 800; letter-spacing: .5px;
+  background: linear-gradient(90deg, rgba(249,115,22,.28), rgba(245,158,11,.28));
+  border: 1px solid rgba(249,115,22,.65);
+  color: #fed7aa; flex-shrink: 0;
+  overflow: hidden;
+  isolation: isolate;
+  animation: lc-top1-glow 1.8s ease-in-out infinite;
+}
+.lc-top1-badge i {
+  position: relative; z-index: 2;
+  animation: lc-top1-flicker 1.4s ease-in-out infinite;
+}
+.lc-top1-badge span.lc-top1-label {
+  position: relative; z-index: 2;
+}
+@keyframes lc-top1-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(249,115,22,.45); }
+  50%      { box-shadow: 0 0 9px 2px rgba(249,115,22,.5); }
+}
+@keyframes lc-top1-flicker {
+  0%, 100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  50%      { transform: scale(1.15) rotate(-4deg); opacity: .85; }
+}
+
+/* Partículas de fuego dentro del badge — chispas subiendo desde la base */
+.lc-top1-spark {
+  position: absolute;
+  bottom: -2px;
+  z-index: 1;
+  width: 3px; height: 3px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff7ed 0%, #fdba74 45%, #f97316 75%, transparent 100%);
+  opacity: 0;
+  pointer-events: none;
+  animation: lc-top1-spark-rise 1.6s ease-in infinite;
+}
+.lc-top1-spark:nth-child(1) { left: 14%; animation-delay: 0s;    animation-duration: 1.5s; }
+.lc-top1-spark:nth-child(2) { left: 30%; animation-delay: .35s;  animation-duration: 1.8s; }
+.lc-top1-spark:nth-child(3) { left: 48%; animation-delay: .15s;  animation-duration: 1.3s; }
+.lc-top1-spark:nth-child(4) { left: 65%; animation-delay: .55s;  animation-duration: 1.7s; }
+.lc-top1-spark:nth-child(5) { left: 80%; animation-delay: .25s;  animation-duration: 1.4s; }
+@keyframes lc-top1-spark-rise {
+  0%   { transform: translateY(0) translateX(0) scale(.6); opacity: 0; }
+  15%  { opacity: 1; }
+  60%  { opacity: .85; }
+  100% { transform: translateY(-14px) translateX(var(--spark-drift, 2px)) scale(.2); opacity: 0; }
+}
+.lc-top1-spark:nth-child(odd)  { --spark-drift: 2.5px; }
+.lc-top1-spark:nth-child(even) { --spark-drift: -2.5px; }
+
 /* Botón favorito */
 .lc-fav-btn {
   position: absolute; top: 8px; right: 8px; z-index: 3;
