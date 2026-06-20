@@ -3,7 +3,7 @@ import { requireAdmin } from '../../../../../lib/auth.js';
 import { ensureSchema, pushFeedLog } from '../../../../../lib/schema.js';
 import { invalidateLevelsCache } from '../../../levels/route.js';
 import { invalidatePlayersCache } from '../../../players/route.js';
-import { notifyDecision } from '../../../../../lib/discordWebhook.js';
+import { notifyDecision, notifyBotDM } from '../../../../../lib/discordWebhook.js';
 
 function extractYouTubeId(url) {
   if (!url) return null;
@@ -239,6 +239,36 @@ export async function PUT(request, { params }) {
       });
     } catch (e) {
       console.error('[submissions] Error notificando decisión (no crítico):', e.message);
+    }
+
+    // DM automático al jugador via el bot local — nunca debe romper la respuesta al admin
+    try {
+      const [submitterRows] = await query(
+        `SELECT u.discord_id FROM submissions s
+         LEFT JOIN users u ON s.submitted_by = u.id
+         WHERE s.id = ? LIMIT 1`,
+        [params.id]
+      );
+      const submitterDiscordId = submitterRows[0]?.discord_id || null;
+
+      if (submitterDiscordId) {
+        await notifyBotDM({
+          discordId:       submitterDiscordId,
+          decision:        status,
+          levelName:       sub.level_name,
+          staffName,
+          youtubeLink:     sub.youtube_url || null,
+          rejectionReason: status === 'rejected' ? (rejection_reason?.trim() || null) : null,
+          approvalNote:    status === 'approved'  ? (approval_note?.trim()   || null) : null,
+          isNewLevel:      newLevel,
+          levelPosition:   finalLevelPosition,
+          aredlPosition:   finalAredlPosition,
+          victorNumber,
+          totalVictors,
+        });
+      }
+    } catch (e) {
+      console.warn('[submissions] No se pudo enviar DM via bot (no crítico):', e.message);
     }
 
     return Response.json({ success: true, levelId, newLevel, victorAdded, levelPosition: finalLevelPosition });
