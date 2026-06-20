@@ -978,11 +978,16 @@ function renderSubsFiltered() {
         : '<span class="text-dim">—</span>'}</td>
       <td><span class="status-badge status-${status}">${status}</span></td>
       <td style="white-space:nowrap">
-        ${status === 'pending' ? `
-        <button class="btn-icon" style="color:var(--success)" title="Aprobar"
-          onclick="approveSubmission(${sub.id})"><i class="fas fa-check"></i></button>
-        <button class="btn-icon" style="color:var(--warning)" title="Rechazar"
-          onclick="rejectSubmission(${sub.id})"><i class="fas fa-times"></i></button>` : ''}
+        ${status === 'pending' ? (
+          sub.submitted_by === window.currentUser?.id ? `
+          <span class="text-dim" style="font-size:.72rem;font-style:italic" title="No podés revisar tu propia submission">
+            <i class="fas fa-lock"></i> Tuya
+          </span>` : `
+          <button class="btn-icon" style="color:var(--success)" title="Aprobar"
+            onclick="approveSubmission(${sub.id})"><i class="fas fa-check"></i></button>
+          <button class="btn-icon" style="color:var(--warning)" title="Rechazar"
+            onclick="rejectSubmission(${sub.id})"><i class="fas fa-times"></i></button>`
+        ) : ''}
         <button class="btn-icon btn-delete" title="Eliminar"
           onclick="deleteSubmission(${sub.id})"><i class="fas fa-trash"></i></button>
       </td>`;
@@ -1079,7 +1084,16 @@ function openSubDetailModal(sub) {
   `;
 
   // Acciones
-  document.getElementById('subDetailActions').innerHTML = sub.status === 'pending' ? `
+  const isOwnSubmission = sub.submitted_by === window.currentUser?.id;
+  document.getElementById('subDetailActions').innerHTML = sub.status === 'pending' ? (
+    isOwnSubmission ? `
+    <div class="admin-notice" style="width:100%;display:flex;align-items:center;gap:.5rem;font-size:.82rem">
+      <i class="fas fa-lock"></i> No podés aprobar ni rechazar tu propia submission — otro miembro del staff debe revisarla.
+    </div>
+    <button class="btn-icon btn-delete" title="Eliminar" style="width:auto;padding:.6rem .85rem"
+      onclick="closeSubDetailModal();deleteSubmission(${sub.id})">
+      <i class="fas fa-trash"></i>
+    </button>` : `
     <button class="btn-approve" onclick="closeSubDetailModal();approveSubmission(${sub.id})">
       <i class="fas fa-check"></i> Aprobar
     </button>
@@ -1089,7 +1103,8 @@ function openSubDetailModal(sub) {
     <button class="btn-icon btn-delete" title="Eliminar" style="width:auto;padding:.6rem .85rem"
       onclick="closeSubDetailModal();deleteSubmission(${sub.id})">
       <i class="fas fa-trash"></i>
-    </button>` : `
+    </button>`
+  ) : `
     <button class="btn-icon btn-delete" title="Eliminar" style="width:auto;flex:1;padding:.65rem;border-radius:var(--r-sm);font-size:.85rem;font-weight:700;display:flex;align-items:center;justify-content:center;gap:.4rem"
       onclick="closeSubDetailModal();deleteSubmission(${sub.id})">
       <i class="fas fa-trash"></i> Eliminar submission

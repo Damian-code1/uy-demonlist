@@ -2453,17 +2453,31 @@ body {
 
 .submissions-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: .9rem;
+  grid-template-columns: minmax(0, .82fr) minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1.1rem;
   align-items: start;
-  max-width: 920px;
+  max-width: 1280px;
   margin: 0 auto;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1100px) {
+  .submissions-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    max-width: 920px;
+  }
+  .sub-guidelines-card {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 700px) {
   .submissions-layout {
     grid-template-columns: 1fr;
     max-width: 520px;
+    gap: .9rem;
+  }
+  .sub-guidelines-card {
+    grid-column: auto;
   }
 }
 
@@ -2551,10 +2565,13 @@ body {
 .sub-reviewer-card {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   gap: .65rem;
+  width: 100%;
   margin-top: .85rem;
-  padding-top: .85rem;
+  padding: .75rem .15rem 0;
   border-top: 1px dashed var(--border, rgba(255,255,255,.08));
+  text-align: left;
 }
 
 .sub-reviewer-avatar {
@@ -2578,8 +2595,10 @@ body {
 .sub-reviewer-info {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: 0;
   min-width: 0;
+  text-align: left;
 }
 
 .sub-reviewer-label {
@@ -2588,6 +2607,7 @@ body {
   text-transform: uppercase;
   letter-spacing: .05em;
   color: var(--text-dim, #64748b);
+  text-align: left;
 }
 
 .sub-reviewer-name {
@@ -2597,13 +2617,97 @@ body {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  text-align: left;
+  max-width: 100%;
 }
 
 .sub-reviewer-handle {
   font-size: .76rem;
   color: var(--text-sub, #94a3b8);
+  text-align: left;
 }
 
+.sub-guidelines-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  height: 100%;
+}
+
+.sub-guidelines-header {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+}
+
+.sub-guidelines-header i {
+  font-size: 1.1rem;
+  color: var(--roulette-fire, #f97316);
+}
+
+.sub-guidelines-header h3 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: .01em;
+}
+
+.sub-guidelines-list {
+  display: flex;
+  flex-direction: column;
+  gap: .95rem;
+  overflow-y: auto;
+  padding-right: .25rem;
+}
+
+.sub-guideline-item {
+  display: flex;
+  gap: .7rem;
+  align-items: flex-start;
+  padding: .85rem .9rem;
+  border-radius: var(--r-sm, 10px);
+  background: var(--bg-elevated, rgba(255,255,255,.03));
+  border: 1px solid var(--border, rgba(255,255,255,.06));
+}
+
+.sub-guideline-icon {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--violet, #8b5cf6), var(--roulette-fire, #f97316));
+  color: #fff;
+  font-size: .8rem;
+}
+
+.sub-guideline-text {
+  font-size: .85rem;
+  line-height: 1.55;
+  color: var(--text-sub, #94a3b8);
+}
+
+.sub-guideline-text strong {
+  color: var(--text, #f1f5f9);
+}
+
+.sub-guideline-text a {
+  color: var(--violet, #a78bfa);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.sub-guideline-text a:hover {
+  color: var(--roulette-fire, #f97316);
+}
+
+@media (max-width: 700px) {
+  .sub-guidelines-list {
+    max-height: none;
+  }
+}
 .my-sub-item:hover {
   border-color: var(--violet, #8b5cf6);
   transform: translateY(-1px);

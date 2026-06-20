@@ -28,6 +28,16 @@ export async function PUT(request, { params }) {
     if (!subRows.length) return Response.json({ error: 'Submission no encontrada' }, { status: 404 });
     const sub = subRows[0];
 
+    // Nadie del staff puede aprobar/rechazar su PROPIA submission — evita
+    // auto-validación de records. Solo aplica al pasar a approved/rejected;
+    // dejar algo en pending (ej. revertir un estado) no se considera "decisión".
+    if ((status === 'approved' || status === 'rejected') && sub.submitted_by === admin.id) {
+      return Response.json({
+        error: 'self_review',
+        message: 'No podés aprobar o rechazar tu propia submission. Otro miembro del staff tiene que revisarla.',
+      }, { status: 403 });
+    }
+
     await query(
       'UPDATE submissions SET status = ?, rejection_reason = ?, approval_note = ?, reviewed_by = ?, updated_at = NOW() WHERE id = ?',
       [
