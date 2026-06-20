@@ -202,10 +202,10 @@
   transform: translateY(-3px) scale(1.02);
   box-shadow: 0 0 60px rgba(124,58,237,.6), 0 8px 32px rgba(255,107,53,.3);
 }
-.rl-hero-cta i { font-size: 1.1rem; animation: spin-die 3s linear infinite; }
-@keyframes spin-die {
-  0%   { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+.rl-hero-cta i { font-size: 1.1rem; animation: bounce-die 1.8s ease-in-out infinite; }
+@keyframes bounce-die {
+  0%,100% { transform: translateY(0) scale(1); }
+  50%     { transform: translateY(-4px) scale(1.1); }
 }
 
 /* ═══════════════════════════════════════════

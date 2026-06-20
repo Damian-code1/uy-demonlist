@@ -45,6 +45,18 @@ export async function POST(request) {
     }
     const username = u.gd_username || u.discord_display_name || u.discord_username;
 
+    // Verificar que no exista ya una submission pendiente del mismo user para el mismo nivel
+    const [dupRows] = await query(
+      `SELECT id FROM submissions WHERE submitted_by = ? AND level_name = ? AND status = 'pending' LIMIT 1`,
+      [userId, levelName.trim()]
+    );
+    if (dupRows.length) {
+      return Response.json({
+        error: 'duplicate_pending',
+        message: `Ya tenés una submission pendiente para "${levelName.trim()}". Esperá a que sea revisada antes de enviar otra.`,
+      }, { status: 409 });
+    }
+
     const [result] = await query(
       `INSERT INTO submissions (username, level_name, youtube_url, raw_url, percentage, is_100, notes, status, submitted_by)
        VALUES (?, ?, ?, ?, 100, 1, ?, 'pending', ?)`,

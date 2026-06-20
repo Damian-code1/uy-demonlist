@@ -867,7 +867,7 @@ function updateButtons() {
   if (spinBtn) {
     spinBtn.disabled = ended || RL.spinning || !!RL.current;
     spinBtn.classList.toggle('spinning', RL.spinning);
-    spinBtn.querySelector('.spin-text').textContent = ended ? 'Sesión terminada' : (RL.spinning ? 'Girando...' : 'Girar');
+    spinBtn.querySelector('.spin-text').textContent = ended ? 'Sesión terminada' : (RL.spinning ? 'Seleccionando...' : 'Elegir nivel');
   }
   if (skipBtn)     skipBtn.disabled     = ended || RL.spinning || !RL.current;
   if (completeBtn) completeBtn.disabled = ended || RL.spinning || !RL.current;

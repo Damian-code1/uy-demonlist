@@ -365,6 +365,15 @@
 
         if (!res.ok) {
           const err = await res.json().catch(() => ({}));
+          if (err.error === 'duplicate_pending') {
+            await uiAlert({
+              title: '¡Ya enviaste este nivel!',
+              message: err.message,
+              type: 'warning',
+              confirmText: 'Entendido',
+            });
+            return;
+          }
           throw new Error(err.error || 'Error del servidor');
         }
 
