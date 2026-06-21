@@ -404,7 +404,10 @@ function renderModalContent(level, opts = {}) {
   // Comparar normalizando null/undefined para evitar race conditions en el polling
   const normId  = videoId  || null;
   const normUrl = videoUrl || null;
-  const samePlayer = normId === _lmCurrentVideoId && normUrl === _lmCurrentVideoUrl;
+  // samePlayer: comparar por videoId primero (más robusto), luego por URL
+  const samePlayer = normId !== null
+    ? normId === _lmCurrentVideoId
+    : normUrl !== null && normUrl === _lmCurrentVideoUrl;
   const skipPlayerRerender = !!(opts.preservePlayer && samePlayer);
 
   // Guardamos el wrap actual del player ANTES de pisar el innerHTML del box,
@@ -574,8 +577,20 @@ function refreshOpenLevelModal(levelId) {
   if (activeVictorIdx >= (fresh.victors?.length || 0)) {
     activeVictorIdx = Math.max(0, (fresh.victors?.length || 1) - 1);
   }
-  // preservePlayer: true → esto viene de un refresh silencioso en background (polling),
-  // no de una acción explícita del usuario, así que no debe interrumpir el video activo.
+
+  // Capturar el videoId/videoUrl actuales del iframe ANTES de renderizar,
+  // para que samePlayer funcione aunque _lmCurrentVideoId esté desincronizado.
+  const existingIframe = modal.querySelector('.lm-player-wrap iframe');
+  if (existingIframe && !_lmCurrentVideoId && !_lmCurrentVideoUrl) {
+    // Recuperar el videoId del src del iframe activo
+    const srcMatch = existingIframe.src?.match(/embed\/([a-zA-Z0-9_-]{11})/);
+    if (srcMatch) {
+      _lmCurrentVideoId  = srcMatch[1];
+      _lmCurrentVideoUrl = `https://www.youtube.com/watch?v=${srcMatch[1]}`;
+    }
+  }
+
+  // preservePlayer: true → refresh silencioso, no interrumpir reproducción.
   renderModalContent(fresh, { preservePlayer: true });
 }
 window.refreshOpenLevelModal = refreshOpenLevelModal;
