@@ -496,15 +496,13 @@ ul { list-style: none; }
 }
 .hero-badge-shine {
   position: absolute;
-  top: -20%; left: -45%;
-  width: 25%; height: 140%;
-  background: linear-gradient(100deg,
-    transparent 0%,
-    rgba(255,255,255,.06) 35%,
-    rgba(255,255,255,.22) 50%,
-    rgba(255,255,255,.06) 65%,
-    transparent 100%);
-  filter: blur(2px);
+  top: -50%; left: -90%;
+  width: 60%; height: 200%;
+  background: radial-gradient(ellipse 30% 70% at 50% 50%,
+    rgba(255,255,255,.28) 0%,
+    rgba(255,255,255,.14) 30%,
+    rgba(255,255,255,.05) 55%,
+    transparent 75%);
   animation: hero-badge-shine-sweep 3.5s linear infinite;
   animation-delay: inherit;
   pointer-events: none;
@@ -512,7 +510,7 @@ ul { list-style: none; }
 }
 @keyframes hero-badge-shine-sweep {
   from { transform: translateX(0%); }
-  to   { transform: translateX(620%); }
+  to   { transform: translateX(260%); }
 }
 
 @media (prefers-reduced-motion: reduce) {
