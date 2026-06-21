@@ -300,10 +300,18 @@ if (rangeMax) {
   document.getElementById('rlBtnCloseFinish')?.addEventListener('click', () => {
     document.getElementById('rlFinishModal')?.classList.remove('open');
   });
-  document.getElementById('rlHistoryClear')?.addEventListener('click', () => {
-    if (RL.session.length && confirm('¿Limpiar el historial de esta sesión?')) {
-      resetSession();
-    }
+  document.getElementById('rlHistoryClear')?.addEventListener('click', async () => {
+    if (!RL.session.length) return;
+    const ok = await uiConfirm({
+      title: '¿Limpiar el historial de esta sesión?',
+      message: 'Se va a borrar todo el progreso de la ruleta actual. Esta acción no se puede deshacer.',
+      type: 'warning',
+      confirmText: 'Limpiar',
+      cancelText: 'Cancelar'
+    });
+    if (!ok) return;
+    resetSession();
+    showRlToast('Historial de la sesión limpiado', 'success');
   });
 
   document.getElementById('rlHeroCta')?.addEventListener('click', () => {
@@ -387,9 +395,15 @@ function loadSession() {
     RL.current = data.current || null;
     RL.sessionActive = !!data.sessionActive;
     RL.surrendered = !!data.surrendered || RL.session.some(s => s.status === 'failed');
-    RL.totalGoal = data.totalGoal || 50;
-    RL.filterRange = data.filterRange || [1, RL.filterRange[1]];
-    RL.filterAredlOnly = !!data.filterAredlOnly;
+
+    const hasSessionToResume = RL.sessionActive || RL.session.length > 0;
+    const total = RL.levels.length || RL.filterRange[1];
+
+    RL.totalGoal = hasSessionToResume ? (data.totalGoal || 50) : 50;
+    RL.filterRange = hasSessionToResume && data.filterRange
+      ? [1, Math.min(data.filterRange[1] || total, total)]
+      : [1, total];
+    RL.filterAredlOnly = hasSessionToResume ? !!data.filterAredlOnly : false;
     RL.revealHidden = !!data.revealHidden;
     const slider = document.getElementById('rlGoalSlider');
     const value = document.getElementById('rlGoalVal');

@@ -125,6 +125,25 @@ function levelPoints(level) {
   return computeAutoPoints(level.position || 1);
 }
 
+function levelTierAccent(pos) {
+  if (pos <= 10) {
+    const t = (pos - 1) / 9;
+    return `hsl(${Math.round(16 - t * 16)}, 90%, ${Math.round(58 - t * 5)}%)`; // ascua → rojo intenso
+  }
+  if (pos <= 75) {
+    const t = (pos - 11) / 64;
+    return `hsl(${Math.round(272 - t * 16)}, 78%, ${Math.round(65 - t * 7)}%)`; // violeta
+  }
+  if (pos <= 150) {
+    const t = (pos - 76) / 74;
+    return `hsl(${Math.round(206 - t * 16)}, 75%, ${Math.round(58 - t * 8)}%)`; // celeste
+  }
+  const restTotal = Math.max((getLevelsData().length || 250) - 150, 1);
+  const t = Math.min((pos - 151) / restTotal, 1);
+  return `hsl(${Math.round(150 - t * 55)}, 45%, ${Math.round(44 - t * 6)}%)`; // verde → gris-verde apagado
+}
+window.levelTierAccent = levelTierAccent;
+
 // ─── BUILD COMPACT CARD ───
 function buildCard(level, index) {
   const pos      = level.position || (index + 1);
@@ -174,9 +193,8 @@ function buildCard(level, index) {
     const firstVictorName = victors[0]?.name || null;
   const extraVictors    = victors.length > 1 ? victors.length - 1 : 0;
 
-  // Colores dinámicos según posición en la lista
-  const hue = Math.round((pos / (getLevelsData().length || 100)) * 120); // verde → rojo
-  const cardAccent = `hsl(${120 - hue}, 70%, 55%)`;
+  // Colores por categoría según posición en la lista (ver levelTierAccent)
+  const cardAccent = levelTierAccent(pos);
   card.style.setProperty('--card-accent', cardAccent);
 
   card.innerHTML = `

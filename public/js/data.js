@@ -99,6 +99,11 @@ async function refreshPublicData(opts = {}) {
   if (typeof renderLeaderboard === 'function') renderLeaderboard();
   if (typeof syncHeroStats === 'function') syncHeroStats();
   if (typeof refreshOpenLevelModal === 'function') refreshOpenLevelModal(opts.levelId);
+  // El feed "En vivo" tenía su propio setInterval de 60s desincronizado del
+  // heartbeat — por eso la lista se actualizaba sola pero el feed se quedaba
+  // viejo hasta el próximo tick suyo (o un F5). Lo enganchamos acá para que
+  // se repinte en el mismo momento exacto en que se detecta el cambio real.
+  if (typeof loadFeed === 'function') loadFeed();
 
   if (opts.scrollToLevelId) {
     setTimeout(() => {
