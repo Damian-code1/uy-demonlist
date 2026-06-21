@@ -149,15 +149,9 @@ function buildCard(level, index) {
       <i class="fas fa-crown"></i><span class="lc-rank-num">1</span>
     </div>
     <div class="lc-fire-border">
-      <div class="lc-flame-row">
-        <span class="lc-flame"></span>
-        <span class="lc-flame"></span>
-        <span class="lc-flame"></span>
-        <span class="lc-flame"></span>
-        <span class="lc-flame"></span>
-        <span class="lc-flame"></span>
-        <span class="lc-flame"></span>
-      </div>
+      <i class="fas fa-fire lc-fire-icon"></i>
+      <span class="lc-fire-spark"></span>
+      <span class="lc-fire-spark"></span>
       <span class="lc-fire-spark"></span>
       <span class="lc-fire-spark"></span>
       <span class="lc-fire-spark"></span>

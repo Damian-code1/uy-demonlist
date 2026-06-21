@@ -40,6 +40,9 @@ export async function DELETE(request, { params }) {
 
   try {
     const name = decodeURIComponent(params.name);
+    // Limpiar también el feed de noticias antes de borrar los victors,
+    // mismo motivo que al borrar un victor individual
+    await query('DELETE FROM feed_log WHERE player_name = ?', [name]);
     await query('DELETE FROM victors WHERE player_name = ?', [name]);
     await query('UPDATE users SET linked_player_name = NULL WHERE linked_player_name = ?', [name]);
     await query('DELETE FROM players WHERE name = ?', [name]);

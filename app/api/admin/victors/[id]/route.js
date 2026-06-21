@@ -34,6 +34,10 @@ export async function DELETE(request, { params }) {
     if (!old.length) return Response.json({ error: 'No encontrado' }, { status: 404 });
     const levelId = old[0].level_id;
 
+    // Limpiar la entrada del feed de noticias correspondiente a este victor,
+    // si no se hace queda fantasma mostrando un completion que ya no existe
+    await query('DELETE FROM feed_log WHERE victor_id = ?', [params.id]);
+
     await query('DELETE FROM victors WHERE id = ?', [params.id]);
 
     // Si el nivel se quedó sin victors, se autoelimina y se reordenan posiciones

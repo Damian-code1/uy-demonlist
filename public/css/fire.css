@@ -1,6 +1,6 @@
 /* =============================================
-   FIRE.CSS — Llamas reales con forma de fuego (clip-path),
-   capas de color apiladas, contenidas al border-radius real.
+   FIRE.CSS — Mismo sistema de partículas que el badge
+   TOP 1 (.lc-top1-spark), aplicado a escala de card completa.
    ============================================= */
 
 /* ─────────────────────────────────────────────
@@ -8,8 +8,14 @@
    ───────────────────────────────────────────── */
 .level-card-first {
   position: relative;
-  border-color: rgba(249, 115, 22, .4) !important;
+  border-color: rgba(249, 115, 22, .45) !important;
   isolation: isolate;
+  animation: lc-card-fire-glow 1.8s ease-in-out infinite;
+}
+
+@keyframes lc-card-fire-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(249,115,22,.35); }
+  50%      { box-shadow: 0 0 16px 2px rgba(249,115,22,.4); }
 }
 
 .lc-fire-border {
@@ -21,114 +27,50 @@
   overflow: hidden;
 }
 
-.lc-fire-border::before {
-  content: '';
+/* Ícono de llama centrado abajo, mismo flicker que el del badge TOP 1 */
+.lc-fire-icon {
   position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  box-shadow: inset 0 0 20px rgba(249,115,22,.15), 0 0 16px 1px rgba(249,115,22,.3);
-  animation: lc-fire-glow 2.4s ease-in-out infinite;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  color: #fb923c;
+  font-size: 1.1rem;
+  text-shadow: 0 0 8px rgba(249,115,22,.8);
+  animation: lc-top1-flicker 1.4s ease-in-out infinite;
 }
 
-@keyframes lc-fire-glow {
-  0%, 100% { box-shadow: inset 0 0 18px rgba(249,115,22,.13), 0 0 13px 1px rgba(249,115,22,.25); }
-  50%      { box-shadow: inset 0 0 26px rgba(249,115,22,.2),  0 0 19px 2px rgba(249,115,22,.4);  }
-}
-
-/* Fila de llamas reales apoyadas en la base de la card, con forma de
-   fuego de verdad: silueta dibujada por clip-path (punta irregular que
-   se angosta hacia arriba), 2 capas de color superpuestas (exterior
-   naranja, interior amarillo) para dar profundidad como un fuego real. */
-.lc-flame-row {
-  position: absolute;
-  left: 0; right: 0; bottom: -2px;
-  height: 34px;
-  display: flex;
-  justify-content: space-evenly;
-  align-items: flex-end;
-}
-
-.lc-flame {
-  position: relative;
-  width: 16px;
-  height: 26px;
-  transform-origin: bottom center;
-}
-
-/* Capa exterior (naranja/rojo) — la silueta completa de la llama */
-.lc-flame::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, #fde047 0%, #f97316 40%, #ef4444 75%, #dc2626 100%);
-  clip-path: polygon(
-    50% 0%, 62% 12%, 58% 24%, 72% 30%, 78% 48%,
-    68% 58%, 80% 68%, 70% 82%, 75% 92%, 50% 100%,
-    25% 92%, 30% 82%, 20% 68%, 32% 58%,
-    22% 48%, 28% 30%, 42% 24%, 38% 12%
-  );
-  filter: blur(.3px) drop-shadow(0 0 4px rgba(249,115,22,.5));
-}
-
-/* Capa interior (amarillo/blanco) — núcleo más caliente, más chica y centrada */
-.lc-flame::after {
-  content: '';
-  position: absolute;
-  left: 26%; right: 26%; bottom: 0; top: 35%;
-  background: linear-gradient(180deg, #fffbeb 0%, #fde047 55%, #fb923c 100%);
-  clip-path: polygon(
-    50% 0%, 70% 20%, 60% 35%, 78% 50%,
-    62% 65%, 50% 100%, 38% 65%, 22% 50%,
-    40% 35%, 30% 20%
-  );
-  opacity: .9;
-}
-
-.lc-flame:nth-child(1) { animation: lc-flame-dance 1.3s ease-in-out infinite; height: 22px; }
-.lc-flame:nth-child(2) { animation: lc-flame-dance 1.05s ease-in-out infinite .15s; height: 30px; width: 19px; }
-.lc-flame:nth-child(3) { animation: lc-flame-dance 1.45s ease-in-out infinite .3s;  height: 18px; width: 13px; }
-.lc-flame:nth-child(4) { animation: lc-flame-dance 1.15s ease-in-out infinite .45s; height: 28px; width: 18px; }
-.lc-flame:nth-child(5) { animation: lc-flame-dance 1.35s ease-in-out infinite .6s;  height: 20px; width: 14px; }
-.lc-flame:nth-child(6) { animation: lc-flame-dance 1.1s ease-in-out infinite .25s;  height: 26px; width: 17px; }
-.lc-flame:nth-child(7) { animation: lc-flame-dance 1.4s ease-in-out infinite .5s;   height: 19px; width: 13px; }
-
-@keyframes lc-flame-dance {
-  0%   { transform: scaleY(1) skewX(0deg) rotate(0deg); }
-  20%  { transform: scaleY(1.12) skewX(-4deg) rotate(-2deg); }
-  40%  { transform: scaleY(.92) skewX(3deg) rotate(2deg); }
-  60%  { transform: scaleY(1.08) skewX(-2deg) rotate(-1deg); }
-  80%  { transform: scaleY(.96) skewX(4deg) rotate(2deg); }
-  100% { transform: scaleY(1) skewX(0deg) rotate(0deg); }
-}
-
-/* Chispas subiendo, mismo lenguaje que el badge TOP 1 */
+/* Partículas — copia exacta del comportamiento de .lc-top1-spark,
+   repartidas a lo largo de toda la base de la card */
 .lc-fire-spark {
   position: absolute;
-  bottom: 2px;
+  bottom: -2px;
   z-index: 2;
   width: 4px; height: 4px;
   border-radius: 50%;
   background: radial-gradient(circle, #fff7ed 0%, #fdba74 45%, #f97316 75%, transparent 100%);
   opacity: 0;
   pointer-events: none;
-  animation: lc-card-spark-rise 2.1s ease-in infinite;
+  animation: lc-card-spark-rise 1.8s ease-in infinite;
 }
-.lc-fire-spark:nth-child(1) { left: 8%;  animation-delay: 0s;   animation-duration: 1.9s; }
-.lc-fire-spark:nth-child(2) { left: 22%; animation-delay: .4s;  animation-duration: 2.3s; }
-.lc-fire-spark:nth-child(3) { left: 38%; animation-delay: .15s; animation-duration: 1.7s; }
-.lc-fire-spark:nth-child(4) { left: 55%; animation-delay: .6s;  animation-duration: 2.1s; }
-.lc-fire-spark:nth-child(5) { left: 70%; animation-delay: .3s;  animation-duration: 1.8s; }
-.lc-fire-spark:nth-child(6) { left: 84%; animation-delay: .5s;  animation-duration: 2s;   }
-.lc-fire-spark:nth-child(7) { left: 95%; animation-delay: .2s;  animation-duration: 2.2s; }
+.lc-fire-spark:nth-child(1) { left: 6%;  animation-delay: 0s;   animation-duration: 1.7s; }
+.lc-fire-spark:nth-child(2) { left: 16%; animation-delay: .3s;  animation-duration: 2s;   }
+.lc-fire-spark:nth-child(3) { left: 27%; animation-delay: .12s; animation-duration: 1.6s; }
+.lc-fire-spark:nth-child(4) { left: 38%; animation-delay: .48s; animation-duration: 1.9s; }
+.lc-fire-spark:nth-child(5) { left: 50%; animation-delay: .22s; animation-duration: 1.7s; }
+.lc-fire-spark:nth-child(6) { left: 62%; animation-delay: .55s; animation-duration: 2.1s; }
+.lc-fire-spark:nth-child(7) { left: 73%; animation-delay: .15s; animation-duration: 1.5s; }
+.lc-fire-spark:nth-child(8) { left: 84%; animation-delay: .4s;  animation-duration: 1.8s; }
+.lc-fire-spark:nth-child(9) { left: 94%; animation-delay: .28s; animation-duration: 2s;   }
 
 @keyframes lc-card-spark-rise {
-  0%   { transform: translateY(0) translateX(0) scale(.5);   opacity: 0; }
+  0%   { transform: translateY(0) translateX(0) scale(.6); opacity: 0; }
   15%  { opacity: 1; }
-  60%  { opacity: .8; }
-  100% { transform: translateY(-34px) translateX(var(--spark-drift, 3px)) scale(.15); opacity: 0; }
+  60%  { opacity: .85; }
+  100% { transform: translateY(-20px) translateX(var(--spark-drift, 3px)) scale(.2); opacity: 0; }
 }
-.lc-fire-spark:nth-child(odd)  { --spark-drift: 4px; }
-.lc-fire-spark:nth-child(even) { --spark-drift: -4px; }
+.lc-fire-spark:nth-child(odd)  { --spark-drift: 3.5px; }
+.lc-fire-spark:nth-child(even) { --spark-drift: -3.5px; }
 
 /* ─────────────────────────────────────────────
    FEED CARD — primer elemento (más reciente)
@@ -136,8 +78,9 @@
    ───────────────────────────────────────────── */
 .feed-card-latest {
   position: relative;
-  border-color: rgba(249, 115, 22, .4) !important;
+  border-color: rgba(249, 115, 22, .45) !important;
   isolation: isolate;
+  animation: lc-card-fire-glow 1.8s ease-in-out infinite;
 }
 
 .fc-fire-border {
@@ -149,84 +92,42 @@
   overflow: hidden;
 }
 
-.fc-fire-border::before {
-  content: '';
+.fc-fire-icon {
   position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  box-shadow: inset 0 0 14px rgba(249,115,22,.13), 0 0 11px 1px rgba(249,115,22,.28);
-  animation: lc-fire-glow 2s ease-in-out infinite;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  color: #fb923c;
+  font-size: .75rem;
+  text-shadow: 0 0 6px rgba(249,115,22,.8);
+  animation: lc-top1-flicker 1.4s ease-in-out infinite;
 }
-
-.fc-flame-row {
-  position: absolute;
-  left: 0; right: 0; bottom: -1px;
-  height: 20px;
-  display: flex;
-  justify-content: space-evenly;
-  align-items: flex-end;
-}
-
-.fc-flame {
-  position: relative;
-  width: 10px;
-  height: 15px;
-  transform-origin: bottom center;
-}
-.fc-flame::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, #fde047 0%, #f97316 40%, #ef4444 75%, #dc2626 100%);
-  clip-path: polygon(
-    50% 0%, 62% 12%, 58% 24%, 72% 30%, 78% 48%,
-    68% 58%, 80% 68%, 70% 82%, 75% 92%, 50% 100%,
-    25% 92%, 30% 82%, 20% 68%, 32% 58%,
-    22% 48%, 28% 30%, 42% 24%, 38% 12%
-  );
-  filter: drop-shadow(0 0 3px rgba(249,115,22,.5));
-}
-.fc-flame::after {
-  content: '';
-  position: absolute;
-  left: 26%; right: 26%; bottom: 0; top: 35%;
-  background: linear-gradient(180deg, #fffbeb 0%, #fde047 55%, #fb923c 100%);
-  clip-path: polygon(
-    50% 0%, 70% 20%, 60% 35%, 78% 50%,
-    62% 65%, 50% 100%, 38% 65%, 22% 50%,
-    40% 35%, 30% 20%
-  );
-  opacity: .9;
-}
-
-.fc-flame:nth-child(1) { animation: lc-flame-dance 1.2s ease-in-out infinite; }
-.fc-flame:nth-child(2) { animation: lc-flame-dance 1s ease-in-out infinite .15s; height: 18px; width: 12px; }
-.fc-flame:nth-child(3) { animation: lc-flame-dance 1.4s ease-in-out infinite .3s; height: 13px; width: 9px; }
-.fc-flame:nth-child(4) { animation: lc-flame-dance 1.1s ease-in-out infinite .45s; height: 16px; width: 11px; }
 
 .fc-fire-spark {
   position: absolute;
-  bottom: 1px;
+  bottom: -1px;
   z-index: 2;
   width: 3px; height: 3px;
   border-radius: 50%;
   background: radial-gradient(circle, #fff7ed 0%, #fdba74 45%, #f97316 75%, transparent 100%);
   opacity: 0;
   pointer-events: none;
-  animation: lc-card-spark-rise 1.8s ease-in infinite;
+  animation: lc-card-spark-rise 1.6s ease-in infinite;
 }
-.fc-fire-spark:nth-child(1) { left: 15%; animation-delay: 0s;   animation-duration: 1.6s; }
-.fc-fire-spark:nth-child(2) { left: 40%; animation-delay: .35s; animation-duration: 1.9s; }
-.fc-fire-spark:nth-child(3) { left: 65%; animation-delay: .15s; animation-duration: 1.5s; }
-.fc-fire-spark:nth-child(4) { left: 85%; animation-delay: .5s;  animation-duration: 1.7s; }
+.fc-fire-spark:nth-child(1) { left: 10%; animation-delay: 0s;   animation-duration: 1.5s; }
+.fc-fire-spark:nth-child(2) { left: 28%; animation-delay: .3s;  animation-duration: 1.8s; }
+.fc-fire-spark:nth-child(3) { left: 46%; animation-delay: .12s; animation-duration: 1.4s; }
+.fc-fire-spark:nth-child(4) { left: 64%; animation-delay: .42s; animation-duration: 1.7s; }
+.fc-fire-spark:nth-child(5) { left: 82%; animation-delay: .2s;  animation-duration: 1.5s; }
 
 @media (prefers-reduced-motion: reduce) {
-  .lc-flame,
-  .fc-flame,
+  .level-card-first,
+  .feed-card-latest,
+  .lc-fire-icon,
+  .fc-fire-icon,
   .lc-fire-spark,
-  .fc-fire-spark,
-  .lc-fire-border::before,
-  .fc-fire-border::before {
+  .fc-fire-spark {
     animation: none !important;
   }
 }
