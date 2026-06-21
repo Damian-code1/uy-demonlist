@@ -138,7 +138,7 @@ function buildCard(level, index) {
   const isNewTop1 = !!level.isNewTop1;
 
   const card = document.createElement('div');
-  card.className = `level-card${pos <= 3 ? ' top-3' : ''}`;
+  card.className = `level-card${pos <= 3 ? ' top-3' : ''}${pos === 1 ? ' level-card-first' : ''}`;
   card.dataset.id = level.id;
   card.tabIndex = 0;
 
@@ -147,6 +147,13 @@ function buildCard(level, index) {
   if (pos === 1) {
     rankHtml = `<div class="lc-rank lc-rank-medal lc-rank-gold" aria-label="Posición 1">
       <i class="fas fa-crown"></i><span class="lc-rank-num">1</span>
+    </div>
+    <div class="lc-fire-wrap">
+      <span class="lc-flame lc-flame-1"></span>
+      <span class="lc-flame lc-flame-2"></span>
+      <span class="lc-flame lc-flame-3"></span>
+      <span class="lc-flame lc-flame-4"></span>
+      <span class="lc-flame lc-flame-5"></span>
     </div>`;
   } else if (pos === 2) {
     rankHtml = `<div class="lc-rank lc-rank-medal lc-rank-silver" aria-label="Posición 2">

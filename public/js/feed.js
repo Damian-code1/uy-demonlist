@@ -29,7 +29,7 @@ function posLabel(pos) {
   return `#${pos}`;
 }
 
-function buildFeedCard(item, mini = false) {
+function buildFeedCard(item, mini = false, isFirst = false) {
   const thumb = item.thumbnail || (item.videoUrl ? ytThumb(item.videoUrl) : null);
   const thumbHtml = thumb
     ? `<div class="fc-thumb"><img src="${esc(thumb)}" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"><div class="fc-thumb-overlay"><i class="fas fa-play"></i></div></div>`
@@ -37,8 +37,18 @@ function buildFeedCard(item, mini = false) {
 
   const videoAttr = item.videoUrl ? `onclick="window.open('${esc(item.videoUrl)}','_blank')" style="cursor:pointer" title="Ver video"` : '';
 
+  // Fuego solo para el primer elemento del feed (lo más reciente)
+  const fireHtml = isFirst ? `
+    <div class="fc-fire-wrap">
+      <span class="fc-flame fc-flame-1"></span>
+      <span class="fc-flame fc-flame-2"></span>
+      <span class="fc-flame fc-flame-3"></span>
+      <span class="fc-flame fc-flame-4"></span>
+    </div>` : '';
+
   return `
-    <div class="feed-card${mini ? ' feed-card-mini' : ''}" ${videoAttr} data-player="${esc(item.player)}">
+    <div class="feed-card${mini ? ' feed-card-mini' : ''}${isFirst ? ' feed-card-latest' : ''}" ${videoAttr} data-player="${esc(item.player)}">
+      ${fireHtml}
       ${thumbHtml}
       <div class="fc-body">
         <div class="fc-level">${esc(item.level)}</div>
@@ -74,7 +84,7 @@ function renderFeedScroll() {
     inner.innerHTML = `<div class="feed-empty"><i class="fas fa-flag-checkered"></i> Aún no hay completions registradas</div>`;
     return;
   }
-  inner.innerHTML = _feedData.slice(0, 20).map(item => buildFeedCard(item, true)).join('');
+  inner.innerHTML = _feedData.slice(0, 20).map((item, i) => buildFeedCard(item, true, i === 0)).join('');
 }
 
 function renderFeedModal(filter = '') {
@@ -86,7 +96,8 @@ function renderFeedModal(filter = '') {
     list.innerHTML = `<div class="feed-empty"><i class="fas fa-search"></i> Sin resultados para "${esc(filter)}"</div>`;
     return;
   }
-  list.innerHTML = items.map(item => buildFeedCard(item)).join('');
+  // El fuego solo aplica al primero cuando no hay filtro activo (es el más reciente real)
+  list.innerHTML = items.map((item, i) => buildFeedCard(item, false, !filter.trim() && i === 0)).join('');
 }
 
 function filterFeedModal(val) {

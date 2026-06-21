@@ -161,7 +161,7 @@ if (!thumb_url) {
         isNewTop1:
           level.position === 1 &&
           !!level.became_top1_at &&
-          (Date.now() - new Date(level.became_top1_at).getTime()) < (7 * 24 * 60 * 60 * 1000),
+          (Date.now() - new Date(level.became_top1_at).getTime()) < (30 * 24 * 60 * 60 * 1000),
       };
     });
 
