@@ -511,9 +511,10 @@ ul { list-style: none; }
   will-change: transform;
 }
 @keyframes hero-badge-shine-sweep {
-  from { transform: translate(0%, 0%); }
-  35%  { transform: translate(94%, 0%); }
-  to   { transform: translate(188%, 0%); }
+  0%   { transform: translateX(0%); }
+  30%  { transform: translateX(40%); }
+  70%  { transform: translateX(93%); }
+  100% { transform: translateX(133%); }
 }
 
 @media (prefers-reduced-motion: reduce) {
