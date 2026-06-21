@@ -663,6 +663,7 @@ function renderLeaderboard() {
     const row = document.createElement('div');
     row.className = `lb-row${pos<=3 ? ` top${pos}` : ''}`;
     row.style.cursor = 'pointer';
+    row.style.animationDelay = `${Math.min(i * 30, 600)}ms`;
   row.addEventListener('click', () => openPlayerProfile(player.name));
     row.innerHTML = `
       <div class="lb-pos-wrap">
