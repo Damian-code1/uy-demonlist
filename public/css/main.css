@@ -5143,17 +5143,19 @@ body {
   border: 1px solid var(--border-s);
   border-radius: 14px;
   overflow: hidden;
-  width: 200px;
+  width: 215px;
   flex-shrink: 0;
   transition: border-color .2s, transform .2s, box-shadow .2s;
   animation: feedCardIn .35s cubic-bezier(.22,1,.36,1) both;
 }
-.feed-card:hover {
-  border-color: rgba(139,92,246,.4);
-  transform: translateY(-3px) scale(1.02);
-  box-shadow: 0 8px 24px rgba(139,92,246,.18);
+@media (hover: hover) and (pointer: fine) {
+  .feed-card:hover {
+    border-color: rgba(139,92,246,.4);
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 8px 24px rgba(139,92,246,.18);
+  }
 }
-.feed-card-mini { width: 190px; }
+.feed-card-mini { width: 200px; }
 
 /* Modal card — full width */
 .feed-modal-list .feed-card {
@@ -5170,7 +5172,7 @@ body {
 }
 
 .fc-thumb {
-  width: 100%; height: 110px;
+  width: 100%; height: 120px;
   position: relative; overflow: hidden;
   background: rgba(139,92,246,.07);
 }
@@ -5193,34 +5195,36 @@ body {
 }
 
 .fc-body {
-  padding: .6rem .75rem;
-  display: flex; flex-direction: column; gap: .3rem;
+  padding: .7rem .85rem;
+  display: flex; flex-direction: column; gap: .38rem;
 }
 .fc-level {
-  font-size: .8rem; font-weight: 700; color: var(--text);
+  font-size: .92rem; font-weight: 700; color: var(--text);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  line-height: 1.25;
 }
 .fc-meta {
   display: flex; align-items: center; justify-content: space-between; gap: .4rem;
 }
 .fc-player {
-  font-size: .68rem; color: var(--text-dim);
-  display: flex; align-items: center; gap: .25rem;
+  font-size: .78rem; color: var(--text-sub);
+  display: flex; align-items: center; gap: .3rem;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  font-weight: 600;
 }
-.fc-player i { color: var(--violet); font-size: .6rem; }
+.fc-player i { color: var(--violet); font-size: .68rem; }
 .fc-pos {
-  font-size: .62rem; font-weight: 800; letter-spacing: .5px;
+  font-size: .72rem; font-weight: 800; letter-spacing: .4px;
   background: linear-gradient(135deg, var(--violet), var(--red));
   -webkit-background-clip: text; background-clip: text;
   -webkit-text-fill-color: transparent;
-  white-space: nowrap;
+  white-space: nowrap; flex-shrink: 0;
 }
 .fc-time {
-  font-size: .62rem; color: rgba(255,255,255,.3);
-  display: flex; align-items: center; gap: .25rem;
+  font-size: .72rem; color: rgba(255,255,255,.45);
+  display: flex; align-items: center; gap: .3rem;
 }
-.fc-time i { font-size: .55rem; }
+.fc-time i { font-size: .64rem; }
 
 .fc-video-badge {
   position: absolute; top: .4rem; right: .4rem;
@@ -5234,6 +5238,22 @@ body {
   display: flex; align-items: center; gap: .5rem;
   padding: 2rem; color: var(--text-dim); font-size: .85rem;
   justify-content: center;
+}
+
+/* ─── Feed — refuerzo de legibilidad en mobile ─── */
+@media (max-width: 640px) {
+  .feed-card, .feed-card-mini {
+    width: 235px;
+  }
+  .fc-thumb { height: 130px; }
+  .fc-body { padding: .8rem .9rem; gap: .42rem; }
+  .fc-level  { font-size: 1rem; }
+  .fc-player { font-size: .82rem; }
+  .fc-pos    { font-size: .76rem; }
+  .fc-time   { font-size: .76rem; }
+  .feed-live-label { font-size: .68rem; }
+  .feed-live-count { font-size: .76rem; }
+  .feed-expand-btn { font-size: .78rem; padding: .4rem .85rem; }
 }
 
 /* ─── MODAL FULLSCREEN ─── */
