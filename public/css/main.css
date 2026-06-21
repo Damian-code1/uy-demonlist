@@ -836,14 +836,7 @@ ul { list-style: none; }
   font-size: .97rem; font-weight: 700; color: var(--text);
   line-height: 1.2;
 }
-.aredl-pos {
-  font-size: .68rem; font-weight: 700; letter-spacing: .8px;
-  padding: .2rem .55rem;
-  background: rgba(139,92,246,.12); border: 1px solid rgba(139,92,246,.3);
-  border-radius: 4px; color: var(--violet);
-  white-space: nowrap;
-}
-.aredl-pos i { font-size: .6rem; margin-right: .25rem; }
+/* (definición consolidada más abajo en .aredl-pos — ver sección "Badge AREDL") */
 
 /* Victors area */
 .victors-area {
@@ -1922,8 +1915,11 @@ ul { list-style: none; }
   display: inline-flex; align-items: center; gap: .28rem; flex-shrink: 0;
   padding: .2rem .6rem; border-radius: 50px;
   font-size: .7rem; font-weight: 700;
-  background: rgba(139,92,246,.2); border: 1px solid rgba(139,92,246,.5);
-  color: #c4aaff;
+  background: linear-gradient(135deg, #7c3aed, #5b21b6);
+  border: 1px solid rgba(0,0,0,.25);
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0,0,0,.4);
+  box-shadow: 0 1px 4px rgba(0,0,0,.35);
 }
 .aredl-pos i { font-size: .6rem; }
 
