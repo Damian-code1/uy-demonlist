@@ -120,7 +120,7 @@ window.refreshPublicData = refreshPublicData;
 
 // ─── Polling de cambios en tiempo real (todos los usuarios, no solo admin) ───
 let _lastKnownChange = null;
-const REALTIME_POLL_MS = 60000; // 60 segundos — evita interrupciones durante reproducción de video
+const REALTIME_POLL_MS = 600000; // 10 minutos — evita interrupciones durante reproducción de video
 
 async function pollForRealtimeChanges() {
   try {
