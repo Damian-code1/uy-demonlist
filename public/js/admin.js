@@ -982,13 +982,13 @@ function renderSubsFiltered() {
       <td><span class="status-badge status-${status}">${status}</span></td>
       <td style="white-space:nowrap">
         ${status === 'pending' ? (
-          sub.submitted_by === window.currentUser?.id ? `
+          sub.submitted_by === window.currentUser?.id && window.currentUser?.role !== 'owner' ? `
           <span class="text-dim" style="font-size:.72rem;font-style:italic" title="No podés revisar tu propia submission">
             <i class="fas fa-lock"></i> Tuya
           </span>` : `
-          <button class="btn-icon" style="color:var(--success)" title="Aprobar"
+          <button class="btn-icon" style="color:var(--success)" title="${sub.submitted_by === window.currentUser?.id ? 'Aprobar (tu propia submission — modo testing de Owner)' : 'Aprobar'}"
             onclick="approveSubmission(${sub.id})"><i class="fas fa-check"></i></button>
-          <button class="btn-icon" style="color:var(--warning)" title="Rechazar"
+          <button class="btn-icon" style="color:var(--warning)" title="${sub.submitted_by === window.currentUser?.id ? 'Rechazar (tu propia submission — modo testing de Owner)' : 'Rechazar'}"
             onclick="rejectSubmission(${sub.id})"><i class="fas fa-times"></i></button>`
         ) : ''}
         <button class="btn-icon btn-delete" title="Eliminar"
@@ -1088,8 +1088,9 @@ function openSubDetailModal(sub) {
 
   // Acciones
   const isOwnSubmission = sub.submitted_by === window.currentUser?.id;
+  const isOwnerTesting  = isOwnSubmission && window.currentUser?.role === 'owner';
   document.getElementById('subDetailActions').innerHTML = sub.status === 'pending' ? (
-    isOwnSubmission ? `
+    isOwnSubmission && !isOwnerTesting ? `
     <div class="admin-notice" style="width:100%;display:flex;align-items:center;gap:.5rem;font-size:.82rem">
       <i class="fas fa-lock"></i> No podés aprobar ni rechazar tu propia submission — otro miembro del staff debe revisarla.
     </div>
@@ -1097,6 +1098,10 @@ function openSubDetailModal(sub) {
       onclick="closeSubDetailModal();deleteSubmission(${sub.id})">
       <i class="fas fa-trash"></i>
     </button>` : `
+    ${isOwnerTesting ? `
+    <div class="admin-notice" style="width:100%;display:flex;align-items:center;gap:.5rem;font-size:.78rem;opacity:.8">
+      <i class="fas fa-flask"></i> Es tu propia submission — podés revisarla igual por ser Owner (modo testing).
+    </div>` : ''}
     <button class="btn-approve" onclick="closeSubDetailModal();approveSubmission(${sub.id})">
       <i class="fas fa-check"></i> Aprobar
     </button>
