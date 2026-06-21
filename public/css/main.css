@@ -1839,20 +1839,20 @@ ul { list-style: none; }
   display: block; z-index: 0;
 }
 
+
 .lc-thumb-fade {
-  position: absolute; left: 0; top: 0; bottom: 0; width: 280px;
+  position: absolute; left: 0; top: 0; bottom: 0; width: 246px;
   background: linear-gradient(to right,
     transparent 0%,
-    transparent 40%,
-    var(--card-color, var(--bg4)) 75%,
-    var(--card-color, var(--bg4)) 100%
+    transparent 78%,
+    var(--card-body-color, var(--bg4)) 100%
   );
   z-index: 1; pointer-events: none;
 }
 
 .lc-color-bg {
   position: absolute; inset: 0; left: 220px;
-  background: var(--card-color, var(--bg4));
+  background: var(--card-body-color, var(--bg4));
   z-index: 0;
 }
 
@@ -2019,7 +2019,7 @@ ul { list-style: none; }
   background: linear-gradient(
     to bottom,
     transparent 30%,
-    color-mix(in srgb, var(--card-color, #07070d) 70%, #07070d) 70%,
+    color-mix(in srgb, var(--card-body-color, #07070d) 70%, #07070d) 70%,
     #07070d 100%
   );
 }
@@ -2044,7 +2044,7 @@ ul { list-style: none; }
 .levels-container.grid-view .lc-thumb-fade { display: none; }
 .levels-container.grid-view .lc-color-bg {
   left: 0; top: 55%;
-  background: linear-gradient(to bottom, transparent 0%, var(--card-color, var(--bg4)) 100%);
+  background: linear-gradient(to bottom, transparent 0%, var(--card-body-color, var(--bg4)) 100%);
 }
 .levels-container.grid-view .lc-rank {
   position: absolute; top: 8px; left: 10px; width: auto; font-size: 1.3rem;

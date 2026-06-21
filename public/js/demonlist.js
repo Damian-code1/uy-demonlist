@@ -144,6 +144,29 @@ function levelTierAccent(pos) {
 }
 window.levelTierAccent = levelTierAccent;
 
+// Versión "fondo" del color por tier: misma franja de posiciones que
+// levelTierAccent, pero con luminosidad baja y saturación contenida para
+// que funcione como background detrás de texto blanco sin verse encandilante
+// ni competir visualmente con la miniatura del nivel.
+function levelTierBodyColor(pos) {
+  if (pos <= 10) {
+    const t = (pos - 1) / 9;
+    return `hsl(${Math.round(16 - t * 16)}, 55%, ${Math.round(16 - t * 3)}%)`; // ascua → rojo, oscuro
+  }
+  if (pos <= 75) {
+    const t = (pos - 11) / 64;
+    return `hsl(${Math.round(272 - t * 16)}, 42%, ${Math.round(15 - t * 2)}%)`; // violeta oscuro
+  }
+  if (pos <= 150) {
+    const t = (pos - 76) / 74;
+    return `hsl(${Math.round(206 - t * 16)}, 38%, ${Math.round(14 - t * 2)}%)`; // celeste oscuro
+  }
+  const restTotal = Math.max((getLevelsData().length || 250) - 150, 1);
+  const t = Math.min((pos - 151) / restTotal, 1);
+  return `hsl(${Math.round(150 - t * 55)}, 26%, ${Math.round(13 - t * 2)}%)`; // verde apagado, oscuro
+}
+window.levelTierBodyColor = levelTierBodyColor;
+
 // ─── BUILD COMPACT CARD ───
 function buildCard(level, index) {
   const pos      = level.position || (index + 1);
@@ -193,9 +216,10 @@ function buildCard(level, index) {
     const firstVictorName = victors[0]?.name || null;
   const extraVictors    = victors.length > 1 ? victors.length - 1 : 0;
 
-  // Colores por categoría según posición en la lista (ver levelTierAccent)
   const cardAccent = levelTierAccent(pos);
+  const cardBodyColor = levelTierBodyColor(pos);
   card.style.setProperty('--card-accent', cardAccent);
+  card.style.setProperty('--card-body-color', cardBodyColor);
 
   card.innerHTML = `
     <button class="lc-fav-btn${isFav ? ' active' : ''}" data-id="${level.id}" title="${isFav ? 'Quitar de favoritos' : 'Agregar a favoritos'}">
@@ -792,8 +816,9 @@ function setupPlayerSearch() {
   });
 }
 
-/* ─── Card Color Extractor ─── */
+
 (function () {
+  return;
 
   // Extrae el color dominante de una imagen via canvas
   function getDominantColor(img) {
