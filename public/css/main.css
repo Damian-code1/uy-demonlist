@@ -463,11 +463,15 @@ ul { list-style: none; }
   border-radius: 50px;
   background: linear-gradient(135deg, rgba(139,92,246,.14), rgba(244,63,94,.1));
   backdrop-filter: blur(10px);
-  overflow: hidden;
   opacity: 0;
   animation: hero-badge-in .7s ease .1s forwards, hero-badge-float 5s ease-in-out 1s infinite;
 }
-@keyframes hero-badge-in {
+.hero-badge-clip {
+  position: absolute; inset: 0;
+  border-radius: 50px;
+  overflow: hidden;
+  pointer-events: none;
+}@keyframes hero-badge-in {
   from { opacity: 0; transform: translateY(-10px) scale(.9); }
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
@@ -491,15 +495,18 @@ ul { list-style: none; }
   -webkit-text-fill-color: transparent;
 }
 .hero-badge-shine {
-  position: absolute; inset: 0;
-  background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,.25) 48%, transparent 60%);
-  background-size: 250% 250%;
-  animation: hero-badge-shine-move 4s linear infinite;
+  position: absolute;
+  top: 0; left: -60%;
+  width: 60%; height: 100%;
+  background: linear-gradient(115deg, transparent 0%, rgba(255,255,255,.3) 50%, transparent 100%);
+  animation: hero-badge-shine-sweep 3.5s linear infinite;
+  animation-delay: inherit;
   pointer-events: none;
+  will-change: transform;
 }
-@keyframes hero-badge-shine-move {
-  0%   { background-position: -150% -150%; }
-  100% { background-position: 150% 150%; }
+@keyframes hero-badge-shine-sweep {
+  from { transform: translateX(0%); }
+  to   { transform: translateX(283%); }
 }
 
 @media (prefers-reduced-motion: reduce) {
