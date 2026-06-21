@@ -328,7 +328,6 @@ async function loadDiscordWidget() {
     if (logoImg)  { logoImg.src = iconUrl; logoImg.style.display = 'block'; }
     if (logoFlag) logoFlag.style.display = 'none';
     setFooterDiscordIcon(iconUrl);
-    setFavicon(iconUrl);
   }
 
   card.innerHTML = `
