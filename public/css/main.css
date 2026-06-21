@@ -691,27 +691,58 @@ ul { list-style: none; }
   max-width: 1320px; margin: 0 auto; padding: 0 1.5rem;
 }
 .section-head {
-  text-align: center; margin-bottom: 3rem;
+  position: relative;
+  text-align: center; margin-bottom: 3.5rem;
 }
 .section-tag {
-  display: inline-block;
+  position: relative;
+  display: inline-flex; align-items: center; gap: .45rem;
   font-size: .65rem; font-weight: 700; letter-spacing: 3px;
   text-transform: uppercase;
-  color: var(--violet); padding: .3rem .9rem;
-  background: rgba(139,92,246,.1); border: 1px solid rgba(139,92,246,.25);
-  border-radius: 50px; margin-bottom: .9rem;
+  color: var(--violet); padding: .35rem 1rem;
+  background: linear-gradient(135deg, rgba(139,92,246,.14), rgba(244,63,94,.08));
+  border: 1px solid rgba(139,92,246,.3);
+  border-radius: 50px; margin-bottom: 1.1rem;
+  overflow: hidden;
+}
+.section-tag::before {
+  content: '';
+  display: inline-block; width: 5px; height: 5px;
+  background: var(--violet); border-radius: 50%;
+  box-shadow: 0 0 8px var(--violet);
+  animation: pulse-dot 2s ease-in-out infinite;
 }
 .section-h2 {
   font-family: var(--font-title);
   font-size: clamp(2.5rem, 5vw, 3.8rem);
   letter-spacing: 4px; line-height: 1;
-  background: linear-gradient(135deg, var(--text) 40%, var(--text-sub));
+  background: linear-gradient(120deg, var(--text) 0%, var(--text) 35%, var(--violet) 50%, var(--text) 65%, var(--text) 100%);
+  background-size: 250% 100%;
   -webkit-background-clip: text; background-clip: text;
   -webkit-text-fill-color: transparent;
-  margin-bottom: .8rem;
+  margin-bottom: .9rem;
+  animation: section-h2-sheen 7s ease-in-out infinite;
+}
+@keyframes section-h2-sheen {
+  0%, 100% { background-position: 0% 0%; }
+  50%      { background-position: 100% 0%; }
 }
 .section-sub {
-  color: var(--text-sub); font-size: .92rem; max-width: 540px; margin: 0 auto;
+  position: relative;
+  color: var(--text-sub); font-size: .94rem; max-width: 540px; margin: 0 auto;
+}
+.section-head::after {
+  content: '';
+  display: block;
+  width: 50px; height: 2px;
+  margin: 1.4rem auto 0;
+  background: linear-gradient(90deg, var(--violet), var(--red));
+  border-radius: 2px;
+  opacity: .6;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .section-h2 { animation: none !important; }
 }
 
 /* =============================================
