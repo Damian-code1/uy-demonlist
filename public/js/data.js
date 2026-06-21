@@ -243,7 +243,6 @@ async function updateDiscordLogo() {
       const logoFlag = document.getElementById('logoFlag');
       if (logoImg)  { logoImg.src = iconUrl; logoImg.style.display = 'block'; }
       if (logoFlag) logoFlag.style.display = 'none';
-      setFavicon(iconUrl);
     }
   } catch {}
 }
