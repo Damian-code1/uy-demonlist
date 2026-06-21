@@ -61,6 +61,46 @@
 .lc-fire-spark:nth-child(even) { --spark-drift: -3.5px; }
 
 /* ─────────────────────────────────────────────
+   VARIANTE PLATEADA — top #2 de la lista
+   ───────────────────────────────────────────── */
+.level-card-second {
+  position: relative;
+  border-color: rgba(203, 213, 225, .45) !important;
+  isolation: isolate;
+  animation: lc-card-silver-glow 2.6s ease-in-out infinite;
+  will-change: box-shadow;
+}
+
+@keyframes lc-card-silver-glow {
+  0%, 100% { box-shadow: 0 0 10px 0 rgba(203,213,225,.22); }
+  50%      { box-shadow: 0 0 16px 2px rgba(203,213,225,.38); }
+}
+
+.lc-fire-border.silver .lc-fire-spark {
+  background: radial-gradient(circle, #ffffff 0%, #e2e8f0 45%, #94a3b8 75%, transparent 100%);
+}
+
+/* ─────────────────────────────────────────────
+   VARIANTE BRONCE — top #3 de la lista
+   ───────────────────────────────────────────── */
+.level-card-third {
+  position: relative;
+  border-color: rgba(194, 114, 42, .45) !important;
+  isolation: isolate;
+  animation: lc-card-bronze-glow 2.6s ease-in-out infinite;
+  will-change: box-shadow;
+}
+
+@keyframes lc-card-bronze-glow {
+  0%, 100% { box-shadow: 0 0 10px 0 rgba(194,114,42,.25); }
+  50%      { box-shadow: 0 0 16px 2px rgba(194,114,42,.4); }
+}
+
+.lc-fire-border.bronze .lc-fire-spark {
+  background: radial-gradient(circle, #fde9d2 0%, #d99757 45%, #c2722a 75%, transparent 100%);
+}
+
+/* ─────────────────────────────────────────────
    FEED CARD — primer elemento (más reciente)
    Versión más chica del mismo sistema
    ───────────────────────────────────────────── */

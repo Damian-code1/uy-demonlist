@@ -180,7 +180,8 @@ function buildCard(level, index) {
   const isNewTop1 = !!level.isNewTop1;
 
   const card = document.createElement('div');
-  card.className = `level-card${pos <= 3 ? ' top-3' : ''}${pos === 1 ? ' level-card-first' : ''}`;
+  const topPosClass = pos === 1 ? ' level-card-first' : pos === 2 ? ' level-card-second' : pos === 3 ? ' level-card-third' : '';
+  card.className = `level-card${pos <= 3 ? ' top-3' : ''}${topPosClass}`;
   card.dataset.id = level.id;
   card.tabIndex = 0;
 
@@ -204,10 +205,32 @@ function buildCard(level, index) {
   } else if (pos === 2) {
     rankHtml = `<div class="lc-rank lc-rank-medal lc-rank-silver" aria-label="Posición 2">
       <i class="fas fa-medal"></i><span class="lc-rank-num">2</span>
+    </div>
+    <div class="lc-fire-border silver">
+      <span class="lc-fire-spark"></span>
+      <span class="lc-fire-spark"></span>
+      <span class="lc-fire-spark"></span>
+      <span class="lc-fire-spark"></span>
+      <span class="lc-fire-spark"></span>
+      <span class="lc-fire-spark"></span>
+      <span class="lc-fire-spark"></span>
+      <span class="lc-fire-spark"></span>
+      <span class="lc-fire-spark"></span>
     </div>`;
   } else if (pos === 3) {
     rankHtml = `<div class="lc-rank lc-rank-medal lc-rank-bronze" aria-label="Posición 3">
       <i class="fas fa-medal"></i><span class="lc-rank-num">3</span>
+    </div>
+    <div class="lc-fire-border bronze">
+      <span class="lc-fire-spark"></span>
+      <span class="lc-fire-spark"></span>
+      <span class="lc-fire-spark"></span>
+      <span class="lc-fire-spark"></span>
+      <span class="lc-fire-spark"></span>
+      <span class="lc-fire-spark"></span>
+      <span class="lc-fire-spark"></span>
+      <span class="lc-fire-spark"></span>
+      <span class="lc-fire-spark"></span>
     </div>`;
   } else {
     rankHtml = `<div class="lc-rank" aria-label="Posición ${pos}"><span class="lc-rank-num">#${pos}</span></div>`;
