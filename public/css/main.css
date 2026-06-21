@@ -321,7 +321,7 @@ ul { list-style: none; }
   position: absolute; top: calc(100% + 12px); right: 0;
   width: max-content;
   min-width: 232px;
-  max-width: min(232px, calc(100vw - 32px));
+  max-width: min(280px, calc(100vw - 32px));
   background: var(--bg3);
   border: 1px solid var(--border);
   border-radius: var(--r-lg);
@@ -4072,11 +4072,10 @@ body {
   text-transform: uppercase; color: var(--text-dim);
 }
 .wdd-gd-nick {
-  font-weight: 700;
+  font-size: .88rem; font-weight: 700;
   color: var(--success);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   min-width: 0; max-width: 100%;
-  font-size: clamp(.6rem, 3vw, .88rem);
   display: block;
 }
 .wdd-gd-sublabel {
