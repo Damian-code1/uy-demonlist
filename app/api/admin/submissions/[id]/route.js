@@ -29,9 +29,14 @@ export async function PUT(request, { params }) {
     const sub = subRows[0];
 
     // Nadie del staff puede aprobar/rechazar su PROPIA submission — evita
-    // auto-validación de records. Solo aplica al pasar a approved/rejected;
+    // auto-validación de records. Excepción: el owner sí puede, ya que es
+    // la máxima autoridad de la lista. Solo aplica al pasar a approved/rejected;
     // dejar algo en pending (ej. revertir un estado) no se considera "decisión".
-    if ((status === 'approved' || status === 'rejected') && sub.submitted_by === admin.id) {
+    if (
+      (status === 'approved' || status === 'rejected') &&
+      sub.submitted_by === admin.id &&
+      admin.role !== 'owner'
+    ) {
       return Response.json({
         error: 'self_review',
         message: 'No podés aprobar o rechazar tu propia submission. Otro miembro del staff tiene que revisarla.',
