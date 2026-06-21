@@ -1856,21 +1856,28 @@ ul { list-style: none; }
   z-index: 0;
 }
 
-/* Número de rank */
+/* Número de rank — con marco propio (chip oscuro + blur) para que se lea
+   siempre, sin importar si la miniatura debajo es clara u oscura. */
 .lc-rank {
   position: relative; z-index: 2;
-  font-family: var(--font-title); font-size: 1.9rem; letter-spacing: 1px;
-  color: #fff; text-shadow: 0 2px 12px rgba(0,0,0,.8);
-  padding: 0 1rem;
+  font-family: var(--font-title); font-size: 2.05rem; letter-spacing: 1px;
+  color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,.9);
+  padding: .5rem 1.05rem;
+  margin: 0 .65rem;
   flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
+  background: rgba(7,7,13,.5);
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: var(--r-sm, 10px);
+  backdrop-filter: blur(3px);
+  box-shadow: 0 2px 10px rgba(0,0,0,.4);
 }
 
 /* Cuerpo de texto */
 .lc-body {
   position: relative; z-index: 2;
-  flex: 1; padding: 0 1.1rem 0 0; min-width: 0;
-  display: flex; flex-direction: column; justify-content: center; gap: .4rem;
+  flex: 1; padding: 0 1.3rem 0 0; min-width: 0;
+  display: flex; flex-direction: column; justify-content: center; gap: .5rem;
 }
 
 .lc-title-row {
@@ -1878,22 +1885,22 @@ ul { list-style: none; }
 }
 
 .lc-name {
-  font-size: 1.15rem; font-weight: 800; color: #fff; line-height: 1.2;
+  font-size: 1.32rem; font-weight: 800; color: #fff; line-height: 1.2;
   text-shadow: 0 1px 8px rgba(0,0,0,.7);
   letter-spacing: .3px;
 }
 
 .lc-meta-row {
-  display: flex; align-items: center; gap: .5rem;
-  font-size: .82rem; color: rgba(255,255,255,.65);
+  display: flex; align-items: center; gap: .6rem;
+  font-size: .9rem; color: rgba(255,255,255,.65);
   flex-wrap: wrap;
 }
 
 .lc-victor-count {
-  display: inline-flex; align-items: center; gap: .35rem;
+  display: inline-flex; align-items: center; gap: .4rem;
   background: rgba(0,0,0,.32); border: 1px solid rgba(255,255,255,.12);
-  padding: .2rem .6rem; border-radius: 50px;
-  font-size: .75rem; font-weight: 700;
+  padding: .26rem .75rem; border-radius: 50px;
+  font-size: .84rem; font-weight: 700;
   backdrop-filter: blur(2px);
   transition: border-color .18s, background .18s;
 }
@@ -1903,35 +1910,35 @@ ul { list-style: none; }
     background: rgba(0,0,0,.4);
   }
 }
-.lc-victor-count i { color: var(--red); font-size: .72rem; }
+.lc-victor-count i { color: var(--red); font-size: .8rem; }
 
 .lc-first-victor {
-  display: inline-flex; align-items: center; gap: .3rem;
+  display: inline-flex; align-items: center; gap: .35rem;
   color: rgba(255,255,255,.9); font-weight: 700;
-  font-size: .82rem;
-  padding-left: .2rem;
+  font-size: .9rem;
+  padding-left: .25rem;
   border-left: 1px solid rgba(255,255,255,.15);
 }
 .lc-first-victor i { opacity: .55; }
 
 /* Badge AREDL */
 .aredl-pos {
-  display: inline-flex; align-items: center; gap: .28rem; flex-shrink: 0;
-  padding: .2rem .6rem; border-radius: 50px;
-  font-size: .7rem; font-weight: 700;
+  display: inline-flex; align-items: center; gap: .32rem; flex-shrink: 0;
+  padding: .26rem .75rem; border-radius: 50px;
+  font-size: .78rem; font-weight: 700;
   background: linear-gradient(135deg, #7c3aed, #5b21b6);
   border: 1px solid rgba(0,0,0,.25);
   color: #fff;
   text-shadow: 0 1px 2px rgba(0,0,0,.4);
   box-shadow: 0 1px 4px rgba(0,0,0,.35);
 }
-.aredl-pos i { font-size: .6rem; }
+.aredl-pos i { font-size: .68rem; }
 
 /* Badge NUEVO */
 .lc-new-badge {
-  display: inline-flex; align-items: center; gap: .25rem;
-  padding: .15rem .5rem; border-radius: 50px;
-  font-size: .62rem; font-weight: 800; letter-spacing: .5px;
+  display: inline-flex; align-items: center; gap: .3rem;
+  padding: .22rem .65rem; border-radius: 50px;
+  font-size: .7rem; font-weight: 800; letter-spacing: .5px;
   background: rgba(34,197,94,.2); border: 1px solid rgba(34,197,94,.5);
   color: #86efac; flex-shrink: 0;
 }
@@ -1939,9 +1946,9 @@ ul { list-style: none; }
 /* Badge TOP 1 — nuevo hardest del país, congrats con fuego + partículas */
 .lc-top1-badge {
   position: relative;
-  display: inline-flex; align-items: center; gap: .3rem;
-  padding: .15rem .55rem; border-radius: 50px;
-  font-size: .62rem; font-weight: 800; letter-spacing: .5px;
+  display: inline-flex; align-items: center; gap: .35rem;
+  padding: .22rem .7rem; border-radius: 50px;
+  font-size: .7rem; font-weight: 800; letter-spacing: .5px;
   background: linear-gradient(90deg, rgba(249,115,22,.28), rgba(245,158,11,.28));
   border: 1px solid rgba(249,115,22,.65);
   color: #fed7aa; flex-shrink: 0;
@@ -3437,11 +3444,11 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: .15rem;
-  font-size: 1rem;
+  gap: .2rem;
+  font-size: 1.2rem;
 }
 .lc-rank-medal .lc-rank-num {
-  font-size: .75rem;
+  font-size: .85rem;
   font-weight: 800;
   letter-spacing: .5px;
 }
@@ -3452,7 +3459,7 @@ body {
 /* Thumbnail placeholder */
 .lc-thumb-ph {
   position: absolute; left: 0; top: 0; bottom: 0;
-  width: 220px; height: 100%;
+  width: 258px; height: 100%;
   background: linear-gradient(135deg, var(--bg3), var(--bg5));
   z-index: 0;
 }
@@ -3476,10 +3483,10 @@ body {
 .lc-pts-badge {
   display: inline-flex;
   align-items: center;
-  gap: .3rem;
-  padding: .22rem .65rem;
+  gap: .35rem;
+  padding: .28rem .8rem;
   border-radius: 50px;
-  font-size: .74rem;
+  font-size: .85rem;
   font-weight: 700;
   background: linear-gradient(135deg, rgba(245,158,11,.18), rgba(249,115,22,.1));
   border: 1px solid rgba(245,158,11,.35);
@@ -3496,28 +3503,30 @@ body {
   }
 }
 .lc-pts-badge i {
-  font-size: .64rem;
+  font-size: .74rem;
   color: #f59e0b;
 }
 
-/* Card más alta en lista para aprovechar espacio */
+/* Card más alta en lista para aprovechar espacio — todo agrandado para que
+   los badges/textos más grandes entren con aire, sin perder la franja
+   horizontal compacta tipo lista. */
 .level-card {
-  height: 104px;
-  padding-left: 200px;
+  height: 122px;
+  padding-left: 224px;
 }
 .lc-thumb {
-  width: 235px;
+  width: 258px;
 }
 .lc-thumb-fade {
-  width: 300px;
+  width: 320px;
 }
 .lc-color-bg {
-  left: 235px;
+  left: 258px;
 }
 
 /* Grid: también más alta */
 .levels-container.grid-view .level-card {
-  height: 200px;
+  height: 218px;
 }
 
 /* =============================================
@@ -3579,14 +3588,16 @@ body {
 /* Responsive — ocultar barra de progreso en mobile */
 @media (max-width: 600px) {
   .level-card {
-    height: 88px;
-    padding-left: 130px;
+    height: 98px;
+    padding-left: 142px;
   }
-  .lc-thumb, .lc-thumb-ph { width: 150px; }
-  .lc-thumb-fade           { width: 200px; }
-  .lc-color-bg             { left: 150px; }
-  .lc-rank                 { padding: 0 .6rem; font-size: 1.4rem; }
-  .lc-name                 { font-size: 1rem; }
+  .lc-thumb, .lc-thumb-ph { width: 162px; }
+  .lc-thumb-fade           { width: 212px; }
+  .lc-color-bg             { left: 162px; }
+  .lc-rank                 {
+    padding: .35rem .7rem; margin: 0 .5rem; font-size: 1.55rem;
+  }
+  .lc-name                 { font-size: 1.08rem; }
   .lc-pts-badge            { display: none; }
   .lc-badges               { display: none; }
 
@@ -3596,12 +3607,13 @@ body {
   .lb-row                  { gap: .6rem; padding: .7rem .9rem; }
 }
 @media (max-width: 420px) {
-  .level-card    { height: 80px; padding-left: 110px; }
-  .lc-thumb, .lc-thumb-ph { width: 125px; }
-  .lc-thumb-fade { width: 170px; }
-  .lc-color-bg   { left: 125px; }
-  .lc-name       { font-size: .9rem; }
-  .lc-meta-row   { gap: .35rem; }
+  .level-card    { height: 90px; padding-left: 122px; }
+  .lc-thumb, .lc-thumb-ph { width: 137px; }
+  .lc-thumb-fade { width: 182px; }
+  .lc-color-bg   { left: 137px; }
+  .lc-rank       { padding: .3rem .55rem; margin: 0 .4rem; font-size: 1.3rem; }
+  .lc-name       { font-size: .98rem; }
+  .lc-meta-row   { gap: .4rem; }
 }
 
 .sub-sug-new { border-top: 2px dashed rgba(34,197,94,.3); }
