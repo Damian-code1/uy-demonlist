@@ -27,19 +27,6 @@
   overflow: hidden;
 }
 
-/* Ícono de llama centrado abajo, mismo flicker que el del badge TOP 1 */
-.lc-fire-icon {
-  position: absolute;
-  bottom: 4px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 2;
-  color: #fb923c;
-  font-size: 1.1rem;
-  text-shadow: 0 0 8px rgba(249,115,22,.8);
-  animation: lc-top1-flicker 1.4s ease-in-out infinite;
-}
-
 /* Partículas — copia exacta del comportamiento de .lc-top1-spark,
    repartidas a lo largo de toda la base de la card */
 .lc-fire-spark {
@@ -92,18 +79,6 @@
   overflow: hidden;
 }
 
-.fc-fire-icon {
-  position: absolute;
-  bottom: 2px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 2;
-  color: #fb923c;
-  font-size: .75rem;
-  text-shadow: 0 0 6px rgba(249,115,22,.8);
-  animation: lc-top1-flicker 1.4s ease-in-out infinite;
-}
-
 .fc-fire-spark {
   position: absolute;
   bottom: -1px;
@@ -124,8 +99,6 @@
 @media (prefers-reduced-motion: reduce) {
   .level-card-first,
   .feed-card-latest,
-  .lc-fire-icon,
-  .fc-fire-icon,
   .lc-fire-spark,
   .fc-fire-spark {
     animation: none !important;

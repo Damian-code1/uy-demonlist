@@ -40,7 +40,6 @@ function buildFeedCard(item, mini = false, isFirst = false) {
   // Fuego solo para el primer elemento del feed (lo más reciente) — anillo realista
   const fireHtml = isFirst ? `
     <div class="fc-fire-border">
-      <i class="fas fa-fire fc-fire-icon"></i>
       <span class="fc-fire-spark"></span>
       <span class="fc-fire-spark"></span>
       <span class="fc-fire-spark"></span>
