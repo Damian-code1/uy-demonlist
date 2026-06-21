@@ -3826,10 +3826,15 @@ body {
   color: var(--text-dim);
 }
 .widget-gd-linked-name {
-  font-size: .9rem;
   font-weight: 700;
   color: var(--text);
   padding-left: 1.55rem;
+  font-size: clamp(.6rem, 2.2vw, .9rem);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
+  display: block;
 }
 .widget-link-gd-btn {
   width: 100%;
