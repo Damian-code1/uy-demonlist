@@ -237,8 +237,20 @@
 
 /* ─── Very small ─── */
 @media (max-width: 380px) {
-  .user-widget-info { display: none; }
-  .user-widget-card { padding: .38rem .42rem; }
+  /* El widget se achica pero NUNCA esconde nombre/rango — solo reduce tamaños */
+  .user-widget { right: 6px; max-width: calc(100vw - 12px); }
+  .user-widget-card {
+    padding: .32rem .5rem .32rem .32rem;
+    gap: .45rem;
+    max-width: calc(100vw - 12px);
+  }
+  .user-widget-avatar,
+  .user-widget-avatar-placeholder { width: 28px; height: 28px; font-size: .68rem; }
+  .user-widget-info { min-width: 0; }
+  .user-widget-name { font-size: .72rem; }
+  .user-widget-role { font-size: .56rem; gap: .25rem; }
+  .user-widget-role::before { width: 4px; height: 4px; }
+  .user-widget-chevron { font-size: .68rem; }
 
   .admin-title { font-size: .95rem; letter-spacing: 1px; }
   .admin-tab   { padding: .55rem .6rem; font-size: .6rem; }
