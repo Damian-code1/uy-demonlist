@@ -110,21 +110,37 @@ function initParticles() {
   const canvas = document.getElementById('particleCanvas');
   if (!canvas) return;
 
-  const ctx    = canvas.getContext('2d');
+  // Respeta accesibilidad y dispositivos de bajo rendimiento
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduceMotion) { canvas.style.display = 'none'; return; }
+
+  const ctx = canvas.getContext('2d', { alpha: true });
   let W, H, particles = [];
-  const N = 60;
+  // Menos partículas y un límite de conexiones por partícula en vez de O(n²) completo
+  const N = window.innerWidth < 768 ? 22 : 36;
+  const MAX_LINK_DIST = 100;
+  const MAX_LINK_DIST_SQ = MAX_LINK_DIST * MAX_LINK_DIST;
+
+  let dpr = Math.min(window.devicePixelRatio || 1, 1.5);
 
   function resize() {
-    W = canvas.width  = window.innerWidth;
-    H = canvas.height = window.innerHeight;
+    W = canvas.width  = Math.floor(window.innerWidth * dpr);
+    H = canvas.height = Math.floor(window.innerHeight * dpr);
+    canvas.style.width  = window.innerWidth + 'px';
+    canvas.style.height = window.innerHeight + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
   resize();
-  window.addEventListener('resize', resize, { passive: true });
+  let resizeTimeout;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(resize, 150);
+  }, { passive: true });
 
   for (let i = 0; i < N; i++) {
     particles.push({
-      x: Math.random() * 1920,
-      y: Math.random() * 1080,
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
       r: Math.random() * 1.4 + .3,
       vx: (Math.random() - .5) * .35,
       vy: (Math.random() - .5) * .35,
@@ -133,37 +149,74 @@ function initParticles() {
     });
   }
 
+  let running = true;
+  let rafId = null;
+
   function frame() {
-    ctx.clearRect(0, 0, W, H);
+    if (!running) return;
+    const w = window.innerWidth, h = window.innerHeight;
+    ctx.clearRect(0, 0, w, h);
+
     particles.forEach(p => {
       p.x += p.vx; p.y += p.vy;
-      if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
-      if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
+      if (p.x < 0) p.x = w; if (p.x > w) p.x = 0;
+      if (p.y < 0) p.y = h; if (p.y > h) p.y = 0;
       ctx.beginPath();
       ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
       ctx.fillStyle = `hsla(${p.hue},80%,70%,${p.a})`;
       ctx.fill();
     });
 
-    // draw faint connecting lines between nearby particles
+    // Conexiones limitadas: cada partícula busca solo su próximo vecino más cercano
+    // dentro del radio, evitando el costo cuadrático completo
     for (let i = 0; i < particles.length; i++) {
-      for (let j = i + 1; j < particles.length; j++) {
+      let linksDrawn = 0;
+      for (let j = i + 1; j < particles.length && linksDrawn < 3; j++) {
         const dx = particles[i].x - particles[j].x;
         const dy = particles[i].y - particles[j].y;
-        const d  = Math.sqrt(dx * dx + dy * dy);
-        if (d < 120) {
+        const dSq = dx * dx + dy * dy;
+        if (dSq < MAX_LINK_DIST_SQ) {
+          const d = Math.sqrt(dSq);
           ctx.beginPath();
           ctx.moveTo(particles[i].x, particles[i].y);
           ctx.lineTo(particles[j].x, particles[j].y);
-          ctx.strokeStyle = `rgba(139,92,246,${.08 * (1 - d / 120)})`;
+          ctx.strokeStyle = `rgba(139,92,246,${.08 * (1 - d / MAX_LINK_DIST)})`;
           ctx.lineWidth = .5;
           ctx.stroke();
+          linksDrawn++;
         }
       }
     }
 
-    requestAnimationFrame(frame);
+    rafId = requestAnimationFrame(frame);
   }
+
+  // Pausar cuando la pestaña no está visible
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      running = false;
+      if (rafId) cancelAnimationFrame(rafId);
+    } else if (!running) {
+      running = true;
+      frame();
+    }
+  });
+
+  // Pausar cuando el canvas sale del viewport (ej. al scrollear mucho hacia abajo)
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting && !document.hidden) {
+          if (!running) { running = true; frame(); }
+        } else {
+          running = false;
+          if (rafId) cancelAnimationFrame(rafId);
+        }
+      });
+    }, { threshold: 0 });
+    io.observe(canvas);
+  }
+
   frame();
 }
 

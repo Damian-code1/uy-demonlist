@@ -72,9 +72,9 @@ ul { list-style: none; }
 .navbar {
   position: fixed; top: 0; left: 0; right: 0;
   height: var(--navbar-h);
-  background: rgba(7,7,13,.88);
-  backdrop-filter: blur(20px) saturate(1.4);
-  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  background: rgba(7,7,13,.92);
+  backdrop-filter: blur(10px) saturate(1.2);
+  -webkit-backdrop-filter: blur(10px) saturate(1.2);
   border-bottom: 1px solid var(--border);
   z-index: 900;
   transition: box-shadow var(--trans), border-color var(--trans);
@@ -146,7 +146,7 @@ ul { list-style: none; }
 .hamburger span {
   display: block; width: 22px; height: 2px;
   background: var(--text-sub); border-radius: 2px;
-  transition: all .25s ease;
+  transition: transform .25s ease, background-color .25s ease, border-color .25s ease, box-shadow .25s ease, color .25s ease, opacity .25s ease;
 }
 .hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
 .hamburger.open span:nth-child(2) { opacity: 0; }
@@ -184,7 +184,7 @@ ul { list-style: none; }
   background: rgba(14,14,24,.92);
   border: 1px solid var(--border);
   border-radius: 50px;
-  backdrop-filter: blur(18px);
+  backdrop-filter: blur(10px);
   cursor: pointer;
   isolation: isolate;
   overflow: hidden;
@@ -653,7 +653,7 @@ ul { list-style: none; }
   border: 1px solid rgba(88,101,242,.4);
   color: #8fa3ff; border-radius: 50px;
   font-size: .8rem; font-weight: 600; letter-spacing: .5px;
-  transition: all var(--trans);
+  transition: transform var(--trans), background-color var(--trans), border-color var(--trans), box-shadow var(--trans), color var(--trans), opacity var(--trans);
   opacity: 0;
   animation: hero-fade-up .7s ease .8s forwards;
 }
@@ -1600,7 +1600,7 @@ ul { list-style: none; }
   padding: .22rem .6rem; border-radius: 50px;
   font-size: .73rem; font-weight: 600; color: var(--text-sub);
   background: var(--bg4); border: 1px solid var(--border-s);
-  transition: all .18s; position: relative;
+  transition: transform .18s, background-color .18s, border-color .18s, box-shadow .18s, color .18s, opacity .18s; position: relative;
 }
 .victor-chip.has-video { cursor: pointer; border-color: rgba(244,63,94,.25); color: var(--text); }
 .victor-chip.has-video:hover { background: rgba(244,63,94,.12); border-color: rgba(244,63,94,.5); color: #fff; }
@@ -3154,7 +3154,7 @@ body {
 .sub-sel-change {
   background: none; border: 1px solid var(--border-s); border-radius: var(--r-sm);
   color: var(--text-sub); padding: .35rem .7rem; cursor: pointer; font-size: .78rem;
-  transition: all .15s; flex-shrink: 0;
+  transition: transform .15s, background-color .15s, border-color .15s, box-shadow .15s, color .15s, opacity .15s; flex-shrink: 0;
 }
 .sub-sel-change:hover { color: var(--text); border-color: var(--violet); }
 
@@ -3650,7 +3650,7 @@ body {
   display: flex; align-items: center; gap: .85rem;
   padding: .85rem 1.1rem; border-radius: var(--r);
   background: var(--bg3); border: 1px solid var(--border-s);
-  cursor: pointer; transition: all .16s; margin-bottom: .55rem;
+  cursor: pointer; transition: transform .16s, background-color .16s, border-color .16s, box-shadow .16s, color .16s, opacity .16s; margin-bottom: .55rem;
 }
 .sub-card-row:hover { border-color: var(--border-h); background: var(--bg4); transform: translateX(2px); }
 .sub-card-thumb { width: 56px; height: 56px; border-radius: 8px; object-fit: cover; flex-shrink: 0; background: var(--bg4); }
@@ -3781,7 +3781,7 @@ body {
   border: 1px solid rgba(244,63,94,.35);
   border-radius: 16px;
   padding: .7rem .9rem;
-  backdrop-filter: blur(20px);
+  backdrop-filter: blur(12px);
   box-shadow: 0 8px 32px rgba(244,63,94,.18), 0 2px 8px rgba(0,0,0,.4);
   display: none;
   flex-direction: column;
@@ -4809,7 +4809,7 @@ body {
   display: inline-flex; align-items: center; gap: .45rem;
   padding: .55rem 1rem; border-radius: var(--r-sm);
   font-size: .8rem; font-weight: 700; cursor: pointer;
-  border: 1px solid transparent; transition: all .2s ease;
+  border: 1px solid transparent; transition: transform .2s ease, background-color .2s ease, border-color .2s ease, box-shadow .2s ease, color .2s ease, opacity .2s ease;
 }
 .sa-btn-ban {
   background: rgba(244,63,94,.12); border-color: rgba(244,63,94,.3); color: var(--red);
@@ -5014,7 +5014,7 @@ body {
   border: 1px solid var(--border);
   border-radius: 20px;
   overflow: hidden;
-  backdrop-filter: blur(16px);
+  backdrop-filter: blur(10px);
 }
 
 .feed-live-bar {

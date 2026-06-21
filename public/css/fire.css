@@ -10,11 +10,12 @@
   position: relative;
   border-color: rgba(249, 115, 22, .45) !important;
   isolation: isolate;
-  animation: lc-card-fire-glow 1.8s ease-in-out infinite;
+  animation: lc-card-fire-glow 2.6s ease-in-out infinite;
+  will-change: box-shadow;
 }
 
 @keyframes lc-card-fire-glow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(249,115,22,.35); }
+  0%, 100% { box-shadow: 0 0 10px 0 rgba(249,115,22,.25); }
   50%      { box-shadow: 0 0 16px 2px rgba(249,115,22,.4); }
 }
 
@@ -67,7 +68,8 @@
   position: relative;
   border-color: rgba(249, 115, 22, .45) !important;
   isolation: isolate;
-  animation: lc-card-fire-glow 1.8s ease-in-out infinite;
+  animation: lc-card-fire-glow 2.6s ease-in-out infinite;
+  will-change: box-shadow;
 }
 
 .fc-fire-border {
