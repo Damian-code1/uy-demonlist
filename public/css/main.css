@@ -1806,18 +1806,33 @@ ul { list-style: none; }
   background: var(--bg4);
   border: 1px solid var(--border-s);
   border-left: 3px solid color-mix(in srgb, var(--card-accent, var(--border-s)) 55%, transparent);
-  transition: transform .18s, box-shadow .18s, border-color .18s, border-left-color .18s;
+  transition: border-color .18s, border-left-color .18s;
 }
-.level-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 32px rgba(0,0,0,.6), 0 0 0 1px var(--card-accent, var(--border-h));
-  border-color: var(--card-accent, var(--border-h));
-  border-left-color: var(--card-accent, var(--border-h));
-}
-.level-card:active { transform: scale(.99); }
 .level-card.top-3 { border-color: rgba(139,92,246,.35); }
-.level-card.top-3:hover { box-shadow: 0 12px 40px rgba(139,92,246,.25); }
 .level-card:focus-visible { outline: 2px solid var(--violet); outline-offset: 2px; }
+
+/* Hover y elevación SOLO en dispositivos con mouse/trackpad real.
+   En touch esto se saltea por completo: nada de transform/box-shadow
+   al tocar, así no se "pega" el efecto al hacer scroll. */
+@media (hover: hover) and (pointer: fine) {
+  .level-card {
+    transition: transform .18s, box-shadow .18s, border-color .18s, border-left-color .18s;
+  }
+  .level-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 32px rgba(0,0,0,.6), 0 0 0 1px var(--card-accent, var(--border-h));
+    border-color: var(--card-accent, var(--border-h));
+    border-left-color: var(--card-accent, var(--border-h));
+  }
+  .level-card:active { transform: scale(.99); }
+  .level-card.top-3:hover { box-shadow: 0 12px 40px rgba(139,92,246,.25); }
+}
+
+/* En touch, dar feedback de "tocado" sin animación cara:
+   solo opacidad, instantáneo, no compite con el scroll */
+@media (hover: none) {
+  .level-card:active { opacity: .85; }
+}
 
 .lc-thumb {
   position: absolute; left: 0; top: 0; bottom: 0;
@@ -1885,9 +1900,11 @@ ul { list-style: none; }
   backdrop-filter: blur(2px);
   transition: border-color .18s, background .18s;
 }
-.level-card:hover .lc-victor-count {
-  border-color: rgba(255,255,255,.22);
-  background: rgba(0,0,0,.4);
+@media (hover: hover) and (pointer: fine) {
+  .level-card:hover .lc-victor-count {
+    border-color: rgba(255,255,255,.22);
+    background: rgba(0,0,0,.4);
+  }
 }
 .lc-victor-count i { color: var(--red); font-size: .72rem; }
 
@@ -1983,9 +2000,11 @@ ul { list-style: none; }
   color: rgba(255,255,255,.5); font-size: .8rem;
   opacity: 0; transition: opacity .18s, color .18s, transform .18s;
 }
-.level-card:hover .lc-fav-btn { opacity: 1; }
 .lc-fav-btn.active { opacity: 1; color: var(--gold); }
-.lc-fav-btn:hover { transform: scale(1.15); color: var(--gold); }
+@media (hover: hover) and (pointer: fine) {
+  .level-card:hover .lc-fav-btn { opacity: 1; }
+  .lc-fav-btn:hover { transform: scale(1.15); color: var(--gold); }
+}
 
 /* ── Vista grilla ── */
 .levels-container.grid-view .level-card {
@@ -3421,9 +3440,11 @@ body {
   flex-shrink: 0;
   transition: border-color .18s, transform .18s;
 }
-.level-card:hover .lc-pts-badge {
-  border-color: rgba(245,158,11,.55);
-  transform: scale(1.04);
+@media (hover: hover) and (pointer: fine) {
+  .level-card:hover .lc-pts-badge {
+    border-color: rgba(245,158,11,.55);
+    transform: scale(1.04);
+  }
 }
 .lc-pts-badge i {
   font-size: .64rem;
@@ -4537,27 +4558,22 @@ body {
 
 /* ════════════════════════════════
    ANIMACIONES GENERALES PRO
+   (hover consolidado: ver .level-card:hover más arriba,
+    solo queda acá lo que no está duplicado)
 ════════════════════════════════ */
-.level-card {
-  transition: transform .22s cubic-bezier(.34,1.2,.64,1), box-shadow .22s ease, border-color .22s ease !important;
+@media (hover: hover) and (pointer: fine) {
+  .lc-fav-btn:hover { transform: scale(1.2) rotate(-10deg); }
 }
-.level-card:hover {
-  transform: translateY(-3px) scale(1.005) !important;
-  box-shadow: 0 8px 28px rgba(0,0,0,.35), 0 0 0 1px var(--border-h) !important;
-}
-.level-card:active { transform: translateY(-1px) scale(1.002) !important; }
 .lc-fav-btn {
-  transition: color .2s, transform .25s cubic-bezier(.34,1.56,.64,1), opacity .2s !important;
+  transition: color .2s, transform .25s cubic-bezier(.34,1.56,.64,1), opacity .2s;
 }
-.lc-fav-btn:hover { transform: scale(1.2) rotate(-10deg) !important; }
-.lc-fav-btn.active { color: #f59e0b !important; }
+.lc-fav-btn.active { color: #f59e0b; }
 .lc-fav-btn.active i { animation: favPop .35s cubic-bezier(.34,1.56,.64,1); }
 @keyframes favPop {
   0%  { transform: scale(1); }
   50% { transform: scale(1.5); }
   100%{ transform: scale(1); }
 }
-/* (regla de hover consolidada arriba en la sección LEADERBOARD — sin duplicar con !important) */
 .submit-btn, .btn-save, .btn-admin-add {
   transition: transform .18s, box-shadow .18s, opacity .18s !important;
 }
