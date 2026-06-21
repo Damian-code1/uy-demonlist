@@ -562,6 +562,8 @@ ul { list-style: none; }
   opacity: 0;
   animation: hero-fade-up .7s ease .5s forwards, hero-stats-glow 4s ease-in-out 1.2s infinite;
   transition: transform var(--trans), box-shadow var(--trans), border-color var(--trans);
+  user-select: none; -webkit-user-select: none;
+  cursor: default;
 }
 .hero-stats::before {
   content: '';
@@ -612,6 +614,8 @@ ul { list-style: none; }
   animation: title-gradient-shift 6s ease-in-out infinite;
   display: inline-block;
   font-variant-numeric: tabular-nums;
+  user-select: none; -webkit-user-select: none;
+  cursor: default;
 }
 .stat-num.is-counting {
   animation: title-gradient-shift 6s ease-in-out infinite, stat-num-tick .15s ease;
@@ -4806,7 +4810,10 @@ body {
 .sa-card-header {
   display: flex; align-items: center; gap: .85rem;
   padding: .9rem 1.1rem .75rem;
+  width: 100%; box-sizing: border-box;
+  cursor: pointer;
 }
+.sa-user-info { cursor: pointer; }
 .sa-avatar-wrap { position: relative; flex-shrink: 0; }
 .sa-avatar {
   width: 40px; height: 40px; border-radius: 50%;
@@ -4837,8 +4844,9 @@ body {
   font-size: .7rem; font-weight: 700;
   flex-shrink: 0; white-space: nowrap;
 }
-.sa-status-ok     { background: rgba(34,197,94,.1);  border: 1px solid rgba(34,197,94,.25);  color: var(--success); }
-.sa-status-banned { background: rgba(244,63,94,.12); border: 1px solid rgba(244,63,94,.3);   color: var(--red); }
+.sa-status-ok      { background: rgba(34,197,94,.1);   border: 1px solid rgba(34,197,94,.25);  color: var(--success); }
+.sa-status-banned  { background: rgba(244,63,94,.12);  border: 1px solid rgba(244,63,94,.3);   color: var(--red); }
+.sa-status-history { background: rgba(245,158,11,.12); border: 1px solid rgba(245,158,11,.3);  color: var(--gold); }
 
 .sa-ban-reason {
   margin: 0 1.1rem .85rem; padding: .6rem .8rem;

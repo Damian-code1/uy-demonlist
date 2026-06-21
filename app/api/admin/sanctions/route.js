@@ -17,6 +17,17 @@ export async function GET(request) {
       ORDER BY (banned_until IS NOT NULL AND banned_until > NOW()) DESC, updated_at DESC
     `);
 
+    // Conteo histórico de sanciones por usuario (incluye levantadas y vencidas,
+    // no solo la activa) — se usa para mostrar "N sanciones" en vez de
+    // "Sin sanciones" cuando el usuario tiene historial aunque hoy esté limpio.
+    const [sanctionCounts] = await query(`
+      SELECT target_discord_id, COUNT(*) AS total
+      FROM sanctions_log
+      GROUP BY target_discord_id
+    `);
+    const countsMap = {};
+    sanctionCounts.forEach(row => { countsMap[row.target_discord_id] = row.total; });
+
     const enriched = users.map(u => ({
       ...u,
       avatar_url: u.discord_avatar
@@ -24,6 +35,7 @@ export async function GET(request) {
         : null,
       display_label: u.discord_display_name || u.discord_username,
       is_banned: !!(u.banned_until && new Date(u.banned_until) > new Date()),
+      sanctions_count: countsMap[u.discord_id] || 0,
     }));
 
     const [log] = await query(`

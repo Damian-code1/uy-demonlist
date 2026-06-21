@@ -137,7 +137,7 @@ function renderSanctionsUsers(filterQ) {
 
         return `
         <div class="sa-card${u.is_banned ? ' sa-card-banned' : ''}" data-discord-id="${esc(u.discord_id)}" onclick="openPlayerSanctionsModal('${esc(u.discord_id)}')">
-          <div class="sa-card-header">
+          <div class="sa-card-header" onclick="openPlayerSanctionsModal('${esc(u.discord_id)}')">
             <div class="sa-avatar-wrap">
               ${avatar}
               ${u.is_banned ? `<span class="sa-ban-dot" title="Sancionado"></span>` : ''}
@@ -151,10 +151,15 @@ function renderSanctionsUsers(filterQ) {
                    <i class="fas fa-ban"></i>
                    <span>${fmtRemaining(u.banned_until)}</span>
                  </div>`
-              : `<div class="sa-status-badge sa-status-ok">
-                   <i class="fas fa-check-circle"></i>
-                   <span>Sin sanciones</span>
-                 </div>`
+              : u.sanctions_count > 0
+                ? `<div class="sa-status-badge sa-status-history" title="Tiene sanciones en su historial">
+                     <i class="fas fa-history"></i>
+                     <span>${u.sanctions_count} ${u.sanctions_count === 1 ? 'sanción' : 'sanciones'}</span>
+                   </div>`
+                : `<div class="sa-status-badge sa-status-ok">
+                     <i class="fas fa-check-circle"></i>
+                     <span>Sin sanciones</span>
+                   </div>`
             }
           </div>
 
