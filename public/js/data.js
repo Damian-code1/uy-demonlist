@@ -364,11 +364,21 @@ async function loadDiscordWidget() {
 function animateCounter(el, target, duration = 1400) {
   if (!el) return;
   const start = performance.now();
+  let lastValue = -1;
   function step(now) {
     const t    = Math.min((now - start) / duration, 1);
     const ease = 1 - Math.pow(1 - t, 4);
-    el.textContent = Math.round(target * ease);
-    if (t < 1) requestAnimationFrame(step);
+    const value = Math.round(target * ease);
+    if (value !== lastValue) {
+      el.textContent = value;
+      lastValue = value;
+    }
+    if (t < 1) {
+      requestAnimationFrame(step);
+    } else {
+      el.classList.add('is-counting');
+      setTimeout(() => el.classList.remove('is-counting'), 200);
+    }
   }
   requestAnimationFrame(step);
 }
