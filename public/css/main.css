@@ -1804,6 +1804,10 @@ ul { list-style: none; }
   border: 1px solid var(--border-s);
   border-left: 3px solid color-mix(in srgb, var(--card-accent, var(--border-s)) 55%, transparent);
   transition: border-color .18s, border-left-color .18s;
+  /* Aísla el layout/paint de cada card del resto de la lista — el navegador
+     no tiene que recalcular las otras 175 cards cuando una sola cambia
+     (hover, animación de fuego en top 1/2/3, etc.) */
+  contain: layout style paint;
 }
 .level-card.top-3 { border-color: rgba(139,92,246,.35); }
 .level-card:focus-visible { outline: 2px solid var(--violet); outline-offset: 2px; }
@@ -1814,14 +1818,19 @@ ul { list-style: none; }
 @media (hover: hover) and (pointer: fine) {
   .level-card {
     transition: transform .18s, box-shadow .18s, border-color .18s, border-left-color .18s;
+    /* Promueve la capa de composición de antemano (en :hover, no en reposo,
+       para no gastar memoria de GPU en las 176 cards a la vez) solo cuando
+       el puntero ya está sobre la zona — el browser no tiene que crear la
+       capa recién al momento del hover, que es lo que causaba el delay. */
   }
   .level-card:hover {
-    transform: translateY(-2px);
+    will-change: transform, box-shadow;
+    transform: translateY(-2px) translateZ(0);
     box-shadow: 0 10px 32px rgba(0,0,0,.6), 0 0 0 1px var(--card-accent, var(--border-h));
     border-color: var(--card-accent, var(--border-h));
     border-left-color: var(--card-accent, var(--border-h));
   }
-  .level-card:active { transform: scale(.99); }
+  .level-card:active { transform: scale(.99) translateZ(0); }
   .level-card.top-3:hover { box-shadow: 0 12px 40px rgba(139,92,246,.25); }
 }
 

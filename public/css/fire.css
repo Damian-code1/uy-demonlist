@@ -12,6 +12,7 @@
   isolation: isolate;
   animation: lc-card-fire-glow 2.6s ease-in-out infinite;
   will-change: box-shadow;
+  contain: layout style paint;
 }
 
 @keyframes lc-card-fire-glow {
@@ -69,6 +70,7 @@
   isolation: isolate;
   animation: lc-card-silver-glow 2.6s ease-in-out infinite;
   will-change: box-shadow;
+  contain: layout style paint;
 }
 
 @keyframes lc-card-silver-glow {
@@ -89,6 +91,7 @@
   isolation: isolate;
   animation: lc-card-bronze-glow 2.6s ease-in-out infinite;
   will-change: box-shadow;
+  contain: layout style paint;
 }
 
 @keyframes lc-card-bronze-glow {
@@ -110,6 +113,7 @@
   isolation: isolate;
   animation: lc-card-fire-glow 2.6s ease-in-out infinite;
   will-change: box-shadow;
+  contain: layout style paint;
 }
 
 .fc-fire-border {

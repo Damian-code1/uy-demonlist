@@ -95,13 +95,39 @@ function paintCards(levels, animated = true) {
     return;
   }
   container.classList.toggle('grid-view', currentView === 'grid');
+
+  // Insertar TODAS las cards en un DocumentFragment primero — un solo reflow
+  // en vez de 176 inserciones individuales al DOM, una por una.
+  const fragment = document.createDocumentFragment();
+  const cardEls  = [];
   levels.forEach((level, i) => {
     const card = buildCard(level, i);
-    container.appendChild(card);
-    if (animated) {
-      gsap.from(card, { opacity: 0, y: 12, duration: .35, ease: 'power3.out', delay: Math.min(i * .015, .7) });
-    }
+    fragment.appendChild(card);
+    cardEls.push(card);
   });
+  container.appendChild(fragment);
+
+  if (!animated) return;
+
+  // Animar SOLO las cards que están (o van a estar) visibles cerca del
+  // viewport al cargar — el resto se anima recién cuando el usuario
+  // scrollea hasta ellas. Esto evita disparar 176 tweens de GSAP de una.
+  const firstScreenCount = 14; // ~lo que entra en pantalla + colchón
+  cardEls.slice(0, firstScreenCount).forEach((card, i) => {
+    gsap.from(card, { opacity: 0, y: 12, duration: .35, ease: 'power3.out', delay: Math.min(i * .02, .35) });
+  });
+
+  if (cardEls.length <= firstScreenCount) return;
+
+  const lazyObserver = new IntersectionObserver((entries, obs) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      gsap.from(entry.target, { opacity: 0, y: 10, duration: .3, ease: 'power3.out' });
+      obs.unobserve(entry.target);
+    });
+  }, { rootMargin: '120px 0px', threshold: 0.01 });
+
+  cardEls.slice(firstScreenCount).forEach(card => lazyObserver.observe(card));
 }
 
 // Curva de puntos tipo potencia (no lineal): el valor cae lento en el
