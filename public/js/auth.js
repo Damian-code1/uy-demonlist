@@ -59,12 +59,10 @@ function loginWithDiscord() {
 
 async function logout() {
   localStorage.removeItem('uy_discord_id');
-  currentUser = null;
-  window.currentUser = null;
-  renderUserWidget(null);
-  closeUserDropdown();
-  if (typeof refreshMySubmissions === 'function') refreshMySubmissions();
-  showToast('Sesión cerrada', 'info');
+  // Recarga inmediata: garantiza que TODOS los paneles que dependan de la
+  // sesión (sanciones, submissions, admin, etc.) arranquen limpios desde
+  // cero, sin tener que refrescar cada uno a mano desde acá.
+  window.location.reload();
 }
 
 function isAdminUser() {

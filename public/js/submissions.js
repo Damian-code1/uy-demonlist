@@ -74,6 +74,10 @@
       }
     }
 
+    // Exponer globalmente para poder refrescar el panel al instante
+    // tras un logout (sin necesitar F5) — ver auth.js → logout()
+    window.refreshSubmissionsPanel = applySession;
+
     // Esperar a que currentUser esté disponible
     if (window.currentUser !== undefined) {
       applySession();
