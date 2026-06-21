@@ -512,8 +512,8 @@ ul { list-style: none; }
 }
 @keyframes hero-badge-shine-sweep {
   0%   { transform: translateX(16.7%); }
-  50%  { transform: translateX(50%); }
-  83%  { transform: translateX(83.3%); }
+  40%  { transform: translateX(50%); }
+  75%  { transform: translateX(83.3%); }
   100% { transform: translateX(116.7%); }
 }
 
