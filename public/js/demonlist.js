@@ -1229,26 +1229,30 @@ function goToMyRanking() {
     return;
   }
 
-  // Scroll al leaderboard
+  // Resaltar la fila del jugador actual.
+  // Un solo scroll (directo a la fila, no a la sección + la fila), para
+  // evitar que dos animaciones de scroll compitan y se sienta como un
+  // salto/teletransporte en vez de un desplazamiento suave.
+  if (name) {
+    let found = false;
+    document.querySelectorAll('.lb-row').forEach(row => {
+      const rowName = row.querySelector('.lb-player-name')?.textContent?.trim().toLowerCase();
+      if (rowName === name.toLowerCase()) {
+        found = true;
+        row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        row.classList.add('lb-row-highlight');
+        setTimeout(() => row.classList.remove('lb-row-highlight'), 2800);
+      }
+    });
+    if (found) return;
+  }
+
+  // Sin nombre o no se encontró la fila: scroll genérico a la sección
   const section = document.getElementById('leaderboard');
   if (section) {
     const navbar = document.getElementById('navbar');
     const top = section.getBoundingClientRect().top + window.scrollY - (navbar?.offsetHeight || 62) - 8;
     window.scrollTo({ top, behavior: 'smooth' });
-  }
-
-  // Resaltar la fila del jugador actual
-  if (name) {
-    setTimeout(() => {
-      document.querySelectorAll('.lb-row').forEach(row => {
-        const rowName = row.querySelector('.lb-player-name')?.textContent?.trim().toLowerCase();
-        if (rowName === name.toLowerCase()) {
-          row.classList.add('lb-row-highlight');
-          row.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          setTimeout(() => row.classList.remove('lb-row-highlight'), 2800);
-        }
-      });
-    }, 600);
   }
 }
 window.goToMyRanking = goToMyRanking;

@@ -42,8 +42,15 @@
       notLoggedIn.querySelector('a');
 
     if (loginBtn) {
+      // Mismo punto de entrada que el botón de Login de la topbar —
+      // antes esto apuntaba directo al endpoint de callback (que espera
+      // un "code" que Discord todavía no mandó), por eso tiraba 500.
       loginBtn.onclick = () => {
-        window.location.href = '/api/auth/callback/discord';
+        if (typeof loginWithDiscord === 'function') {
+          loginWithDiscord();
+        } else {
+          window.location.href = 'https://discord.com/oauth2/authorize?client_id=1503353668941123684&response_type=code&redirect_uri=https%3A%2F%2Fuy-demonlist.vercel.app%2Fapi%2Fauth%2Fcallback%2Fdiscord&scope=identify+email';
+        }
       };
     }
 

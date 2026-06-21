@@ -4207,14 +4207,30 @@ body {
   gap: .4rem; align-content: flex-start; padding-top: .1rem;
 }
 
-/* Highlight del leaderboard al hacer "Mi ranking" */
+/* Highlight del leaderboard al hacer "Mi ranking" — glow brillante hacia
+   afuera en vez de un tinte oscuro hacia adentro, para que se note bien
+   incluso sobre el fondo oscuro de la fila */
 .lb-row-highlight {
   animation: lb-pulse 2.8s ease forwards;
+  position: relative;
+  z-index: 1;
 }
 @keyframes lb-pulse {
-  0%   { background: rgba(139,92,246,.35); box-shadow: inset 0 0 0 2px rgba(139,92,246,.7); }
-  50%  { background: rgba(139,92,246,.15); box-shadow: inset 0 0 0 1px rgba(139,92,246,.35); }
-  100% { background: transparent; box-shadow: none; }
+  0%   {
+    background: linear-gradient(90deg, rgba(139,92,246,.25), rgba(244,63,94,.18));
+    border-color: rgba(167,139,250,.9);
+    box-shadow: 0 0 0 2px rgba(167,139,250,.6), 0 0 28px 4px rgba(139,92,246,.5);
+  }
+  50%  {
+    background: linear-gradient(90deg, rgba(139,92,246,.14), rgba(244,63,94,.08));
+    border-color: rgba(167,139,250,.5);
+    box-shadow: 0 0 0 1px rgba(167,139,250,.3), 0 0 18px 2px rgba(139,92,246,.3);
+  }
+  100% {
+    background: transparent;
+    border-color: var(--border-s);
+    box-shadow: none;
+  }
 }
 
 /* Nuevo nivel tras aprobar submission */
