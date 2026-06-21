@@ -319,7 +319,9 @@ ul { list-style: none; }
 /* User dropdown */
 .user-widget-dropdown {
   position: absolute; top: calc(100% + 12px); right: 0;
+  width: max-content;
   min-width: 232px;
+  max-width: min(232px, calc(100vw - 32px));
   background: var(--bg3);
   border: 1px solid var(--border);
   border-radius: var(--r-lg);

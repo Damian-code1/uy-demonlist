@@ -66,9 +66,23 @@
   .hamburger { display: flex; }
 
   /* Float user widget smaller on mobile */
-  .user-widget { right: 10px; top: calc(var(--navbar-h) + 8px); }
+  .user-widget { right: 10px; top: calc(var(--navbar-h) + 8px); left: auto; max-width: calc(100vw - 20px); }
   .user-widget-card { padding: .38rem .6rem .38rem .42rem; max-width: 180px; }
   .user-widget-name { font-size: .72rem; }
+
+  /* Dropdown: nunca se sale de pantalla en viewports angostos */
+  .user-widget-dropdown {
+    right: 0;
+    left: auto;
+    max-width: calc(100vw - 20px);
+    min-width: min(232px, calc(100vw - 20px));
+  }
+
+  /* Countdown flotante de sanción: mismo clamping que el widget */
+  .ban-countdown-float {
+    max-width: calc(100vw - 20px) !important;
+    min-width: 0;
+  }
 
   /* Botones de paneles (Manager/Admin/Sanciones) salen de la navbar visible
      y se ocultan ahí — JS los reinserta dentro del menú hamburguesa, para

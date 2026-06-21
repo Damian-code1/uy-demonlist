@@ -624,7 +624,10 @@ function repositionBanCountdown() {
 
   el.style.position = 'fixed';
   el.style.top   = `${cardRect.bottom + 10}px`;
-  el.style.right = `${window.innerWidth - cardRect.right}px`;
+  // Clampear el right calculado para que el countdown nunca quede pegado
+  // o se salga por el borde izquierdo en viewports angostos (mobile)
+  const rightOffset = Math.max(10, Math.min(window.innerWidth - cardRect.right, window.innerWidth - 20));
+  el.style.right = `${rightOffset}px`;
   el.style.left  = 'auto';
 }
 window.repositionBanCountdown = repositionBanCountdown;
