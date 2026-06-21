@@ -405,3 +405,36 @@ document.addEventListener('keydown', e => {
     initCustomScrollbar();
   }
 })();
+
+// ─── Reubicar botones de paneles (Manager/Admin/Sanciones) en mobile ───
+// para liberar la esquina superior derecha y que el widget flotante del
+// usuario sea siempre accesible, sin estar tapado por esos botones.
+function relocatePanelButtonsForViewport() {
+  const isMobile   = window.innerWidth <= 640;
+  const mobileSlot = document.getElementById('navLinksPanelsMobile');
+  const navRight   = document.querySelector('.nav-right');
+  const buttons    = ['navOwnerBtn', 'navAdminBtn', 'navSanctionsBtn']
+    .map(id => document.getElementById(id))
+    .filter(Boolean);
+
+  if (!mobileSlot || !navRight || !buttons.length) return;
+
+  buttons.forEach(btn => {
+    const targetParent = isMobile ? mobileSlot : navRight;
+    if (btn.parentElement !== targetParent) {
+      if (!isMobile) {
+        const loginBtn = navRight.querySelector('.login-btn');
+        if (loginBtn) navRight.insertBefore(btn, loginBtn);
+        else navRight.appendChild(btn);
+      } else {
+        mobileSlot.appendChild(btn);
+      }
+    }
+  });
+}
+
+document.addEventListener('DOMContentLoaded', relocatePanelButtonsForViewport);
+window.addEventListener('resize', () => {
+  clearTimeout(window._panelRelocateDebounce);
+  window._panelRelocateDebounce = setTimeout(relocatePanelButtonsForViewport, 150);
+});

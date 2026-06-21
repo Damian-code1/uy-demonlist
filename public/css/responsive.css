@@ -70,6 +70,29 @@
   .user-widget-card { padding: .38rem .6rem .38rem .42rem; max-width: 180px; }
   .user-widget-name { font-size: .72rem; }
 
+  /* Botones de paneles (Manager/Admin/Sanciones) salen de la navbar visible
+     y se ocultan ahí — JS los reinserta dentro del menú hamburguesa, para
+     que la esquina superior derecha quede libre y el widget flotante del
+     usuario sea siempre clickeable. */
+  .nav-right #navOwnerBtn,
+  .nav-right #navAdminBtn,
+  .nav-right #navSanctionsBtn {
+    display: none !important;
+  }
+
+  .nav-links-panels-mobile {
+    display: flex; flex-direction: column; gap: .4rem;
+    width: 100%; margin-top: .5rem; padding-top: .6rem;
+    border-top: 1px solid var(--border-s);
+  }
+  .nav-links-panels-mobile:empty { display: none; border: none; margin: 0; padding: 0; }
+
+  .nav-links-panels-mobile button {
+    width: 100%; justify-content: flex-start;
+    padding: .65rem .85rem; font-size: .82rem;
+    border-radius: var(--r-sm);
+  }
+
   /* Hero */
   .hero-title { font-size: clamp(4rem, 18vw, 6rem); }
   .hero-stats { border-radius: var(--r); }
