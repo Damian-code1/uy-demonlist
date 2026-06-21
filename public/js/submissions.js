@@ -49,6 +49,8 @@
         if (typeof loginWithDiscord === 'function') {
           loginWithDiscord();
         } else {
+          // Fallback de seguridad: va directo a Discord (no al callback,
+          // que espera un "code" que todavía no existe en este punto).
           window.location.href = 'https://discord.com/oauth2/authorize?client_id=1503353668941123684&response_type=code&redirect_uri=https%3A%2F%2Fuy-demonlist.vercel.app%2Fapi%2Fauth%2Fcallback%2Fdiscord&scope=identify+email';
         }
       };
