@@ -505,15 +505,17 @@ ul { list-style: none; }
     rgba(255,255,255,.24) 50.7%,
     transparent 54%,
     transparent 100%);
-  animation: hero-badge-shine-sweep 6s linear infinite;
+  animation: hero-badge-shine-sweep 5s linear infinite;
   animation-delay: inherit;
   pointer-events: none;
   will-change: transform;
 }
 @keyframes hero-badge-shine-sweep {
-  0%   { transform: translateX(16.7%); }
-  40%  { transform: translateX(50%); }
-  75%  { transform: translateX(83.3%); }
+  0%   { transform: translateX(-50%); }
+  20%  { transform: translateX(16.7%); }
+  35%  { transform: translateX(50%); }
+  55%  { transform: translateX(83.3%); }
+  70%  { transform: translateX(116.7%); }
   100% { transform: translateX(116.7%); }
 }
 
