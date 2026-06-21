@@ -4072,9 +4072,12 @@ body {
   text-transform: uppercase; color: var(--text-dim);
 }
 .wdd-gd-nick {
-  font-size: .88rem; font-weight: 700;
+  font-weight: 700;
   color: var(--success);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  min-width: 0; max-width: 100%;
+  font-size: clamp(.6rem, 3vw, .88rem);
+  display: block;
 }
 .wdd-gd-sublabel {
   font-size: .75rem; color: var(--text-dim);
