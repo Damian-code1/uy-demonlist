@@ -148,12 +148,19 @@ function buildCard(level, index) {
     rankHtml = `<div class="lc-rank lc-rank-medal lc-rank-gold" aria-label="Posición 1">
       <i class="fas fa-crown"></i><span class="lc-rank-num">1</span>
     </div>
-    <div class="lc-fire-wrap">
-      <span class="lc-flame lc-flame-1"></span>
-      <span class="lc-flame lc-flame-2"></span>
-      <span class="lc-flame lc-flame-3"></span>
-      <span class="lc-flame lc-flame-4"></span>
-      <span class="lc-flame lc-flame-5"></span>
+    <div class="lc-fire-border">
+      <span class="lc-flame-blob bl"></span>
+      <span class="lc-flame-blob mid"></span>
+      <span class="lc-flame-blob br"></span>
+      <span class="lc-flame-blob tl"></span>
+      <span class="lc-flame-blob tr"></span>
+      <span class="lc-fire-spark"></span>
+      <span class="lc-fire-spark"></span>
+      <span class="lc-fire-spark"></span>
+      <span class="lc-fire-spark"></span>
+      <span class="lc-fire-spark"></span>
+      <span class="lc-fire-spark"></span>
+      <span class="lc-fire-spark"></span>
     </div>`;
   } else if (pos === 2) {
     rankHtml = `<div class="lc-rank lc-rank-medal lc-rank-silver" aria-label="Posición 2">

@@ -1,155 +1,162 @@
 /* =============================================
-   FIRE.CSS — Animaciones de fuego para feed y top #1
+   FIRE.CSS — Llamas reales (gradiente orgánico) + partículas,
+   mismo lenguaje visual que el badge TOP 1, contenidas
+   dentro del border-radius real de cada card.
    ============================================= */
-
-/* ─────────────────────────────────────────────
-   FEED CARD — primer elemento (más reciente)
-   ───────────────────────────────────────────── */
-.feed-card-latest {
-  position: relative;
-  overflow: visible !important;
-  border-color: rgba(249, 115, 22, .45) !important;
-  box-shadow: 0 0 0 1px rgba(249, 115, 22, .25), 0 8px 28px rgba(249, 115, 22, .18);
-  animation: fc-latest-pulse 2.4s ease-in-out infinite;
-}
-
-@keyframes fc-latest-pulse {
-  0%, 100% { box-shadow: 0 0 0 1px rgba(249, 115, 22, .25), 0 8px 28px rgba(249, 115, 22, .18); }
-  50%      { box-shadow: 0 0 0 1px rgba(249, 115, 22, .45), 0 8px 36px rgba(249, 115, 22, .32); }
-}
-
-.fc-fire-wrap {
-  position: absolute;
-  bottom: -2px;
-  left: 0;
-  right: 0;
-  height: 22px;
-  display: flex;
-  justify-content: space-evenly;
-  align-items: flex-end;
-  pointer-events: none;
-  z-index: 5;
-  overflow: visible;
-}
-
-.fc-flame {
-  display: block;
-  width: 9px;
-  height: 16px;
-  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-  background: linear-gradient(180deg, #fde047 0%, #f97316 45%, #ef4444 85%);
-  filter: blur(.2px);
-  transform-origin: bottom center;
-  opacity: .92;
-}
-
-.fc-flame-1 { animation: fc-flame-flicker 1.1s ease-in-out infinite; }
-.fc-flame-2 { animation: fc-flame-flicker 0.9s ease-in-out infinite .15s; height: 20px; }
-.fc-flame-3 { animation: fc-flame-flicker 1.3s ease-in-out infinite .3s;  height: 14px; }
-.fc-flame-4 { animation: fc-flame-flicker 1s   ease-in-out infinite .45s; height: 18px; }
-
-@keyframes fc-flame-flicker {
-  0%   { transform: scaleY(1) scaleX(1) translateY(0) rotate(-2deg); opacity: .85; }
-  25%  { transform: scaleY(1.15) scaleX(.9) translateY(-2px) rotate(2deg); opacity: 1; }
-  50%  { transform: scaleY(.92) scaleX(1.08) translateY(0) rotate(-3deg); opacity: .9; }
-  75%  { transform: scaleY(1.08) scaleX(.95) translateY(-1px) rotate(1deg); opacity: .96; }
-  100% { transform: scaleY(1) scaleX(1) translateY(0) rotate(-2deg); opacity: .85; }
-}
 
 /* ─────────────────────────────────────────────
    LEVEL CARD — top #1 de la lista
    ───────────────────────────────────────────── */
 .level-card-first {
   position: relative;
-  overflow: visible !important;
+  border-color: rgba(249, 115, 22, .4) !important;
+  isolation: isolate;
 }
 
-.level-card-first .lc-color-bg,
-.level-card-first .lc-thumb-fade {
-  overflow: visible;
-}
-
-.lc-fire-wrap {
+/* Contenedor recortado al contorno exacto de la card */
+.lc-fire-border {
   position: absolute;
-  bottom: -3px;
-  left: 6%;
-  right: 6%;
-  height: 30px;
-  display: flex;
-  justify-content: space-evenly;
-  align-items: flex-end;
+  inset: 0;
+  border-radius: inherit;
   pointer-events: none;
-  z-index: 6;
+  z-index: 1;
+  overflow: hidden;
 }
 
-.lc-flame {
-  display: block;
-  width: 13px;
-  height: 22px;
-  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-  background: linear-gradient(180deg, #fef08a 0%, #fde047 25%, #f97316 55%, #ef4444 90%);
-  box-shadow: 0 0 10px rgba(249, 115, 22, .55);
-  transform-origin: bottom center;
-  opacity: .94;
-}
-
-.lc-flame-1 { animation: lc-flame-flicker 1.15s ease-in-out infinite; }
-.lc-flame-2 { animation: lc-flame-flicker 0.95s ease-in-out infinite .1s;  height: 27px; }
-.lc-flame-3 { animation: lc-flame-flicker 1.3s  ease-in-out infinite .25s; height: 19px; }
-.lc-flame-4 { animation: lc-flame-flicker 1s    ease-in-out infinite .4s;  height: 25px; }
-.lc-flame-5 { animation: lc-flame-flicker 1.2s  ease-in-out infinite .55s; height: 17px; }
-
-@keyframes lc-flame-flicker {
-  0%   { transform: scaleY(1) scaleX(1) translateY(0) rotate(-3deg); opacity: .88; }
-  25%  { transform: scaleY(1.2) scaleX(.88) translateY(-3px) rotate(3deg); opacity: 1; }
-  50%  { transform: scaleY(.9) scaleX(1.1) translateY(0) rotate(-4deg); opacity: .92; }
-  75%  { transform: scaleY(1.12) scaleX(.92) translateY(-2px) rotate(2deg); opacity: .98; }
-  100% { transform: scaleY(1) scaleX(1) translateY(0) rotate(-3deg); opacity: .88; }
-}
-
-/* Glow extra en el borde de la card top #1, sincronizado con el fuego */
-.level-card-first {
-  border-color: rgba(249, 115, 22, .35) !important;
-  animation: lc-first-glow 2.6s ease-in-out infinite;
-}
-
-@keyframes lc-first-glow {
-  0%, 100% { box-shadow: 0 0 0 1px rgba(249, 115, 22, .2), 0 10px 32px rgba(249, 115, 22, .14); }
-  50%      { box-shadow: 0 0 0 1px rgba(249, 115, 22, .4), 0 10px 40px rgba(249, 115, 22, .28); }
-}
-
-/* Brillo sutil de chispas subiendo (opcional, agrega profundidad) */
-.lc-fire-wrap::before,
-.lc-fire-wrap::after {
+/* Resplandor cálido ambiental detrás de todo, pegado al borde */
+.lc-fire-border::before {
   content: '';
   position: absolute;
-  bottom: 6px;
-  width: 3px;
-  height: 3px;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: inset 0 0 22px rgba(249,115,22,.16), 0 0 16px 1px rgba(249,115,22,.3);
+  animation: lc-fire-glow 2.4s ease-in-out infinite;
+}
+
+@keyframes lc-fire-glow {
+  0%, 100% { box-shadow: inset 0 0 22px rgba(249,115,22,.14), 0 0 14px 1px rgba(249,115,22,.25); }
+  50%      { box-shadow: inset 0 0 28px rgba(249,115,22,.22), 0 0 20px 2px rgba(249,115,22,.4);  }
+}
+
+/* Llamas orgánicas: blobs con border-radius irregular que se mueven y deforman,
+   ancladas a las 4 esquinas + base, como lenguas de fuego reales (no gotas estáticas) */
+.lc-flame-blob {
+  position: absolute;
+  width: 26px;
+  height: 30px;
+  background: radial-gradient(circle at 50% 85%, #fff7ed 0%, #fde047 22%, #f97316 55%, #ef4444 85%, transparent 100%);
+  filter: blur(.5px);
+  opacity: .85;
+  mix-blend-mode: screen;
+}
+
+.lc-flame-blob.bl  { bottom: -10px; left: -10px;  animation: lc-flame-organic 1.3s ease-in-out infinite; }
+.lc-flame-blob.br  { bottom: -10px; right: -10px;  animation: lc-flame-organic 1.5s ease-in-out infinite .25s; transform: scaleX(-1); }
+.lc-flame-blob.tl  { top: -10px; left: -10px;     animation: lc-flame-organic 1.4s ease-in-out infinite .4s;  transform: rotate(180deg); width: 20px; height: 22px; opacity: .65; }
+.lc-flame-blob.tr  { top: -10px; right: -10px;    animation: lc-flame-organic 1.2s ease-in-out infinite .15s; transform: rotate(180deg) scaleX(-1); width: 20px; height: 22px; opacity: .65; }
+.lc-flame-blob.mid { bottom: -12px; left: 50%; margin-left: -16px; width: 32px; height: 34px; animation: lc-flame-organic 1.6s ease-in-out infinite .3s; opacity: .9; }
+
+@keyframes lc-flame-organic {
+  0%   { border-radius: 50% 50% 45% 55% / 60% 65% 35% 40%; transform: scale(1) translateY(0) rotate(-3deg); }
+  25%  { border-radius: 45% 55% 50% 50% / 55% 60% 40% 45%; transform: scale(1.08, 1.18) translateY(-3px) rotate(3deg); }
+  50%  { border-radius: 55% 45% 40% 60% / 65% 55% 45% 35%; transform: scale(.94, 1.05) translateY(-1px) rotate(-2deg); }
+  75%  { border-radius: 50% 50% 55% 45% / 50% 65% 35% 50%; transform: scale(1.04, 1.12) translateY(-4px) rotate(2deg); }
+  100% { border-radius: 50% 50% 45% 55% / 60% 65% 35% 40%; transform: scale(1) translateY(0) rotate(-3deg); }
+}
+
+/* Partículas / chispas subiendo — idéntico lenguaje al badge TOP 1, escaladas */
+.lc-fire-spark {
+  position: absolute;
+  bottom: -4px;
+  z-index: 2;
+  width: 4px; height: 4px;
   border-radius: 50%;
-  background: #fde047;
-  box-shadow: 0 0 6px 1px rgba(253, 224, 71, .8);
-  animation: lc-spark-rise 2.2s ease-in infinite;
+  background: radial-gradient(circle, #fff7ed 0%, #fdba74 45%, #f97316 75%, transparent 100%);
   opacity: 0;
+  pointer-events: none;
+  animation: lc-card-spark-rise 2.1s ease-in infinite;
 }
-.lc-fire-wrap::before { left: 28%; animation-delay: .3s; }
-.lc-fire-wrap::after  { left: 65%; animation-delay: 1.1s; }
+.lc-fire-spark:nth-child(1) { left: 8%;  animation-delay: 0s;   animation-duration: 1.9s; }
+.lc-fire-spark:nth-child(2) { left: 22%; animation-delay: .4s;  animation-duration: 2.3s; }
+.lc-fire-spark:nth-child(3) { left: 38%; animation-delay: .15s; animation-duration: 1.7s; }
+.lc-fire-spark:nth-child(4) { left: 55%; animation-delay: .6s;  animation-duration: 2.1s; }
+.lc-fire-spark:nth-child(5) { left: 70%; animation-delay: .3s;  animation-duration: 1.8s; }
+.lc-fire-spark:nth-child(6) { left: 84%; animation-delay: .5s;  animation-duration: 2s;   }
+.lc-fire-spark:nth-child(7) { left: 95%; animation-delay: .2s;  animation-duration: 2.2s; }
 
-@keyframes lc-spark-rise {
-  0%   { transform: translateY(0) scale(1);   opacity: 0; }
+@keyframes lc-card-spark-rise {
+  0%   { transform: translateY(0) translateX(0) scale(.5);   opacity: 0; }
   15%  { opacity: 1; }
-  100% { transform: translateY(-26px) scale(.3); opacity: 0; }
+  60%  { opacity: .8; }
+  100% { transform: translateY(-32px) translateX(var(--spark-drift, 3px)) scale(.15); opacity: 0; }
+}
+.lc-fire-spark:nth-child(odd)  { --spark-drift: 4px; }
+.lc-fire-spark:nth-child(even) { --spark-drift: -4px; }
+
+/* ─────────────────────────────────────────────
+   FEED CARD — primer elemento (más reciente)
+   Versión más chica del mismo sistema
+   ───────────────────────────────────────────── */
+.feed-card-latest {
+  position: relative;
+  border-color: rgba(249, 115, 22, .4) !important;
+  isolation: isolate;
 }
 
-/* Reducir movimiento si el usuario lo prefiere */
+.fc-fire-border {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.fc-fire-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: inset 0 0 16px rgba(249,115,22,.14), 0 0 12px 1px rgba(249,115,22,.28);
+  animation: lc-fire-glow 2s ease-in-out infinite;
+}
+
+.fc-flame-blob {
+  position: absolute;
+  width: 16px;
+  height: 19px;
+  background: radial-gradient(circle at 50% 85%, #fff7ed 0%, #fde047 22%, #f97316 55%, #ef4444 85%, transparent 100%);
+  filter: blur(.4px);
+  opacity: .85;
+  mix-blend-mode: screen;
+}
+.fc-flame-blob.bl  { bottom: -6px; left: -6px;  animation: lc-flame-organic 1.2s ease-in-out infinite; }
+.fc-flame-blob.br  { bottom: -6px; right: -6px;  animation: lc-flame-organic 1.4s ease-in-out infinite .2s; transform: scaleX(-1); }
+.fc-flame-blob.mid { bottom: -7px; left: 50%; margin-left: -10px; width: 20px; height: 22px; animation: lc-flame-organic 1.5s ease-in-out infinite .3s; }
+
+.fc-fire-spark {
+  position: absolute;
+  bottom: -3px;
+  z-index: 2;
+  width: 3px; height: 3px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff7ed 0%, #fdba74 45%, #f97316 75%, transparent 100%);
+  opacity: 0;
+  pointer-events: none;
+  animation: lc-card-spark-rise 1.8s ease-in infinite;
+}
+.fc-fire-spark:nth-child(1) { left: 15%; animation-delay: 0s;   animation-duration: 1.6s; }
+.fc-fire-spark:nth-child(2) { left: 40%; animation-delay: .35s; animation-duration: 1.9s; }
+.fc-fire-spark:nth-child(3) { left: 65%; animation-delay: .15s; animation-duration: 1.5s; }
+.fc-fire-spark:nth-child(4) { left: 85%; animation-delay: .5s;  animation-duration: 1.7s; }
+
 @media (prefers-reduced-motion: reduce) {
-  .feed-card-latest,
-  .level-card-first {
+  .lc-flame-blob,
+  .fc-flame-blob,
+  .lc-fire-spark,
+  .fc-fire-spark,
+  .lc-fire-border::before,
+  .fc-fire-border::before {
     animation: none !important;
-  }
-  .fc-flame,
-  .lc-flame {
-    animation: none !important;
-    opacity: .7;
   }
 }

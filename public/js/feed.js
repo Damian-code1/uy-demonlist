@@ -37,13 +37,16 @@ function buildFeedCard(item, mini = false, isFirst = false) {
 
   const videoAttr = item.videoUrl ? `onclick="window.open('${esc(item.videoUrl)}','_blank')" style="cursor:pointer" title="Ver video"` : '';
 
-  // Fuego solo para el primer elemento del feed (lo más reciente)
+  // Fuego solo para el primer elemento del feed (lo más reciente) — anillo realista
   const fireHtml = isFirst ? `
-    <div class="fc-fire-wrap">
-      <span class="fc-flame fc-flame-1"></span>
-      <span class="fc-flame fc-flame-2"></span>
-      <span class="fc-flame fc-flame-3"></span>
-      <span class="fc-flame fc-flame-4"></span>
+    <div class="fc-fire-border">
+      <span class="fc-flame-blob bl"></span>
+      <span class="fc-flame-blob mid"></span>
+      <span class="fc-flame-blob br"></span>
+      <span class="fc-fire-spark"></span>
+      <span class="fc-fire-spark"></span>
+      <span class="fc-fire-spark"></span>
+      <span class="fc-fire-spark"></span>
     </div>` : '';
 
   return `
