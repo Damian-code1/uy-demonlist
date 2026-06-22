@@ -32,9 +32,7 @@ async function initAuth() {
     showBanCountdown(currentUser.bannedUntil, currentUser.banReason);
   }
 
-  // Auto-actualizar avatar: re-fetch silencioso para obtener el avatar fresco
-  // desde Discord (el servidor ya lo actualiza en DB al llamar a /api/auth/session)
-  // Hacemos un segundo fetch diferido para que no bloquee el render inicial.
+  // Auto-actualizar avatar desde Discord
   if (currentUser) {
     setTimeout(async () => {
       const discordId = localStorage.getItem('uy_discord_id');
@@ -42,16 +40,19 @@ async function initAuth() {
       try {
         const res  = await fetch(`/api/auth/session?uid=${discordId}`);
         const data = await res.json();
+        console.log('[AUTH] Session refresh:', {
+          oldImage: window.currentUser?.image,
+          newImage: data.user?.image,
+          changed: data.user?.image !== window.currentUser?.image,
+        });
         if (!data.user) return;
-        // Solo re-renderizar si el avatar cambió
-        if (data.user.image !== window.currentUser?.image) {
-          window.currentUser = data.user;
-          currentUser = data.user;
-          renderUserWidget(data.user);
-          // Refrescar también el leaderboard si está visible
-          if (typeof renderLeaderboard === 'function') renderLeaderboard();
-        }
-      } catch {}
+        window.currentUser = data.user;
+        currentUser = data.user;
+        renderUserWidget(data.user);
+        if (typeof renderLeaderboard === 'function') renderLeaderboard();
+      } catch (e) {
+        console.error('[AUTH] Avatar refresh error:', e);
+      }
     }, 1500);
   }
 
