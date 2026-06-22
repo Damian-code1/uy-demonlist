@@ -2162,13 +2162,21 @@ ul { list-style: none; }
   color: var(--text-dim); margin-bottom: .75rem; display: flex; align-items: center; gap: .5rem;
 }
 
-.lm-victors-tabs { display: flex; flex-wrap: wrap; gap: .45rem; margin-bottom: 1rem; }
+.lm-victors-tabs {
+  display: flex; flex-wrap: wrap; gap: .45rem; margin-bottom: 1rem;
+  max-height: 140px; overflow-y: auto;
+  scrollbar-width: thin; scrollbar-color: var(--border-s) transparent;
+  padding-right: .25rem;
+}
+.lm-victors-tabs::-webkit-scrollbar { width: 4px; }
+.lm-victors-tabs::-webkit-scrollbar-thumb { background: var(--border-s); border-radius: 4px; }
 .lm-victor-tab {
   display: inline-flex; align-items: center; gap: .4rem;
   padding: .4rem .55rem .4rem .7rem; border-radius: 50px;
   background: var(--bg3); border: 1px solid var(--border-s);
   font-size: .8rem; font-weight: 600; color: var(--text-sub);
   transition: background .16s, border-color .16s, color .16s; position: relative;
+  flex-shrink: 0;
 }
 @media (hover: hover) and (pointer: fine) {
   .lm-victor-tab:hover { border-color: var(--border); color: var(--text); }
@@ -5386,16 +5394,35 @@ body {
 /* ── Modal nivel: ajustes mobile ── */
 @media (max-width: 600px) {
   .level-detail-modal {
-    padding: 8px;
+    padding: 6px;
     align-items: flex-end;
   }
   .level-modal-box {
     max-width: 100%;
-    max-height: min(96vh, 100dvh - 8px);
+    max-height: min(94vh, 100dvh - 6px);
     border-radius: 18px 18px 8px 8px;
+    overflow: hidden;
+    display: flex; flex-direction: column;
   }
-  .lm-body { padding: .9rem 1rem 1.2rem; }
-  .lm-title { font-size: 1.25rem; }
-  .lm-rank-badge { min-width: 40px; height: 40px; font-size: 1rem; }
-  .modal-close { top: .5rem; right: .5rem; width: 32px; height: 32px; font-size: .8rem; }
+  .lm-player-wrap { flex-shrink: 0; }
+  .lm-body {
+    padding: .8rem .9rem 1rem;
+    overflow-y: auto;
+    flex: 1;
+    min-height: 0;
+  }
+  .lm-title { font-size: 1.15rem; }
+  .lm-rank-badge { min-width: 38px; height: 38px; font-size: .95rem; }
+  .modal-close {
+    top: .4rem; right: .4rem;
+    width: 34px; height: 34px; font-size: .8rem;
+    background: rgba(0,0,0,.6);
+    z-index: 10;
+  }
+  .lm-victors-tabs { max-height: 100px; }
+  .lm-victor-tab { font-size: .72rem; padding: .3rem .45rem .3rem .55rem; }
+  .lm-section-title { font-size: .75rem; }
+  .lm-nav-buttons { padding: .45rem 0; margin-bottom: .6rem; }
+  .lm-actions { padding-top: .3rem; }
+  .submit-btn { font-size: .85rem; padding: .7rem 1rem; }
 }
