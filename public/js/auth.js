@@ -32,24 +32,27 @@ async function initAuth() {
     showBanCountdown(currentUser.bannedUntil, currentUser.banReason);
   }
 
-  // Auto-actualizar avatar: si el avatar en DB cambió, re-renderizar el widget
-  if (currentUser?.image) {
-    const img = new Image();
-    img.onload = () => {}; // avatar actual carga bien, no hacer nada
-    img.onerror = async () => {
-      // Avatar roto → re-fetch sesión y re-renderizar
+  // Auto-actualizar avatar: re-fetch silencioso para obtener el avatar fresco
+  // desde Discord (el servidor ya lo actualiza en DB al llamar a /api/auth/session)
+  // Hacemos un segundo fetch diferido para que no bloquee el render inicial.
+  if (currentUser) {
+    setTimeout(async () => {
       const discordId = localStorage.getItem('uy_discord_id');
       if (!discordId) return;
       try {
         const res  = await fetch(`/api/auth/session?uid=${discordId}`);
         const data = await res.json();
-        if (data.user) {
+        if (!data.user) return;
+        // Solo re-renderizar si el avatar cambió
+        if (data.user.image !== window.currentUser?.image) {
           window.currentUser = data.user;
+          currentUser = data.user;
           renderUserWidget(data.user);
+          // Refrescar también el leaderboard si está visible
+          if (typeof renderLeaderboard === 'function') renderLeaderboard();
         }
       } catch {}
-    };
-    img.src = currentUser.image;
+    }, 1500);
   }
 
   // Polling cada 30s para detectar cambios de sanción sin necesitar F5
