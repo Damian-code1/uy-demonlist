@@ -49,7 +49,20 @@ async function initAuth() {
         window.currentUser = data.user;
         currentUser = data.user;
         renderUserWidget(data.user);
-        if (typeof renderLeaderboard === 'function') renderLeaderboard();
+
+        // Actualizar avatar en el leaderboard sin re-renderizar todo
+        if (data.user.image) {
+          const linkedName = (data.user.linkedPlayer || data.user.name || '').toLowerCase();
+          document.querySelectorAll('.lb-row').forEach(row => {
+            const rowName = row.querySelector('.lb-player-name')?.textContent?.trim().toLowerCase();
+            if (rowName && rowName === linkedName) {
+              const avatarEl = row.querySelector('.lb-avatar');
+              if (avatarEl) {
+                avatarEl.innerHTML = `<img src="${data.user.image}" alt="">`;
+              }
+            }
+          });
+        }
       } catch (e) {
         console.error('[AUTH] Avatar refresh error:', e);
       }
