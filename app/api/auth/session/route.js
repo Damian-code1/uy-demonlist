@@ -32,8 +32,10 @@ export async function GET(request) {
           headers: { Authorization: `Bearer ${u.discord_access_token}` },
           signal: AbortSignal.timeout(3000),
         });
+        console.log('[session] Discord API status:', discordRes.status);
         if (discordRes.ok) {
           const fresh = await discordRes.json();
+          console.log('[session] Fresh avatar hash:', fresh.avatar, '| DB avatar hash:', u.avatar);
           const newAvatar      = fresh.avatar      || null;
           const newUsername    = fresh.username     || u.name;
           const newDisplayName = fresh.global_name || fresh.username || u.display_name;
@@ -47,8 +49,15 @@ export async function GET(request) {
             u.name         = newUsername;
             u.display_name = newDisplayName;
           }
+        } else {
+          const errText = await discordRes.text();
+          console.log('[session] Discord API error:', discordRes.status, errText);
         }
-      } catch {}
+      } catch (e) {
+        console.log('[session] Discord fetch failed:', e.message);
+      }
+    } else {
+      console.log('[session] No access token for user:', discordId);
     }
 
     const avatarUrl = u.avatar
