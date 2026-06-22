@@ -32,6 +32,26 @@ async function initAuth() {
     showBanCountdown(currentUser.bannedUntil, currentUser.banReason);
   }
 
+  // Auto-actualizar avatar: si el avatar en DB cambió, re-renderizar el widget
+  if (currentUser?.image) {
+    const img = new Image();
+    img.onload = () => {}; // avatar actual carga bien, no hacer nada
+    img.onerror = async () => {
+      // Avatar roto → re-fetch sesión y re-renderizar
+      const discordId = localStorage.getItem('uy_discord_id');
+      if (!discordId) return;
+      try {
+        const res  = await fetch(`/api/auth/session?uid=${discordId}`);
+        const data = await res.json();
+        if (data.user) {
+          window.currentUser = data.user;
+          renderUserWidget(data.user);
+        }
+      } catch {}
+    };
+    img.src = currentUser.image;
+  }
+
   // Polling cada 30s para detectar cambios de sanción sin necesitar F5
   startSanctionPolling();
 

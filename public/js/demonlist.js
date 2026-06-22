@@ -1326,7 +1326,10 @@ window.scrollToSubmissions   = scrollToSubmissions;
 // ─── IR A MI RANKING en el leaderboard ───
 function goToMyRanking() {
   if (typeof closeUserDropdown === 'function') closeUserDropdown();
-  const name = window.currentUser?.gdUsername || window.currentUser?.name;
+  // Intentar con linkedPlayer primero (nombre en la lista), luego gdUsername, luego name de Discord
+  const name = window.currentUser?.linkedPlayer
+    || window.currentUser?.gdUsername
+    || window.currentUser?.name;
 
   // Si estamos en roulette.html u otra página, redirigir con parámetro
   if (!document.getElementById('leaderboardBody')) {
