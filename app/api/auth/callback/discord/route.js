@@ -30,7 +30,8 @@ export async function GET(request) {
       return Response.redirect(`${process.env.NEXTAUTH_URL}/?auth=error`);
     }
 
-    const { access_token } = await tokenRes.json();
+    const tokenData = await tokenRes.json();
+    const { access_token } = tokenData;
 
     const userRes     = await fetch('https://discord.com/api/users/@me', {
       headers: { Authorization: `Bearer ${access_token}` },
@@ -42,20 +43,22 @@ export async function GET(request) {
     }
 
     await query(
-      `INSERT INTO users (discord_id, discord_username, discord_display_name, discord_avatar, discord_email)
-       VALUES (?, ?, ?, ?, ?)
+      `INSERT INTO users (discord_id, discord_username, discord_display_name, discord_avatar, discord_email, discord_access_token)
+       VALUES (?, ?, ?, ?, ?, ?)
        ON DUPLICATE KEY UPDATE
-         discord_username     = VALUES(discord_username),
-         discord_display_name = VALUES(discord_display_name),
-         discord_avatar       = VALUES(discord_avatar),
-         discord_email        = VALUES(discord_email),
-         updated_at           = NOW()`,
+         discord_username      = VALUES(discord_username),
+         discord_display_name  = VALUES(discord_display_name),
+         discord_avatar        = VALUES(discord_avatar),
+         discord_email         = VALUES(discord_email),
+         discord_access_token  = VALUES(discord_access_token),
+         updated_at            = NOW()`,
       [
         discordUser.id,
         discordUser.username,
         discordUser.global_name || discordUser.username,
         discordUser.avatar || null,
         discordUser.email  || null,
+        access_token || null,
       ]
     );
 

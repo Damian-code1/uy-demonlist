@@ -120,6 +120,31 @@
   /* Sections */
   .page-section { padding: 4rem 0; }
 
+  /* Level detail modal — mobile: video no se corta, body scrolleable */
+  .level-detail-modal {
+    padding: 0;
+    align-items: flex-end;
+  }
+  .level-modal-box {
+    max-height: 96vh;
+    border-radius: var(--r-lg) var(--r-lg) 0 0;
+    width: 100%;
+    max-width: 100%;
+  }
+  .lm-player-wrap {
+    border-radius: var(--r-lg) var(--r-lg) 0 0;
+  }
+  .lm-body {
+    padding: 1rem 1rem 1.25rem;
+  }
+  .lm-header-row {
+    margin: 0 -1rem; padding: .85rem 1rem .8rem;
+    gap: .65rem;
+  }
+  .lm-title { font-size: 1.1rem; }
+  .lm-rank-badge { font-size: 1.1rem; min-width: 38px; height: 38px; }
+  .lm-edit-level-btn { display: none; } /* en mobile no hay espacio para este botón */
+
   /* Level cards — mobile */
   .level-card {
     height: 80px;
@@ -128,8 +153,12 @@
   .lc-thumb, .lc-thumb-ph { width: 130px; }
   .lc-thumb-fade           { width: 170px; }
   .lc-color-bg             { left: 130px; }
-  .lc-rank                 { padding: 0 .55rem; font-size: 1.25rem; }
-  .lc-rank-num             { font-size: 1rem; }
+  .lc-rank                 { padding: 0 .45rem; font-size: 1.1rem; min-width: 44px; }
+  .lc-rank-num             { font-size: .9rem; }
+  /* En PC el rank flota sobre la miniatura. En mobile lo separamos
+     para que no se overlappeen — el padding-left de la card ya crea
+     el espacio necesario para que el rank se vea sin pisar la imagen */
+  .lc-rank { position: relative; z-index: 2; }
   .lc-name                 { font-size: .92rem; }
   .lc-meta-row             { font-size: .72rem; gap: .4rem; }
   .lc-victor-count         { font-size: .68rem; padding: .12rem .42rem; }

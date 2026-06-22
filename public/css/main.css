@@ -3606,9 +3606,16 @@ body {
   .lc-rank                 {
     padding: .35rem .7rem; margin: 0 .5rem; font-size: 1.55rem;
   }
-  .lc-name                 { font-size: 1.08rem; }
+  .lc-name                 { font-size: 1rem; }
   .lc-pts-badge            { display: none; }
-  .lc-badges               { display: none; }
+  /* Badges visibles pero más compactos */
+  .lc-badges               { gap: .25rem; flex-wrap: wrap; }
+  .lc-top1-badge           { font-size: .6rem; padding: .18rem .45rem; gap: .2rem; }
+  .lc-top1-label           { display: inline; }
+  .lc-new-badge            { font-size: .6rem; padding: .18rem .45rem; letter-spacing: .5px; }
+  .aredl-pos               { font-size: .62rem; padding: .18rem .4rem; }
+  /* Nombre largo: nunca se oculta, solo se acorta con ellipsis */
+  .lc-name                 { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: calc(100vw - 200px); }
 
   .lb-progress-wrap        { display: none; }
   .lb-stats-group          { gap: .3rem; }
@@ -3621,7 +3628,7 @@ body {
   .lc-thumb-fade { width: 182px; }
   .lc-color-bg   { left: 137px; }
   .lc-rank       { padding: .3rem .55rem; margin: 0 .4rem; font-size: 1.3rem; }
-  .lc-name       { font-size: .98rem; }
+  .lc-name       { font-size: .92rem; max-width: calc(100vw - 175px); }
   .lc-meta-row   { gap: .4rem; }
 }
 

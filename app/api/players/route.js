@@ -83,11 +83,13 @@ export async function GET(request) {
         const u = userMap.get(p.name.toLowerCase());
         return {
           ...p,
-          discord_id:     u?.discord_id     || null,
-          discord_avatar: u?.discord_avatar || null,
-          gd_username:    u?.gd_username    || null,
-          linked_player_name: u?.linked_player_name || null,
-          role:           u?.role           || 'usuario',
+          discord_id:           u?.discord_id           || null,
+          discord_avatar:       u?.discord_avatar       || null,
+          discord_display_name: u?.discord_display_name || null,
+          discord_username:     u?.discord_username     || null,
+          gd_username:          u?.gd_username          || null,
+          linked_player_name:   u?.linked_player_name   || null,
+          role:                 u?.role                 || 'usuario',
         };
       })
       .sort((a, b) => b.points - a.points);

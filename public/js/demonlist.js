@@ -791,7 +791,7 @@ ${avatarUrl
       </div>
 
       <div class="lb-info">
-        <span class="lb-player-name">${esc(player.gd_username || player.name)}</span>
+        <span class="lb-player-name">${esc(player.discord_display_name || player.discord_username || player.name)}</span>
         ${player.hardest_level
           ? `<span class="lb-hardest"><i class="fas fa-skull"></i> ${esc(player.hardest_level)}</span>`
           : `<span class="lb-hardest"><i class="fas fa-flag"></i> Uruguay</span>`
@@ -1070,7 +1070,7 @@ const avatarUrl = player.discord_id && player.discord_avatar
           </div>
         </div>
         <div class="pm-header-info">
-          <h2 class="pm-name">${esc(player.gd_username || player.name)}</h2>
+          <h2 class="pm-name">${esc(player.discord_display_name || player.discord_username || player.name)}</h2>
           <div class="pm-badges-row">
             <span class="pm-rank-badge">${rankLabel} en Uruguay</span>
             ${player.role && player.role !== 'usuario'
