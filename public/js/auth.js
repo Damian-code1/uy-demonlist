@@ -143,6 +143,10 @@ function renderUserWidget(user) {
     muralAv.innerHTML = `<img src="${user.avatar}" alt="" style="width:100%;height:100%;object-fit:cover">`;
   }
   if (typeof updateMuralFormVisibility === 'function') updateMuralFormVisibility();
+  // Re-renderizar el feed del mural para que el botón de eliminar
+  // aparezca correctamente ahora que currentUser ya está disponible.
+  // Usamos renderMural() (no loadMural()) para no hacer otro fetch innecesario.
+  if (typeof renderMural === 'function') renderMural();
   }
 
   if (user.isBanned && typeof showBanCountdown === 'function') {

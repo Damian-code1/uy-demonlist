@@ -64,6 +64,32 @@
 .mural-counter-warn   { color: #f59e0b !important; }
 .mural-counter-danger { color: #f43f5e !important; font-weight: 700; }
 
+/* ── Hint Ctrl+Enter ── */
+.mural-kbd-hint {
+  display: inline-flex; align-items: center; gap: .25rem;
+  opacity: .45; transition: opacity .2s;
+  margin-left: .1rem;
+}
+.mural-form-footer:focus-within .mural-kbd-hint { opacity: .65; }
+.mural-kbd-hint kbd {
+  display: inline-flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono, monospace);
+  font-size: .62rem; font-weight: 600;
+  padding: .15rem .38rem;
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(255,255,255,.15);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  color: var(--text-dim);
+  line-height: 1.4;
+  user-select: none;
+}
+.mural-kbd-plus {
+  font-size: .6rem;
+  color: var(--text-dim);
+  opacity: .7;
+}
+
 /* ── Botón refresh ── */
 .mural-refresh-btn {
   display: flex; align-items: center; gap: .4rem;

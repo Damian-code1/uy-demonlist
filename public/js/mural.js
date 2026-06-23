@@ -403,8 +403,9 @@ function updateMuralFormVisibility() {
   loginNote.classList.toggle('hidden', loggedIn);
 }
 
-window.loadMural              = loadMural;
+window.loadMural                 = loadMural;
 window.updateMuralFormVisibility = updateMuralFormVisibility;
+window.renderMural               = renderMural;
 
 document.addEventListener('DOMContentLoaded', () => {
   initMuralForm();
