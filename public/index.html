@@ -34,6 +34,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js@1.12.0/src/toastify.min.css">
   <!-- Styles -->
   <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/mural.css">
   <link rel="stylesheet" href="css/fire.css">
   <link rel="stylesheet" href="css/animations.css">
   <link rel="stylesheet" href="css/responsive.css">
@@ -446,6 +447,41 @@
           <span>Cargando jugadores…</span>
         </div>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── MURAL DE LA COMUNIDAD ─── -->
+<section class="page-section" id="mural">
+  <div class="section-wrap">
+    <div class="section-head" data-aos="fade-up">
+      <span class="section-tag">Comunidad</span>
+      <h2 class="section-h2">MURAL</h2>
+      <p class="section-sub">Lo que piensa la comunidad uruguaya. Escribí lo que quieras.</p>
+    </div>
+    <div class="mural-wrap" data-aos="fade-up" data-aos-delay="60">
+      <!-- Formulario (solo logueados) -->
+      <div id="muralFormWrap" class="mural-new-post hidden">
+        <div class="mural-new-post-header">
+          <div class="mural-new-avatar-wrap" id="muralUserAvatar">?</div>
+          <span class="mural-new-label">Tu comentario</span>
+        </div>
+        <textarea id="muralNewText" class="mural-textarea" placeholder="¿Qué pensás? (máx. 500 caracteres)" maxlength="500" rows="3"></textarea>
+        <div class="mural-form-footer">
+          <span class="mural-char-count" id="muralCharCount">0/500</span>
+          <button class="mural-submit-btn" id="muralSubmit" disabled>
+            <i class="fas fa-paper-plane"></i> Publicar
+          </button>
+        </div>
+      </div>
+      <p id="muralLoginNote" class="mural-login-note hidden">
+        <i class="fas fa-lock"></i> Iniciá sesión con Discord para comentar en el mural.
+      </p>
+      <!-- Feed de posts -->
+      <div id="muralFeed"></div>
+      <button class="mural-load-more-btn hidden" id="muralLoadMore">
+        <i class="fas fa-chevron-down"></i> Cargar más comentarios
+      </button>
     </div>
   </div>
 </section>
@@ -942,7 +978,8 @@
 <script src="js/auth.js"></script>
 <script src="js/admin.js"></script><script src="js/owner.js"></script>
 <script src="js/sanctions.js"></script>
-  <script src="js/feed.js"></script>
+<script src="js/feed.js"></script>
+<script src="js/mural.js"></script>
 
 <script>
   // Admin level filter

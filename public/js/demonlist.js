@@ -100,7 +100,26 @@ function paintCards(levels, animated = true) {
   // en vez de 176 inserciones individuales al DOM, una por una.
   const fragment = document.createDocumentFragment();
   const cardEls  = [];
+  const firstLegacyIdx = levels.findIndex(l => l.legacy);
+  let dividerInserted  = false;
+
   levels.forEach((level, i) => {
+    // Separador antes del primer nivel legacy
+    if (!dividerInserted && level.legacy && i === firstLegacyIdx) {
+      const divider = document.createElement('div');
+      divider.className = 'legacy-divider';
+      divider.innerHTML = `
+        <div class="legacy-divider-line"></div>
+        <div class="legacy-divider-badge">
+          <i class="fas fa-archive"></i>
+          <span>LEGACY LIST</span>
+          <span class="legacy-divider-sub">Niveles que salieron del extreme</span>
+        </div>
+        <div class="legacy-divider-line"></div>
+      `;
+      fragment.appendChild(divider);
+      dividerInserted = true;
+    }
     const card = buildCard(level, i);
     fragment.appendChild(card);
     cardEls.push(card);
@@ -197,9 +216,11 @@ window.levelTierBodyColor = levelTierBodyColor;
 function buildCard(level, index) {
   const pos      = level.position || (index + 1);
   const victors  = level.victors || [];
-  const aredlPos = level.aredl_position || null;
-  const thumb = level.thumb_url || null;
-  const pts      = levelPoints(level);
+  // Los niveles legacy no muestran su posición en AREDL (ya no son extreme)
+  const aredlPos  = (!level.legacy && level.aredl_position) ? level.aredl_position : null;
+  const thumb     = level.thumb_url || null;
+  // Los niveles legacy no otorgan puntos
+  const pts       = level.legacy ? null : levelPoints(level);
 
   const isFav = userFavorites.includes(level.id);
   const isNew     = !!level.isNew;
@@ -315,9 +336,14 @@ function buildCard(level, index) {
              </span>`
           : ''
         }
-        <span class="lc-pts-badge" title="Puntos por esta completion">
-          <i class="fas fa-star"></i>${pts.toLocaleString()} pts
-        </span>
+        ${pts !== null
+          ? `<span class="lc-pts-badge" title="Puntos por esta completion">
+               <i class="fas fa-star"></i>${pts.toLocaleString()} pts
+             </span>`
+          : `<span class="lc-pts-badge lc-pts-legacy" title="Nivel legacy — no otorga puntos">
+               <i class="fas fa-archive"></i>Legacy
+             </span>`
+        }
       </div>
     </div>
   `;

@@ -13,8 +13,8 @@ const ROLE_META = {
 
 const ROLE_ORDER = ['usuario', 'list_mod', 'admin', 'manager', 'owner'];
 
-const SANCTIONS_ROLES       = ['list_mod', 'admin', 'manager', 'owner']; // panel admin general — list_mod+
-const STAFF_SANCTIONS_ROLES = ['admin', 'manager', 'owner'];             // panel de SANCIONES — admin+ (sin list_mod)
+const SANCTIONS_ROLES       = ['list_mod', 'admin', 'manager', 'owner']; // panel de submissions/admin general — list_mod+
+const STAFF_SANCTIONS_ROLES = ['admin', 'manager', 'owner'];             // panel de SANCIONES (bans, log) — admin+ NUNCA list_mod
 const MANAGER_ROLES         = ['manager', 'owner'];
 const OWNER_ROLES           = ['owner'];
 

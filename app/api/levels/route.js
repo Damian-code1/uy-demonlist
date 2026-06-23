@@ -81,6 +81,7 @@ try {
           thumbnail_url: row.thumbnail_url,
           thumbnail_youtube_id: row.thumbnail_youtube_id,
           gd_id:       row.gd_id || null,
+          legacy:      !!row.legacy,
           created_from_submission: row.created_from_submission,
           created_at:  row.created_at,
           became_top1_at: row.became_top1_at,

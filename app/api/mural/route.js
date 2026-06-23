@@ -1,0 +1,55 @@
+import { query } from '../../../lib/db.js';
+import { getSession } from '../../../lib/auth.js';
+
+export const dynamic = 'force-dynamic';
+
+export async function GET() {
+  try {
+    const [rows] = await query(`
+      SELECT
+        p.id, p.content, p.created_at, p.parent_id,
+        u.discord_id, u.display_name, u.gd_username,
+        u.avatar_url,
+        (SELECT COUNT(*) FROM mural_posts r WHERE r.parent_id = p.id) AS reply_count,
+        pp.player_rank
+      FROM mural_posts p
+      JOIN users u ON u.id = p.user_id
+      LEFT JOIN (
+        SELECT player_name, RANK() OVER (ORDER BY total_points DESC) AS player_rank
+        FROM players
+      ) pp ON pp.player_name = u.linked_player_name
+      WHERE p.parent_id IS NULL
+      ORDER BY p.created_at DESC
+      LIMIT 100
+    `);
+    return Response.json({ posts: rows });
+  } catch (e) {
+    return Response.json({ posts: [], error: e.message }, { status: 500 });
+  }
+}
+
+export async function POST(request) {
+  const user = await getSession(request);
+  if (!user) return Response.json({ error: 'No autenticado' }, { status: 401 });
+  if (user.isBanned) return Response.json({ error: 'Baneado' }, { status: 403 });
+
+  const { content, parent_id } = await request.json();
+  if (!content?.trim() || content.trim().length > 500)
+    return Response.json({ error: 'Contenido inválido (máx. 500 chars)' }, { status: 400 });
+
+  // Si es reply, verificar que el post padre existe y no es ya una reply
+  if (parent_id) {
+    const [[parent]] = await query('SELECT id, parent_id FROM mural_posts WHERE id = ?', [parent_id]);
+    if (!parent || parent.parent_id !== null)
+      return Response.json({ error: 'Post padre inválido' }, { status: 400 });
+  }
+
+  const [[dbUser]] = await query('SELECT id FROM users WHERE discord_id = ?', [user.id]);
+  if (!dbUser) return Response.json({ error: 'Usuario no encontrado' }, { status: 404 });
+
+  await query(
+    'INSERT INTO mural_posts (user_id, content, parent_id) VALUES (?, ?, ?)',
+    [dbUser.id, content.trim(), parent_id || null]
+  );
+  return Response.json({ success: true }, { status: 201 });
+}

@@ -136,6 +136,13 @@ function renderUserWidget(user) {
       ? isSanctionsStaffRole(user.role)
       : ['owner','admin','manager'].includes(user.role);
     sanctionsBtn.style.display = canSeeSanctions ? 'flex' : 'none';
+
+  // Actualizar avatar y visibilidad del formulario del mural
+  const muralAv = document.getElementById('muralUserAvatar');
+  if (muralAv && user.avatar) {
+    muralAv.innerHTML = `<img src="${user.avatar}" alt="" style="width:100%;height:100%;object-fit:cover">`;
+  }
+  if (typeof updateMuralFormVisibility === 'function') updateMuralFormVisibility();
   }
 
   if (user.isBanned && typeof showBanCountdown === 'function') {
