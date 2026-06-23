@@ -11,8 +11,10 @@ export async function GET(request, { params }) {
         p.id, p.content, p.created_at, p.parent_id,
         u.discord_id,
         COALESCE(u.discord_display_name, u.discord_username, u.gd_username) AS display_name,
+        u.discord_username,
         u.gd_username,
         u.discord_avatar,
+        u.role,
         pp.player_rank
       FROM mural_posts p
       JOIN users u ON u.id = p.user_id
@@ -25,7 +27,7 @@ export async function GET(request, { params }) {
         GROUP BY v.player_name
       ) pp ON pp.player_name = u.linked_player_name
       WHERE p.parent_id = ?
-      ORDER BY p.created_at ASC
+      ORDER BY p.created_at DESC
     `, [params.id]);
     return Response.json({ replies: rows });
   } catch (e) {

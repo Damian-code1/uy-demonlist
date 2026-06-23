@@ -460,6 +460,11 @@
       <p class="section-sub">Lo que piensa la comunidad uruguaya. Escribí lo que quieras.</p>
     </div>
     <div class="mural-wrap" data-aos="fade-up" data-aos-delay="60">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:.75rem">
+        <button class="mural-refresh-btn" id="muralRefreshBtn" title="Actualizar mural">
+          <i class="fas fa-rotate-right"></i> Actualizar
+        </button>
+      </div>
       <!-- Formulario (solo logueados) -->
       <div id="muralFormWrap" class="mural-new-post hidden">
         <div class="mural-new-post-header">
@@ -469,6 +474,7 @@
         <textarea id="muralNewText" class="mural-textarea" placeholder="¿Qué pensás? (máx. 500 caracteres)" maxlength="500" rows="3"></textarea>
         <div class="mural-form-footer">
           <span class="mural-char-count" id="muralCharCount">0/500</span>
+          <span style="font-size:.68rem;color:var(--text-dim);opacity:.55;margin-left:.25rem">Ctrl+Enter</span>
           <button class="mural-submit-btn" id="muralSubmit" disabled>
             <i class="fas fa-paper-plane"></i> Publicar
           </button>

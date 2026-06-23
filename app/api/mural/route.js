@@ -10,8 +10,10 @@ export async function GET() {
         p.id, p.content, p.created_at, p.parent_id,
         u.discord_id,
         COALESCE(u.discord_display_name, u.discord_username, u.gd_username) AS display_name,
+        u.discord_username,
         u.gd_username,
         u.discord_avatar,
+        u.role,
         (SELECT COUNT(*) FROM mural_posts r WHERE r.parent_id = p.id) AS reply_count,
         pp.player_rank
       FROM mural_posts p
@@ -26,7 +28,7 @@ export async function GET() {
       ) pp ON pp.player_name = u.linked_player_name
       WHERE p.parent_id IS NULL
       ORDER BY p.created_at DESC
-      LIMIT 100
+      LIMIT 200
     `);
     return Response.json({ posts: rows });
   } catch (e) {

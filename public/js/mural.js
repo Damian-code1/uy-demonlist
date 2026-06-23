@@ -5,22 +5,64 @@
 const MURAL_PAGE_SIZE = 10;
 let muralPosts   = [];
 let muralShowing = MURAL_PAGE_SIZE;
+let muralTimeInterval = null;
+
+// Metadata de roles para los badges del mural
+const MURAL_ROLE_META = {
+  owner:    { label: 'Owner',    icon: 'fa-crown',         color: '#f59e0b' },
+  manager:  { label: 'Manager',  icon: 'fa-chess-queen',   color: '#ec4899' },
+  admin:    { label: 'Admin',    icon: 'fa-shield-halved', color: '#f43f5e' },
+  list_mod: { label: 'Mod',      icon: 'fa-shield',        color: '#8b5cf6' },
+};
+
+function getMuralRoleMeta(role) {
+  return MURAL_ROLE_META[role] || null;
+}
 
 // ─── Carga inicial ───
-async function loadMural() {
+async function loadMural(silent = false) {
   const wrap = document.getElementById('muralFeed');
   if (!wrap) return;
-  wrap.innerHTML = `<div class="mural-loading"><i class="fas fa-spinner fa-spin"></i> Cargando…</div>`;
+  if (!silent) {
+    wrap.innerHTML = `<div class="mural-loading"><i class="fas fa-spinner fa-spin"></i> Cargando…</div>`;
+  }
   try {
-    const r = await fetch('/api/mural');
+    const r = await fetch('/api/mural?_t=' + Date.now());
     const { posts = [] } = await r.json();
     muralPosts   = posts;
-    muralShowing = MURAL_PAGE_SIZE;
+    if (!silent) muralShowing = MURAL_PAGE_SIZE;
     renderMural();
+    startMuralTimeTicker();
   } catch {
-    wrap.innerHTML = `<div class="mural-error"><i class="fas fa-exclamation-circle"></i> Error al cargar el mural.</div>`;
+    if (!silent) {
+      wrap.innerHTML = `<div class="mural-error"><i class="fas fa-exclamation-circle"></i> Error al cargar el mural.</div>`;
+    }
   }
 }
+
+// ─── Contador de tiempo en vivo (actualiza ".mural-time" cada 30s sin re-renderizar todo) ───
+function startMuralTimeTicker() {
+  if (muralTimeInterval) clearInterval(muralTimeInterval);
+  muralTimeInterval = setInterval(() => {
+    document.querySelectorAll('.mural-time[data-ts]').forEach(el => {
+      el.textContent = relativeTime(Number(el.dataset.ts));
+    });
+  }, 30_000);
+}
+
+// ─── Actualizar manualmente (botón refresh) ───
+async function refreshMural() {
+  const btn = document.getElementById('muralRefreshBtn');
+  if (btn) {
+    btn.classList.add('spinning');
+    btn.disabled = true;
+  }
+  await loadMural(false);
+  if (btn) {
+    setTimeout(() => { btn.classList.remove('spinning'); btn.disabled = false; }, 600);
+  }
+}
+window.refreshMural = refreshMural;
 
 function renderMural() {
   const wrap = document.getElementById('muralFeed');
@@ -57,8 +99,8 @@ function renderMural() {
 function buildPostHTML(post, isReply = false) {
   const user      = window.currentUser;
   const isOwn     = user && user.id === post.discord_id;
-  const isStaff   = user && ['admin','manager','owner'].includes(user.role);
-  const canDelete = isOwn || isStaff;
+  const isAdminUser = user && ['admin','manager','owner'].includes(user.role);
+  const canDelete = isOwn || isAdminUser;
 
   const avatarUrl = post.discord_id && post.discord_avatar
     ? `https://cdn.discordapp.com/avatars/${post.discord_id}/${post.discord_avatar}.png?size=64`
@@ -66,18 +108,34 @@ function buildPostHTML(post, isReply = false) {
   const avatar = avatarUrl
     ? `<img class="mural-avatar" src="${avatarUrl}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
     : '';
-  const initials = (post.display_name || post.gd_username || '?')[0].toUpperCase();
+  const initials = (post.display_name || post.discord_username || '?')[0].toUpperCase();
 
+  // Badge de rango en la lista (#33, etc.)
   const rankBadge = post.player_rank
-    ? `<span class="mural-rank-badge" title="Ranking en la lista">#${post.player_rank}</span>`
+    ? `<span class="mural-rank-badge" title="Ranking en la lista UY">
+         <i class="fas fa-list-ol"></i>#${post.player_rank}
+       </span>`
     : '';
 
-  const relTime = relativeTime(post.created_at);
+  // Badge de rol del staff (solo para roles relevantes)
+  const roleMeta = getMuralRoleMeta(post.role);
+  const roleBadge = roleMeta
+    ? `<span class="mural-role-badge mural-role-${post.role}" title="${roleMeta.label}">
+         <i class="fas ${roleMeta.icon}"></i>${roleMeta.label}
+       </span>`
+    : '';
+
+  // Timestamp guardado como epoch para el ticker de tiempo real
+  const ts = new Date(post.created_at).getTime();
+  const relTime = relativeTime(ts);
+
+  // Username de Discord (@handle) — prefiere discord_username, fallback a gd_username
+  const atHandle = post.discord_username || post.gd_username || '—';
 
   const repliesSection = !isReply ? `
     <div class="mural-replies-wrap" id="replies-${post.id}"></div>
     ${post.reply_count > 0
-      ? `<button class="mural-replies-toggle" data-id="${post.id}">
+      ? `<button class="mural-replies-toggle" data-id="${post.id}" data-count="${post.reply_count}">
            <i class="fas fa-comments"></i> Ver ${post.reply_count} respuesta${post.reply_count > 1 ? 's' : ''}
          </button>`
       : ''}
@@ -100,18 +158,23 @@ function buildPostHTML(post, isReply = false) {
             <div class="mural-avatar-fallback" ${avatar ? 'style="display:none"' : ''}>${initials}</div>
           </div>
           <div class="mural-author-info">
-            <span class="mural-display-name">${escMural(post.display_name || post.gd_username || 'Usuario')}</span>
-            <span class="mural-username">@${escMural(post.gd_username || '—')}</span>
+            <span class="mural-display-name">${escMural(post.display_name || post.discord_username || 'Usuario')}</span>
+            <span class="mural-username">@${escMural(atHandle)}</span>
           </div>
           ${rankBadge}
+          ${roleBadge}
         </div>
         <div class="mural-post-meta">
-          <span class="mural-time" title="${new Date(post.created_at).toLocaleString('es-UY')}">${relTime}</span>
-          ${canDelete ? `<button class="mural-delete-btn" data-id="${post.id}" title="Eliminar"><i class="fas fa-trash"></i></button>` : ''}
+          <span class="mural-time" data-ts="${ts}" title="${new Date(ts).toLocaleString('es-UY')}">${relTime}</span>
+          ${canDelete
+            ? `<button class="mural-delete-btn" data-id="${post.id}" title="Eliminar comentario">
+                 <i class="fas fa-trash-alt"></i>
+               </button>`
+            : ''}
         </div>
       </div>
       <div class="mural-content">${escMural(post.content)}</div>
-      ${!isReply && window.currentUser && !window.currentUser.isBanned
+      ${!isReply && user && !user.isBanned
         ? `<button class="mural-reply-btn" data-id="${post.id}"><i class="fas fa-reply"></i> Responder</button>`
         : ''
       }
@@ -238,25 +301,38 @@ async function deletePost(postId) {
 
 // Formulario principal
 function initMuralForm() {
-  const textarea = document.getElementById('muralNewText');
-  const counter  = document.getElementById('muralCharCount');
+  const textarea  = document.getElementById('muralNewText');
+  const counter   = document.getElementById('muralCharCount');
   const submitBtn = document.getElementById('muralSubmit');
   if (!textarea) return;
 
+  // ── Contador de caracteres en tiempo real ──
   textarea.addEventListener('input', () => {
     const len = textarea.value.length;
     if (counter) {
       counter.textContent = `${len}/500`;
       counter.classList.toggle('mural-counter-warn', len > 450);
+      counter.classList.toggle('mural-counter-danger', len > 490);
     }
     if (submitBtn) submitBtn.disabled = len === 0 || len > 500;
+    // Auto-grow del textarea (hasta 6 líneas)
+    textarea.style.height = 'auto';
+    textarea.style.height = Math.min(textarea.scrollHeight, 160) + 'px';
+  });
+
+  // ── Publicar con Ctrl+Enter ──
+  textarea.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      e.preventDefault();
+      submitBtn?.click();
+    }
   });
 
   submitBtn?.addEventListener('click', async () => {
     const content = textarea.value.trim();
     if (!content || content.length > 500) return;
     submitBtn.disabled = true;
-    submitBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Enviando…`;
+    submitBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Publicando…`;
     const discordId = localStorage.getItem('uy_discord_id') || '';
     const r = await fetch('/api/mural', {
       method: 'POST',
@@ -266,7 +342,9 @@ function initMuralForm() {
     submitBtn.innerHTML = `<i class="fas fa-paper-plane"></i> Publicar`;
     if (r.ok) {
       textarea.value = '';
-      if (counter) { counter.textContent = '0/500'; counter.classList.remove('mural-counter-warn'); }
+      textarea.style.height = 'auto';
+      if (counter) { counter.textContent = '0/500'; counter.classList.remove('mural-counter-warn','mural-counter-danger'); }
+      submitBtn.disabled = true;
       await loadMural();
       showToast('¡Comentario publicado!', 'success');
     } else {
@@ -280,6 +358,9 @@ function initMuralForm() {
     muralShowing += MURAL_PAGE_SIZE;
     renderMural();
   });
+
+  // ── Botón refresh ──
+  document.getElementById('muralRefreshBtn')?.addEventListener('click', refreshMural);
 }
 
 // Utilidades
@@ -287,16 +368,19 @@ function escMural(s) {
   return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-function relativeTime(dateStr) {
-  const diff = Date.now() - new Date(dateStr).getTime();
-  const m = Math.floor(diff / 60000);
-  if (m < 1)  return 'ahora mismo';
+// Acepta tanto un string ISO como un epoch numérico
+function relativeTime(input) {
+  const ts   = typeof input === 'number' ? input : new Date(input).getTime();
+  const diff = Date.now() - ts;
+  if (diff < 45_000)   return 'ahora mismo';
+  const m = Math.floor(diff / 60_000);
   if (m < 60) return `hace ${m} min`;
   const h = Math.floor(m / 60);
   if (h < 24) return `hace ${h}h`;
   const d = Math.floor(h / 24);
   if (d < 7)  return `hace ${d}d`;
-  return new Date(dateStr).toLocaleDateString('es-UY', { day:'numeric', month:'short' });
+  if (d < 30) return `hace ${d} días`;
+  return new Date(ts).toLocaleDateString('es-UY', { day: 'numeric', month: 'short' });
 }
 
 function showToast(msg, type = 'info') {
