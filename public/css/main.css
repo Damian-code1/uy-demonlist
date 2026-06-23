@@ -3275,35 +3275,42 @@ body {
   display: flex;
   align-items: center;
   gap: .9rem;
-  padding: 1.5rem 0 1rem;
+  padding: 2rem 0 1.25rem;
   width: 100%;
+  position: relative;
 }
 .legacy-divider-line {
   flex: 1;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(100,116,139,.4), transparent);
+  background: linear-gradient(90deg, transparent, rgba(148,163,184,.35), transparent);
+  position: relative;
 }
 .legacy-divider-badge {
   display: flex;
   align-items: center;
   gap: .5rem;
-  background: rgba(100,116,139,.1);
-  border: 1px solid rgba(100,116,139,.25);
+  background: linear-gradient(135deg, rgba(30,27,40,.95), rgba(20,18,30,.98));
+  border: 1px solid rgba(148,163,184,.2);
   border-radius: var(--r-pill);
-  padding: .45rem 1rem;
+  padding: .5rem 1.1rem;
   color: #94a3b8;
   font-size: .72rem;
   font-weight: 700;
-  letter-spacing: 2px;
+  letter-spacing: 2.5px;
   white-space: nowrap;
   flex-shrink: 0;
+  box-shadow: 0 0 18px rgba(100,116,139,.12), 0 2px 8px rgba(0,0,0,.3);
+  text-transform: uppercase;
 }
-.legacy-divider-badge i { font-size: .7rem; opacity: .7; }
+.legacy-divider-badge i {
+  font-size: .68rem;
+  color: #64748b;
+}
 .legacy-divider-sub {
-  font-size: .65rem;
+  font-size: .63rem;
   font-weight: 400;
   letter-spacing: .5px;
-  opacity: .7;
+  opacity: .55;
   display: none;
 }
 @media (min-width: 600px) { .legacy-divider-sub { display: inline; } }
@@ -3315,6 +3322,27 @@ body {
   color: #64748b !important;
 }
 .lc-pts-legacy i { color: #64748b !important; }
+
+/* Rank "LEGACY" en la card (reemplaza el #pos para niveles legacy) */
+.lc-rank-legacy {
+  background: linear-gradient(180deg, rgba(15,12,22,.9), rgba(10,8,18,.95)) !important;
+  border-right: 2px solid rgba(100,116,139,.2) !important;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+.lc-rank-legacy-label {
+  font-size: .52rem;
+  font-weight: 800;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: #64748b;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transform: rotate(180deg);
+  line-height: 1;
+  user-select: none;
+}
 
 /* =============================================
    ADMIN — Buscadores mejorados

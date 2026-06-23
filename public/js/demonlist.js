@@ -111,9 +111,9 @@ function paintCards(levels, animated = true) {
       divider.innerHTML = `
         <div class="legacy-divider-line"></div>
         <div class="legacy-divider-badge">
-          <i class="fas fa-archive"></i>
-          <span>LEGACY LIST</span>
-          <span class="legacy-divider-sub">Niveles que salieron del extreme</span>
+          <i class="fas fa-history"></i>
+          <span>LEGACY</span>
+          <span class="legacy-divider-sub">Insane Demons — sin puntos</span>
         </div>
         <div class="legacy-divider-line"></div>
       `;
@@ -279,6 +279,8 @@ function buildCard(level, index) {
       <span class="lc-fire-spark"></span>
       <span class="lc-fire-spark"></span>
     </div>`;
+  } else if (level.legacy) {
+    rankHtml = `<div class="lc-rank lc-rank-legacy" aria-label="Nivel legacy"><span class="lc-rank-legacy-label">LEGACY</span></div>`;
   } else {
     rankHtml = `<div class="lc-rank" aria-label="Posición ${pos}"><span class="lc-rank-num">#${pos}</span></div>`;
   }
