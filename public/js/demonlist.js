@@ -138,13 +138,24 @@ function paintCards(levels, animated = true) {
 
   if (cardEls.length <= firstScreenCount) return;
 
+  // Las cards fuera de pantalla arrancan visibles (opacity: 1) — si GSAP
+  // llega a tiempo hace el efecto de entrada, si no, ya se ven igual.
+  // Esto evita el parpadeo al scrollear rápido donde las cards estaban
+  // en opacity:0 esperando la animación que nunca llegó a dispararse.
+  cardEls.slice(firstScreenCount).forEach(card => {
+    card.style.opacity = '1';
+  });
+
   const lazyObserver = new IntersectionObserver((entries, obs) => {
     entries.forEach(entry => {
       if (!entry.isIntersecting) return;
-      gsap.from(entry.target, { opacity: 0, y: 10, duration: .3, ease: 'power3.out' });
+      gsap.fromTo(entry.target,
+        { opacity: 0, y: 10 },
+        { opacity: 1, y: 0, duration: .3, ease: 'power3.out' }
+      );
       obs.unobserve(entry.target);
     });
-  }, { rootMargin: '120px 0px', threshold: 0.01 });
+  }, { rootMargin: '200px 0px', threshold: 0 });
 
   cardEls.slice(firstScreenCount).forEach(card => lazyObserver.observe(card));
 }
