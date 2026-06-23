@@ -1,5 +1,5 @@
 import { query } from '../../../../lib/db.js';
-import { getSession, requireAdmin } from '../../../../lib/auth.js';
+import { requireAuth } from '../../../../lib/auth.js';
 
 export const dynamic = 'force-dynamic';
 
@@ -9,7 +9,7 @@ export async function GET(request, { params }) {
     const [rows] = await query(`
       SELECT
         p.id, p.content, p.created_at, p.parent_id,
-        u.discord_id, u.display_name, u.gd_username, u.avatar_url,
+        u.discord_id, u.discord_display_name AS display_name, u.gd_username, u.discord_avatar,
         pp.player_rank
       FROM mural_posts p
       JOIN users u ON u.id = p.user_id
@@ -28,7 +28,7 @@ export async function GET(request, { params }) {
 
 // DELETE — el propio autor o admin+
 export async function DELETE(request, { params }) {
-  const user = await getSession(request);
+  const user = await requireAuth(request);
   if (!user) return Response.json({ error: 'No autenticado' }, { status: 401 });
 
   const [[post]] = await query(
