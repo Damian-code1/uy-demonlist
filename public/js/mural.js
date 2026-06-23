@@ -60,8 +60,11 @@ function buildPostHTML(post, isReply = false) {
   const isStaff   = user && ['admin','manager','owner'].includes(user.role);
   const canDelete = isOwn || isStaff;
 
-  const avatar = post.avatar_url
-    ? `<img class="mural-avatar" src="${post.avatar_url}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+  const avatarUrl = post.discord_id && post.discord_avatar
+    ? `https://cdn.discordapp.com/avatars/${post.discord_id}/${post.discord_avatar}.png?size=64`
+    : null;
+  const avatar = avatarUrl
+    ? `<img class="mural-avatar" src="${avatarUrl}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
     : '';
   const initials = (post.display_name || post.gd_username || '?')[0].toUpperCase();
 
@@ -169,9 +172,10 @@ async function submitReply(postId) {
   const content = input.value.trim();
   if (!content) return;
 
+  const discordId = localStorage.getItem('uy_discord_id') || '';
   const r = await fetch('/api/mural', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', 'x-discord-id': discordId },
     body: JSON.stringify({ content, parent_id: parseInt(postId) }),
   });
   if (r.ok) {
@@ -219,7 +223,11 @@ async function deletePost(postId) {
   });
   if (!ok) return;
 
-  const r = await fetch(`/api/mural/${postId}`, { method: 'DELETE' });
+  const discordId = localStorage.getItem('uy_discord_id') || '';
+  const r = await fetch(`/api/mural/${postId}`, {
+    method: 'DELETE',
+    headers: { 'x-discord-id': discordId }
+  });
   if (r.ok) {
     await loadMural();
     showToast('Comentario eliminado', 'success');
@@ -249,9 +257,10 @@ function initMuralForm() {
     if (!content || content.length > 500) return;
     submitBtn.disabled = true;
     submitBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Enviando…`;
+    const discordId = localStorage.getItem('uy_discord_id') || '';
     const r = await fetch('/api/mural', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'x-discord-id': discordId },
       body: JSON.stringify({ content }),
     });
     submitBtn.innerHTML = `<i class="fas fa-paper-plane"></i> Publicar`;

@@ -8,7 +8,9 @@ export async function GET() {
     const [rows] = await query(`
       SELECT
         p.id, p.content, p.created_at, p.parent_id,
-        u.discord_id, u.discord_display_name AS display_name, u.gd_username,
+        u.discord_id,
+        COALESCE(u.discord_display_name, u.discord_username, u.gd_username) AS display_name,
+        u.gd_username,
         u.discord_avatar,
         (SELECT COUNT(*) FROM mural_posts r WHERE r.parent_id = p.id) AS reply_count,
         pp.player_rank

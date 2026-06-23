@@ -9,7 +9,10 @@ export async function GET(request, { params }) {
     const [rows] = await query(`
       SELECT
         p.id, p.content, p.created_at, p.parent_id,
-        u.discord_id, u.discord_display_name AS display_name, u.gd_username, u.discord_avatar,
+        u.discord_id,
+        COALESCE(u.discord_display_name, u.discord_username, u.gd_username) AS display_name,
+        u.gd_username,
+        u.discord_avatar,
         pp.player_rank
       FROM mural_posts p
       JOIN users u ON u.id = p.user_id

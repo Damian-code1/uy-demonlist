@@ -85,6 +85,14 @@ function renderAdminLevels(levels) {
   }
 
   container.innerHTML = `
+    <div class="admin-toolbar" style="margin-bottom:.9rem;gap:.6rem;flex-wrap:wrap">
+      <button class="btn-admin-add" onclick="openAdminLevelModal(null,'',null,'','',0,0)">
+        <i class="fas fa-plus"></i> Agregar nivel
+      </button>
+      <button class="admin-btn" id="syncLegacyBtn" onclick="syncLegacyFromGD()" title="Detecta automáticamente niveles que ya no son Extreme Demon y los marca como Legacy">
+        <i class="fas fa-sync-alt"></i> Auto-detectar Legacy
+      </button>
+    </div>
     <div class="admin-table-wrap">
       <table class="admin-table">
         <thead><tr>
@@ -151,6 +159,7 @@ function openAdminLevelModal(id, name, pos, youtubeUrl, gdId, legacy, twoPlayer)
   document.getElementById('levelFormYoutube').value     = youtubeUrl  || '';
   document.getElementById('levelFormGdId').value        = gdId        || '';
   document.getElementById('levelFormLegacy').checked    = !!legacy;
+  // Auto-detectar vía GDBrowser si no se pasó legacy=1 ya
   document.getElementById('levelFormTwoPlayer').checked = !!twoPlayer;
   modal.classList.add('open');
 }
@@ -1534,6 +1543,32 @@ window.clearSubFilters         = clearSubFilters;
 window.renderSubsFiltered      = renderSubsFiltered;
 window.deleteAllSubmissions    = deleteAllSubmissions;
 window.syncPositionsWithAredl  = syncPositionsWithAredl;
+
+async function syncLegacyFromGD() {
+  const btn = document.getElementById('syncLegacyBtn');
+  if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Detectando…'; }
+  try {
+    const discordId = localStorage.getItem('uy_discord_id') || '';
+    const r = await fetch('/api/admin/sync-legacy', {
+      method: 'POST',
+      headers: { 'x-discord-id': discordId }
+    });
+    const data = await r.json();
+    if (data.success) {
+      showToast(`Legacy sync: ${data.updated} marcados, ${data.skipped} sin cambios${data.errors ? `, ${data.errors} errores` : ''}`, 'success');
+      invalidateAdminLevelsCache();
+      loadAdminLevels();
+      refreshPublicData();
+    } else {
+      showToast(data.error || 'Error en sync', 'error');
+    }
+  } catch (e) {
+    showToast('Error de red', 'error');
+  } finally {
+    if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-sync-alt"></i> Auto-detectar Legacy'; }
+  }
+}
+window.syncLegacyFromGD = syncLegacyFromGD;
 
 // ESC limpia filtros activos en submissions
 document.addEventListener('keydown', e => {
