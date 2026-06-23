@@ -1839,6 +1839,9 @@ ul { list-style: none; }
 }
 
 /* En touch, dar feedback de "tocado" sin animación cara:
+}
+
+/* En touch, dar feedback de "tocado" sin animación cara:
    solo opacidad, instantáneo, no compite con el scroll */
 @media (hover: none) {
   .level-card:active { opacity: .85; }

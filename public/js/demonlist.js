@@ -112,8 +112,8 @@ function paintCards(levels, animated = true) {
         <div class="legacy-divider-line"></div>
         <div class="legacy-divider-badge">
           <i class="fas fa-history"></i>
-          <span>LEGACY</span>
-          <span class="legacy-divider-sub">Insane Demons — sin puntos</span>
+          <span>LEGACY LIST</span>
+          <span class="legacy-divider-sub">Insane Demons · sin puntos</span>
         </div>
         <div class="legacy-divider-line"></div>
       `;

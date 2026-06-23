@@ -64,7 +64,7 @@ try {
         v.video_url
       FROM levels l
       LEFT JOIN victors v ON v.level_id = l.id
-      ORDER BY l.position ASC, v.id ASC
+      ORDER BY l.legacy ASC, l.position ASC, v.id ASC
     `);
     // Agrupar los victors dentro de cada nivel en JS (mucho más rápido que N+1 queries)
     const levelMap = new Map();
