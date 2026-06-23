@@ -1804,10 +1804,13 @@ ul { list-style: none; }
   border: 1px solid var(--border-s);
   border-left: 3px solid color-mix(in srgb, var(--card-accent, var(--border-s)) 55%, transparent);
   transition: border-color .18s, border-left-color .18s;
-  /* Aísla el layout/paint de cada card del resto de la lista — el navegador
-     no tiene que recalcular las otras 175 cards cuando una sola cambia
-     (hover, animación de fuego en top 1/2/3, etc.) */
+  /* Aísla layout/paint por card */
   contain: layout style paint;
+  /* El navegador salta el render de cards fuera del viewport por completo —
+     mayor ganancia de performance en listas largas. contain-intrinsic-size
+     le dice al navegador qué tamaño "placeholder" usar para el scroll. */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 96px;
 }
 .level-card.top-3 { border-color: rgba(139,92,246,.35); }
 .level-card:focus-visible { outline: 2px solid var(--violet); outline-offset: 2px; }
@@ -1818,20 +1821,21 @@ ul { list-style: none; }
 @media (hover: hover) and (pointer: fine) {
   .level-card {
     transition: transform .18s, box-shadow .18s, border-color .18s, border-left-color .18s;
-    /* Promueve la capa de composición de antemano (en :hover, no en reposo,
-       para no gastar memoria de GPU en las 176 cards a la vez) solo cuando
-       el puntero ya está sobre la zona — el browser no tiene que crear la
-       capa recién al momento del hover, que es lo que causaba el delay. */
   }
   .level-card:hover {
-    will-change: transform, box-shadow;
     transform: translateY(-2px) translateZ(0);
     box-shadow: 0 10px 32px rgba(0,0,0,.6), 0 0 0 1px var(--card-accent, var(--border-h));
     border-color: var(--card-accent, var(--border-h));
     border-left-color: var(--card-accent, var(--border-h));
+    will-change: transform, box-shadow;
   }
   .level-card:active { transform: scale(.99) translateZ(0); }
   .level-card.top-3:hover { box-shadow: 0 12px 40px rgba(139,92,246,.25); }
+  /* Primeras 10 cards siempre en GPU layer — estas son las que más se hovean */
+  .level-card:nth-child(-n+10) {
+    transform: translateZ(0);
+    will-change: transform, box-shadow;
+  }
 }
 
 /* En touch, dar feedback de "tocado" sin animación cara:
@@ -1849,7 +1853,17 @@ ul { list-style: none; }
 }
 
 
-.lc-thumb-fade {
+/* lc-thumb-fade y lc-color-bg ahora son pseudo-elementos de .level-card
+   en vez de nodos del DOM — elimina ~360 elementos del árbol en una lista
+   de 180 niveles, reduciendo el trabajo de layout/paint del navegador */
+.level-card::before {
+  content: '';
+  position: absolute; inset: 0; left: 220px;
+  background: var(--card-body-color, var(--bg4));
+  z-index: 0; pointer-events: none;
+}
+.level-card::after {
+  content: '';
   position: absolute; left: 0; top: 0; bottom: 0; width: 246px;
   background: linear-gradient(to right,
     transparent 0%,
@@ -1857,12 +1871,6 @@ ul { list-style: none; }
     var(--card-body-color, var(--bg4)) 100%
   );
   z-index: 1; pointer-events: none;
-}
-
-.lc-color-bg {
-  position: absolute; inset: 0; left: 220px;
-  background: var(--card-body-color, var(--bg4));
-  z-index: 0;
 }
 
 /* Número de rank — con marco propio (chip oscuro + blur) para que se lea
@@ -2029,8 +2037,8 @@ ul { list-style: none; }
 .levels-container.grid-view .lc-thumb {
   width: 100%; min-width: unset; height: 100%; position: absolute; inset: 0;
 }
-.levels-container.grid-view .lc-thumb-fade { display: none; }
-.levels-container.grid-view .lc-color-bg {
+.levels-container.grid-view .level-card::after { display: none; }
+.levels-container.grid-view .level-card::before {
   left: 0; top: 0;
   background: linear-gradient(
     to bottom,
@@ -2057,8 +2065,8 @@ ul { list-style: none; }
 .levels-container.grid-view .lc-thumb {
   width: 100%; min-width: unset; height: 100%;
 }
-.levels-container.grid-view .lc-thumb-fade { display: none; }
-.levels-container.grid-view .lc-color-bg {
+.levels-container.grid-view .level-card::after { display: none; }
+.levels-container.grid-view .level-card::before {
   left: 0; top: 55%;
   background: linear-gradient(to bottom, transparent 0%, var(--card-body-color, var(--bg4)) 100%);
 }
@@ -3602,16 +3610,13 @@ body {
 .level-card {
   height: 122px;
   padding-left: 270px;
+  contain-intrinsic-size: auto 122px;
 }
 .lc-thumb {
   width: 258px;
 }
-.lc-thumb-fade {
-  width: 310px;
-}
-.lc-color-bg {
-  left: 258px;
-}
+.level-card::after  { width: 310px; }
+.level-card::before { left: 258px; }
 
 /* Grid: también más alta */
 .levels-container.grid-view .level-card {
@@ -3681,8 +3686,8 @@ body {
     padding-left: 142px;
   }
   .lc-thumb, .lc-thumb-ph { width: 162px; }
-  .lc-thumb-fade           { width: 212px; }
-  .lc-color-bg             { left: 162px; }
+  .level-card::after  { width: 212px; }
+  .level-card::before { left: 162px; }
   .lc-rank                 {
     padding: .35rem .7rem; margin: 0 .5rem; font-size: 1.55rem;
   }
@@ -3707,8 +3712,8 @@ body {
 @media (max-width: 420px) {
   .level-card    { height: 90px; padding-left: 122px; }
   .lc-thumb, .lc-thumb-ph { width: 137px; }
-  .lc-thumb-fade { width: 182px; }
-  .lc-color-bg   { left: 137px; }
+  .level-card::after  { width: 182px; }
+  .level-card::before { left: 137px; }
   .lc-rank       { padding: .3rem .55rem; margin: 0 .4rem; font-size: 1.3rem; }
   .lc-name       { font-size: .92rem; max-width: calc(100vw - 175px); }
   .lc-meta-row   { gap: .4rem; }

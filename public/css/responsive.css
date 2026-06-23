@@ -151,8 +151,8 @@
     padding-left: 130px;
   }
   .lc-thumb, .lc-thumb-ph { width: 130px; }
-  .lc-thumb-fade           { width: 170px; }
-  .lc-color-bg             { left: 130px; }
+  .level-card::after  { width: 170px; }
+  .level-card::before { left: 130px; }
   .lc-rank                 { padding: 0 .45rem; font-size: 1.1rem; min-width: 44px; }
   .lc-rank-num             { font-size: .9rem; }
   /* En PC el rank flota sobre la miniatura. En mobile lo separamos
@@ -249,8 +249,8 @@
 
   .level-card  { height: 72px; padding-left: 100px; }
   .lc-thumb, .lc-thumb-ph { width: 100px; }
-  .lc-thumb-fade { width: 140px; }
-  .lc-color-bg   { left: 100px; }
+  .level-card::after  { width: 140px; }
+  .level-card::before { left: 100px; }
   .lc-name       { font-size: .8rem; }
   .lc-rank       { padding: 0 .4rem; font-size: 1rem; }
   .lc-pts-badge  { display: none; }

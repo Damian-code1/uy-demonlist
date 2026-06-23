@@ -322,8 +322,6 @@ function buildCard(level, index) {
       : ``
     }
     <div class="lc-thumb lc-thumb-ph" style="${thumb ? 'display:none' : ''}"></div>
-    <div class="lc-thumb-fade"></div>
-    <div class="lc-color-bg"></div>
 
     ${rankHtml}
 
