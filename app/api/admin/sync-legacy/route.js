@@ -15,44 +15,40 @@ export async function POST(request) {
   if (!admin) return Response.json({ error: 'No autorizado' }, { status: 401 });
 
   try {
-    const [levels] = await query('SELECT id, name, gd_id FROM levels WHERE legacy = 0');
-    const results = { updated: 0, skipped: 0, errors: 0 };
+    const body = await request.json().catch(() => ({}));
 
-    for (const level of levels) {
-      try {
-        const gdId = level.gd_id;
-        const url  = gdId
-          ? `/api/gdbrowser?id=${encodeURIComponent(gdId)}`
-          : `/api/gdbrowser?name=${encodeURIComponent(level.name)}`;
+    // ── Modo single: checkear + marcar un nivel específico ──
+    // El cliente llama esto por cada nivel individualmente para
+    // evitar el timeout serverless que ocurría con el loop completo.
+    if (body.levelId) {
+      const [[level]] = await query('SELECT id, name, gd_id FROM levels WHERE id = ?', [body.levelId]);
+      if (!level) return Response.json({ error: 'Nivel no encontrado' }, { status: 404 });
 
-        // Llamar al propio API (server-side self-call)
-        const origin = request.headers.get('origin') || 'https://uy-demonlist.vercel.app';
-        const res  = await fetch(`${origin}${url}`, {
-          headers: { 'User-Agent': 'UY-Demonlist-Internal/2.0' }
-        });
-        if (!res.ok) { results.skipped++; continue; }
+      const url = level.gd_id
+        ? `https://gdbrowser.com/api/level/${encodeURIComponent(level.gd_id)}`
+        : `https://gdbrowser.com/api/search/${encodeURIComponent(level.name)}`;
 
-        const gd = await res.json();
-        if (!gd?.found || !gd.difficulty) { results.skipped++; continue; }
+      const res = await fetch(url, { headers: { 'User-Agent': 'UY-Demonlist/2.0' } });
+      if (!res.ok) return Response.json({ checked: true, marked: false, skipped: true });
 
-        if (NON_EXTREME_DEMON_DIFFICULTIES.includes(gd.difficulty)) {
-          await query('UPDATE levels SET legacy = 1, updated_at = NOW() WHERE id = ?', [level.id]);
-          results.updated++;
-          console.log(`[sync-legacy] Marcado legacy: ${level.name} (${gd.difficulty})`);
-        } else {
-          results.skipped++;
-        }
+      const raw = await res.json();
+      const lvl = level.gd_id ? raw : (Array.isArray(raw) ? raw.find(r => r.name?.toLowerCase() === level.name.toLowerCase()) || raw[0] : null);
+      if (!lvl || lvl.error) return Response.json({ checked: true, marked: false, skipped: true });
 
-        // Rate limit gentil: esperar 300ms entre requests a GDBrowser
-        await new Promise(r => setTimeout(r, 300));
-      } catch (e) {
-        console.warn(`[sync-legacy] Error en ${level.name}:`, e.message);
-        results.errors++;
+      const isLegacy = NON_EXTREME_DEMON_DIFFICULTIES.includes(lvl.difficulty);
+      if (isLegacy) {
+        await query('UPDATE levels SET legacy = 1, updated_at = NOW() WHERE id = ?', [level.id]);
+        invalidateLevelsCache();
       }
+
+      return Response.json({ checked: true, marked: isLegacy, skipped: !isLegacy, name: level.name, difficulty: lvl.difficulty });
     }
 
-    invalidateLevelsCache();
-    return Response.json({ success: true, ...results });
+    // ── Modo list: solo devuelve la lista de niveles a chequear ──
+    // (no hace el loop, eso lo hace el cliente)
+    const [levels] = await query('SELECT id, name, gd_id FROM levels WHERE legacy = 0 ORDER BY position ASC');
+    return Response.json({ success: true, levels });
+
   } catch (e) {
     return Response.json({ error: e.message }, { status: 500 });
   }

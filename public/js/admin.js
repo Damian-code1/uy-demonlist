@@ -89,8 +89,8 @@ function renderAdminLevels(levels) {
       <button class="btn-admin-add" onclick="openAdminLevelModal(null,'',null,'','',0,0)">
         <i class="fas fa-plus"></i> Agregar nivel
       </button>
-      <button class="admin-btn" id="syncLegacyBtn" onclick="syncLegacyFromGD()" title="Detecta automáticamente niveles que ya no son Extreme Demon y los marca como Legacy">
-        <i class="fas fa-sync-alt"></i> Auto-detectar Legacy
+      <button class="btn-admin-add" id="syncLegacyBtn" onclick="syncLegacyFromGD()" style="background:linear-gradient(135deg,rgba(100,116,139,.25),rgba(71,85,105,.2));border-color:rgba(148,163,184,.3);color:#94a3b8;" title="Detecta automáticamente niveles que ya no son Extreme Demon y los marca como Legacy">
+        <i class="fas fa-history"></i> Auto-detectar Legacy
       </button>
     </div>
     <div class="admin-table-wrap">
@@ -1546,27 +1546,125 @@ window.syncPositionsWithAredl  = syncPositionsWithAredl;
 
 async function syncLegacyFromGD() {
   const btn = document.getElementById('syncLegacyBtn');
-  if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Detectando…'; }
+  const discordId = localStorage.getItem('uy_discord_id') || '';
+  const headers = { 'Content-Type': 'application/json', 'x-discord-id': discordId };
+
+  // Paso 1: obtener lista de niveles a chequear
+  if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Cargando lista…'; }
+  let levels = [];
   try {
-    const discordId = localStorage.getItem('uy_discord_id') || '';
-    const r = await fetch('/api/admin/sync-legacy', {
-      method: 'POST',
-      headers: { 'x-discord-id': discordId }
-    });
+    const r = await fetch('/api/admin/sync-legacy', { method: 'POST', headers, body: JSON.stringify({}) });
     const data = await r.json();
-    if (data.success) {
-      showToast(`Legacy sync: ${data.updated} marcados, ${data.skipped} sin cambios${data.errors ? `, ${data.errors} errores` : ''}`, 'success');
+    if (!data.success) { showToast(data.error || 'Error al obtener niveles', 'error'); if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-sync-alt"></i> Auto-detectar Legacy'; } return; }
+    levels = data.levels || [];
+  } catch (e) {
+    showToast('Error de red', 'error');
+    if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-sync-alt"></i> Auto-detectar Legacy'; }
+    return;
+  }
+
+  if (!levels.length) { showToast('No hay niveles para chequear', 'info'); if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-sync-alt"></i> Auto-detectar Legacy'; } return; }
+
+  // Paso 2: mostrar modal de progreso
+  let progressModal = document.getElementById('legacySyncModal');
+  if (!progressModal) {
+    progressModal = document.createElement('div');
+    progressModal.id = 'legacySyncModal';
+    progressModal.style.cssText = 'position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.75);backdrop-filter:blur(8px)';
+    progressModal.innerHTML = `
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:18px;padding:2rem;width:min(460px,90vw);box-shadow:0 32px 80px rgba(0,0,0,.6)">
+        <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem">
+          <i class="fas fa-sync-alt" id="lsm-icon" style="color:var(--violet);font-size:1.1rem"></i>
+          <span style="font-family:var(--font-title);font-size:1.1rem;letter-spacing:1.5px;color:var(--text)">AUTO-DETECTAR LEGACY</span>
+        </div>
+        <div style="font-size:.8rem;color:var(--text-sub);margin-bottom:.9rem" id="lsm-status">Iniciando…</div>
+        <div style="background:var(--bg4);border-radius:50px;height:8px;overflow:hidden;margin-bottom:1rem">
+          <div id="lsm-bar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--violet),var(--red));border-radius:50px;transition:width .3s ease"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:.72rem;color:var(--text-dim);margin-bottom:1.25rem">
+          <span id="lsm-count">0 / ${levels.length}</span>
+          <span id="lsm-marked" style="color:var(--violet)">0 marcados legacy</span>
+        </div>
+        <div id="lsm-log" style="max-height:140px;overflow-y:auto;background:var(--bg3);border-radius:var(--r-sm);padding:.6rem .75rem;font-size:.7rem;font-family:monospace;color:var(--text-sub);display:flex;flex-direction:column;gap:.2rem"></div>
+        <button id="lsm-cancel" style="margin-top:1rem;width:100%;padding:.55rem;background:rgba(244,63,94,.1);border:1px solid rgba(244,63,94,.3);border-radius:var(--r-sm);color:var(--red);font-size:.78rem;font-weight:700;cursor:pointer">
+          Cancelar
+        </button>
+      </div>`;
+    document.body.appendChild(progressModal);
+  }
+  progressModal.style.display = 'flex';
+  const bar      = document.getElementById('lsm-bar');
+  const status   = document.getElementById('lsm-status');
+  const count    = document.getElementById('lsm-count');
+  const marked   = document.getElementById('lsm-marked');
+  const log      = document.getElementById('lsm-log');
+  const cancelBtn = document.getElementById('lsm-cancel');
+  log.innerHTML  = '';
+  let cancelled  = false;
+  cancelBtn.onclick = () => { cancelled = true; };
+
+  // Paso 3: chequear nivel por nivel
+  const results = { updated: 0, skipped: 0, errors: 0 };
+  for (let i = 0; i < levels.length; i++) {
+    if (cancelled) { status.textContent = 'Cancelado.'; break; }
+    const level = levels[i];
+    status.textContent = `Chequeando: ${level.name}…`;
+    count.textContent  = `${i + 1} / ${levels.length}`;
+    bar.style.width    = `${Math.round(((i + 1) / levels.length) * 100)}%`;
+
+    try {
+      const r = await fetch('/api/admin/sync-legacy', {
+        method: 'POST', headers,
+        body: JSON.stringify({ levelId: level.id })
+      });
+      const d = await r.json();
+      if (d.marked) {
+        results.updated++;
+        marked.textContent = `${results.updated} marcados legacy`;
+        const entry = document.createElement('div');
+        entry.style.cssText = 'color:#a78bfa';
+        entry.textContent = `✓ ${level.name} → Legacy (${d.difficulty})`;
+        log.appendChild(entry);
+        log.scrollTop = log.scrollHeight;
+      } else if (d.skipped) {
+        results.skipped++;
+      } else if (d.error) {
+        results.errors++;
+      }
+    } catch (e) {
+      results.errors++;
+    }
+
+    // 250ms entre requests para no martillar GDBrowser
+    await new Promise(r => setTimeout(r, 250));
+  }
+
+  // Paso 4: finalizar
+  bar.style.width = '100%';
+  const iconEl = document.getElementById('lsm-icon');
+  if (iconEl) iconEl.className = 'fas fa-check-circle';
+  status.textContent = cancelled ? 'Cancelado por el usuario.' : '¡Completado!';
+  cancelBtn.textContent = 'Cerrar';
+  cancelBtn.style.cssText = 'margin-top:1rem;width:100%;padding:.55rem;background:rgba(139,92,246,.12);border:1px solid rgba(139,92,246,.3);border-radius:var(--r-sm);color:var(--violet);font-size:.78rem;font-weight:700;cursor:pointer';
+  cancelBtn.onclick = () => {
+    progressModal.style.display = 'none';
+    if (results.updated > 0) {
       invalidateAdminLevelsCache();
       loadAdminLevels();
       refreshPublicData();
-    } else {
-      showToast(data.error || 'Error en sync', 'error');
     }
-  } catch (e) {
-    showToast('Error de red', 'error');
-  } finally {
-    if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-sync-alt"></i> Auto-detectar Legacy'; }
+  };
+
+  if (!cancelled) {
+    showToast(`✓ ${results.updated} marcados legacy · ${results.skipped} sin cambios${results.errors ? ` · ${results.errors} errores` : ''}`, results.updated > 0 ? 'success' : 'info');
+    if (results.updated > 0) {
+      invalidateAdminLevelsCache();
+      loadAdminLevels();
+      refreshPublicData();
+    }
   }
+
+  if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-sync-alt"></i> Auto-detectar Legacy'; }
 }
 window.syncLegacyFromGD = syncLegacyFromGD;
 
