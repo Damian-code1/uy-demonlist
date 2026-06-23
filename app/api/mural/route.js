@@ -17,8 +17,12 @@ export async function GET() {
       FROM mural_posts p
       JOIN users u ON u.id = p.user_id
       LEFT JOIN (
-        SELECT player_name, RANK() OVER (ORDER BY total_points DESC) AS player_rank
-        FROM players
+        SELECT
+          v.player_name,
+          RANK() OVER (ORDER BY SUM(COALESCE(l.points, 1)) DESC) AS player_rank
+        FROM victors v
+        JOIN levels l ON l.id = v.level_id
+        GROUP BY v.player_name
       ) pp ON pp.player_name = u.linked_player_name
       WHERE p.parent_id IS NULL
       ORDER BY p.created_at DESC
