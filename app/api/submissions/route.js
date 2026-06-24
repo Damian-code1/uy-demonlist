@@ -158,3 +158,30 @@ export async function POST(request) {
     return Response.json({ error: error.message }, { status: 500 });
   }
 }
+
+// DELETE /api/submissions?id=X — el usuario elimina su propia submission del historial
+// Solo funciona si la submission le pertenece. No toca ningún dato de la lista.
+export async function DELETE(request) {
+  const user = await requireAuth(request);
+  if (!user) return Response.json({ error: 'No autenticado' }, { status: 401 });
+
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = parseInt(searchParams.get('id'));
+    if (!id) return Response.json({ error: 'ID requerido' }, { status: 400 });
+
+    // Solo puede eliminar sus propias submissions
+    const [[sub]] = await query(
+      'SELECT id, submitted_by FROM submissions WHERE id = ? LIMIT 1',
+      [id]
+    );
+    if (!sub) return Response.json({ error: 'No encontrada' }, { status: 404 });
+    if (sub.submitted_by !== user.discord_id)
+      return Response.json({ error: 'No autorizado' }, { status: 403 });
+
+    await query('DELETE FROM submissions WHERE id = ?', [id]);
+    return Response.json({ success: true });
+  } catch (e) {
+    return Response.json({ error: e.message }, { status: 500 });
+  }
+}

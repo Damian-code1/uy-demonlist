@@ -91,6 +91,9 @@ function renderMural() {
   wrap.querySelectorAll('.mural-delete-btn').forEach(btn => {
     btn.addEventListener('click', () => deletePost(btn.dataset.id));
   });
+  wrap.querySelectorAll('.mural-react-btn').forEach(btn => {
+    btn.addEventListener('click', () => toggleMuralReaction(btn.dataset.postId, btn.dataset.reaction));
+  });
   wrap.querySelectorAll('.mural-reply-submit').forEach(btn => {
     btn.addEventListener('click', () => submitReply(btn.dataset.id));
   });
@@ -169,6 +172,9 @@ function buildPostHTML(post, isReply = false) {
         </div>
       </div>
       <div class="mural-content">${escMural(post.content)}</div>
+      <div class="mural-reactions" data-post-id="${post.id}">
+        ${buildReactionBar(post, user)}
+      </div>
       ${!isReply && user && !user.isBanned
         ? `<button class="mural-reply-btn" data-id="${post.id}"><i class="fas fa-reply"></i> Responder</button>`
         : ''
@@ -176,6 +182,46 @@ function buildPostHTML(post, isReply = false) {
       ${repliesSection}
     </div>
   `;
+}
+
+function buildReactionBar(post, user) {
+  const myId       = user?.id;
+  const iLiked     = myId && post.liked_by?.includes(myId);
+  const iDisliked  = myId && post.disliked_by?.includes(myId);
+  const likeUsers  = (post.liked_by  || []).length;
+  const dislikeUsers = (post.disliked_by || []).length;
+
+  const likeTitle    = post.liked_by?.length
+    ? post.liked_by.slice(0,8).join(', ') + (post.liked_by.length > 8 ? ` y ${post.liked_by.length - 8} más` : '')
+    : 'Nadie aún';
+  const dislikeTitle = post.disliked_by?.length
+    ? post.disliked_by.slice(0,8).join(', ') + (post.disliked_by.length > 8 ? ` y ${post.disliked_by.length - 8} más` : '')
+    : 'Nadie aún';
+
+  if (!user) {
+    // No logueado: solo muestra conteos sin botones
+    return `
+      <span class="mural-reaction-count" title="${likeTitle}">
+        <i class="fas fa-thumbs-up"></i> ${post.likes || 0}
+      </span>
+      <span class="mural-reaction-count mural-dislike-count" title="${dislikeTitle}">
+        <i class="fas fa-thumbs-down"></i> ${post.dislikes || 0}
+      </span>`;
+  }
+
+  return `
+    <button class="mural-react-btn mural-like-btn${iLiked ? ' active' : ''}"
+            data-post-id="${post.id}" data-reaction="like"
+            title="Le gustó a: ${likeTitle}">
+      <i class="fas fa-thumbs-up"></i>
+      <span class="mural-react-count">${post.likes || 0}</span>
+    </button>
+    <button class="mural-react-btn mural-dislike-btn${iDisliked ? ' active' : ''}"
+            data-post-id="${post.id}" data-reaction="dislike"
+            title="No le gustó a: ${dislikeTitle}">
+      <i class="fas fa-thumbs-down"></i>
+      <span class="mural-react-count">${post.dislikes || 0}</span>
+    </button>`;
 }
 
 function toggleReplyBox(postId) {
@@ -400,6 +446,42 @@ function updateMuralFormVisibility() {
 
 window.loadMural                 = loadMural;
 window.updateMuralFormVisibility = updateMuralFormVisibility;
+async function toggleMuralReaction(postId, reaction) {
+  const user = window.currentUser;
+  if (!user) { if (typeof showToast === 'function') showToast('Iniciá sesión para reaccionar', 'info'); return; }
+
+  const discordId = localStorage.getItem('uy_discord_id') || '';
+  try {
+    const res = await fetch('/api/mural', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'x-discord-id': discordId },
+      body: JSON.stringify({ post_id: Number(postId), reaction })
+    });
+    if (!res.ok) return;
+    const data = await res.json();
+
+    // Actualizar en cache sin re-renderizar todo
+    const post = muralPosts.find(p => p.id === Number(postId));
+    if (post) {
+      post.likes       = data.likes       ?? post.likes;
+      post.dislikes    = data.dislikes    ?? post.dislikes;
+      post.liked_by    = data.liked_by    ?? post.liked_by;
+      post.disliked_by = data.disliked_by ?? post.disliked_by;
+    }
+
+    // Actualizar solo el bar de reacciones de ese post, sin re-renderizar toda la lista
+    const bar = document.querySelector(`.mural-reactions[data-post-id="${postId}"]`);
+    if (bar) bar.innerHTML = buildReactionBar(post || { id: Number(postId), likes: data.likes, dislikes: data.dislikes, liked_by: data.liked_by, disliked_by: data.disliked_by }, user);
+
+    // Re-enganchar eventos del bar actualizado
+    bar?.querySelectorAll('.mural-react-btn').forEach(btn => {
+      btn.addEventListener('click', () => toggleMuralReaction(btn.dataset.postId, btn.dataset.reaction));
+    });
+  } catch (e) {
+    if (typeof showToast === 'function') showToast('Error al reaccionar', 'error');
+  }
+}
+
 window.renderMural               = renderMural;
 
 document.addEventListener('DOMContentLoaded', () => {

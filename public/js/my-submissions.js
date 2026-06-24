@@ -100,7 +100,9 @@
             <span class="my-sub-item-date">${dateStr}</span>
             ${noteStr ? `<span class="my-sub-item-note">${noteStr}</span>` : ''}
           </div>
-          <i class="fas fa-chevron-right" style="opacity:.4;font-size:.75rem"></i>
+          <button class="my-sub-delete-btn" data-id="${sub.id}" title="Quitar del historial" style="flex-shrink:0;background:none;border:none;cursor:pointer;padding:.3rem .4rem;border-radius:6px;color:rgba(255,255,255,.25);font-size:.78rem;transition:color .15s,background .15s;" onclick="event.stopPropagation()">
+            <i class="fas fa-times"></i>
+          </button>
         </div>`;
     }).join('');
 
@@ -109,6 +111,53 @@
         const id  = Number(item.dataset.id);
         const sub = mySubsCache.find(s => s.id === id);
         if (sub) openMySubDetailModal(sub);
+      });
+    });
+
+    // Botón eliminar — solo lo quita del historial visual del usuario
+    list.querySelectorAll('.my-sub-delete-btn').forEach(btn => {
+      btn.addEventListener('mouseenter', () => {
+        btn.style.color = 'var(--red)';
+        btn.style.background = 'rgba(244,63,94,.1)';
+      });
+      btn.addEventListener('mouseleave', () => {
+        btn.style.color = 'rgba(255,255,255,.25)';
+        btn.style.background = 'none';
+      });
+      btn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const id = Number(btn.dataset.id);
+        if (!id) return;
+
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        btn.disabled = true;
+
+        try {
+          const discordId = localStorage.getItem('uy_discord_id') || '';
+          const res = await fetch(`/api/submissions?id=${id}`, {
+            method: 'DELETE',
+            headers: { 'x-discord-id': discordId }
+          });
+          if (res.ok) {
+            // Animación de salida antes de quitar
+            const item = btn.closest('.my-sub-item');
+            if (item) {
+              item.style.transition = 'opacity .2s, transform .2s';
+              item.style.opacity = '0';
+              item.style.transform = 'translateX(10px)';
+              setTimeout(() => {
+                mySubsCache = mySubsCache.filter(s => s.id !== id);
+                renderMySubsList();
+              }, 200);
+            }
+          } else {
+            btn.innerHTML = '<i class="fas fa-times"></i>';
+            btn.disabled = false;
+          }
+        } catch {
+          btn.innerHTML = '<i class="fas fa-times"></i>';
+          btn.disabled = false;
+        }
       });
     });
   }

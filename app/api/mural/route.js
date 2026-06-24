@@ -14,14 +14,30 @@ export async function GET() {
         u.gd_username,
         u.discord_avatar,
         u.role,
-        (SELECT COUNT(*) FROM mural_posts r WHERE r.parent_id = p.id) AS reply_count
+        (SELECT COUNT(*) FROM mural_posts r WHERE r.parent_id = p.id) AS reply_count,
+        (SELECT COUNT(*) FROM mural_reactions mr WHERE mr.post_id = p.id AND mr.reaction = 'like') AS likes,
+        (SELECT COUNT(*) FROM mural_reactions mr WHERE mr.post_id = p.id AND mr.reaction = 'dislike') AS dislikes,
+        (SELECT GROUP_CONCAT(u2.discord_id ORDER BY mr2.created_at SEPARATOR ',')
+         FROM mural_reactions mr2 JOIN users u2 ON u2.id = mr2.user_id
+         WHERE mr2.post_id = p.id AND mr2.reaction = 'like') AS liked_by,
+        (SELECT GROUP_CONCAT(u3.discord_id ORDER BY mr3.created_at SEPARATOR ',')
+         FROM mural_reactions mr3 JOIN users u3 ON u3.id = mr3.user_id
+         WHERE mr3.post_id = p.id AND mr3.reaction = 'dislike') AS disliked_by
       FROM mural_posts p
       JOIN users u ON u.id = p.user_id
       WHERE p.parent_id IS NULL
       ORDER BY p.created_at DESC
       LIMIT 200
     `);
-    return Response.json({ posts: rows });
+
+    const posts = rows.map(p => ({
+      ...p,
+      liked_by:    p.liked_by    ? p.liked_by.split(',')    : [],
+      disliked_by: p.disliked_by ? p.disliked_by.split(',') : [],
+    }));
+
+    return Response.json({ posts });
+    // return Response.json({ posts: rows });
   } catch (e) {
     return Response.json({ posts: [], error: e.message }, { status: 500 });
   }
@@ -58,4 +74,67 @@ export async function POST(request) {
     [dbUserFull.id, content.trim(), parent_id || null]
   );
   return Response.json({ success: true }, { status: 201 });
+}
+
+// PUT /api/mural — toggle like/dislike en un post
+export async function PUT(request) {
+  const user = await requireAuth(request);
+  if (!user) return Response.json({ error: 'No autenticado' }, { status: 401 });
+
+  try {
+    const { post_id, reaction } = await request.json();
+    if (!post_id || !['like','dislike'].includes(reaction))
+      return Response.json({ error: 'Parámetros inválidos' }, { status: 400 });
+
+    const [[dbUser]] = await query('SELECT id FROM users WHERE discord_id = ? LIMIT 1', [user.discord_id]);
+    if (!dbUser) return Response.json({ error: 'Usuario no encontrado' }, { status: 404 });
+
+    // Verificar reacción actual
+    const [[existing]] = await query(
+      'SELECT id, reaction FROM mural_reactions WHERE post_id = ? AND user_id = ? LIMIT 1',
+      [post_id, dbUser.id]
+    );
+
+    if (existing) {
+      if (existing.reaction === reaction) {
+        // Mismo botón → quitar reacción (toggle off)
+        await query('DELETE FROM mural_reactions WHERE id = ?', [existing.id]);
+      } else {
+        // Cambiar de like a dislike o viceversa
+        await query('UPDATE mural_reactions SET reaction = ? WHERE id = ?', [reaction, existing.id]);
+      }
+    } else {
+      await query(
+        'INSERT INTO mural_reactions (post_id, user_id, reaction) VALUES (?, ?, ?)',
+        [post_id, dbUser.id, reaction]
+      );
+    }
+
+    // Devolver conteos actualizados
+    const [[counts]] = await query(
+      `SELECT
+        (SELECT COUNT(*) FROM mural_reactions WHERE post_id = ? AND reaction = 'like') AS likes,
+        (SELECT COUNT(*) FROM mural_reactions WHERE post_id = ? AND reaction = 'dislike') AS dislikes,
+        (SELECT GROUP_CONCAT(u.discord_id SEPARATOR ',') FROM mural_reactions mr JOIN users u ON u.id = mr.user_id WHERE mr.post_id = ? AND mr.reaction = 'like') AS liked_by,
+        (SELECT GROUP_CONCAT(u.discord_id SEPARATOR ',') FROM mural_reactions mr JOIN users u ON u.id = mr.user_id WHERE mr.post_id = ? AND mr.reaction = 'dislike') AS disliked_by`,
+      [post_id, post_id, post_id, post_id]
+    );
+
+    return Response.json({
+      likes:       counts.likes || 0,
+      dislikes:    counts.dislikes || 0,
+      liked_by:    counts.liked_by    ? counts.liked_by.split(',')    : [],
+      disliked_by: counts.disliked_by ? counts.disliked_by.split(',') : [],
+    });
+  } catch (e) {
+    return Response.json({ error: e.message }, { status: 500 });
+  }
+}
+
+export async function OPTIONS() {
+  return new Response(null, { status: 204, headers: {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type,x-discord-id',
+  }});
 }

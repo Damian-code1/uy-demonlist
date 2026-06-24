@@ -568,6 +568,30 @@ function renderModalContent(level, opts = {}) {
           <i class="fas fa-paper-plane"></i> Enviar mi Completion
         </button>
       </div>
+
+      <!-- ─── Comentarios del nivel ─── -->
+      <div class="lm-comments-section" id="lmCommentsSection" data-level-id="${level.id}">
+        <div class="lm-section-title" style="margin-top:1.25rem">
+          <i class="fas fa-comments"></i> COMENTARIOS
+        </div>
+        <div id="lmCommentsList" class="lm-comments-list">
+          <div class="lm-comments-loading"><i class="fas fa-spinner fa-spin"></i></div>
+        </div>
+        <div class="lm-comment-form" id="lmCommentForm">
+          <div class="lm-comment-input-wrap">
+            <textarea id="lmCommentInput" class="lm-comment-input" placeholder="Escribí tu comentario sobre este nivel… (máx. 500 caracteres)" maxlength="500" rows="2"></textarea>
+            <div class="lm-comment-form-footer">
+              <span class="lm-comment-char-count" id="lmCommentCount">0/500</span>
+              <button class="lm-comment-submit" id="lmCommentSubmit">
+                <i class="fas fa-paper-plane"></i> Comentar
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="lm-comment-login-prompt" id="lmCommentLoginPrompt" style="display:none">
+          <i class="fas fa-lock"></i> Iniciá sesión para comentar
+        </div>
+      </div>
     </div>`;
 
   if (existingPlayerWrap) {
@@ -575,6 +599,9 @@ function renderModalContent(level, opts = {}) {
   } else {
     renderLmPlayer(videoId, videoUrl);
   }
+
+  // Cargar comentarios del nivel
+  setTimeout(() => initLevelComments(level.id), 50);
 
   // Repintar stats de GDBrowser desde caché — el innerHTML de arriba acaba de
   // recrear #lmGdStats vacío; sin esto, cambiar de victor o refrescar la lista
@@ -1361,6 +1388,162 @@ function extractYTId(url) {
 function esc(s) {
   if (!s) return '';
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ─── COMENTARIOS DEL MODAL DE NIVEL ───
+async function initLevelComments(levelId) {
+  const user = window.currentUser;
+  const form  = document.getElementById('lmCommentForm');
+  const prompt = document.getElementById('lmCommentLoginPrompt');
+  if (form)   form.style.display   = user ? '' : 'none';
+  if (prompt) prompt.style.display = user ? 'none' : '';
+
+  // Contador de caracteres
+  const input = document.getElementById('lmCommentInput');
+  const counter = document.getElementById('lmCommentCount');
+  if (input && counter) {
+    input.addEventListener('input', () => {
+      counter.textContent = `${input.value.length}/500`;
+    });
+  }
+
+  // Submit
+  const submitBtn = document.getElementById('lmCommentSubmit');
+  if (submitBtn) {
+    submitBtn.addEventListener('click', async () => {
+      if (!input?.value.trim()) return;
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+      await postLevelComment(levelId, input.value.trim());
+      input.value = '';
+      if (counter) counter.textContent = '0/500';
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Comentar';
+    });
+  }
+
+  await loadLevelComments(levelId);
+}
+
+async function loadLevelComments(levelId) {
+  const list = document.getElementById('lmCommentsList');
+  if (!list) return;
+  list.innerHTML = '<div class="lm-comments-loading"><i class="fas fa-spinner fa-spin"></i></div>';
+
+  try {
+    const res = await fetch(`/api/level-comments?level_id=${levelId}`);
+    const { comments = [] } = await res.json();
+    renderLevelComments(comments, levelId);
+  } catch {
+    list.innerHTML = '<div class="lm-comments-empty">Error al cargar comentarios.</div>';
+  }
+}
+
+function renderLevelComments(comments, levelId) {
+  const list = document.getElementById('lmCommentsList');
+  if (!list) return;
+  const user = window.currentUser;
+
+  if (!comments.length) {
+    list.innerHTML = '<div class="lm-comments-empty"><i class="far fa-comment-dots"></i> Nadie comentó este nivel todavía.</div>';
+    return;
+  }
+
+  list.innerHTML = comments.map(c => {
+    const isOwn = user && user.id === c.discord_id;
+    const isAdmin = user && ['admin','manager','owner'].includes(user.role);
+    const canDelete = isOwn || isAdmin;
+    const iLiked    = user && c.liked_by?.includes(user.id);
+    const iDisliked = user && c.disliked_by?.includes(user.id);
+    const avatarUrl = c.discord_id && c.discord_avatar
+      ? `https://cdn.discordapp.com/avatars/${c.discord_id}/${c.discord_avatar}.png?size=64`
+      : null;
+    const ts = new Date(c.created_at).getTime();
+    const rel = (() => {
+      const d = Date.now() - ts, m = 60000;
+      if (d < m)        return 'ahora';
+      if (d < 60*m)     return `hace ${Math.floor(d/m)}m`;
+      if (d < 1440*m)   return `hace ${Math.floor(d/3600000)}h`;
+      return `hace ${Math.floor(d/86400000)}d`;
+    })();
+
+    return `
+      <div class="lm-comment" data-id="${c.id}">
+        <div class="lm-comment-header">
+          <div class="lm-comment-author">
+            ${avatarUrl
+              ? `<img class="lm-comment-avatar" src="${avatarUrl}" alt="" onerror="this.style.display='none'">`
+              : `<div class="lm-comment-avatar lm-comment-avatar-ph">${(c.display_name||'?')[0].toUpperCase()}</div>`
+            }
+            <div>
+              <span class="lm-comment-name">${c.display_name || c.discord_username || 'Usuario'}</span>
+              <span class="lm-comment-time">${rel}</span>
+            </div>
+          </div>
+          ${canDelete ? `<button class="lm-comment-delete" data-id="${c.id}" title="Eliminar"><i class="fas fa-trash-alt"></i></button>` : ''}
+        </div>
+        <div class="lm-comment-body">${c.content.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+        <div class="lm-comment-reactions">
+          ${user ? `
+            <button class="lm-comment-react-btn${iLiked ? ' active-like' : ''}" data-id="${c.id}" data-reaction="like">
+              <i class="fas fa-thumbs-up"></i> <span>${c.likes || 0}</span>
+            </button>
+            <button class="lm-comment-react-btn${iDisliked ? ' active-dislike' : ''}" data-id="${c.id}" data-reaction="dislike">
+              <i class="fas fa-thumbs-down"></i> <span>${c.dislikes || 0}</span>
+            </button>` : `
+            <span class="lm-comment-react-static"><i class="fas fa-thumbs-up"></i> ${c.likes||0}</span>
+            <span class="lm-comment-react-static"><i class="fas fa-thumbs-down"></i> ${c.dislikes||0}</span>`
+          }
+        </div>
+      </div>`;
+  }).join('');
+
+  // Eventos
+  list.querySelectorAll('.lm-comment-delete').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const id = Number(btn.dataset.id);
+      btn.disabled = true;
+      const discordId = localStorage.getItem('uy_discord_id') || '';
+      try {
+        const res = await fetch(`/api/level-comments?id=${id}`, {
+          method: 'DELETE', headers: { 'x-discord-id': discordId }
+        });
+        if (res.ok) await loadLevelComments(levelId);
+      } catch { btn.disabled = false; }
+    });
+  });
+
+  list.querySelectorAll('.lm-comment-react-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const discordId = localStorage.getItem('uy_discord_id') || '';
+      try {
+        const res = await fetch('/api/level-comments', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'x-discord-id': discordId },
+          body: JSON.stringify({ comment_id: Number(btn.dataset.id), reaction: btn.dataset.reaction })
+        });
+        if (res.ok) await loadLevelComments(levelId);
+      } catch {}
+    });
+  });
+}
+
+async function postLevelComment(levelId, content) {
+  const discordId = localStorage.getItem('uy_discord_id') || '';
+  try {
+    const res = await fetch('/api/level-comments', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-discord-id': discordId },
+      body: JSON.stringify({ level_id: levelId, content })
+    });
+    if (res.ok) await loadLevelComments(levelId);
+    else {
+      const err = await res.json().catch(() => ({}));
+      if (typeof showToast === 'function') showToast(err.error || 'Error al comentar', 'error');
+    }
+  } catch {
+    if (typeof showToast === 'function') showToast('Error de red', 'error');
+  }
 }
 
 window.openLevelModal        = openLevelModal;
