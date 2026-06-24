@@ -14,8 +14,8 @@ export async function GET() {
         u.gd_username,
         u.discord_avatar,
         u.role,
-        (SELECT COUNT(*) FROM mural_posts r WHERE r.parent_id = p.id) AS reply_count,
-        FROM mural_posts p
+        (SELECT COUNT(*) FROM mural_posts r WHERE r.parent_id = p.id) AS reply_count
+      FROM mural_posts p
       JOIN users u ON u.id = p.user_id
       WHERE p.parent_id IS NULL
       ORDER BY p.created_at DESC
