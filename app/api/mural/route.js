@@ -25,7 +25,9 @@ export async function GET() {
         FROM victors v
         JOIN levels l ON l.id = v.level_id
         GROUP BY v.player_name
-      ) pp ON pp.player_name = u.linked_player_name
+      ) pp ON LOWER(pp.player_name) = LOWER(
+        COALESCE(u.linked_player_name, u.gd_username)
+      )
       WHERE p.parent_id IS NULL
       ORDER BY p.created_at DESC
       LIMIT 200
