@@ -110,12 +110,7 @@ function buildPostHTML(post, isReply = false) {
     : '';
   const initials = (post.display_name || post.discord_username || '?')[0].toUpperCase();
 
-  // Badge de rango en la lista (#33, etc.)
-  const rankBadge = post.player_rank
-    ? `<span class="mural-rank-badge" title="Ranking en la lista UY">
-         <i class="fas fa-list-ol"></i>#${post.player_rank}
-       </span>`
-    : '';
+  const rankBadge = '';
 
   // Badge de rol del staff (solo para roles relevantes)
   const roleMeta = getMuralRoleMeta(post.role);
