@@ -1,10 +1,12 @@
 import { query } from '../../../lib/db.js';
 import { requireAuth } from '../../../lib/auth.js';
+import { ensureSchema } from '../../../lib/schema.js';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
+    await ensureSchema();
     const [rows] = await query(`
       SELECT
         p.id, p.content, p.created_at, p.parent_id,
