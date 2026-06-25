@@ -188,41 +188,106 @@ function buildReactionBar(post, user) {
   const myId       = user?.id;
   const iLiked     = myId && post.liked_by?.includes(myId);
   const iDisliked  = myId && post.disliked_by?.includes(myId);
-  const likeUsers  = (post.liked_by  || []).length;
-  const dislikeUsers = (post.disliked_by || []).length;
 
-  const likeTitle    = post.liked_by?.length
-    ? post.liked_by.slice(0,8).join(', ') + (post.liked_by.length > 8 ? ` y ${post.liked_by.length - 8} más` : '')
-    : 'Nadie aún';
-  const dislikeTitle = post.disliked_by?.length
-    ? post.disliked_by.slice(0,8).join(', ') + (post.disliked_by.length > 8 ? ` y ${post.disliked_by.length - 8} más` : '')
-    : 'Nadie aún';
+  // Dropdowns de usuarios con avatar Discord — se recuperan de liked_by_users / disliked_by_users
+  // (arrays de objetos {id, name, avatar} que vienen del backend) o fallback a nombres simples.
+  const likedUsers    = post.liked_by_users    || (post.liked_by    || []).map(n => ({ name: n }));
+  const dislikedUsers = post.disliked_by_users || (post.disliked_by || []).map(n => ({ name: n }));
+
+  function buildUserDropdown(users, type) {
+    if (!users.length) return `<div class="mural-voters-empty">Nadie aún</div>`;
+    return users.map(u => {
+      const av = u.discord_id && u.discord_avatar
+        ? `<img src="https://cdn.discordapp.com/avatars/${u.discord_id}/${u.discord_avatar}.png?size=32" alt="" class="mural-voter-avatar" onerror="this.style.display='none'">`
+        : `<span class="mural-voter-avatar mural-voter-avatar-ph">${(u.name||'?')[0].toUpperCase()}</span>`;
+      return `<div class="mural-voter-row">${av}<span class="mural-voter-name">${escMural(u.name || 'Usuario')}</span></div>`;
+    }).join('');
+  }
+
+  const likeDropId    = `mrd-like-${post.id}`;
+  const dislikeDropId = `mrd-dislike-${post.id}`;
 
   if (!user) {
-    // No logueado: solo muestra conteos sin botones
     return `
-      <span class="mural-reaction-count" title="${likeTitle}">
+      <span class="mural-reaction-count mural-reaction-count-clickable"
+            onclick="toggleMuralVoterDrop('${likeDropId}', event)">
         <i class="fas fa-thumbs-up"></i> ${post.likes || 0}
+        <div class="mural-voters-drop" id="${likeDropId}">
+          <div class="mural-voters-title"><i class="fas fa-thumbs-up"></i> Les gustó (${likedUsers.length})</div>
+          ${buildUserDropdown(likedUsers, 'like')}
+        </div>
       </span>
-      <span class="mural-reaction-count mural-dislike-count" title="${dislikeTitle}">
+      <span class="mural-reaction-count mural-dislike-count mural-reaction-count-clickable"
+            onclick="toggleMuralVoterDrop('${dislikeDropId}', event)">
         <i class="fas fa-thumbs-down"></i> ${post.dislikes || 0}
+        <div class="mural-voters-drop" id="${dislikeDropId}">
+          <div class="mural-voters-title"><i class="fas fa-thumbs-down"></i> No les gustó (${dislikedUsers.length})</div>
+          ${buildUserDropdown(dislikedUsers, 'dislike')}
+        </div>
       </span>`;
   }
 
   return `
     <button class="mural-react-btn mural-like-btn${iLiked ? ' active' : ''}"
-            data-post-id="${post.id}" data-reaction="like"
-            title="Le gustó a: ${likeTitle}">
+            data-post-id="${post.id}" data-reaction="like">
       <i class="fas fa-thumbs-up"></i>
       <span class="mural-react-count">${post.likes || 0}</span>
     </button>
+    ${likedUsers.length > 0 ? `
+    <span class="mural-reaction-count-clickable mural-voters-trigger"
+          onclick="toggleMuralVoterDrop('${likeDropId}', event)"
+          style="position:relative">
+      <span class="mural-voters-avatars">
+        ${likedUsers.slice(0,3).map(u => u.discord_id && u.discord_avatar
+          ? `<img src="https://cdn.discordapp.com/avatars/${u.discord_id}/${u.discord_avatar}.png?size=32" class="mural-voter-mini-avatar" alt="">`
+          : `<span class="mural-voter-mini-avatar mural-voter-mini-ph">${(u.name||'?')[0].toUpperCase()}</span>`
+        ).join('')}
+        ${likedUsers.length > 3 ? `<span class="mural-voter-mini-more">+${likedUsers.length - 3}</span>` : ''}
+      </span>
+      <div class="mural-voters-drop" id="${likeDropId}">
+        <div class="mural-voters-title"><i class="fas fa-thumbs-up" style="color:#4ade80"></i> Les gustó (${likedUsers.length})</div>
+        ${buildUserDropdown(likedUsers, 'like')}
+      </div>
+    </span>` : ''}
     <button class="mural-react-btn mural-dislike-btn${iDisliked ? ' active' : ''}"
-            data-post-id="${post.id}" data-reaction="dislike"
-            title="No le gustó a: ${dislikeTitle}">
+            data-post-id="${post.id}" data-reaction="dislike">
       <i class="fas fa-thumbs-down"></i>
       <span class="mural-react-count">${post.dislikes || 0}</span>
-    </button>`;
+    </button>
+    ${dislikedUsers.length > 0 ? `
+    <span class="mural-reaction-count-clickable mural-voters-trigger"
+          onclick="toggleMuralVoterDrop('${dislikeDropId}', event)"
+          style="position:relative">
+      <span class="mural-voters-avatars">
+        ${dislikedUsers.slice(0,3).map(u => u.discord_id && u.discord_avatar
+          ? `<img src="https://cdn.discordapp.com/avatars/${u.discord_id}/${u.discord_avatar}.png?size=32" class="mural-voter-mini-avatar" alt="">`
+          : `<span class="mural-voter-mini-avatar mural-voter-mini-ph">${(u.name||'?')[0].toUpperCase()}</span>`
+        ).join('')}
+        ${dislikedUsers.length > 3 ? `<span class="mural-voter-mini-more">+${dislikedUsers.length - 3}</span>` : ''}
+      </span>
+      <div class="mural-voters-drop" id="${dislikeDropId}">
+        <div class="mural-voters-title"><i class="fas fa-thumbs-down" style="color:var(--red)"></i> No les gustó (${dislikedUsers.length})</div>
+        ${buildUserDropdown(dislikedUsers, 'dislike')}
+      </div>
+    </span>` : ''}`;
 }
+
+function toggleMuralVoterDrop(id, event) {
+  event?.stopPropagation();
+  const drop = document.getElementById(id);
+  if (!drop) return;
+  // Cerrar todos los demás abiertos
+  document.querySelectorAll('.mural-voters-drop.open').forEach(d => {
+    if (d.id !== id) d.classList.remove('open');
+  });
+  drop.classList.toggle('open');
+}
+window.toggleMuralVoterDrop = toggleMuralVoterDrop;
+
+// Cerrar dropdowns al click fuera
+document.addEventListener('click', () => {
+  document.querySelectorAll('.mural-voters-drop.open').forEach(d => d.classList.remove('open'));
+});
 
 function toggleReplyBox(postId) {
   const form   = document.getElementById(`reply-form-${postId}`);

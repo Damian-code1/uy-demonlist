@@ -526,6 +526,7 @@ function renderModalContent(level, opts = {}) {
           <div class="lm-badges">
             ${aredlPos ? `<span class="aredl-pos"><i class="fas fa-trophy"></i> AREDL #${aredlPos}</span>` : ''}
             <span class="lm-badge-vic"><i class="fas fa-flag-checkered"></i> ${victors.length} ${victors.length === 1 ? 'Victor' : 'Victors'}</span>
+            ${!level.legacy ? `<span class="lm-badge-pts" style="user-select:none;-webkit-user-select:none"><i class="fas fa-star" style="color:#f59e0b;font-size:.7rem"></i> ${levelPoints(level).toLocaleString()} pts</span>` : ''}
           </div>
         </div>
         ${isAdmin ? `

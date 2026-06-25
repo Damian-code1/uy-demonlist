@@ -29,7 +29,40 @@ export async function GET(request, { params }) {
       WHERE p.parent_id = ?
       ORDER BY p.created_at DESC
     `, [params.id]);
-    return Response.json({ replies: rows });
+    const allDiscordIds = new Set();
+    rows.forEach(p => {
+      const lb = Array.isArray(p.liked_by)    ? p.liked_by    : (p.liked_by    ? JSON.parse(p.liked_by)    : []);
+      const db = Array.isArray(p.disliked_by) ? p.disliked_by : (p.disliked_by ? JSON.parse(p.disliked_by) : []);
+      lb.forEach(id => allDiscordIds.add(id));
+      db.forEach(id => allDiscordIds.add(id));
+    });
+
+    let userMap = {};
+    if (allDiscordIds.size > 0) {
+      const ids = [...allDiscordIds];
+      const placeholders = ids.map(() => '?').join(',');
+      const [userRows] = await query(
+        `SELECT discord_id, discord_avatar,
+                COALESCE(discord_display_name, discord_username, gd_username) AS name
+         FROM users WHERE discord_id IN (${placeholders})`,
+        ids
+      );
+      userRows.forEach(u => { userMap[u.discord_id] = u; });
+    }
+
+    const enriched = rows.map(p => {
+      const lb = Array.isArray(p.liked_by)    ? p.liked_by    : (p.liked_by    ? JSON.parse(p.liked_by)    : []);
+      const db = Array.isArray(p.disliked_by) ? p.disliked_by : (p.disliked_by ? JSON.parse(p.disliked_by) : []);
+      return {
+        ...p,
+        liked_by:          lb,
+        disliked_by:       db,
+        liked_by_users:    lb.map(id => ({ discord_id: id, discord_avatar: userMap[id]?.discord_avatar || null, name: userMap[id]?.name || id })),
+        disliked_by_users: db.map(id => ({ discord_id: id, discord_avatar: userMap[id]?.discord_avatar || null, name: userMap[id]?.name || id })),
+      };
+    });
+
+    return Response.json({ replies: enriched });
   } catch (e) {
     return Response.json({ replies: [], error: e.message }, { status: 500 });
   }

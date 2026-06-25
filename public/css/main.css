@@ -2158,6 +2158,11 @@ ul { list-style: none; }
   padding: .2rem .65rem; border-radius: 50px; font-size: .68rem; font-weight: 700;
   background: rgba(255,255,255,.06); border: 1px solid var(--border-s); color: var(--text-sub);
 }
+.lm-badge-pts {
+  display: inline-flex; align-items: center; gap: .3rem;
+  padding: .2rem .65rem; border-radius: 50px; font-size: .68rem; font-weight: 700;
+  background: rgba(245,158,11,.12); border: 1px solid rgba(245,158,11,.3); color: #fbbf24;
+}
 .lm-edit-level-btn {
   margin-left: auto; flex-shrink: 0;
   display: flex; align-items: center; gap: .4rem;
@@ -3704,7 +3709,11 @@ body {
     padding: .35rem .7rem; margin: 0 .5rem; font-size: 1.55rem;
   }
   .lc-name                 { font-size: 1rem; }
-  .lc-pts-badge            { display: none; }
+  /* Puntos: compactos en mobile pero siempre visibles */
+  .lc-pts-badge            {
+    font-size: .68rem; padding: .2rem .55rem; gap: .25rem;
+  }
+  .lc-pts-badge i          { font-size: .6rem; }
   /* Badges visibles pero más compactos */
   .lc-badges               { gap: .25rem; flex-wrap: wrap; }
   .lc-top1-badge           { font-size: .6rem; padding: .18rem .45rem; gap: .2rem; }
@@ -5524,6 +5533,9 @@ body {
 .mural-reactions {
   display: flex; align-items: center; gap: .5rem;
   margin: .4rem 0 .5rem;
+  user-select: none;
+  -webkit-user-select: none;
+  position: relative;
 }
 .mural-react-btn {
   display: inline-flex; align-items: center; gap: .35rem;
@@ -5532,6 +5544,10 @@ body {
   color: var(--text-dim); font-size: .78rem; font-weight: 600;
   cursor: pointer; transition: background .15s, border-color .15s, color .15s, transform .15s;
   user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
 }
 .mural-react-btn:hover { background: rgba(255,255,255,.1); color: var(--text); transform: translateY(-1px); }
 .mural-like-btn.active {
@@ -5550,6 +5566,100 @@ body {
   padding: .25rem .6rem;
 }
 .mural-dislike-count { opacity: .6; }
+
+.mural-reaction-count-clickable {
+  cursor: pointer;
+  position: relative;
+  display: inline-flex; align-items: center; gap: .3rem;
+  font-size: .75rem; color: var(--text-dim);
+  padding: .25rem .4rem;
+  border-radius: 50px;
+  transition: background .15s;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+.mural-reaction-count-clickable:hover { background: rgba(255,255,255,.06); }
+
+.mural-voters-trigger {
+  display: inline-flex; align-items: center;
+}
+.mural-voters-avatars {
+  display: inline-flex; align-items: center;
+}
+.mural-voter-mini-avatar {
+  width: 20px; height: 20px; border-radius: 50%;
+  object-fit: cover;
+  border: 1.5px solid var(--bg2);
+  margin-left: -5px;
+  flex-shrink: 0;
+}
+.mural-voter-mini-avatar:first-child { margin-left: 0; }
+.mural-voter-mini-ph {
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--violet); color: #fff;
+  font-size: .6rem; font-weight: 700;
+}
+.mural-voter-mini-more {
+  font-size: .62rem; color: var(--text-dim);
+  margin-left: 3px;
+}
+
+/* Dropdown popup de quién votó */
+.mural-voters-drop {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 0;
+  min-width: 180px;
+  max-width: 240px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  box-shadow: 0 8px 24px rgba(0,0,0,.5);
+  z-index: 999;
+  padding: .5rem;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.mural-voters-drop.open { display: block; }
+/* Si está cerca del borde derecho, alinea a la derecha */
+.mural-voters-drop.align-right { left: auto; right: 0; }
+
+.mural-voters-title {
+  font-size: .68rem; font-weight: 700; letter-spacing: .5px;
+  text-transform: uppercase; color: var(--text-dim);
+  padding: .2rem .3rem .5rem;
+  border-bottom: 1px solid var(--border-s);
+  margin-bottom: .35rem;
+  display: flex; align-items: center; gap: .35rem;
+}
+.mural-voters-empty {
+  font-size: .75rem; color: var(--text-dim);
+  text-align: center; padding: .5rem;
+}
+.mural-voter-row {
+  display: flex; align-items: center; gap: .5rem;
+  padding: .35rem .3rem;
+  border-radius: var(--r-sm);
+  transition: background .12s;
+}
+.mural-voter-row:hover { background: rgba(255,255,255,.04); }
+.mural-voter-avatar {
+  width: 24px; height: 24px; border-radius: 50%;
+  object-fit: cover; flex-shrink: 0;
+}
+.mural-voter-avatar-ph {
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--violet); color: #fff;
+  font-size: .65rem; font-weight: 700;
+  width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0;
+}
+.mural-voter-name {
+  font-size: .78rem; color: var(--text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
 
 /* =============================================
    LEVEL MODAL — SECCIÓN DE COMENTARIOS
