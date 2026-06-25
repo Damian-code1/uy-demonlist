@@ -440,6 +440,8 @@ function detectVideoPlatform(url) {
   return { platform: 'other', icon: 'fas fa-external-link-alt', label: 'Ver video', color: 'var(--violet)' };
 }
 window.detectVideoPlatform = detectVideoPlatform;
+window.updateDiscordLogo   = updateDiscordLogo;
+window.addDiscordLinks     = addDiscordLinks;
 
 
 // Copiar al portapapeles

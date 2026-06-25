@@ -120,7 +120,6 @@ ul { list-style: none; }
 .nav-dropdown-chevron {
   font-size: .55rem; transition: transform .2s ease;
 }
-.nav-dropdown-wrap:hover .nav-dropdown-chevron,
 .nav-dropdown-wrap.open .nav-dropdown-chevron { transform: rotate(180deg); }
 .nav-dropdown-menu {
   position: absolute; top: calc(100% + .5rem); left: 0;
@@ -136,7 +135,6 @@ ul { list-style: none; }
   transition: opacity .18s ease, transform .18s ease;
   z-index: 999;
 }
-.nav-dropdown-wrap:hover .nav-dropdown-menu,
 .nav-dropdown-wrap.open .nav-dropdown-menu {
   opacity: 1; pointer-events: all;
   transform: translateY(0);

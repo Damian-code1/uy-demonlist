@@ -32,6 +32,9 @@ function initAuth() {
 
 function onAuthReady() {
   _currentUser = window.currentUser || null;
+  if (typeof updateDiscordLogo === 'function') updateDiscordLogo();
+  if (typeof addDiscordLinks   === 'function') addDiscordLinks();
+  if (typeof loadFooterCredits === 'function') loadFooterCredits();
   const isStaff = _currentUser && STAFF_ROLES.includes(_currentUser.role);
   if (isStaff) {
     document.getElementById('achAddBtn').style.display = '';
