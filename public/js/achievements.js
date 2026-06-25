@@ -709,7 +709,7 @@ async function saveAchForm() {
     return showToast('El campo Progreso es obligatorio para tipo Progreso', 'error');
   }
 
-  const body = { position, player_name: player, level_name: level, progress, type, video_url: video, thumbnail_url: thumb, notes };
+  const body = { position, player_name: player, level_name: level, progress: progress || '100%', type, video_url: video, thumbnail_url: thumb, notes };
 
   try {
     const res = await fetch(id ? `${ACH_API}/${id}` : ACH_API, {
