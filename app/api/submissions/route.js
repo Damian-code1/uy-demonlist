@@ -1,6 +1,7 @@
 // app/api/submissions/route.js
 import { query } from '../../../lib/db.js';
 import { notifySubmission } from '../../../lib/discordWebhook.js';
+import { requireAuth } from '../../../lib/auth.js';
 
 export async function GET(request) {
   try {
@@ -160,7 +161,7 @@ export async function POST(request) {
 }
 
 // DELETE /api/submissions?id=X — el usuario elimina su propia submission del historial
-// Solo funciona si la submission le pertenece. No toca ningún dato de la lista.
+// Solo funciona si la submission le pertenece y NO está pendiente.
 export async function DELETE(request) {
   const user = await requireAuth(request);
   if (!user) return Response.json({ error: 'No autenticado' }, { status: 401 });
@@ -170,14 +171,26 @@ export async function DELETE(request) {
     const id = parseInt(searchParams.get('id'));
     if (!id) return Response.json({ error: 'ID requerido' }, { status: 400 });
 
-    // Solo puede eliminar sus propias submissions
+    // Buscar la submission junto con el id interno del usuario autenticado
+    const [[dbUser]] = await query(
+      'SELECT id FROM users WHERE discord_id = ? LIMIT 1',
+      [user.discord_id]
+    );
+    if (!dbUser) return Response.json({ error: 'Usuario no encontrado' }, { status: 404 });
+
     const [[sub]] = await query(
-      'SELECT id, submitted_by FROM submissions WHERE id = ? LIMIT 1',
+      'SELECT id, submitted_by, status FROM submissions WHERE id = ? LIMIT 1',
       [id]
     );
     if (!sub) return Response.json({ error: 'No encontrada' }, { status: 404 });
-    if (sub.submitted_by !== user.discord_id)
+
+    // Verificar pertenencia (submitted_by es el id interno del usuario)
+    if (sub.submitted_by !== dbUser.id)
       return Response.json({ error: 'No autorizado' }, { status: 403 });
+
+    // No se puede eliminar una submission que está esperando revisión
+    if (sub.status === 'pending')
+      return Response.json({ error: 'pending', message: 'Esta submission está siendo revisada por el staff. No podés eliminarla mientras esté pendiente.' }, { status: 409 });
 
     await query('DELETE FROM submissions WHERE id = ?', [id]);
     return Response.json({ success: true });

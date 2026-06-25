@@ -100,9 +100,15 @@
             <span class="my-sub-item-date">${dateStr}</span>
             ${noteStr ? `<span class="my-sub-item-note">${noteStr}</span>` : ''}
           </div>
-          <button class="my-sub-delete-btn" data-id="${sub.id}" title="Quitar del historial" style="flex-shrink:0;background:none;border:none;cursor:pointer;padding:.3rem .4rem;border-radius:6px;color:rgba(255,255,255,.25);font-size:.78rem;transition:color .15s,background .15s;" onclick="event.stopPropagation()">
+          ${sub.status !== 'pending' ? `
+          <button class="my-sub-delete-btn" data-id="${sub.id}" title="Quitar del historial"
+            style="flex-shrink:0;background:none;border:none;cursor:pointer;padding:.3rem .4rem;border-radius:6px;color:rgba(255,255,255,.25);font-size:.78rem;transition:color .15s,background .15s;"
+            onclick="event.stopPropagation()">
             <i class="fas fa-times"></i>
-          </button>
+          </button>` : `
+          <span title="En revisión por el staff" style="flex-shrink:0;padding:.3rem .4rem;color:rgba(255,193,7,.35);font-size:.72rem">
+            <i class="fas fa-clock"></i>
+          </span>`}
         </div>`;
     }).join('');
 
@@ -153,6 +159,22 @@
           } else {
             btn.innerHTML = '<i class="fas fa-times"></i>';
             btn.disabled = false;
+            try {
+              const data = await res.clone().json();
+              if (data.error === 'pending' || res.status === 409) {
+                if (typeof uiConfirm === 'function') {
+                  uiConfirm({
+                    title: 'Submission en revisión',
+                    message: data.message || 'Esta submission está siendo revisada por el staff. No podés eliminarla mientras esté pendiente.',
+                    type: 'warning',
+                    confirmText: 'Entendido',
+                    cancelText: null,
+                  });
+                } else if (typeof showToast === 'function') {
+                  showToast('No podés eliminar una submission pendiente', 'warning');
+                }
+              }
+            } catch {}
           }
         } catch {
           btn.innerHTML = '<i class="fas fa-times"></i>';
