@@ -66,8 +66,8 @@ export async function GET(request, { params }) {
     ]);
 
     if (!plistRes.ok || !atlasRes.ok) {
-      console.log('[gd-icon] Assets not found for:', iconStr);
-      return new Response('Icon assets not found', { status: 404 });
+      console.log('[gd-icon] Assets not found for:', iconStr, '- using GDBrowser fallback');
+      return Response.redirect(`https://gdbrowser.com/icon/${username}?form=${form}&icon=${iconNum}`, 307);
     }
 
     const plistText = await plistRes.text();
@@ -118,7 +118,8 @@ export async function GET(request, { params }) {
     });
   } catch (error) {
     console.error('[gd-icon] Error:', error.message, error.stack);
-    return new Response('Error rendering icon', { status: 500 });
+    console.log('[gd-icon] Using GDBrowser fallback due to error');
+    return Response.redirect(`https://gdbrowser.com/icon/${encodeURIComponent(username)}`, 307);
   }
 }
 
