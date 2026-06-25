@@ -52,6 +52,7 @@
       </a>
       <a href="index.html#comunidad"  class="nav-link">Discord</a>
       <a href="index.html#donaciones" class="nav-link">Donaciones</a>
+    <div class="nav-links-panels-mobile" id="navLinksPanelsMobile"></div>
     </div>
     <div class="nav-right">
       <button class="login-btn" id="loginBtn">
@@ -209,15 +210,49 @@
 <script>
   AOS.init({ duration: 500, once: true, offset: 40 });
 
-  // Navbar scroll
   window.addEventListener('scroll', () => {
     document.getElementById('navbar')?.classList.toggle('scrolled', window.scrollY > 20);
   }, { passive: true });
 
-  // Hamburger
   document.getElementById('hamburger')?.addEventListener('click', function () {
     this.classList.toggle('open');
     document.getElementById('navLinks')?.classList.toggle('open');
+  });
+
+  // Nav dropdown (igual que main.js pero solo para esta página)
+  document.querySelectorAll('.nav-dropdown-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const wrap = btn.closest('.nav-dropdown-wrap');
+      const isOpen = wrap.classList.toggle('open');
+      btn.setAttribute('aria-expanded', isOpen);
+    });
+  });
+  document.addEventListener('click', () => {
+    document.querySelectorAll('.nav-dropdown-wrap.open').forEach(w => {
+      w.classList.remove('open');
+      w.querySelector('.nav-dropdown-btn')?.setAttribute('aria-expanded', 'false');
+    });
+  });
+
+  // Logo del servidor Discord y links — normalmente lo hace main.js
+  document.addEventListener('DOMContentLoaded', () => {
+    if (typeof updateDiscordLogo === 'function') updateDiscordLogo();
+    if (typeof addDiscordLinks   === 'function') addDiscordLinks();
+
+    // Mover botones de paneles a mobile si corresponde
+    if (typeof relocatePanelButtonsForViewport === 'function') {
+      relocatePanelButtonsForViewport();
+    }
+
+    // Scrollbar custom
+    const backBtn = document.getElementById('backToTop');
+    if (backBtn) {
+      window.addEventListener('scroll', () => {
+        backBtn.classList.toggle('visible', window.scrollY > 600);
+      }, { passive: true });
+      backBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+    }
   });
 </script>
 </body>
