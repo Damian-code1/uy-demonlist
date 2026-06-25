@@ -22,10 +22,10 @@ export async function GET(request) {
         (SELECT COUNT(*) FROM level_comments r WHERE r.parent_id = c.id) AS reply_count,
         (SELECT COUNT(*) FROM level_comment_reactions r WHERE r.comment_id = c.id AND r.reaction = 'like') AS likes,
         (SELECT COUNT(*) FROM level_comment_reactions r WHERE r.comment_id = c.id AND r.reaction = 'dislike') AS dislikes,
-        (SELECT GROUP_CONCAT(u2.discord_id SEPARATOR ',')
+        (SELECT GROUP_CONCAT(CONCAT(u2.discord_id,'|',COALESCE(u2.discord_display_name,u2.discord_username,'?'),'|',COALESCE(u2.discord_avatar,'')) SEPARATOR ';;')
          FROM level_comment_reactions r2 JOIN users u2 ON u2.id = r2.user_id
          WHERE r2.comment_id = c.id AND r2.reaction = 'like') AS liked_by,
-        (SELECT GROUP_CONCAT(u3.discord_id SEPARATOR ',')
+        (SELECT GROUP_CONCAT(CONCAT(u3.discord_id,'|',COALESCE(u3.discord_display_name,u3.discord_username,'?'),'|',COALESCE(u3.discord_avatar,'')) SEPARATOR ';;')
          FROM level_comment_reactions r3 JOIN users u3 ON u3.id = r3.user_id
          WHERE r3.comment_id = c.id AND r3.reaction = 'dislike') AS disliked_by
       FROM level_comments c
@@ -35,10 +35,14 @@ export async function GET(request) {
       LIMIT 100
     `, [levelId]);
 
+    const parseReactors = raw => !raw ? [] : raw.split(';;').map(s => {
+      const [id, name, avatar] = s.split('|');
+      return { id, name, avatar: avatar || null };
+    });
     const comments = rows.map(c => ({
       ...c,
-      liked_by:    c.liked_by    ? c.liked_by.split(',')    : [],
-      disliked_by: c.disliked_by ? c.disliked_by.split(',') : [],
+      liked_by:    parseReactors(c.liked_by),
+      disliked_by: parseReactors(c.disliked_by),
     }));
 
     return Response.json({ comments });
@@ -121,16 +125,23 @@ export async function PUT(request) {
       `SELECT
         (SELECT COUNT(*) FROM level_comment_reactions WHERE comment_id = ? AND reaction = 'like') AS likes,
         (SELECT COUNT(*) FROM level_comment_reactions WHERE comment_id = ? AND reaction = 'dislike') AS dislikes,
-        (SELECT GROUP_CONCAT(u.discord_id SEPARATOR ',') FROM level_comment_reactions r JOIN users u ON u.id = r.user_id WHERE r.comment_id = ? AND r.reaction = 'like') AS liked_by,
-        (SELECT GROUP_CONCAT(u.discord_id SEPARATOR ',') FROM level_comment_reactions r JOIN users u ON u.id = r.user_id WHERE r.comment_id = ? AND r.reaction = 'dislike') AS disliked_by`,
+        (SELECT GROUP_CONCAT(CONCAT(u.discord_id,'|',COALESCE(u.discord_display_name,u.discord_username,'?'),'|',COALESCE(u.discord_avatar,'')) SEPARATOR ';;')
+         FROM level_comment_reactions r JOIN users u ON u.id = r.user_id WHERE r.comment_id = ? AND r.reaction = 'like') AS liked_by,
+        (SELECT GROUP_CONCAT(CONCAT(u.discord_id,'|',COALESCE(u.discord_display_name,u.discord_username,'?'),'|',COALESCE(u.discord_avatar,'')) SEPARATOR ';;')
+         FROM level_comment_reactions r JOIN users u ON u.id = r.user_id WHERE r.comment_id = ? AND r.reaction = 'dislike') AS disliked_by`,
       [comment_id, comment_id, comment_id, comment_id]
     );
+
+    const parseR = raw => !raw ? [] : raw.split(';;').map(s => {
+      const [id, name, avatar] = s.split('|');
+      return { id, name, avatar: avatar || null };
+    });
 
     return Response.json({
       likes:       counts.likes || 0,
       dislikes:    counts.dislikes || 0,
-      liked_by:    counts.liked_by    ? counts.liked_by.split(',')    : [],
-      disliked_by: counts.disliked_by ? counts.disliked_by.split(',') : [],
+      liked_by:    parseR(counts.liked_by),
+      disliked_by: parseR(counts.disliked_by),
     });
   } catch (e) {
     return Response.json({ error: e.message }, { status: 500 });

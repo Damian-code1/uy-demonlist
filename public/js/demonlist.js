@@ -1459,8 +1459,8 @@ function buildLevelCommentHTML(c, user, isReply) {
   const isOwn     = user && user.id === c.discord_id;
   const isAdmin   = user && ['admin','manager','owner'].includes(user.role);
   const canDelete = isOwn || isAdmin;
-  const iLiked    = user && c.liked_by?.includes(user.id);
-  const iDisliked = user && c.disliked_by?.includes(user.id);
+  const iLiked    = user && (c.liked_by||[]).some(r => r.id === user.id);
+  const iDisliked = user && (c.disliked_by||[]).some(r => r.id === user.id);
   const avatarUrl = c.discord_id && c.discord_avatar
     ? `https://cdn.discordapp.com/avatars/${c.discord_id}/${c.discord_avatar}.png?size=64`
     : null;
@@ -1470,21 +1470,23 @@ function buildLevelCommentHTML(c, user, isReply) {
   const likeNames    = (c.liked_by    || []).length;
   const dislikeNames = (c.disliked_by || []).length;
 
+  const reactorsLike    = JSON.stringify(c.liked_by    || []).replace(/'/g, '&#39;');
+  const reactorsDislike = JSON.stringify(c.disliked_by || []).replace(/'/g, '&#39;');
   const reactionsHTML = user ? `
     <button class="lm-comment-react-btn lm-like-btn${iLiked ? ' active-like' : ''}"
       data-id="${c.id}" data-reaction="like"
-      data-names="${esc((c.liked_by||[]).join(','))}">
+      data-reactors='${reactorsLike}'>
       <i class="fas fa-thumbs-up"></i> <span>${c.likes || 0}</span>
     </button>
     <button class="lm-comment-react-btn lm-dislike-btn${iDisliked ? ' active-dislike' : ''}"
       data-id="${c.id}" data-reaction="dislike"
-      data-names="${esc((c.disliked_by||[]).join(','))}">
+      data-reactors='${reactorsDislike}'>
       <i class="fas fa-thumbs-down"></i> <span>${c.dislikes || 0}</span>
     </button>` : `
-    <span class="lm-comment-react-static" data-names="${esc((c.liked_by||[]).join(','))}" data-reaction="like" style="cursor:${likeNames?'pointer':'default'}">
+    <span class="lm-comment-react-static" data-reactors='${reactorsLike}' data-reaction="like" style="cursor:${likeNames?'pointer':'default'}">
       <i class="fas fa-thumbs-up"></i> ${c.likes||0}
     </span>
-    <span class="lm-comment-react-static" data-names="${esc((c.disliked_by||[]).join(','))}" data-reaction="dislike" style="cursor:${dislikeNames?'pointer':'default'}">
+    <span class="lm-comment-react-static" data-reactors='${reactorsDislike}' data-reaction="dislike" style="cursor:${dislikeNames?'pointer':'default'}">
       <i class="fas fa-thumbs-down"></i> ${c.dislikes||0}
     </span>`;
 
@@ -1526,7 +1528,7 @@ function buildLevelCommentHTML(c, user, isReply) {
             <span class="lm-comment-time" data-ts="${ts}">${rel}</span>
           </div>
         </div>
-        ${canDelete ? `<button class="lm-comment-delete" data-id="${c.id}" title="Eliminar"><i class="fas fa-trash-alt"></i></button>` : ''}
+        ${canDelete ? `<button class="lm-comment-delete" data-id="${c.id}" data-own="${isOwn?'1':'0'}" title="Eliminar"><i class="fas fa-trash-alt"></i></button>` : ''}
       </div>
       <div class="lm-comment-body">${esc(c.content)}</div>
       <div class="lm-comment-reactions">${reactionsHTML}</div>
@@ -1553,40 +1555,69 @@ function startLcTimeUpdater(list) {
   }, 30000);
 }
 
-function showReactionPopup(names, type, anchorEl) {
+function showLcReactionPopup(reactors, type, anchorEl) {
   document.getElementById('lcReactionPopup')?.remove();
-  if (!names?.length) return;
+  if (!reactors?.length) return;
+
+  const icon  = type === 'like' ? 'thumbs-up' : 'thumbs-down';
+  const label = type === 'like' ? 'Les gustó' : 'No les gustó';
+  const color = type === 'like' ? '#4ade80' : '#f87171';
 
   const popup = document.createElement('div');
   popup.id = 'lcReactionPopup';
   popup.className = 'lc-reaction-popup';
   popup.innerHTML = `
-    <div class="lc-reaction-popup-title">
-      <i class="fas fa-thumbs-${type === 'like' ? 'up' : 'down'}"></i>
-      ${type === 'like' ? 'Les gustó' : 'No les gustó'}
+    <div class="lc-reaction-popup-title" style="color:${color}">
+      <i class="fas fa-${icon}"></i> ${label} (${reactors.length})
     </div>
-    <div class="lc-reaction-popup-list">${names.map(id =>
-      `<span class="lc-reaction-user" data-discord="${id}">@${id.slice(0,8)}…</span>`
-    ).join('')}</div>`;
+    <div class="lc-reaction-popup-list">
+      ${reactors.map(r => {
+        const av = r.id && r.avatar
+          ? `<img src="https://cdn.discordapp.com/avatars/${r.id}/${r.avatar}.png?size=32" class="lc-reaction-avatar" onerror="this.style.display='none'">`
+          : `<div class="lc-reaction-avatar lc-reaction-avatar-ph">${(r.name||'?')[0].toUpperCase()}</div>`;
+        return `<div class="lc-reaction-user">${av}<span>${esc(r.name||'Usuario')}</span></div>`;
+      }).join('')}
+    </div>`;
   document.body.appendChild(popup);
 
   const rect = anchorEl.getBoundingClientRect();
-  const top  = rect.bottom + window.scrollY + 6;
-  const left = Math.min(rect.left + window.scrollX, window.innerWidth - 200);
-  popup.style.top  = top + 'px';
-  popup.style.left = left + 'px';
+  let top  = rect.bottom + window.scrollY + 8;
+  let left = rect.left  + window.scrollX;
+  const popW = 210;
+  if (left + popW > window.innerWidth - 8) left = window.innerWidth - popW - 8;
+  if (left < 8) left = 8;
+  // Si el popup quedaría fuera de la pantalla por abajo, mostrarlo arriba
+  const estH = Math.min(reactors.length * 36 + 50, 250);
+  if (rect.bottom + estH > window.innerHeight) top = rect.top + window.scrollY - estH - 8;
+  popup.style.top  = `${top}px`;
+  popup.style.left = `${left}px`;
 
-  setTimeout(() => {
-    document.addEventListener('click', () => popup.remove(), { once: true });
-  }, 10);
+  const close = e => { if (!popup.contains(e.target)) { popup.remove(); document.removeEventListener('pointerdown', close); }};
+  setTimeout(() => document.addEventListener('pointerdown', close), 50);
 }
 
 function attachLevelCommentEvents(list, levelId) {
   const discordId = () => localStorage.getItem('uy_discord_id') || '';
 
-  // Delete
+  // Delete con confirmación diferenciada por rol
   list.querySelectorAll('.lm-comment-delete').forEach(btn => {
     btn.addEventListener('click', async () => {
+      const isOwn   = btn.dataset.own === '1';
+      const author  = btn.closest('.lm-comment')?.querySelector('.lm-comment-name')?.textContent || 'este comentario';
+      const ok = await uiConfirm(isOwn ? {
+        title:       '¿Eliminar tu comentario?',
+        message:     'Esta acción no se puede deshacer.',
+        type:        'warning',
+        confirmText: 'Eliminar',
+        cancelText:  'Cancelar',
+      } : {
+        title:       `¿Eliminar comentario de ${author}?`,
+        message:     'Estás eliminando el comentario de otro usuario como staff. Esta acción no se puede deshacer.',
+        type:        'warning',
+        confirmText: 'Eliminar de todas formas',
+        cancelText:  'Cancelar',
+      });
+      if (!ok) return;
       btn.disabled = true;
       try {
         const res = await fetch(`/api/level-comments?id=${btn.dataset.id}`, {
@@ -1598,31 +1629,38 @@ function attachLevelCommentEvents(list, levelId) {
     });
   });
 
-  // Reacciones — click reactúa, longpress/contextmenu muestra popup
-  list.querySelectorAll('.lm-comment-react-btn').forEach(btn => {
-    btn.addEventListener('click', async () => {
-      try {
-        const res = await fetch('/api/level-comments', {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json', 'x-discord-id': discordId() },
-          body: JSON.stringify({ comment_id: Number(btn.dataset.id), reaction: btn.dataset.reaction })
-        });
-        if (res.ok) await loadLevelComments(levelId);
-      } catch {}
-    });
-    btn.addEventListener('contextmenu', e => {
-      e.preventDefault();
-      const names = (btn.dataset.names || '').split(',').filter(Boolean);
-      showReactionPopup(names, btn.dataset.reaction, btn);
-    });
-  });
+  // Reacciones — click = toggle, longpress/contextmenu = popup de usuarios
+  list.querySelectorAll('.lm-comment-react-btn, .lm-comment-react-static').forEach(el => {
+    const getReactors = () => {
+      try { return JSON.parse(el.dataset.reactors || '[]'); } catch { return []; }
+    };
+    const showPopup = () => {
+      const reactors = getReactors();
+      if (reactors.length) showLcReactionPopup(reactors, el.dataset.reaction, el);
+    };
 
-  // Popup en reacciones estáticas (no logueado)
-  list.querySelectorAll('.lm-comment-react-static').forEach(el => {
-    el.addEventListener('click', () => {
-      const names = (el.dataset.names || '').split(',').filter(Boolean);
-      if (names.length) showReactionPopup(names, el.dataset.reaction, el);
-    });
+    if (el.classList.contains('lm-comment-react-btn')) {
+      el.addEventListener('click', async () => {
+        try {
+          const res = await fetch('/api/level-comments', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'x-discord-id': discordId() },
+            body: JSON.stringify({ comment_id: Number(el.dataset.id), reaction: el.dataset.reaction })
+          });
+          if (res.ok) await loadLevelComments(levelId);
+        } catch {}
+      });
+    } else {
+      // Estático (no logueado): click directo muestra popup
+      el.addEventListener('click', showPopup);
+    }
+
+    // Longpress mobile + contextmenu desktop en ambos tipos
+    let pressTimer;
+    el.addEventListener('pointerdown', () => { pressTimer = setTimeout(showPopup, 500); });
+    el.addEventListener('pointerup',   () => clearTimeout(pressTimer));
+    el.addEventListener('pointerleave',() => clearTimeout(pressTimer));
+    el.addEventListener('contextmenu', e => { e.preventDefault(); showPopup(); });
   });
 
   // Toggle replies
