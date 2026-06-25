@@ -802,6 +802,9 @@ function renderLeaderboard() {
     row.style.cursor = 'pointer';
     row.style.animationDelay = `${Math.min(i * 30, 600)}ms`;
   row.addEventListener('click', () => openPlayerProfile(player.name));
+    
+    const gdIconUrl = player.name ? `/api/gd-icon/${encodeURIComponent(player.name)}` : null;
+    
     row.innerHTML = `
       <div class="lb-pos-wrap">
         ${pos === 1
@@ -815,7 +818,9 @@ function renderLeaderboard() {
       </div>
 
       <div class="lb-avatar" style="--av-color:${playerColor(player.name)}">
-${avatarUrl
+${gdIconUrl
+  ? `<img src="${esc(gdIconUrl)}" alt="" class="lb-gd-icon">`
+  : avatarUrl
   ? `<img src="${esc(avatarUrl)}" alt="">`
   : `<span>${initials}</span>`
 }
@@ -829,31 +834,25 @@ ${avatarUrl
         }
       </div>
 
-      <div class="lb-stats-group">
-        <div class="lb-stat-pill lb-stat-pts">
+      <div class="lb-stats-horizontal">
+        <div class="lb-stat-item">
           <i class="fas fa-star"></i>
           <span>${(player.points||0).toLocaleString()}</span>
           <small>pts</small>
         </div>
-        <div class="lb-stat-pill lb-stat-comp">
+        <div class="lb-stat-item">
           <i class="fas fa-flag-checkered"></i>
           <span>${player.completions||0}</span>
           <small>comps</small>
         </div>
-      </div>
-
-      <div class="lb-progress-wrap">
-        <div class="lb-progress-track">
-          <div class="lb-progress-fill" style="width:${pct}%"></div>
+        <div class="lb-stat-item">
+          <i class="fas fa-chart-line"></i>
+          <span>${pct}%</span>
+          <small>prog</small>
         </div>
-        <span class="lb-pct">${pct}%</span>
       </div>`;
 
     tbody.appendChild(row);
-    
-    setTimeout(() => {
-      row.querySelector('.lb-progress-fill')?.style.setProperty('width', pct + '%');
-    }, 50 + i * 30);
   });
 }
 

@@ -2,9 +2,6 @@ import { query } from '../../../../lib/db.js';
 import { requireAdmin } from '../../../../lib/auth.js';
 import { pushFeedLog } from '../../../../lib/schema.js';
 
-// Marca, dentro de cada level_id, cuál victor es el "primero" (menor id) —
-// solo ese hereda visualmente el video de Showcase del nivel si no tiene
-// video_url propio, igual que ya hace el modal público.
 function markFirstVictorPerLevel(victors) {
   const seenLevels = new Set();
   return victors.map(v => {

@@ -4,20 +4,21 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev":     "next dev -p 3001",
-    "build":   "next build",
-    "start":   "next start -p 3001",
+    "dev": "next dev -p 3001",
+    "build": "next build",
+    "start": "next start -p 3001",
     "migrate": "node scripts/migrate.js"
   },
   "dependencies": {
-    "next":     "14.0.4",
-    "react":    "^18.2.0",
-    "react-dom":"^18.2.0",
-    "mysql2":   "^3.6.5",
-    "dotenv":   "^16.3.1"
+    "@napi-rs/canvas": "^1.0.1",
+    "dotenv": "^16.3.1",
+    "mysql2": "^3.6.5",
+    "next": "14.0.4",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "eslint":             "^8.56.0",
+    "eslint": "^8.56.0",
     "eslint-config-next": "14.0.4"
   }
 }

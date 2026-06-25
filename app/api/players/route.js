@@ -82,15 +82,19 @@ export async function GET(request) {
       .map(p => {
         const u = userMap.get(p.name.toLowerCase());
         return {
-          ...p,
-          discord_id:           u?.discord_id           || null,
-          discord_avatar:       u?.discord_avatar       || null,
-          discord_display_name: u?.discord_display_name || null,
-          discord_username:     u?.discord_username     || null,
-          gd_username:          u?.gd_username          || null,
-          linked_player_name:   u?.linked_player_name   || null,
-          role:                 u?.role                 || 'usuario',
-        };
+        ...p,
+        discord_id:           u?.discord_id           || null,
+        discord_avatar:       u?.discord_avatar       || null,
+        discord_display_name: u?.discord_display_name || null,
+        discord_username:     u?.discord_username     || null,
+        gd_username:          u?.gd_username          || null,
+        linked_player_name:   u?.linked_player_name   || null,
+        role:                 u?.role                 || 'usuario',
+
+        gd_icon_url: u?.gd_username
+          ? `/api/gd-icon/${encodeURIComponent(u.gd_username)}`
+          : null,
+      };
       })
       .sort((a, b) => b.points - a.points);
 

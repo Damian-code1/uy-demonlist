@@ -26,24 +26,37 @@ export async function GET(request) {
         return Response.json(data);
       }
       const data = {
-        found:      true,
-        username:   p.username,
-        playerID:   p.playerID,
-        accountID:  p.accountID,
-        rank:       p.globalRank,
-        stars:      p.stars,
-        moons:      p.moons,
-        demons:     p.demons,
-        diamonds:   p.diamonds,
-        coins:      p.coins,
-        userCoins:  p.userCoins,
-        cp:         p.cp,
-        color1:     p.col1,
-        color2:     p.col2,
-        iconUrl:    p.icon
-          ? `https://gdbrowser.com/icon/${encodeURIComponent(p.username)}?form=${p.icon}&col1=${p.col1 ?? 0}&col2=${p.col2 ?? 3}&glow=${p.glow ? 1 : 0}`
-          : null,
-      };
+      found:      true,
+      username:   p.username,
+      playerID:   p.playerID,
+      accountID:  p.accountID,
+      rank:       p.globalRank,
+      stars:      p.stars,
+      moons:      p.moons,
+      demons:     p.demons,
+      diamonds:   p.diamonds,
+      coins:      p.coins,
+      userCoins:  p.userCoins,
+      cp:         p.cp,
+
+      iconType:   p.iconType,
+      icon:       p.icon,
+      ship:       p.ship,
+      ball:       p.ball,
+      ufo:        p.ufo,
+      wave:       p.wave,
+      robot:      p.robot,
+      spider:     p.spider,
+      swing:      p.swing,
+      jetpack:    p.jetpack,
+
+      col1RGB:    p.col1RGB,
+      col2RGB:    p.col2RGB,
+      colGRGB:    p.colGRGB,
+      glow:       p.glow,
+
+      gdIconUrl: `/api/gd-icon/${encodeURIComponent(p.username)}`
+    };
       profileCache.set(key, { data, time: Date.now() });
       return Response.json(data);
     } catch (e) {
