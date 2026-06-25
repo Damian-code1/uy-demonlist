@@ -15,10 +15,10 @@ let _searchTerm    = '';
 document.addEventListener('DOMContentLoaded', () => {
   loadAchievements();
   setupSearch();
-  initAuth();
+  initAchAuth();
 });
 
-function initAuth() {
+function initAchAuth() {
   // Esperar a que auth.js inicialice window.currentUser
   const poll = setInterval(() => {
     if (typeof window.currentUser !== 'undefined') {
