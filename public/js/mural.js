@@ -190,9 +190,9 @@ function buildPostHTML(post, isReply = false) {
 }
 
 function buildReactionBar(post, user) {
-  const myId       = user?.id;
-  const iLiked     = myId && post.liked_by?.includes(myId);
-  const iDisliked  = myId && post.disliked_by?.includes(myId);
+  const myId      = user?.id ? String(user.id) : null;
+  const iLiked    = myId && (post.liked_by    || []).map(String).includes(myId);
+  const iDisliked = myId && (post.disliked_by || []).map(String).includes(myId);
 
   const likedUsers    = post.liked_by_users    || (post.liked_by    || []).map(n => ({ name: n }));
   const dislikedUsers = post.disliked_by_users || (post.disliked_by || []).map(n => ({ name: n }));
@@ -477,7 +477,7 @@ window.loadMural                 = loadMural;
 window.updateMuralFormVisibility = updateMuralFormVisibility;
 async function toggleMuralReaction(postId, reaction) {
   const user = window.currentUser;
-  if (!user) { if (typeof showToast === 'function') showToast('Iniciá sesión para reaccionar', 'info'); return; }
+  if (!user) { showToast('Iniciá sesión para reaccionar', 'info'); return; }
 
   const post = muralPosts.find(p => p.id === Number(postId));
   const wasActive = reaction === 'like'
@@ -502,32 +502,49 @@ async function toggleMuralReaction(postId, reaction) {
     if (!res.ok) return;
     const data = await res.json();
 
+    if (post) {
+      post.likes             = data.likes             ?? post.likes;
+      post.dislikes          = data.dislikes          ?? post.dislikes;
+      post.liked_by          = data.liked_by          ?? post.liked_by;
+      post.disliked_by       = data.disliked_by       ?? post.disliked_by;
+      post.liked_by_users    = data.liked_by_users    ?? post.liked_by_users;
+      post.disliked_by_users = data.disliked_by_users ?? post.disliked_by_users;
+    }
+
     if (wasActive) {
-      showToast('Reacción quitada', 'info');
+      showToast(reaction === 'like' ? 'Quitaste el like' : 'Quitaste el dislike', 'info');
     } else if (reaction === 'like') {
       showToast('👍 ¡Le diste like!', 'success');
     } else {
       showToast('👎 Le diste dislike', 'info');
     }
 
-    const post = muralPosts.find(p => p.id === Number(postId));
-    if (post) {
-      post.likes            = data.likes            ?? post.likes;
-      post.dislikes         = data.dislikes         ?? post.dislikes;
-      post.liked_by         = data.liked_by         ?? post.liked_by;
-      post.disliked_by      = data.disliked_by      ?? post.disliked_by;
-      post.liked_by_users   = data.liked_by_users   ?? post.liked_by_users;
-      post.disliked_by_users= data.disliked_by_users?? post.disliked_by_users;
-    }
-
     const bar = document.querySelector(`.mural-reactions[data-post-id="${postId}"]`);
-    if (bar) bar.innerHTML = buildReactionBar(post || { id: Number(postId), likes: data.likes, dislikes: data.dislikes, liked_by: data.liked_by, disliked_by: data.disliked_by }, user);
+    if (bar) {
+      bar.innerHTML = buildReactionBar(post || {
+        id: Number(postId),
+        likes: data.likes, dislikes: data.dislikes,
+        liked_by: data.liked_by, disliked_by: data.disliked_by,
+        liked_by_users: data.liked_by_users, disliked_by_users: data.disliked_by_users,
+      }, user);
 
-    bar?.querySelectorAll('.mural-react-btn').forEach(btn => {
-      btn.addEventListener('click', () => toggleMuralReaction(btn.dataset.postId, btn.dataset.reaction));
-    });
-  } catch (e) {
-    if (typeof showToast === 'function') showToast('Error al reaccionar', 'error');
+      bar.querySelectorAll('.mural-react-btn').forEach(btn => {
+        let pressTimer;
+        btn.addEventListener('click', () => toggleMuralReaction(btn.dataset.postId, btn.dataset.reaction));
+        const showVoters = () => {
+          try {
+            const voters = JSON.parse(btn.dataset.voters || '[]');
+            showMuralVoterPopup(voters, btn.dataset.reaction === 'like', btn);
+          } catch {}
+        };
+        btn.addEventListener('contextmenu', e => { e.preventDefault(); showVoters(); });
+        btn.addEventListener('pointerdown', () => { pressTimer = setTimeout(showVoters, 500); });
+        btn.addEventListener('pointerup',   () => clearTimeout(pressTimer));
+        btn.addEventListener('pointerleave',() => clearTimeout(pressTimer));
+      });
+    }
+  } catch {
+    showToast('Error al reaccionar', 'error');
   }
 }
 
