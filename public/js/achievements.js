@@ -10,12 +10,15 @@ let _currentUser   = null;
 let _searchTerm    = '';
 
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   loadAchievements();
   setupSearch();
   initAchAuth();
   setupPlayerAutocomplete();
   setupLevelAutocomplete();
+  // Cargar niveles y AREDL para el buscador de niveles
+  if (typeof loadData     === 'function') await loadData();
+  if (typeof loadAredlMap === 'function') loadAredlMap();
 });
 
 function initAchAuth() {
