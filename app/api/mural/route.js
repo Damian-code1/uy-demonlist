@@ -32,11 +32,47 @@ export async function GET() {
       LIMIT 200
     `);
 
-    const posts = rows.map(p => ({
-      ...p,
-      liked_by:    p.liked_by    ? p.liked_by.split(',')    : [],
-      disliked_by: p.disliked_by ? p.disliked_by.split(',') : [],
-    }));
+    const allIds = new Set();
+    rows.forEach(p => {
+      (p.liked_by    ? p.liked_by.split(',')    : []).forEach(id => allIds.add(id));
+      (p.disliked_by ? p.disliked_by.split(',') : []).forEach(id => allIds.add(id));
+    });
+
+    let userMap = {};
+    if (allIds.size > 0) {
+      const ids = [...allIds];
+      const placeholders = ids.map(() => '?').join(',');
+      const [userRows] = await query(
+        `SELECT discord_id, discord_avatar,
+                discord_username,
+                COALESCE(discord_display_name, discord_username, gd_username) AS display_name
+         FROM users WHERE discord_id IN (${placeholders})`,
+        ids
+      );
+      userRows.forEach(u => { userMap[u.discord_id] = u; });
+    }
+
+    const posts = rows.map(p => {
+      const lb = p.liked_by    ? p.liked_by.split(',')    : [];
+      const db = p.disliked_by ? p.disliked_by.split(',') : [];
+      return {
+        ...p,
+        liked_by:          lb,
+        disliked_by:       db,
+        liked_by_users:    lb.map(id => ({
+          discord_id:     id,
+          discord_avatar: userMap[id]?.discord_avatar || null,
+          name:           userMap[id]?.display_name   || id,
+          username:       userMap[id]?.discord_username || null,
+        })),
+        disliked_by_users: db.map(id => ({
+          discord_id:     id,
+          discord_avatar: userMap[id]?.discord_avatar || null,
+          name:           userMap[id]?.display_name   || id,
+          username:       userMap[id]?.discord_username || null,
+        })),
+      };
+    });
 
     return Response.json({ posts });
     // return Response.json({ posts: rows });
@@ -122,11 +158,39 @@ export async function PUT(request) {
       [post_id, post_id, post_id, post_id]
     );
 
+    const lbIds = counts.liked_by    ? counts.liked_by.split(',')    : [];
+    const dbIds = counts.disliked_by ? counts.disliked_by.split(',') : [];
+
+    const allReactorIds = [...new Set([...lbIds, ...dbIds])];
+    let reactorMap = {};
+    if (allReactorIds.length > 0) {
+      const ph = allReactorIds.map(() => '?').join(',');
+      const [reactorRows] = await query(
+        `SELECT discord_id, discord_avatar, discord_username,
+                COALESCE(discord_display_name, discord_username, gd_username) AS display_name
+         FROM users WHERE discord_id IN (${ph})`,
+        allReactorIds
+      );
+      reactorRows.forEach(u => { reactorMap[u.discord_id] = u; });
+    }
+
     return Response.json({
       likes:       counts.likes || 0,
       dislikes:    counts.dislikes || 0,
-      liked_by:    counts.liked_by    ? counts.liked_by.split(',')    : [],
-      disliked_by: counts.disliked_by ? counts.disliked_by.split(',') : [],
+      liked_by:    lbIds,
+      disliked_by: dbIds,
+      liked_by_users:    lbIds.map(id => ({
+        discord_id:     id,
+        discord_avatar: reactorMap[id]?.discord_avatar || null,
+        name:           reactorMap[id]?.display_name   || id,
+        username:       reactorMap[id]?.discord_username || null,
+      })),
+      disliked_by_users: dbIds.map(id => ({
+        discord_id:     id,
+        discord_avatar: reactorMap[id]?.discord_avatar || null,
+        name:           reactorMap[id]?.display_name   || id,
+        username:       reactorMap[id]?.discord_username || null,
+      })),
     });
   } catch (e) {
     return Response.json({ error: e.message }, { status: 500 });

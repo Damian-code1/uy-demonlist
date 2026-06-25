@@ -204,18 +204,20 @@ function buildReactionBar(post, user) {
       <span class="mural-reaction-count mural-reaction-count-clickable"
             onclick="toggleMuralVoterDrop('${likeDropId}', event)">
         <i class="fas fa-thumbs-up"></i> ${post.likes || 0}
+        ${likedUsers.length ? `
         <div class="mural-voters-drop" id="${likeDropId}">
-          <div class="mural-voters-title"><i class="fas fa-thumbs-up"></i> Les gustó (${likedUsers.length})</div>
+          <div class="mural-voters-title"><i class="fas fa-thumbs-up" style="color:#4ade80"></i> Les gustó (${likedUsers.length})</div>
           ${buildUserDropdown(likedUsers, 'like')}
-        </div>
+        </div>` : ''}
       </span>
       <span class="mural-reaction-count mural-dislike-count mural-reaction-count-clickable"
             onclick="toggleMuralVoterDrop('${dislikeDropId}', event)">
         <i class="fas fa-thumbs-down"></i> ${post.dislikes || 0}
+        ${dislikedUsers.length ? `
         <div class="mural-voters-drop" id="${dislikeDropId}">
-          <div class="mural-voters-title"><i class="fas fa-thumbs-down"></i> No les gustó (${dislikedUsers.length})</div>
+          <div class="mural-voters-title"><i class="fas fa-thumbs-down" style="color:#f87171"></i> No les gustó (${dislikedUsers.length})</div>
           ${buildUserDropdown(dislikedUsers, 'dislike')}
-        </div>
+        </div>` : ''}
       </span>`;
   }
 
@@ -514,10 +516,12 @@ async function toggleMuralReaction(postId, reaction) {
 
     const post = muralPosts.find(p => p.id === Number(postId));
     if (post) {
-      post.likes       = data.likes       ?? post.likes;
-      post.dislikes    = data.dislikes    ?? post.dislikes;
-      post.liked_by    = data.liked_by    ?? post.liked_by;
-      post.disliked_by = data.disliked_by ?? post.disliked_by;
+      post.likes            = data.likes            ?? post.likes;
+      post.dislikes         = data.dislikes         ?? post.dislikes;
+      post.liked_by         = data.liked_by         ?? post.liked_by;
+      post.disliked_by      = data.disliked_by      ?? post.disliked_by;
+      post.liked_by_users   = data.liked_by_users   ?? post.liked_by_users;
+      post.disliked_by_users= data.disliked_by_users?? post.disliked_by_users;
     }
 
     const bar = document.querySelector(`.mural-reactions[data-post-id="${postId}"]`);
