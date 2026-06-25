@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   initAchAuth();
   setupPlayerAutocomplete();
   setupLevelAutocomplete();
-  // Cargar niveles y AREDL para el buscador de niveles
+  setupFormDraftListeners();
   if (typeof loadData     === 'function') await loadData();
   if (typeof loadAredlMap === 'function') loadAredlMap();
 });
@@ -738,6 +738,58 @@ async function deleteAchComment(commentId, achId) {
 }
 window.deleteAchComment = deleteAchComment;
 
+const ACH_FORM_DRAFT_KEY = 'ach_form_draft';
+
+function saveFormDraft() {
+  if (document.getElementById('achFormId')?.value) return; // no guardar en edición
+  const draft = {
+    pos:      document.getElementById('achFormPos')?.value,
+    type:     document.getElementById('achFormType')?.value,
+    player:   document.getElementById('achFormPlayer')?.value,
+    level:    document.getElementById('achFormLevel')?.value,
+    progress: document.getElementById('achFormProgress')?.value,
+    video:    document.getElementById('achFormVideo')?.value,
+    thumb:    document.getElementById('achFormThumb')?.value,
+    notes:    document.getElementById('achFormNotes')?.value,
+  };
+  const hasData = Object.values(draft).some(v => v && v.trim());
+  if (hasData) localStorage.setItem(ACH_FORM_DRAFT_KEY, JSON.stringify(draft));
+  else localStorage.removeItem(ACH_FORM_DRAFT_KEY);
+}
+
+function loadFormDraft() {
+  try {
+    const raw = localStorage.getItem(ACH_FORM_DRAFT_KEY);
+    if (!raw) return false;
+    const d = JSON.parse(raw);
+    if (d.pos)      document.getElementById('achFormPos').value      = d.pos;
+    if (d.type)     document.getElementById('achFormType').value      = d.type;
+    if (d.player)   document.getElementById('achFormPlayer').value    = d.player;
+    if (d.level)    document.getElementById('achFormLevel').value     = d.level;
+    if (d.progress) document.getElementById('achFormProgress').value  = d.progress;
+    if (d.video)    document.getElementById('achFormVideo').value     = d.video;
+    if (d.thumb) {
+      document.getElementById('achFormThumb').value = d.thumb;
+      previewAchThumb(d.thumb);
+    }
+    if (d.notes)    document.getElementById('achFormNotes').value     = d.notes;
+    document.getElementById('achFormType').dispatchEvent(new Event('change'));
+    return Object.values(d).some(v => v && v.trim());
+  } catch { return false; }
+}
+
+function clearFormDraft() {
+  localStorage.removeItem(ACH_FORM_DRAFT_KEY);
+}
+
+function setupFormDraftListeners() {
+  const fields = ['achFormPos','achFormType','achFormPlayer','achFormLevel','achFormProgress','achFormVideo','achFormThumb','achFormNotes'];
+  fields.forEach(id => {
+    document.getElementById(id)?.addEventListener('input', saveFormDraft);
+    document.getElementById(id)?.addEventListener('change', saveFormDraft);
+  });
+}
+
 function openAchForm(id = null) {
   const isStaff = _currentUser && STAFF_ROLES.includes(_currentUser.role);
   if (!isStaff) return;
@@ -769,27 +821,53 @@ function openAchForm(id = null) {
     document.getElementById('achFormVideo').value    = '';
     document.getElementById('achFormThumb').value    = '';
     document.getElementById('achFormNotes').value    = '';
+
+    const hasDraft = loadFormDraft();
+    if (hasDraft) showToast('Borrador restaurado ✓', 'info');
   }
 
   document.getElementById('achFormOverlay').classList.add('open');
 }
 
 function closeAchForm() {
+  saveFormDraft();
   document.getElementById('achFormOverlay').classList.remove('open');
 }
 window.openAchForm  = openAchForm;
 window.closeAchForm = closeAchForm;
 
 function previewAchThumb(url) {
-  const ytId    = extractYTId(url);
   const preview = document.getElementById('achFormThumbPreview');
   const img     = document.getElementById('achFormThumbImg');
-  if (ytId) {
-    img.src = `https://img.youtube.com/vi/${ytId}/mqdefault.jpg`;
-    preview.style.display = '';
-  } else {
+  if (!preview || !img) return;
+
+  const trimmed = (url || '').trim();
+  if (!trimmed) {
     preview.style.display = 'none';
+    return;
   }
+
+  const ytId = extractYTId(trimmed);
+  if (!ytId) {
+    preview.style.display = 'block';
+    preview.innerHTML = `<div class="ach-form-thumb-error"><i class="fas fa-exclamation-circle"></i> Ingresá un link de YouTube válido para ver la preview</div>`;
+    return;
+  }
+
+  preview.style.display = 'block';
+  preview.innerHTML = `
+    <div class="ach-form-thumb-loader"><i class="fas fa-spinner fa-spin"></i> Cargando preview…</div>
+    <img id="achFormThumbImg" src="" alt="" style="display:none">`;
+
+  const newImg = document.getElementById('achFormThumbImg');
+  newImg.onload = () => {
+    preview.querySelector('.ach-form-thumb-loader')?.remove();
+    newImg.style.display = 'block';
+  };
+  newImg.onerror = () => {
+    preview.innerHTML = `<div class="ach-form-thumb-error"><i class="fas fa-exclamation-circle"></i> No se pudo cargar la thumbnail</div>`;
+  };
+  newImg.src = `https://img.youtube.com/vi/${ytId}/mqdefault.jpg`;
 }
 window.previewAchThumb = previewAchThumb;
 
@@ -837,6 +915,7 @@ async function saveAchForm() {
     if (!res.ok) throw new Error(data.error);
 
     showToast(id ? 'Achievement actualizado ✓' : 'Achievement agregado ✓', 'success');
+    clearFormDraft();
     closeAchForm();
     loadAchievements();
   } catch (e) {

@@ -464,9 +464,21 @@
 .ach-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
 .ach-form-thumb-preview {
   margin-top: .5rem; border-radius: var(--r-sm); overflow: hidden;
-  max-height: 120px; display: none;
+  display: none; position: relative; background: var(--bg4);
 }
-.ach-form-thumb-preview img { width: 100%; height: 120px; object-fit: cover; }
+.ach-form-thumb-preview img {
+  width: 100%; height: 130px; object-fit: cover;
+  display: block; transition: opacity .2s;
+}
+.ach-form-thumb-loader {
+  position: absolute; inset: 0; display: flex; align-items: center;
+  justify-content: center; background: var(--bg4);
+  color: var(--text-dim); font-size: .85rem; gap: .5rem;
+}
+.ach-form-thumb-error {
+  padding: .75rem 1rem; color: var(--red); font-size: .8rem;
+  display: flex; align-items: center; gap: .4rem;
+}
 .ach-form-footer {
   display: flex; gap: .65rem; justify-content: flex-end; margin-top: 1.5rem; padding-top: 1rem;
   border-top: 1px solid var(--border-s);
