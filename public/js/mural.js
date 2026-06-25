@@ -1,13 +1,10 @@
-// ─── MURAL DE LA COMUNIDAD ───
-// Comentarios públicos con replies y avatar de Discord.
-// Reglas: 500 chars máx., máx. 1 nivel de reply, "Mostrar más" para replies largas.
+// MURAL DE LA COMUNIDAD
 
 const MURAL_PAGE_SIZE = 10;
 let muralPosts   = [];
 let muralShowing = MURAL_PAGE_SIZE;
 let muralTimeInterval = null;
 
-// Metadata de roles para los badges del mural
 const MURAL_ROLE_META = {
   owner:    { label: 'Owner',    icon: 'fa-crown',         color: '#f59e0b' },
   manager:  { label: 'Manager',  icon: 'fa-chess-queen',   color: '#ec4899' },
@@ -19,7 +16,6 @@ function getMuralRoleMeta(role) {
   return MURAL_ROLE_META[role] || null;
 }
 
-// ─── Carga inicial ───
 async function loadMural(silent = false) {
   const wrap = document.getElementById('muralFeed');
   if (!wrap) return;
@@ -40,7 +36,7 @@ async function loadMural(silent = false) {
   }
 }
 
-// ─── Contador de tiempo en vivo (actualiza ".mural-time" cada 30s sin re-renderizar todo) ───
+// Contador de tiempo en vivo
 function startMuralTimeTicker() {
   if (muralTimeInterval) clearInterval(muralTimeInterval);
   muralTimeInterval = setInterval(() => {
@@ -50,7 +46,6 @@ function startMuralTimeTicker() {
   }, 30_000);
 }
 
-// ─── Actualizar manualmente (botón refresh) ───
 async function refreshMural() {
   const btn = document.getElementById('muralRefreshBtn');
   if (btn) {
@@ -77,7 +72,6 @@ function renderMural() {
   const slice = muralPosts.slice(0, muralShowing);
   wrap.innerHTML = slice.map(p => buildPostHTML(p)).join('');
 
-  // Botón cargar más
   const btn = document.getElementById('muralLoadMore');
   if (btn) btn.classList.toggle('hidden', muralShowing >= muralPosts.length);
 
@@ -115,7 +109,6 @@ function buildPostHTML(post, isReply = false) {
 
   const rankBadge = '';
 
-  // Badge de rol del staff (solo para roles relevantes)
   const roleMeta = getMuralRoleMeta(post.role);
   const roleBadge = roleMeta
     ? `<span class="mural-role-badge mural-role-${post.role}" title="${roleMeta.label}">
@@ -123,11 +116,9 @@ function buildPostHTML(post, isReply = false) {
        </span>`
     : '';
 
-  // Timestamp guardado como epoch para el ticker de tiempo real
   const ts = new Date(post.created_at).getTime();
   const relTime = relativeTime(ts);
 
-  // Username de Discord (@handle) — prefiere discord_username, fallback a gd_username
   const atHandle = post.discord_username || post.gd_username || '—';
 
   const repliesSection = !isReply ? `
@@ -189,8 +180,6 @@ function buildReactionBar(post, user) {
   const iLiked     = myId && post.liked_by?.includes(myId);
   const iDisliked  = myId && post.disliked_by?.includes(myId);
 
-  // Dropdowns de usuarios con avatar Discord — se recuperan de liked_by_users / disliked_by_users
-  // (arrays de objetos {id, name, avatar} que vienen del backend) o fallback a nombres simples.
   const likedUsers    = post.liked_by_users    || (post.liked_by    || []).map(n => ({ name: n }));
   const dislikedUsers = post.disliked_by_users || (post.disliked_by || []).map(n => ({ name: n }));
 
@@ -284,7 +273,6 @@ function toggleMuralVoterDrop(id, event) {
 }
 window.toggleMuralVoterDrop = toggleMuralVoterDrop;
 
-// Cerrar dropdowns al click fuera
 document.addEventListener('click', () => {
   document.querySelectorAll('.mural-voters-drop.open').forEach(d => d.classList.remove('open'));
 });
@@ -308,7 +296,6 @@ async function loadReplies(postId) {
   const btn  = document.querySelector(`.mural-replies-toggle[data-id="${postId}"]`);
   if (!wrap) return;
 
-  // Toggle: si ya tiene replies mostradas, las oculta
   if (wrap.dataset.loaded === '1') {
     wrap.innerHTML = '';
     wrap.dataset.loaded = '0';
@@ -326,7 +313,6 @@ async function loadReplies(postId) {
       btn.dataset.count = replies.length;
       btn.innerHTML = `<i class="fas fa-chevron-up"></i> Ocultar respuestas`;
     }
-    // Eventos de delete en replies
     wrap.querySelectorAll('.mural-delete-btn').forEach(b => {
       b.addEventListener('click', () => deletePost(b.dataset.id));
     });
@@ -350,20 +336,17 @@ async function submitReply(postId) {
   if (r.ok) {
     input.value = '';
     document.getElementById(`reply-form-${postId}`)?.classList.add('hidden');
-    // Recargar replies si estaban abiertas
     const wrap = document.getElementById(`replies-${postId}`);
     if (wrap?.dataset.loaded === '1') {
       wrap.dataset.loaded = '0';
       loadReplies(postId);
     }
-    // Actualizar contador
     const toggleBtn = document.querySelector(`.mural-replies-toggle[data-id="${postId}"]`);
     if (toggleBtn) {
       const count = parseInt(toggleBtn.dataset.count || 0) + 1;
       toggleBtn.dataset.count = count;
       toggleBtn.innerHTML = `<i class="fas fa-comments"></i> Ver ${count} respuesta${count > 1 ? 's' : ''}`;
     } else {
-      // Mostrar toggle si no existía
       const postEl = document.querySelector(`.mural-post[data-post-id="${postId}"]`);
       if (postEl) {
         const btn = document.createElement('button');
@@ -405,14 +388,12 @@ async function deletePost(postId) {
   }
 }
 
-// Formulario principal
 function initMuralForm() {
   const textarea  = document.getElementById('muralNewText');
   const counter   = document.getElementById('muralCharCount');
   const submitBtn = document.getElementById('muralSubmit');
   if (!textarea) return;
 
-  // ── Contador de caracteres en tiempo real ──
   textarea.addEventListener('input', () => {
     const len = textarea.value.length;
     if (counter) {
@@ -421,12 +402,10 @@ function initMuralForm() {
       counter.classList.toggle('mural-counter-danger', len > 490);
     }
     if (submitBtn) submitBtn.disabled = len === 0 || len > 500;
-    // Auto-grow del textarea (hasta 6 líneas)
     textarea.style.height = 'auto';
     textarea.style.height = Math.min(textarea.scrollHeight, 160) + 'px';
   });
 
-  // ── Publicar con Ctrl+Enter ──
   textarea.addEventListener('keydown', e => {
     if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
       e.preventDefault();
@@ -465,16 +444,13 @@ function initMuralForm() {
     renderMural();
   });
 
-  // ── Botón refresh ──
   document.getElementById('muralRefreshBtn')?.addEventListener('click', refreshMural);
 }
 
-// Utilidades
 function escMural(s) {
   return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-// Acepta tanto un string ISO como un epoch numérico
 function relativeTime(input) {
   const ts   = typeof input === 'number' ? input : new Date(input).getTime();
   const diff = Date.now() - ts;
@@ -499,7 +475,6 @@ function showToast(msg, type = 'info') {
   setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 300); }, 2800);
 }
 
-// Visibilidad del formulario según sesión
 function updateMuralFormVisibility() {
   const formWrap  = document.getElementById('muralFormWrap');
   const loginNote = document.getElementById('muralLoginNote');
@@ -525,7 +500,6 @@ async function toggleMuralReaction(postId, reaction) {
     if (!res.ok) return;
     const data = await res.json();
 
-    // Actualizar en cache sin re-renderizar todo
     const post = muralPosts.find(p => p.id === Number(postId));
     if (post) {
       post.likes       = data.likes       ?? post.likes;
@@ -534,11 +508,9 @@ async function toggleMuralReaction(postId, reaction) {
       post.disliked_by = data.disliked_by ?? post.disliked_by;
     }
 
-    // Actualizar solo el bar de reacciones de ese post, sin re-renderizar toda la lista
     const bar = document.querySelector(`.mural-reactions[data-post-id="${postId}"]`);
     if (bar) bar.innerHTML = buildReactionBar(post || { id: Number(postId), likes: data.likes, dislikes: data.dislikes, liked_by: data.liked_by, disliked_by: data.disliked_by }, user);
 
-    // Re-enganchar eventos del bar actualizado
     bar?.querySelectorAll('.mural-react-btn').forEach(btn => {
       btn.addEventListener('click', () => toggleMuralReaction(btn.dataset.postId, btn.dataset.reaction));
     });

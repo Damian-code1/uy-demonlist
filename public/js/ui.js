@@ -1,6 +1,4 @@
-// =============================================
-// UI.JS — Modales estilizados
-// =============================================
+// UI.JS
 
 function uiAlert({ title, message, type = 'info', confirmText = 'Aceptar' }) {
   return new Promise(resolve => {
@@ -123,9 +121,7 @@ window.uiAlert   = uiAlert;
 window.uiConfirm = uiConfirm;
 window.uiPrompt  = uiPrompt;
 
-// =============================================
-// TOAST NOTIFICATIONS
-// =============================================
+// Toast notifications
 function showToast(message, type = 'info') {
   const colors = {
     success: 'linear-gradient(135deg, #16a34a, #22c55e)',

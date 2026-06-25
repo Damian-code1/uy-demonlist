@@ -1,8 +1,6 @@
-/* =============================================
-   RESPONSIVE.CSS — UY Demonlist v2
-   ============================================= */
+/* RESPONSIVE.CSS */
 
-/* ─── Tablet ─── */
+/* Tablet */
 @media (max-width: 900px) {
   .navbar-inner { gap: 1rem; }
   .nav-links { gap: 0; }
@@ -17,7 +15,7 @@
   .form-grid-2 { grid-template-columns: 1fr; }
   .admin-form-grid2 { grid-template-columns: 1fr; }
 
-  /* Admin panel — empieza a angostarse antes de llegar a mobile */
+  /* Admin panel */
   .admin-panel { max-width: 100%; }
   .admin-header { padding: 1rem 1.1rem; }
   .admin-title  { font-size: 1.35rem; letter-spacing: 2px; }
@@ -26,7 +24,7 @@
   .admin-form-box { padding: 1.4rem; }
 }
 
-/* ─── Admin: franja intermedia donde toolbar/select empiezan a apretar ─── */
+/* Admin: franja intermedia */
 @media (max-width: 760px) {
   .admin-toolbar { gap: .5rem; }
   .admin-toolbar .search-box { min-width: 140px; }
@@ -38,18 +36,16 @@
   .admin-table { font-size: .76rem; }
   .admin-table th, .admin-table td { padding: .55rem .6rem; }
 
-  /* La fila de "Filtrar por jugador o nivel..." + contador de resultados
-     usa max-width:340px inline en el HTML — lo pisamos para que también
-     se achique con la pantalla. */
+  /* Filtro de resultados */
   .adm-search-wrap { max-width: none !important; width: 100%; }
   #victorsTableCount { white-space: nowrap; flex-shrink: 0; font-size: .72rem !important; }
 }
 
-/* ─── Mobile ─── */
+/* Mobile */
 @media (max-width: 640px) {
   :root { --navbar-h: 56px; }
 
-  /* Nav: show hamburger */
+  /* Nav: hamburger */
   .nav-links {
     position: fixed; top: var(--navbar-h); left: 0; right: 0;
     background: rgba(7,7,13,.97);
@@ -65,12 +61,12 @@
   .nav-link { width: 100%; padding: .7rem .85rem; font-size: .8rem; }
   .hamburger { display: flex; }
 
-  /* Float user widget smaller on mobile */
+  /* User widget más chico */
   .user-widget { right: 10px; top: calc(var(--navbar-h) + 8px); left: auto; max-width: calc(100vw - 20px); }
   .user-widget-card { padding: .38rem .6rem .38rem .42rem; max-width: 180px; }
   .user-widget-name { font-size: .72rem; }
 
-  /* Dropdown: nunca se sale de pantalla en viewports angostos */
+  /* Dropdown en viewports angostos */
   .user-widget-dropdown {
     right: 0;
     left: auto;
@@ -78,16 +74,13 @@
     min-width: min(232px, calc(100vw - 20px));
   }
 
-  /* Countdown flotante de sanción: mismo clamping que el widget */
+  /* Countdown flotante */
   .ban-countdown-float {
     max-width: calc(100vw - 20px) !important;
     min-width: 0;
   }
 
-  /* Botones de paneles (Manager/Admin/Sanciones) salen de la navbar visible
-     y se ocultan ahí — JS los reinserta dentro del menú hamburguesa, para
-     que la esquina superior derecha quede libre y el widget flotante del
-     usuario sea siempre clickeable. */
+  /* Botones de paneles en menú hamburguesa */
   .nav-right #navOwnerBtn,
   .nav-right #navAdminBtn,
   .nav-right #navSanctionsBtn {
@@ -237,8 +230,7 @@
   #victorLevelSelect { width: 100% !important; flex: none !important; }
   .btn-admin-add { width: 100%; justify-content: center; }
 
-/* Buscador de la tabla de victors/jugadores: apila en vez de
-     apretarse al lado del contador "X resultados" */
+/* Buscador de tabla */
   div[style*="margin-bottom:.6rem"][style*="display:flex"] {
     flex-wrap: wrap !important;
   }
@@ -266,7 +258,7 @@
   .footer-bottom { flex-direction: column; align-items: flex-start; gap: .6rem; }
   .footer-credit { flex-wrap: wrap; }
 }
-/* ─── Extra small (la mayoría de celulares chicos) ─── */
+/* Extra small */
 @media (max-width: 400px) {
   .lb-row { padding: .55rem .6rem; gap: .4rem; }
   .lb-pos-wrap { width: 24px; }
@@ -302,9 +294,9 @@
   .modal-box   { border-radius: var(--r); }
 }
 
-/* ─── Very small ─── */
+/* Very small */
 @media (max-width: 380px) {
-  /* El widget se achica pero NUNCA esconde nombre/rango — solo reduce tamaños */
+  /* Widget más chico */
   .user-widget { right: 6px; max-width: calc(100vw - 12px); }
   .user-widget-card {
     padding: .32rem .5rem .32rem .32rem;
@@ -326,7 +318,7 @@
   .btn-admin-add { font-size: .68rem; padding: .5rem .7rem; }
 }
 
-/* ─── Player profile modal — mobile ─── */
+/* Player profile modal — mobile */
 @media (max-width: 640px) {
   .player-modal { padding: .5rem; }
 

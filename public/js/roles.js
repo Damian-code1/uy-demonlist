@@ -1,7 +1,4 @@
-// =============================================
-// ROLES.JS — Fuente única de verdad de roles (frontend)
-// Agregar un rol nuevo = editar SOLO este archivo
-// =============================================
+// ROLES.JS
 
 const ROLE_META = {
   usuario:  { label: 'Usuario',  icon: 'fa-user',       color: '#64748b' },
@@ -13,8 +10,8 @@ const ROLE_META = {
 
 const ROLE_ORDER = ['usuario', 'list_mod', 'admin', 'manager', 'owner'];
 
-const SANCTIONS_ROLES       = ['list_mod', 'admin', 'manager', 'owner']; // panel de submissions/admin general — list_mod+
-const STAFF_SANCTIONS_ROLES = ['admin', 'manager', 'owner'];             // panel de SANCIONES (bans, log) — admin+ NUNCA list_mod
+const SANCTIONS_ROLES       = ['list_mod', 'admin', 'manager', 'owner'];
+const STAFF_SANCTIONS_ROLES = ['admin', 'manager', 'owner'];
 const MANAGER_ROLES         = ['manager', 'owner'];
 const OWNER_ROLES           = ['owner'];
 

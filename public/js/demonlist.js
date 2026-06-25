@@ -1,12 +1,10 @@
-// =============================================
-// DEMONLIST.JS — UY Demonlist v2
-// =============================================
+// DEMONLIST.JS
 
 let filteredLevels   = [];
 let currentView      = localStorage.getItem('preferredView') || 'list';
 let activeModalLevel = null;
 let activeVictorIdx  = 0;
-let _lmGdStatsCache   = {}; // { [levelId]: gdData } — persiste entre re-renders del modal (cambio de victor, refresh)
+let _lmGdStatsCache = {};
 let favoritesView    = false;
 let userFavorites    = JSON.parse(localStorage.getItem('favorites') || '[]');
 
@@ -68,7 +66,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   setupSubmissionAutocomplete();
 });
 
-// ─── HERO STATS ───
+// Hero stats
 function syncHeroStats() {
   const { totalLevels, totalPlayers, totalCompletions } = getGlobalStats();
   animateCounter(document.getElementById('statLevels'),      totalLevels);
@@ -128,20 +126,15 @@ function paintCards(levels, animated = true) {
 
   if (!animated) return;
 
-  // Animar SOLO las cards que están (o van a estar) visibles cerca del
-  // viewport al cargar — el resto se anima recién cuando el usuario
-  // scrollea hasta ellas. Esto evita disparar 176 tweens de GSAP de una.
-  const firstScreenCount = 14; // ~lo que entra en pantalla + colchón
+  
+  const firstScreenCount = 14; 
   cardEls.slice(0, firstScreenCount).forEach((card, i) => {
     gsap.from(card, { opacity: 0, y: 12, duration: .35, ease: 'power3.out', delay: Math.min(i * .02, .35) });
   });
 
   if (cardEls.length <= firstScreenCount) return;
 
-  // Las cards fuera de pantalla arrancan visibles (opacity: 1) — si GSAP
-  // llega a tiempo hace el efecto de entrada, si no, ya se ven igual.
-  // Esto evita el parpadeo al scrollear rápido donde las cards estaban
-  // en opacity:0 esperando la animación que nunca llegó a dispararse.
+  
   cardEls.slice(firstScreenCount).forEach(card => {
     card.style.opacity = '1';
   });
@@ -223,14 +216,12 @@ function levelTierBodyColor(pos) {
 }
 window.levelTierBodyColor = levelTierBodyColor;
 
-// ─── BUILD COMPACT CARD ───
+// Build card
 function buildCard(level, index) {
   const pos      = level.position || (index + 1);
   const victors  = level.victors || [];
-  // Los niveles legacy no muestran su posición en AREDL (ya no son extreme)
   const aredlPos  = (!level.legacy && level.aredl_position) ? level.aredl_position : null;
   const thumb     = level.thumb_url || null;
-  // Los niveles legacy no otorgan puntos
   const pts       = level.legacy ? null : levelPoints(level);
 
   const isFav = userFavorites.includes(level.id);
@@ -243,7 +234,6 @@ function buildCard(level, index) {
   card.dataset.id = level.id;
   card.tabIndex = 0;
 
-  // Ícono de medalla para top 3 (sin emoji, sin seleccionable)
   let rankHtml;
   if (pos === 1) {
     rankHtml = `<div class="lc-rank lc-rank-medal lc-rank-gold" aria-label="Posición 1">
@@ -373,9 +363,7 @@ function buildCard(level, index) {
   return card;
 }
 
-// ─── Extract dominant color from thumbnail for dynamic gradient ───
-
-// ─── LEVEL MODAL (with switchable victor player) ───
+// Level modal
 function setupLevelModal() {
   const modal = document.getElementById('levelDetailModal');
   modal?.querySelector('.modal-backdrop')?.addEventListener('click', closeLevelDetailModal);
@@ -389,14 +377,12 @@ async function openLevelModal(level, opts = {}) {
   activeModalLevel = level;
   activeVictorIdx  = 0;
 
-  // Deep-link a un victor específico (usado desde el perfil de jugador en el leaderboard)
   if (opts.targetVictorName) {
     const norm = s => (s || '').trim().toLowerCase();
     const foundIdx = (level.victors || []).findIndex(v => norm(v.name) === norm(opts.targetVictorName));
     if (foundIdx !== -1) activeVictorIdx = foundIdx;
   }
 
-  // Abrir siempre re-renderiza el player desde cero (no es un refresh silencioso)
   _lmCurrentVideoId  = null;
   _lmCurrentVideoUrl = null;
 
@@ -404,17 +390,15 @@ async function openLevelModal(level, opts = {}) {
   modal.classList.add('active');
   document.body.style.overflow = 'hidden';
 
-  // Si ya tenemos stats cacheadas para este nivel (de una apertura previa), pintarlas de inmediato
   if (_lmGdStatsCache[level.id]) {
     paintGdStats(_lmGdStatsCache[level.id]);
   }
 
-  // Enrich with GDBrowser data — usar ID de AREDL si existe (más preciso)
   const gd = level.gd_level_id
     ? await fetchGdBrowserInfoById(level.gd_level_id)
     : await fetchGdBrowserInfo(level.name);
   if (gd && activeModalLevel === level) {
-    _lmGdStatsCache[level.id] = gd; // cachear: sobrevive a cambios de victor y refreshes del modal
+    _lmGdStatsCache[level.id] = gd;
     paintGdStats(gd);
   }
 }
@@ -472,36 +456,27 @@ function renderModalContent(level, opts = {}) {
 
   const idx      = victors[activeVictorIdx] ? activeVictorIdx : 0;
   const current  = victors[idx] || null;
-  // Usar el video propio del victor actual. Si el victor activo es el PRIMERO de la
-  // lista (idx 0) y no tiene video propio cargado, hacer fallback al video de
-  // Showcase del nivel — en la práctica ese campo casi siempre corresponde al primer
-  // completion. Para el resto de los victors (idx > 0) NO se hace fallback, ya que
-  // el showcase pertenecería a otro jugador distinto y mostraríamos el video equivocado.
+  
   const currentVideoUrl = current?.videoUrl || null;
   const isFirstVictor   = idx === 0;
   const videoUrl = currentVideoUrl
     || ((victors.length === 0 || isFirstVictor) ? (level.youtube_url || null) : null);
   const videoId  = videoUrl ? extractYTId(videoUrl) : null;
 
-  // Si es un refresh silencioso en background (opts.preservePlayer) y el video
-  // activo es el mismo que ya se está reproduciendo, NO tocamos el player wrap
-  // para no interrumpir la reproducción. El resto del modal (víctores, stats, etc.)
-  // sí se actualiza siempre.
-  // Comparar normalizando null/undefined para evitar race conditions en el polling
+  
   const normId  = videoId  || null;
   const normUrl = videoUrl || null;
-  // samePlayer: comparar por videoId primero (más robusto), luego por URL
+  
   const samePlayer = normId !== null
     ? normId === _lmCurrentVideoId
     : normUrl !== null && normUrl === _lmCurrentVideoUrl;
   const skipPlayerRerender = !!(opts.preservePlayer && samePlayer);
 
-  // Guardamos el wrap actual del player ANTES de pisar el innerHTML del box,
-  // para poder reinsertarlo intacto (con su iframe reproduciendo) si corresponde.
+  
   const existingPlayerWrap = skipPlayerRerender
     ? box.querySelector('.lm-player-wrap')
     : null;
-  if (existingPlayerWrap) existingPlayerWrap.remove(); // lo sacamos del DOM temporalmente, no lo destruimos
+  if (existingPlayerWrap) existingPlayerWrap.remove(); 
 
   _lmCurrentVideoId  = videoId;
   _lmCurrentVideoUrl = videoUrl;
@@ -570,7 +545,7 @@ function renderModalContent(level, opts = {}) {
         </button>
       </div>
 
-      <!-- ─── Comentarios del nivel ─── -->
+      <!-- Comentarios -->
       <div class="lm-comments-section" id="lmCommentsSection" data-level-id="${level.id}">
         <div class="lm-section-title" style="margin-top:1.25rem">
           <i class="fas fa-comments"></i> COMENTARIOS
@@ -604,9 +579,6 @@ function renderModalContent(level, opts = {}) {
   // Cargar comentarios del nivel
   setTimeout(() => initLevelComments(level.id), 50);
 
-  // Repintar stats de GDBrowser desde caché — el innerHTML de arriba acaba de
-  // recrear #lmGdStats vacío; sin esto, cambiar de victor o refrescar la lista
-  // hace que las stats desaparezcan aunque ya las tengamos cargadas.
   if (_lmGdStatsCache[level.id]) {
     paintGdStats(_lmGdStatsCache[level.id]);
   }
@@ -626,7 +598,7 @@ function renderModalContent(level, opts = {}) {
     });
   });
 
-  // Victor tab switching
+ 
   box.querySelectorAll('.lm-victor-tab').forEach(tab => {
     tab.addEventListener('click', e => {
       if (e.target.closest('.lm-victor-edit-icon')) return; // handled separately
@@ -635,7 +607,7 @@ function renderModalContent(level, opts = {}) {
     });
   });
 
-  // Admin edit-victor icon
+  
   if (isAdmin) {
     box.querySelectorAll('.lm-victor-edit-icon').forEach(icon => {
       icon.addEventListener('click', e => {
@@ -670,9 +642,8 @@ function closeLevelDetailModal() {
   activeModalLevel = null;
   _lmCurrentVideoId  = null;
   _lmCurrentVideoUrl = null;
-  _lmGdStatsCache    = {}; // limpiar caché de stats al cerrar, no tiene sentido mantenerlo entre sesiones de modal
+  _lmGdStatsCache    = {};
 
-  // Destruir el iframe del player para que el video/audio deje de reproducirse en segundo plano
   const playerWrap = document.querySelector('#levelDetailModal .lm-player-wrap');
   if (playerWrap) playerWrap.innerHTML = '';
 }
@@ -692,11 +663,8 @@ function refreshOpenLevelModal(levelId) {
     activeVictorIdx = Math.max(0, (fresh.victors?.length || 1) - 1);
   }
 
-  // Capturar el videoId/videoUrl actuales del iframe ANTES de renderizar,
-  // para que samePlayer funcione aunque _lmCurrentVideoId esté desincronizado.
   const existingIframe = modal.querySelector('.lm-player-wrap iframe');
   if (existingIframe && !_lmCurrentVideoId && !_lmCurrentVideoUrl) {
-    // Recuperar el videoId del src del iframe activo
     const srcMatch = existingIframe.src?.match(/embed\/([a-zA-Z0-9_-]{11})/);
     if (srcMatch) {
       _lmCurrentVideoId  = srcMatch[1];
@@ -704,12 +672,11 @@ function refreshOpenLevelModal(levelId) {
     }
   }
 
-  // preservePlayer: true → refresh silencioso, no interrumpir reproducción.
   renderModalContent(fresh, { preservePlayer: true });
 }
 window.refreshOpenLevelModal = refreshOpenLevelModal;
 
-// ─── SEARCH ───
+// Search
 function setupSearch() {
   const input    = document.getElementById('searchInput');
   const clearBtn = document.getElementById('listSearchClear');
@@ -723,7 +690,6 @@ function setupSearch() {
     debounce = setTimeout(() => {
       const ql = q.toLowerCase().trim();
       const qlNorm = ql.replace(/\s+/g, '');
-      // Normaliza fullwidth (２１１ → 211) y halfwidth
       const normalize = typeof normalizeForSearch === 'function'
         ? normalizeForSearch
         : s => s.replace(/[\uff01-\uff5e]/g, c =>
@@ -756,7 +722,7 @@ function setupSearch() {
   });
 }
 
-// ─── VIEW TOGGLES ───
+// View toggles
 function setupViewToggles() {
   document.querySelectorAll('.view-btn').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.view === currentView);
@@ -772,7 +738,7 @@ function setupViewToggles() {
   });
 }
 
-// ─── FAVORITES TOGGLE ───
+// Favorites toggle
 function setupFavoritesToggle() {
   const btn = document.getElementById('favViewBtn');
   if (!btn) return;
@@ -791,10 +757,10 @@ function setupFavoritesToggle() {
   });
 }
 
-// ─── SUBMISSION AUTOCOMPLETE ───
+// Submission autocomplete
 function setupSubmissionAutocomplete() {}
 
-// ─── SCROLL TO SUBMISSIONS ───
+// Scroll to submissions
 function scrollToSubmissions(levelName) {
   const section = document.getElementById('submissions');
   const input   = document.getElementById('levelName');
@@ -810,7 +776,7 @@ function scrollToSubmissions(levelName) {
   }
 }
 
-// ─── LEADERBOARD ───
+
 function renderLeaderboard() {
   const tbody = document.getElementById('leaderboardBody');
   if (!tbody) return;
@@ -825,7 +791,7 @@ function renderLeaderboard() {
     const pos = i + 1;
     const pct = ((player.points||0) / maxPts * 100).toFixed(1);
     const initials = (player.name||'?').slice(0,2).toUpperCase();
-    // Si este jugador es el usuario actual, usar su avatar fresco de sesión
+    
     const isCurrentUser = window.currentUser &&
       (player.discord_id === window.currentUser.discordId ||
        (player.name && window.currentUser.linkedPlayer &&
@@ -891,7 +857,7 @@ ${avatarUrl
       </div>`;
 
     tbody.appendChild(row);
-    // Animar la barra con delay
+    
     setTimeout(() => {
       row.querySelector('.lb-progress-fill')?.style.setProperty('width', pct + '%');
     }, 50 + i * 30);
@@ -899,7 +865,7 @@ ${avatarUrl
 }
 
 function playerColor(name) {
-  // Genera un color consistente basado en el nombre
+  
   let hash = 0;
   for (let c of (name||'')) hash = c.charCodeAt(0) + ((hash << 5) - hash);
   const h = Math.abs(hash) % 360;
@@ -925,7 +891,7 @@ function setupPlayerSearch() {
         row.style.display = show ? '' : 'none';
         if (show) found++;
       });
-      // Mostrar mensaje si no hay resultados
+      
       let noResult = document.getElementById('lbNoResult');
       if (!noResult) {
         noResult = document.createElement('div');
@@ -956,10 +922,10 @@ function setupPlayerSearch() {
 (function () {
   return;
 
-  // Extrae el color dominante de una imagen via canvas
+  
   function getDominantColor(img) {
     const canvas = document.createElement('canvas');
-    const size = 40; // downscale para velocidad
+    const size = 40; 
     canvas.width = size; canvas.height = size;
     const ctx = canvas.getContext('2d');
     ctx.drawImage(img, 0, 0, size, size);
@@ -968,8 +934,8 @@ function setupPlayerSearch() {
     let r = 0, g = 0, b = 0, count = 0;
     for (let i = 0; i < data.length; i += 4) {
       const pr = data[i], pg = data[i+1], pb = data[i+2], a = data[i+3];
-      if (a < 128) continue; // skip transparent
-      // Skip near-black and near-white (no aportan color interesante)
+      if (a < 128) continue; 
+
       const brightness = (pr + pg + pb) / 3;
       if (brightness < 20 || brightness > 230) continue;
       r += pr; g += pg; b += pb; count++;
@@ -978,9 +944,9 @@ function setupPlayerSearch() {
     return [Math.round(r/count), Math.round(g/count), Math.round(b/count)];
   }
 
-  // Ajusta saturación y oscurece el color para que quede bien de fondo
+  
   function toCardBg(r, g, b) {
-    // Convertir a HSL
+    
     const rn = r/255, gn = g/255, bn = b/255;
     const max = Math.max(rn, gn, bn), min = Math.min(rn, gn, bn);
     let h, s, l = (max + min) / 2;
@@ -997,11 +963,11 @@ function setupPlayerSearch() {
       }
     }
 
-    // Forzar: oscuro (L 10-22%), saturado (S 45-75%)
+    
     l = Math.max(0.10, Math.min(0.22, l * 0.35));
     s = Math.max(0.45, Math.min(0.75, s * 1.6));
 
-    // HSL → RGB
+    
     function hue2rgb(p, q, t) {
       if (t < 0) t += 1; if (t > 1) t -= 1;
       if (t < 1/6) return p + (q - p) * 6 * t;
@@ -1017,21 +983,21 @@ function setupPlayerSearch() {
     return `rgb(${rf},${gf},${bf})`;
   }
 
-  // Aplica el color a una card dada su thumbnail
+  
   function applyCardColor(card, img) {
     try {
       const rgb = getDominantColor(img);
       if (!rgb) return;
       const color = toCardBg(...rgb);
       card.style.setProperty('--card-color', color);
-      // También suaviza el borde con el color
+      
       card.style.borderColor = `color-mix(in srgb, ${color} 60%, rgba(255,255,255,.12))`;
     } catch (e) {
-      // CORS o error de canvas — no pasa nada, queda el fondo default
+      
     }
   }
 
-  // Procesa todas las tarjetas que ya existen y observa las nuevas
+  
   function processCard(card) {
     const thumb = card.querySelector('.lc-thumb');
     if (!thumb || thumb.dataset.colorized) return;
@@ -1045,7 +1011,7 @@ function setupPlayerSearch() {
     }
   }
 
-  // MutationObserver para cards que se rendericen después
+  
   const observer = new MutationObserver(mutations => {
     for (const m of mutations) {
       for (const node of m.addedNodes) {
@@ -1070,13 +1036,13 @@ function setupPlayerSearch() {
   }
 })();
 
-// ─── PLAYER PROFILE MODAL ───
+
 function openPlayerProfile(playerName) {
   const players = getPlayersData();
   const player  = players.find(p => p.name === playerName);
   if (!player) return;
 
-  // Buscar todas las completions del jugador en levelsData
+  
   const normName = s => (s||'').trim().toLowerCase();
   const completions = getLevelsData()
     .filter(l => (l.victors||[]).some(v => normName(v.name) === normName(playerName)))

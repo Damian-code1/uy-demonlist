@@ -1,13 +1,10 @@
-// =============================================
-// ROULETTE.JS — UY Demonlist Extreme Demon Roulette
-// Based on the demonlist, syncs with live API data
-// =============================================
+// ROULETTE.JS
 
-// ─── STATE ───
+// State
 const RL = {
   levels:       [],
   pool:         [],
-  session:      [],       // [{level, status, percentage, timestamp}]
+  session:      [],
   current:      null,
   sessionActive:false,
   totalGoal:    50,
@@ -19,12 +16,12 @@ const RL = {
   surrendered:  false,
   confettiCtx:  null,
   confettiParticles: [],
-  pctModalMode: 'complete', // 'complete' | 'fail'
+  pctModalMode: 'complete',
 };
 
 const RL_STORAGE_KEY = 'uydl_roulette_session_v1';
 
-// ─── INIT ───
+// Init
 document.addEventListener('DOMContentLoaded', async () => {
   buildEmbers();
   if (typeof loadDiscordWidget === 'function') loadDiscordWidget();
@@ -62,7 +59,7 @@ if (RL.current) {
 }
 });
 
-// ─── FETCH LEVELS from API (mismo endpoint que index.html) ───
+// Fetch levels
 async function fetchLevels() {
   const API = typeof API_BASE !== 'undefined' ? API_BASE : 'http://localhost:3001/api';
   try {
@@ -111,7 +108,7 @@ async function fetchLevels() {
   rebuildPool();
 }
 
-// ─── BUILD POOL ───
+// Build pool
 function rebuildPool() {
   const [minPos, maxPos] = RL.filterRange;
   RL.pool = RL.levels.filter(l => {
@@ -135,7 +132,7 @@ function updatePoolStats() {
   if (el) el.textContent = `${RL.pool.length} niveles disponibles`;
 }
 
-// ─── PERCENTAGE HELPERS ───
+// Percentage helpers
 function getLastRecordedPercentage() {
   for (const s of RL.session) {
     if (s.percentage != null && (s.status === 'completed' || s.status === 'failed')) {
@@ -163,7 +160,7 @@ function validatePercentage(value, mode) {
   return { ok: true, value: num };
 }
 
-// ─── PERCENTAGE MODAL ───
+// Percentage modal
 function initPctModal() {
   document.getElementById('rlPctCancel')?.addEventListener('click', closePctModal);
   document.getElementById('rlPctBackdrop')?.addEventListener('click', closePctModal);
@@ -256,7 +253,7 @@ function submitPctModal() {
 }
 
 
-// ─── INIT CONTROLS ───
+// Init controls
 function initControls() {
   const goalSlider = document.getElementById('rlGoalSlider');
 
@@ -426,7 +423,7 @@ function loadSession() {
   }
 }
 
-// ─── SESSION MANAGEMENT ───
+// Session management
 function startSession() {
   RL.session = [];
   RL.sessionActive = true;
@@ -478,7 +475,7 @@ function checkActiveSession() {
   }
 }
 
-// ─── SPIN ───
+// Spin
 async function handleSpin() {
   if (isSessionEnded()) {
     showRlToast('La sesión terminó porque te rendiste.', 'error');
@@ -505,7 +502,6 @@ if (RL.current) {
   RL.spinning = true;
   updateButtons();
 
-  // Delete the pending level
   const index = RL.session.findIndex(l => l.status === 'pending');
   if (index !== -1) RL.session.splice(index, 1);
 
@@ -529,7 +525,6 @@ if (RL.current) {
 }
 
 async function animateSlotMachine(target) {
-  // Animación simple: flash de carga y reveal directo, sin scroll de nombres
   const machine = document.getElementById('rlSlotMachine');
   if (machine) {
     machine.style.transition = 'opacity .15s ease';
@@ -610,7 +605,7 @@ function resetSlotDisplay() {
   if (thumbEl) { thumbEl.src = ''; thumbEl.style.display = 'none'; }
 }
 
-// ─── COMPLETE / FAIL / SKIP ───
+// Complete / fail / skip
 function finalizeComplete(percentage) {
   if (isSessionEnded()) return;
   if (!RL.current) return;
@@ -706,7 +701,7 @@ function handleSkip() {
   updateButtons();
 }
 
-// ─── PROGRESS UI ───
+// Progress UI
 function updateProgressUI() {
   const completed = RL.session.filter(s => s.status === 'completed').length;
   const skipped   = RL.session.filter(s => s.status === 'skipped').length;
@@ -742,7 +737,7 @@ function updateProgressUI() {
   if (infoEl) infoEl.textContent = `${completed} completados · ${failed} rendidos · ${skipped} salteados`;
 }
 
-// ─── SESSION STATS ───
+// Session stats
 function updateSessionStats() {
   const completed = RL.session.filter(s => s.status === 'completed').length;
   const failed    = RL.session.filter(s => s.status === 'failed').length;
@@ -803,7 +798,7 @@ function statusLabel(entry) {
   return '⏳ Pendiente';
 }
 
-// ─── HISTORY ───
+// History
 function renderHistory() {
   const list  = document.getElementById('rlHistoryList');
   const empty = document.getElementById('rlHistoryEmpty');
@@ -867,7 +862,7 @@ function renderHistory() {
   }).join('');
 }
 
-// ─── BUTTONS STATE ───
+// Buttons state
 function updateButtons() {
   const ended       = isSessionEnded();
   const spinBtn     = document.getElementById('rlBtnSpin');
@@ -895,7 +890,7 @@ function updateButtons() {
   if (heroCta)     heroCta.disabled     = ended;
 }
 
-// ─── FINISH MODAL ───
+// Finish modal
 function showFinishModal() {
   const modal = document.getElementById('rlFinishModal');
   if (!modal) return;
@@ -915,8 +910,7 @@ function showFinishModal() {
   launchConfetti();
 }
 
-// ─── PDF EXPORT ───
-// ─── PDF EXPORT ───
+// PDF export
 function downloadSessionPdf() {
   if (!RL.session.length) {
     showRlToast('No hay datos de sesión para exportar', 'error');
@@ -936,7 +930,7 @@ function downloadSessionPdf() {
   const MR   = 14;   // margin right
   const CW   = W - ML - MR;
 
-  // ── Colores principales ──
+  // Colors
   const C = {
     violet:    [124, 58, 237],
     red:       [244, 63, 94],

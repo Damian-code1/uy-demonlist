@@ -1,10 +1,8 @@
-// =============================================
-// SUBMISSIONS.JS — UY Demonlist v2
-// =============================================
+// SUBMISSIONS.JS
 (function () {
   'use strict';
 
-  let selectedLevel = null; // { name, position, aredl_position, youtube_id }
+  let selectedLevel = null;
   let rawRequired   = false;
 
   document.addEventListener('DOMContentLoaded', () => {
@@ -28,7 +26,6 @@
 
     if (!form) return;
 
-    // ─── Decidir qué mostrar según sesión ───
     function applySession() {
   const user = window.currentUser;
 
@@ -57,7 +54,6 @@
       noGd.style.display        = 'none';
       form.style.display        = '';
 
-      // Mostrar quién está enviando
       const avatar    = document.getElementById('subPlayerAvatar');
       const nameEl    = document.getElementById('subPlayerName');
       const gdEl      = document.getElementById('subPlayerGd');
@@ -72,11 +68,8 @@
       }
     }
 
-    // Exponer globalmente para poder refrescar el panel al instante
-    // tras un logout (sin necesitar F5) — ver auth.js → logout()
     window.refreshSubmissionsPanel = applySession;
 
-    // Esperar a que currentUser esté disponible
     if (window.currentUser !== undefined) {
       applySession();
     } else {
@@ -88,7 +81,6 @@
       }, 100);
     }
 
-    // ─── Autocomplete de niveles ───
     let debounce;
     levelInput?.addEventListener('input', () => {
       const q = levelInput.value.trim();
@@ -97,8 +89,6 @@
       debounce = setTimeout(() => renderLevelSuggestions(q), 120);
     });
 
-    // QOL: si el usuario clickea afuera por error y vuelve a enfocar el input
-    // con texto ya escrito, reaparecen las sugerencias sin tener que reescribir.
     levelInput?.addEventListener('focus', () => {
       const q = levelInput.value.trim();
       if (q.length >= 1 && !selectedLevel) renderLevelSuggestions(q);
@@ -125,8 +115,6 @@
       if (!e.target.closest('#subLevelSearchWrap') && !e.target.closest('#levelSuggestions')) hideSuggestions();
     });
 
-    // Cerrar con Escape (sin tocar el scroll: el dropdown ahora tiene su propio
-    // scroll interno y debe permanecer visible mientras el usuario scrollea la página).
     levelInput?.addEventListener('keydown', e => {
       if (e.key === 'Escape') {
         hideSuggestions();
@@ -162,7 +150,6 @@
       if (words.some(w => w === ql)) return 600;
       if (words.some(w => w.startsWith(ql))) return 500;
       if (words.some(w => w.includes(ql))) return 300;
-      // fuzzy: todos los caracteres de ql aparecen en orden en name
       let qi = 0;
       for (let i = 0; i < name.length && qi < ql.length; i++) {
         if (name[i] === ql[qi]) qi++;
@@ -176,14 +163,12 @@
       const levels = typeof getLevelsData === 'function' ? getLevelsData() : [];
       const ql = q.toLowerCase().trim();
 
-      // Niveles que YA están en nuestra lista
       const listHits = levels
         .map(level => ({ ...level, score: scoreMatch((level.name || '').toLowerCase(), ql) }))
         .filter(x => x.score > 0)
         .sort((a, b) => b.score - a.score)
         .slice(0, 25);
 
-      // Niveles de AREDL que NO están en nuestra lista todavía (sugerencia para agregar nuevo)
       const aredlMapData = window.aredlMap || {};
       const listNames    = new Set(levels.map(l => l.name?.toLowerCase()));
       const aredlHits = Object.entries(aredlMapData)
@@ -234,7 +219,7 @@
       suggestions.querySelector('.sub-sug-item')?.classList.add('active');
 
       suggestions.querySelectorAll('.sub-sug-item').forEach(item => {
-        item.addEventListener('mousedown', e => { e.preventDefault(); }); // evita que el blur cierre antes del click
+        item.addEventListener('mousedown', e => { e.preventDefault(); });
         item.addEventListener('mouseenter', () => {
           suggestions.querySelectorAll('.sub-sug-item.active').forEach(it => it.classList.remove('active'));
           item.classList.add('active');
@@ -299,7 +284,6 @@
       return text.replace(re, '<mark>$1</mark>');
     }
 
-    // ─── YouTube preview ───
     ytInput?.addEventListener('input', () => {
       const id = extractYouTubeId(ytInput.value.trim());
       if (id && preview && previewThumb) {
@@ -310,7 +294,6 @@
       }
     });
 
-    // ─── Submit ───
     form.addEventListener('submit', async e => {
       e.preventDefault();
       clearErrors();

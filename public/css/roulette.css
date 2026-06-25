@@ -1,8 +1,6 @@
-/* =============================================
-   ROULETTE.CSS — UY Demonlist Extreme Demon Roulette
-   ============================================= */
+/* ROULETTE.CSS */
 
-/* ─── VARIABLES (extends main.css) ─── */
+/* VARIABLES */
 :root {
   --roulette-glow:   rgba(155,89,245,.5);
   --roulette-fire:   #ff6b35;
@@ -11,16 +9,14 @@
   --slot-dur:        .08s;
 }
 
-/* ─── PAGE BASE ─── */
+/* PAGE BASE */
 .roulette-page {
   min-height: 100vh;
   background: var(--bg);
   overflow-x: hidden;
 }
 
-/* ═══════════════════════════════════════════
-   HERO SECTION
-   ═══════════════════════════════════════════ */
+/* HERO SECTION */
 .rl-hero {
   position: relative;
   min-height: 52vh;
@@ -31,7 +27,7 @@
   padding: calc(var(--navbar-h) + 3rem) 1.5rem 4rem;
 }
 
-/* Fondo animado de partículas de fuego */
+/* Fondo animado */
 .rl-hero-bg {
   position: absolute;
   inset: 0;
@@ -70,7 +66,7 @@
   100% { opacity: 0;    transform: translateY(-80vh) scale(.3) translateX(var(--drift, 30px)); }
 }
 
-/* Titulo */
+/* Título */
 .rl-hero-content {
   position: relative;
   z-index: 1;
@@ -138,10 +134,7 @@
   line-height: 1.7;
 }
 
-/* Stats del hero — mismo look & feel que .hero-stats de index.html
-   (línea de glow arriba, hover con elevación, ícono, número con
-   degradé animado) para que ambas páginas se sientan parte del
-   mismo sitio en vez de dos estilos distintos */
+/* Stats del hero */
 .rl-hero-stats {
   position: relative;
   display: flex;
@@ -359,8 +352,7 @@ input[type="range"] {
   cursor: pointer;
   box-sizing: border-box;
 }
-/* Margen lateral en el track para que el thumb nunca quede pegado/superpuesto
-   al texto de los extremos en .rl-range-labels (ej. "Full lista", "100") */
+/* Margen lateral en el track */
 .rl-range-wrap input[type="range"] {
   width: calc(100% - 20px);
   margin: 0 10px;
@@ -386,7 +378,7 @@ input[type="range"]::-webkit-slider-thumb {
 }
 input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.18); }
 
-/* Firefox: el track y el thumb se centran automáticamente entre sí, no requiere margin-top */
+/* Firefox */
 input[type="range"]::-moz-range-track {
   height: 6px;
   border-radius: 3px;
@@ -447,7 +439,7 @@ input[type="range"]::-moz-range-progress {
 .rl-toggle input:checked + .rl-toggle-slider::before { transform: translateX(16px); background: var(--violet); }
 .rl-toggle-label { font-size: .82rem; color: var(--text-sub); }
 
-/* ─── CURRENT LEVEL SLOT MACHINE ─── */
+/* CURRENT LEVEL SLOT MACHINE */
 .rl-slot-section {
   margin-bottom: 2rem;
 }
@@ -465,7 +457,7 @@ input[type="range"]::-moz-range-progress {
 }
 .rl-slot-title i { color: var(--roulette-fire); }
 
-/* La "máquina tragamonedas" principal */
+/* Máquina tragamonedas */
 .rl-slot-machine {
   position: relative;
   border-radius: var(--r-lg);
@@ -484,7 +476,7 @@ input[type="range"]::-moz-range-progress {
   border-color: rgba(34,197,94,.35);
 }
 
-/* Thumbnail grande */
+/* Thumbnail */
 .rl-slot-thumb-wrap {
   position: relative;
   aspect-ratio: 16/6;
@@ -516,11 +508,10 @@ input[type="range"]::-moz-range-progress {
   );
 }
 
-/* Efecto "spinning" sobre el thumb */
-/* Strip de scroll eliminado — se usa fade directo */
+/* Strip de scroll eliminado */
 .rl-slot-spin-overlay { display: none; }
 
-/* Reveal del nivel: aparece con scale + fade */
+/* Reveal del nivel */
 .rl-slot-machine.revealed .rl-slot-info {
   animation: level-reveal .35s cubic-bezier(.34,1.4,.64,1) both;
 }
@@ -536,7 +527,7 @@ input[type="range"]::-moz-range-progress {
   to   { opacity: 1; filter: none; }
 }
 
-/* Info encima del thumb */
+/* Info del nivel */
 .rl-slot-info {
   position: absolute;
   bottom: 0; left: 0; right: 0;
@@ -605,7 +596,7 @@ input[type="range"]::-moz-range-progress {
 }
 .rl-slot-chip i { font-size: .65rem; }
 
-/* ─── CONTROLES ─── */
+/* CONTROLES */
 .rl-controls {
   display: flex;
   align-items: center;
@@ -721,7 +712,7 @@ input[type="range"]::-moz-range-progress {
   min-width: 100px;
 }
 
-/* ─── PROGRESS BAR ─── */
+/* PROGRESS BAR */
 .rl-progress-section {
   background: var(--bg2);
   border: 1px solid var(--border);
@@ -807,7 +798,7 @@ input[type="range"]::-moz-range-progress {
   50%      { transform: scale(1.3); }
 }
 
-/* ─── HISTORIAL ─── */
+/* HISTORIAL */
 .rl-history-section {
   background: var(--bg2);
   border: 1px solid var(--border);
@@ -964,7 +955,7 @@ input[type="range"]::-moz-range-progress {
 }
 .rl-history-yt-btn:hover { background: rgba(244,63,94,.2); }
 
-/* ─── FINISH MODAL ─── */
+/* FINISH MODAL */
 .rl-finish-modal {
   position: fixed;
   inset: 0;
@@ -1134,7 +1125,7 @@ input[type="range"]::-moz-range-progress {
 }
 .rl-finish-btn-pdf:hover { background: rgba(244,63,94,.2); }
 
-/* ─── PERCENTAGE MODAL ─── */
+/* PERCENTAGE MODAL */
 .rl-pct-modal {
   position: fixed;
   inset: 0;
@@ -1286,7 +1277,7 @@ input[type="range"]::-moz-range-progress {
 }
 .rl-pct-btn-submit:hover { opacity: .88; }
 
-/* ─── SESSION STATS ─── */
+/* SESSION STATS */
 .rl-stats-section {
   background: var(--bg2);
   border: 1px solid var(--border);
@@ -1408,7 +1399,7 @@ input[type="range"]::-moz-range-progress {
 .rl-stats-row-status.skipped   { color: var(--warning); }
 .rl-stats-row-status.pending   { color: var(--violet); }
 
-/* ─── TOAST NOTIFICATION ─── */
+/* TOAST NOTIFICATION */
 .rl-toast {
   position: fixed;
   bottom: 2rem;
@@ -1439,7 +1430,7 @@ input[type="range"]::-moz-range-progress {
 .rl-toast.error   { border-color: rgba(244,63,94,.4); color: var(--red); }
 .rl-toast.info    { border-color: rgba(124,58,237,.4); color: var(--violet); }
 
-/* ─── CONFETI CANVAS ─── */
+/* CONFETI CANVAS */
 #confettiCanvas {
   position: fixed;
   inset: 0;
@@ -1450,7 +1441,7 @@ input[type="range"]::-moz-range-progress {
 }
 #confettiCanvas.active { opacity: 1; }
 
-/* ─── NAVBAR LINK ACTIVE ─── */
+/* NAVBAR LINK ACTIVE */
 .nav-link.nav-roulette {
   color: var(--roulette-fire);
   position: relative;
@@ -1469,7 +1460,7 @@ input[type="range"]::-moz-range-progress {
   border-radius: 3px;
 }
 
-/* ─── RESPONSIVE ─── */
+/* RESPONSIVE */
 @media (max-width: 640px) {
   .rl-hero-title { font-size: clamp(2.8rem, 14vw, 5rem); }
   .rl-config-panel { grid-template-columns: 1fr; padding: 1.25rem; }

@@ -1,8 +1,3 @@
-// =============================================
-// AUTH.JS — UY Demonlist v2
-// Floating user widget + Discord OAuth
-// =============================================
-
 let currentUser = null;
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -32,7 +27,6 @@ async function initAuth() {
     showBanCountdown(currentUser.bannedUntil, currentUser.banReason);
   }
 
-  // Auto-actualizar avatar desde Discord
   if (currentUser) {
     setTimeout(async () => {
       const discordId = localStorage.getItem('uy_discord_id');
@@ -40,36 +34,24 @@ async function initAuth() {
       try {
         const res  = await fetch(`/api/auth/session?uid=${discordId}`);
         const data = await res.json();
-        console.log('[AUTH] Session refresh:', {
-          oldImage: window.currentUser?.image,
-          newImage: data.user?.image,
-          changed: data.user?.image !== window.currentUser?.image,
-        });
         if (!data.user) return;
         window.currentUser = data.user;
         currentUser = data.user;
         renderUserWidget(data.user);
-
-        // Actualizar avatar en el leaderboard sin re-renderizar todo
         if (data.user.image) {
           const linkedName = (data.user.linkedPlayer || data.user.name || '').toLowerCase();
           document.querySelectorAll('.lb-row').forEach(row => {
             const rowName = row.querySelector('.lb-player-name')?.textContent?.trim().toLowerCase();
             if (rowName && rowName === linkedName) {
               const avatarEl = row.querySelector('.lb-avatar');
-              if (avatarEl) {
-                avatarEl.innerHTML = `<img src="${data.user.image}" alt="">`;
-              }
+              if (avatarEl) avatarEl.innerHTML = `<img src="${data.user.image}" alt="">`;
             }
           });
         }
-      } catch (e) {
-        console.error('[AUTH] Avatar refresh error:', e);
-      }
+      } catch {}
     }, 1500);
   }
 
-  // Polling cada 30s para detectar cambios de sanción sin necesitar F5
   startSanctionPolling();
 
   document.getElementById('loginBtn')?.addEventListener('click', loginWithDiscord);
@@ -96,9 +78,6 @@ function loginWithDiscord() {
 
 async function logout() {
   localStorage.removeItem('uy_discord_id');
-  // Recarga inmediata: garantiza que TODOS los paneles que dependan de la
-  // sesión (sanciones, submissions, admin, etc.) arranquen limpios desde
-  // cero, sin tener que refrescar cada uno a mano desde acá.
   window.location.reload();
 }
 
@@ -106,7 +85,6 @@ function isAdminUser() {
   return currentUser && typeof isAdminRole === 'function' && isAdminRole(currentUser.role);
 }
 
-// ─── Floating Widget ───
 function renderUserWidget(user) {
   const widget   = document.getElementById('userWidget');
   const loginBtn = document.getElementById('loginBtn');
@@ -136,18 +114,14 @@ function renderUserWidget(user) {
       ? isSanctionsStaffRole(user.role)
       : ['owner','admin','manager'].includes(user.role);
     sanctionsBtn.style.display = canSeeSanctions ? 'flex' : 'none';
+  }
 
-  // Actualizar avatar y visibilidad del formulario del mural
   const muralAv = document.getElementById('muralUserAvatar');
   if (muralAv && user.avatar) {
     muralAv.innerHTML = `<img src="${user.avatar}" alt="" style="width:100%;height:100%;object-fit:cover">`;
   }
   if (typeof updateMuralFormVisibility === 'function') updateMuralFormVisibility();
-  // Re-renderizar el feed del mural para que el botón de eliminar
-  // aparezca correctamente ahora que currentUser ya está disponible.
-  // Usamos renderMural() (no loadMural()) para no hacer otro fetch innecesario.
   if (typeof renderMural === 'function') renderMural();
-  }
 
   if (user.isBanned && typeof showBanCountdown === 'function') {
     showBanCountdown(user.bannedUntil, user.banReason);
@@ -185,10 +159,8 @@ function renderUserWidget(user) {
     card.onclick = toggleUserDropdown;
   }
 
-const isRoulettePage = window.location.pathname.includes('roulette');
+  const isRoulettePage = window.location.pathname.includes('roulette');
 
-  // ─── Ruleta: perfil flotante de solo lectura, sin dropdown ───
-  // Solo usuario, avatar y rango — sin stats, sin GD, sin acciones, sin logout.
   if (isRoulettePage) {
     if (card) {
       card.innerHTML = `
@@ -396,24 +368,14 @@ function startSanctionPolling() {
       const nowBanned = !!user.isBanned;
       const wasBanned = !!_lastBanState;
 
-      // Se acaba de sancionar → recargar para mostrar ban
-      if (nowBanned && !wasBanned) {
-        location.reload();
-        return;
-      }
-
-      // Se levantó la sanción → recargar para quitar ban
-      if (!nowBanned && wasBanned) {
-        location.reload();
-        return;
-      }
+      if (nowBanned && !wasBanned) { location.reload(); return; }
+      if (!nowBanned && wasBanned) { location.reload(); return; }
 
       _lastBanState = nowBanned;
       window.currentUser = user;
     } catch {}
   }, 30000);
 
-  // Inicializar estado
   if (currentUser) _lastBanState = !!currentUser.isBanned;
 }
 window.startSanctionPolling = startSanctionPolling;

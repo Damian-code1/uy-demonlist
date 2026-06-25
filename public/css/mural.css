@@ -1,11 +1,11 @@
-/* ─── MURAL DE LA COMUNIDAD ─── */
+/* MURAL DE LA COMUNIDAD */
 
 .mural-wrap {
   max-width: 760px;
   margin: 0 auto;
 }
 
-/* ── Formulario de nuevo comentario ── */
+/* Formulario de nuevo comentario */
 .mural-new-post {
   background: linear-gradient(135deg, rgba(124,58,237,.08), rgba(14,14,24,.6));
   border: 1px solid rgba(124,58,237,.25);
@@ -64,7 +64,7 @@
 .mural-counter-warn   { color: #f59e0b !important; }
 .mural-counter-danger { color: #f43f5e !important; font-weight: 700; }
 
-/* ── Hint Ctrl+Enter ── */
+/* Hint Ctrl+Enter */
 .mural-kbd-hint {
   display: inline-flex; align-items: center; gap: .25rem;
   opacity: .45; transition: opacity .2s;
@@ -90,7 +90,7 @@
   opacity: .7;
 }
 
-/* ── Botón refresh ── */
+/* Botón refresh */
 .mural-refresh-btn {
   display: flex; align-items: center; gap: .4rem;
   background: rgba(255,255,255,.04);
@@ -107,7 +107,7 @@
 .mural-refresh-btn.spinning i { animation: muralSpin .55s cubic-bezier(.34,1,.64,1) forwards; }
 @keyframes muralSpin { to { transform: rotate(360deg); } }
 
-/* ── Botón Publicar — rediseño premium ── */
+/* Botón Publicar */
 .mural-submit-btn {
   position: relative;
   background: linear-gradient(135deg, #7c3aed 0%, #a855f7 50%, #ec4899 100%);
@@ -153,7 +153,7 @@
 }
 .mural-login-note a { color: var(--violet); }
 
-/* ── Posts ── */
+/* Posts */
 .mural-post {
   background: var(--bg2);
   border: 1px solid var(--border-s);
@@ -218,7 +218,7 @@
 }
 .mural-rank-badge i { font-size: .58rem; }
 
-/* ── Badge de rol del staff ── */
+/* Badge de rol del staff */
 .mural-role-badge {
   display: inline-flex; align-items: center; gap: .28rem;
   font-size: .62rem; font-weight: 800; letter-spacing: .3px;
@@ -250,7 +250,7 @@
   margin-bottom: .65rem;
 }
 
-/* ── Replies ── */
+/* Replies */
 .mural-reply-btn {
   background: none; border: none; cursor: pointer;
   color: var(--violet); font-size: .76rem; font-weight: 600;
@@ -272,7 +272,7 @@
 }
 .mural-replies-toggle:hover { color: var(--violet); background: rgba(124,58,237,.08); }
 
-/* ── Formulario reply ── */
+/* Formulario reply */
 .mural-reply-form {
   margin-top: .5rem;
   background: rgba(255,255,255,.025);
@@ -300,7 +300,7 @@
 }
 .mural-reply-cancel:hover { border-color: var(--text-sub); color: var(--text); }
 
-/* ── Estados ── */
+/* Estados */
 .mural-loading, .mural-error, .mural-empty {
   text-align: center; padding: 3rem 1rem; color: var(--text-sub); font-size: .9rem;
 }
@@ -311,7 +311,7 @@
 .mural-loading-replies { text-align: center; padding: .5rem; color: var(--text-dim); font-size: .8rem; }
 .mural-error-sm { font-size: .78rem; color: var(--red); padding: .35rem; }
 
-/* ── Botón cargar más ── */
+/* Botón cargar más */
 .mural-load-more-btn {
   display: flex; align-items: center; justify-content: center;
   width: 100%; margin-top: 1rem;
@@ -325,7 +325,7 @@
 .mural-load-more-btn:hover { background: rgba(124,58,237,.14); border-color: rgba(124,58,237,.4); }
 .mural-load-more-btn.hidden { display: none; }
 
-/* ── Toast propio (fallback) ── */
+/* Toast propio */
 .mural-toast {
   position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 9999;
   background: var(--bg2); border-radius: var(--r-sm);
@@ -338,7 +338,7 @@
 .mural-toast-success { border-color: var(--success); }
 .mural-toast-error   { border-color: var(--red); }
 
-/* ── Responsive ── */
+/* Responsive */
 @media (max-width: 600px) {
   .mural-new-post { padding: 1rem; }
   .mural-post { padding: .85rem .9rem; }

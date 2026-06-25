@@ -1,6 +1,4 @@
-// =============================================
-// ADMIN.JS — UY Demonlist v2
-// =============================================
+// ADMIN.JS
 
 let adminCurrentTab  = 'levels';
 let adminVictorLevelId = null;
@@ -47,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('navAdminBtn')?.addEventListener('click', openAdminPanel);
 });
 
-// ─── HELPERS ───
+// Helpers
 function adminLoading() {
   return `<div class="loader-wrap"><i class="fas fa-spinner fa-spin"></i><span>Cargando…</span></div>`;
 }
@@ -59,9 +57,7 @@ function esc(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-// =============================================
-// LEVELS
-// =============================================
+// Levels
 async function loadAdminLevels() {
   const container = document.getElementById('admin-levels-table');
   if (!container) return;
@@ -159,7 +155,6 @@ function openAdminLevelModal(id, name, pos, youtubeUrl, gdId, legacy, twoPlayer)
   document.getElementById('levelFormYoutube').value     = youtubeUrl  || '';
   document.getElementById('levelFormGdId').value        = gdId        || '';
   document.getElementById('levelFormLegacy').checked    = !!legacy;
-  // Auto-detectar vía GDBrowser si no se pasó legacy=1 ya
   document.getElementById('levelFormTwoPlayer').checked = !!twoPlayer;
   modal.classList.add('open');
 }
@@ -216,9 +211,7 @@ async function deleteLevel(id) {
   }
 }
 
-// =============================================
-// VICTORS
-// =============================================
+// Victors
 let _victorOutsideClickHandler = null;
 
 async function loadAdminVictors() {
@@ -244,7 +237,6 @@ async function loadAdminVictors() {
     _victorOutsideClickHandler = null;
   }
 
-  // Vista por defecto: todos los victors de todos los niveles, con loading
   adminVictorLevelId = null;
   loadAllAdminVictors();
 }
@@ -299,7 +291,6 @@ function renderVictorLevelSuggestions(q, levels, sugg, input, clearBtn, dropdown
       clearBtn.style.display = '';
       sugg.classList.remove('open');
       sugg.innerHTML = '';
-      // Sincronizar dropdown
       if (dropdown) dropdown.value = id;
       onVictorLevelChange(id);
     });
@@ -361,7 +352,6 @@ function renderVictorsTable(victors, opts = {}) {
   const clearEl   = document.getElementById('victorsTableClear');
   const countEl   = document.getElementById('victorsTableCount');
 
-  // Renderizar filas
   function buildRows(list) {
     tbody.innerHTML = '';
     if (countEl) countEl.textContent = `${list.length} resultado${list.length !== 1 ? 's' : ''}`;
@@ -405,7 +395,6 @@ function renderVictorsTable(victors, opts = {}) {
 
   buildRows(victors);
 
-  // Buscador inline
   let debounce;
   searchEl?.addEventListener('input', () => {
     const q = searchEl.value.trim().toLowerCase();
@@ -427,7 +416,6 @@ function renderVictorsTable(victors, opts = {}) {
     searchEl.focus();
   });
 
-  // Inicializar contador
   if (countEl) countEl.textContent = `${victors.length} resultado${victors.length !== 1 ? 's' : ''}`;
 }
 
@@ -496,9 +484,7 @@ async function deleteVictor(id) {
   }
 }
 
-// =============================================
-// PLAYERS — stats fully computed from victors, no manual points/completions
-// =============================================
+// Players
 async function loadAdminPlayers() {
   const container = document.getElementById('admin-players-table');
   if (!container) return;
@@ -521,7 +507,6 @@ function renderAdminPlayers(players) {
     return;
   }
 
-  // Guardar lista completa para el filtro
   window._adminAllPlayers = players;
 
   container.innerHTML = `
@@ -665,9 +650,7 @@ async function deletePlayer(name) {
   }
 }
 
-// =============================================
-// PUNTOS POR NIVEL
-// =============================================
+// Puntos por nivel
 async function loadAdminPoints() {
   const container = document.getElementById('admin-points-table');
   if (!container) return;
@@ -814,9 +797,7 @@ async function resetPointsForLevel(id, position) {
 window.savePointsForLevel  = savePointsForLevel;
 window.resetPointsForLevel = resetPointsForLevel;
 
-// =============================================
-// SUBMISSIONS
-// =============================================
+// Submissions
 async function loadAdminSubmissions() {
   const container = document.getElementById('admin-submissions-table');
   if (!container) return;
@@ -834,11 +815,10 @@ function renderAdminSubmissions(subs) {
   const container = document.getElementById('admin-submissions-table');
   if (!container) return;
 
-  // Guardar lista completa para filtros
   window._adminAllSubs = subs;
 
   container.innerHTML = `
-    <!-- Barra de filtros -->
+    <!-- Filtros -->
     <div class="adm-subs-filters">
       <div class="adm-search-wrap" style="flex:2;min-width:160px">
         <i class="fas fa-user adm-search-icon"></i>

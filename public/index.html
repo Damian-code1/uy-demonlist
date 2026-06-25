@@ -7,7 +7,7 @@
   <link rel="icon" type="image/png" href="/assets/logo.png">
   <meta name="description" content="Los niveles más difíciles de Geometry Dash completados por jugadores uruguayos.">
 
-  <!-- Open Graph / Discord embed -->
+
   <meta property="og:type"        content="website">
   <meta property="og:url"         content="https://uy-demonlist.vercel.app/">
   <meta property="og:site_name"   content="UY Demonlist">
@@ -18,7 +18,7 @@
   <meta property="og:image:height" content="630">
   <meta property="og:locale"      content="es_UY">
 
-  <!-- Twitter card (también lo usa Discord como fallback) -->
+  <!-- Twitter card -->
   <meta name="twitter:card"        content="summary_large_image">
   <meta name="twitter:title"       content="UY Demonlist">
   <meta name="twitter:description" content="Los niveles más difíciles de Geometry Dash completados por jugadores uruguayos.">
@@ -41,7 +41,7 @@
 </head>
 <body>
 
-<!-- ─── NAVBAR ─── -->
+
 <nav class="navbar" id="navbar">
   <div class="navbar-inner">
     <a href="#hero" class="navbar-logo">
@@ -59,24 +59,24 @@
       </a>
       <a href="#comunidad"   class="nav-link" data-section="comunidad">Discord</a>
       <a href="#donaciones"  class="nav-link" data-section="donaciones">Donaciones</a>
-      <!-- En mobile, los botones de paneles se reubican acá adentro vía JS (ver main.js) -->
+
       <div class="nav-links-panels-mobile" id="navLinksPanelsMobile"></div>
     </div>
 
     <div class="nav-right">
-      <!-- Manager button (visible for manager+) -->
+
       <button id="navOwnerBtn" onclick="openOwnerPanel()" title="Panel Manager" class="nav-btn-manager" style="display:none">
         <i class="fas fa-crown"></i> Manager
       </button>
-      <!-- Admin button (visible for list_mod+) -->
+
       <button id="navAdminBtn" onclick="openAdminPanel()" title="Panel de Admin">
         <i class="fas fa-shield-alt"></i> Admin
       </button>
-      <!-- Sanctions button (visible for list_mod+) -->
+
       <button id="navSanctionsBtn" onclick="openSanctionsPanel()" title="Panel de Sanciones" style="display:none">
         <i class="fas fa-gavel"></i> Sanciones
       </button>
-      <!-- Login button -->
+
       <button class="login-btn" id="loginBtn">
         <i class="fab fa-discord"></i>
         <span>Login</span>
@@ -89,7 +89,7 @@
   </div>
 </nav>
 
-<!-- ─── FLOATING USER WIDGET ─── -->
+<!-- FLOATING USER WIDGET -->
 <div class="user-widget" id="userWidget">
   <div class="user-widget-card">
     <!-- Filled by auth.js -->
@@ -99,7 +99,7 @@
   </div>
 </div>
 
-<!-- ─── HERO ─── -->
+<!-- HERO -->
 <section class="hero" id="hero">
   <canvas id="particleCanvas"></canvas>
   <div class="hero-glow"></div>
@@ -155,7 +155,7 @@
   </div>
 </section>
 
-<!-- ─── FEED DE COMPLETIONS ─── -->
+<!-- FEED DE COMPLETIONS -->
 <section class="page-section" id="feed-section">
   <div class="section-wrap">
     <div class="section-head" data-aos="fade-up">
@@ -181,7 +181,7 @@
   </div>
 </section>
 
-<!-- ─── MODAL FEED FULLSCREEN ─── -->
+<!-- MODAL FEED FULLSCREEN -->
 <div class="feed-modal" id="feedModal">
   <div class="feed-modal-backdrop" onclick="closeFeedModal()"></div>
   <div class="feed-modal-box">
@@ -203,7 +203,7 @@
   </div>
 </div>
 
-<!-- ─── LISTA ─── -->
+<!-- LISTA -->
 <section class="page-section" id="lista">
   <div class="section-wrap">
     <div class="section-head" data-aos="fade-up">
@@ -240,7 +240,7 @@
   </div>
 </section>
 
-<!-- ─── LEVEL DETAIL MODAL ─── -->
+<!-- LEVEL DETAIL MODAL -->
 <div class="level-detail-modal" id="levelDetailModal">
   <div class="modal-backdrop"></div>
   <div class="level-modal-box">
@@ -248,7 +248,7 @@
   </div>
 </div>
 
-<!-- ─── SUBMISSIONS ─── -->
+<!-- SUBMISSIONS -->
 <section class="page-section alt-bg" id="submissions">
   <div class="section-wrap">
     <div class="section-head" data-aos="fade-up">
@@ -259,7 +259,7 @@
 
     <div class="submissions-layout" id="submissionsLayout">
 
-    <!-- Guidelines / Reglas -->
+
     <div class="form-card sub-guidelines-card" data-aos="fade-up" data-aos-delay="40">
       <div class="sub-guidelines-header">
         <i class="fas fa-scroll"></i>
@@ -290,7 +290,7 @@
     </div>
 
     <div class="form-card sub-card" data-aos="fade-up" data-aos-delay="80" id="submissionsFormWrap">
-      <!-- Estado: no logueado -->
+
       <div id="subNotLoggedIn" style="display:none">
         <div class="sub-login-prompt">
           <div class="sub-login-icon"><i class="fab fa-discord"></i></div>
@@ -302,7 +302,7 @@
         </div>
       </div>
 
-      <!-- Estado: logueado pero sin GD vinculado -->
+
       <div id="subNoGd" style="display:none">
         <div class="sub-login-prompt">
           <div class="sub-login-icon" style="background:linear-gradient(135deg,#a78bfa,#7c3aed)">
@@ -316,9 +316,9 @@
         </div>
       </div>
 
-      <!-- Formulario real -->
+
       <form id="submissionsForm" novalidate style="display:none">
-        <!-- Jugador (bloqueado, viene del perfil) -->
+
         <div class="sub-player-display" id="subPlayerDisplay">
           <div class="sub-player-avatar" id="subPlayerAvatar"></div>
           <div class="sub-player-info">
@@ -328,7 +328,7 @@
           </div>
         </div>
 
-        <!-- Nivel con autocomplete -->
+
         <div class="form-field sub-level-field">
           <label>Nivel completado <span class="req">*</span></label>
           <div class="sub-search-wrap" id="subLevelSearchWrap">
@@ -396,7 +396,7 @@
       </form>
     </div>
 
-    <!-- Historial de submissions del usuario -->
+    <!-- Historial de submissions -->
     <div class="form-card my-subs-card" data-aos="fade-up" data-aos-delay="120" id="mySubsCard">
       <div class="my-subs-header">
         <h3><i class="fas fa-history"></i> Tu historial</h3>
@@ -416,7 +416,7 @@
   </div>
 </section>
 
-<!-- ─── LEADERBOARD ─── -->
+<!-- LEADERBOARD -->
 <section class="page-section" id="leaderboard">
   <div class="section-wrap">
     <div class="section-head" data-aos="fade-up">
@@ -451,7 +451,7 @@
   </div>
 </section>
 
-<!-- ─── MURAL DE LA COMUNIDAD ─── -->
+<!-- MURAL DE LA COMUNIDAD -->
 <section class="page-section" id="mural">
   <div class="section-wrap">
     <div class="section-head" data-aos="fade-up">
@@ -465,7 +465,7 @@
           <i class="fas fa-rotate-right"></i> Actualizar
         </button>
       </div>
-      <!-- Formulario (solo logueados) -->
+      <!-- Formulario -->
       <div id="muralFormWrap" class="mural-new-post hidden">
         <div class="mural-new-post-header">
           <div class="mural-new-avatar-wrap" id="muralUserAvatar">?</div>
@@ -494,7 +494,7 @@
   </div>
 </section>
 
-<!-- ─── COMUNIDAD (Discord) ─── -->
+<!-- COMUNIDAD (Discord) -->
 <section class="page-section alt-bg" id="comunidad">
   <div class="section-wrap">
     <div class="section-head" data-aos="fade-up">
@@ -510,7 +510,7 @@
   </div>
 </section>
 
-<!-- ─── DONACIONES ─── -->
+<!-- DONACIONES -->
 <section class="page-section donaciones-section" id="donaciones">
   <div class="section-wrap">
     <div class="donaciones-center" data-aos="zoom-in">
@@ -525,7 +525,7 @@
   </div>
 </section>
 
-<!-- ─── FOOTER ─── -->
+<!-- FOOTER -->
 <footer class="footer">
   <div class="footer-inner">
     <a href="#hero" class="footer-logo">
@@ -556,9 +556,7 @@
   </div>
 </footer>
 
-<!-- ═══════════════════════════════════════
-     PANEL DE SANCIONES
-     ═══════════════════════════════════════ -->
+<!-- PANEL DE SANCIONES -->
 <div class="admin-overlay" id="sanctionsOverlay"></div>
 
 <aside class="admin-panel sa-panel" id="sanctionsPanel">
@@ -582,7 +580,7 @@
   <!-- Body -->
   <div class="admin-body">
 
-    <!-- ── Tab: Usuarios ── -->
+    <!-- Tab: Usuarios -->
     <div class="admin-section active" id="sanctions-users">
       <div class="admin-toolbar">
         <div class="search-box enhanced-search" id="sanctionsUserSearchWrap" style="flex:1">
@@ -597,7 +595,7 @@
       <div id="sanctions-users-table"></div>
     </div>
 
-    <!-- ── Tab: Log de Sanciones ── -->
+    <!-- Tab: Log de Sanciones -->
     <div class="admin-section" id="sanctions-log">
       <div class="admin-toolbar">
         <div class="search-box enhanced-search" id="sanctionsLogSearchWrap" style="flex:1">
@@ -652,21 +650,19 @@
   </div>
 </div>
 
-<!-- Modal: Detalle de sanción (log) -->
+<!-- Modal: Detalle de sanción -->
 <div class="admin-form-modal sa-detail-modal" id="sanctionDetailModal">
   <div class="modal-backdrop"></div>
   <div class="admin-form-box sa-detail-box" id="sanctionDetailBox"></div>
 </div>
 
-<!-- Modal: Sanciones y stats de un jugador (click en card de usuario) -->
+<!-- Modal: Sanciones y stats de jugador -->
 <div class="admin-form-modal" id="playerSanctionsModal">
   <div class="modal-backdrop" onclick="closePlayerSanctionsModal()"></div>
   <div class="admin-form-box psm-box" id="playerSanctionsBox"></div>
 </div>
 
-<!-- ═══════════════════════════════════════
-     ADMIN PANEL
-     ═══════════════════════════════════════ -->
+<!-- ADMIN PANEL -->
 <div class="admin-overlay" id="adminOverlay"></div>
 
 <aside class="admin-panel" id="adminPanel">
@@ -706,7 +702,7 @@
   <!-- Body -->
   <div class="admin-body">
 
-    <!-- ── Niveles ── -->
+    <!-- Niveles -->
     <div class="admin-section active" id="admin-levels">
       <div class="admin-toolbar">
         <div class="search-box enhanced-search" id="adminLevelSearchWrap" style="flex:1">
@@ -724,22 +720,22 @@
       <div id="admin-levels-table"></div>
     </div>
 
-    <!-- ── Victors ── -->
+    <!-- Victors -->
     <div class="admin-section" id="admin-victors">
       <div id="admin-victors-table"></div>
     </div>
 
-    <!-- ── Jugadores ── -->
+    <!-- Jugadores -->
     <div class="admin-section" id="admin-players">
       <div id="admin-players-table"></div>
     </div>
 
-    <!-- ── Puntos ── -->
+    <!-- Puntos -->
     <div class="admin-section" id="admin-points">
       <div id="admin-points-table"></div>
     </div>
 
-    <!-- ── Submissions ── -->
+    <!-- Submissions -->
     <div class="admin-section" id="admin-submissions">
       <div class="admin-toolbar">
         <span class="text-sub" style="font-size:.82rem">Submissions pendientes de revisión</span>
@@ -751,16 +747,15 @@
     </div>
 
     <script>
-      // Marca de tiempo del último refresh, usada por el polling de refresco en tiempo real
       window._lastRefreshCheck = Date.now();
     </script>
     
-    <!-- ── Sync AREDL ── -->
+    <!-- Sync AREDL -->
     <div class="admin-section" id="admin-sync">
       <div id="admin-sync-table"></div>
     </div>
 
-    <!-- ── Thumbnails ── -->
+    <!-- Thumbnails -->
     <div class="admin-section" id="admin-thumbnails">
       <div class="admin-toolbar">
         <div class="search-box enhanced-search" style="flex:1">
@@ -777,9 +772,7 @@
   </div>
 </aside>
 
-<!-- ═══════════════════════════════════════
-     OWNER PANEL (solo owner)
-     ═══════════════════════════════════════ -->
+<!-- OWNER PANEL -->
 <div class="admin-overlay" id="ownerOverlay"></div>
 
 <aside class="admin-panel owner-panel" id="ownerPanel">

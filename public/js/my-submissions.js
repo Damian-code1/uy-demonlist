@@ -1,7 +1,4 @@
-// =============================================
-// MY-SUBMISSIONS.JS — Historial de submissions del usuario
-// Auto-refresh en tiempo real + modal de detalle de solo lectura
-// =============================================
+// MY-SUBMISSIONS.JS
 (function () {
   'use strict';
 
@@ -120,7 +117,6 @@
       });
     });
 
-    // Botón eliminar — solo lo quita del historial visual del usuario
     list.querySelectorAll('.my-sub-delete-btn').forEach(btn => {
       btn.addEventListener('mouseenter', () => {
         btn.style.color = 'var(--red)';
@@ -145,7 +141,6 @@
             headers: { 'x-discord-id': discordId }
           });
           if (res.ok) {
-            // Animación de salida antes de quitar
             const item = btn.closest('.my-sub-item');
             if (item) {
               item.style.transition = 'opacity .2s, transform .2s';
@@ -287,7 +282,6 @@
     return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
-  // Re-renderizar cuando cambia la sesión (login/logout)
   document.addEventListener('click', () => {}); // no-op, evita warning de listener vacío en algunos linters
 
   window.openMySubDetailModal  = openMySubDetailModal;

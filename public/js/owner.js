@@ -1,8 +1,4 @@
-// =============================================
-// MANAGER.JS — Panel Manager (antes "owner panel")
-// Vincular usuarios Discord ↔ nombres del leaderboard, gestión de roles
-// Accesible para manager+ (manager, owner)
-// =============================================
+// MANAGER.JS
 
 let ownerUsers = [];
 let ownerLeaderboardNames = [];
@@ -45,7 +41,7 @@ async function loadOwnerUsers() {
   }
 }
 
-// ROLE_META ahora vive en roles.js — se usa window.ROLE_META directamente
+// ROLE_META en roles.js
 
 function renderOwnerUsers(filterQ) {
   const container = document.getElementById('owner-users-table');
@@ -65,11 +61,6 @@ function renderOwnerUsers(filterQ) {
     return;
   }
 
-  // Lista de roles ASIGNABLES por el viewer actual — manager solo puede asignar
-  // hasta 'admin' (no puede crear otro owner/manager). Esto define qué puede
-  // ELEGIR el viewer, NO qué se muestra seleccionado (eso se resuelve por fila
-  // más abajo, porque el rol actual del usuario siempre tiene que existir como
-  // <option> aunque el viewer no pueda asignarlo).
   const isCurrentUserOwner = window.currentUser?.role === 'owner';
   const assignableRoles = isCurrentUserOwner
     ? window.ROLE_ORDER
@@ -85,14 +76,6 @@ function renderOwnerUsers(filterQ) {
         const lbOptions = ownerLeaderboardNames.map(n =>
           `<option value="${esc(n)}"${u.linked_player_name === n ? ' selected' : ''}>${esc(n)}</option>`
         ).join('');
-        // BUGFIX: el rol ACTUAL del usuario siempre tiene que tener su <option>
-        // en el <select>, aunque el viewer no tenga permiso para asignarlo.
-        // Antes, si u.role === 'manager' y el viewer no era owner, 'manager'
-        // quedaba excluido de la lista de opciones → no existía
-        // <option value="manager"> → el <select> caía a la primera opción
-        // disponible ("Usuario") y mostraba un rol incorrecto, aunque la DB
-        // tuviera 'manager' guardado correctamente. Esto es lo que te pasaba
-        // con Redelekys.
         const rowRoleOptions = assignableRoles.includes(u.role)
           ? assignableRoles
           : [u.role, ...assignableRoles];
@@ -108,9 +91,6 @@ function renderOwnerUsers(filterQ) {
         const isLinked = !!u.linked_player_name;
         const isOwner  = u.role === 'owner';
         const isSelf   = window.currentUser && u.id === window.currentUser.id;
-        // El viewer no puede tocar el rol de esta fila si: es su propia fila,
-        // el target es owner, o el target tiene un rol que el viewer no puede
-        // asignar (ej: un manager no-owner mirando a OTRO manager).
         const cannotAssignThisRole = !isCurrentUserOwner && !assignableRoles.includes(u.role);
         const isRoleLocked = isSelf || isOwner || cannotAssignThisRole;
 

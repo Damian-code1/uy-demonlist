@@ -1,6 +1,4 @@
-// =============================================
-// MAIN.JS — UY Demonlist v2
-// =============================================
+// MAIN.JS
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -18,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (!location.hash) window.scrollTo(0, 0);
 });
 
-// ─── NAVBAR ───
+// Navbar
 function setupNavbar() {
   const navbar    = document.getElementById('navbar');
   const hamburger = document.getElementById('hamburger');
@@ -88,7 +86,7 @@ function updateActiveLink() {
   });
 }
 
-// ─── SMOOTH SCROLL ───
+// Smooth scroll
 function initSmoothScroll() {
   document.querySelectorAll('a[href^="#"]').forEach(a => {
     if (a.classList.contains('nav-link')) return;
@@ -105,18 +103,16 @@ function initSmoothScroll() {
   });
 }
 
-// ─── PARTICLES ───
+// Particles
 function initParticles() {
   const canvas = document.getElementById('particleCanvas');
   if (!canvas) return;
 
-  // Respeta accesibilidad y dispositivos de bajo rendimiento
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (reduceMotion) { canvas.style.display = 'none'; return; }
 
   const ctx = canvas.getContext('2d', { alpha: true });
   let W, H, particles = [];
-  // Menos partículas y un límite de conexiones por partícula en vez de O(n²) completo
   const N = window.innerWidth < 768 ? 22 : 36;
   const MAX_LINK_DIST = 100;
   const MAX_LINK_DIST_SQ = MAX_LINK_DIST * MAX_LINK_DIST;
@@ -167,8 +163,6 @@ function initParticles() {
       ctx.fill();
     });
 
-    // Conexiones limitadas: cada partícula busca solo su próximo vecino más cercano
-    // dentro del radio, evitando el costo cuadrático completo
     for (let i = 0; i < particles.length; i++) {
       let linksDrawn = 0;
       for (let j = i + 1; j < particles.length && linksDrawn < 3; j++) {
@@ -191,7 +185,6 @@ function initParticles() {
     rafId = requestAnimationFrame(frame);
   }
 
-  // Pausar cuando la pestaña no está visible
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) {
       running = false;
@@ -202,7 +195,6 @@ function initParticles() {
     }
   });
 
-  // Pausar cuando el canvas sale del viewport (ej. al scrollear mucho hacia abajo)
   if ('IntersectionObserver' in window) {
     const io = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
@@ -220,7 +212,7 @@ function initParticles() {
   frame();
 }
 
-// ─── BACK TO TOP (QOL) ───
+// Back to top
 document.addEventListener('DOMContentLoaded', () => {
   const btn = document.getElementById('backToTop');
   if (!btn) return;
@@ -230,7 +222,7 @@ document.addEventListener('DOMContentLoaded', () => {
   btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 });
 
-// ─── KEYBOARD NAV FOR LEVEL MODAL VICTORS (QOL) ───
+// Keyboard nav for level modal
 document.addEventListener('keydown', e => {
   const modal = document.getElementById('levelDetailModal');
   if (!modal?.classList.contains('active')) return;
@@ -238,7 +230,7 @@ document.addEventListener('keydown', e => {
   if (e.key === 'ArrowRight') document.getElementById('lmNextBtn')?.click();
 });
 
-// ─── CUSTOM SCROLLBAR FLUIDA ───
+// Custom scrollbar fluida
 (function () {
   let bar, thumb, track;
   let rafId = null, isDragging = false;
@@ -343,7 +335,7 @@ document.addEventListener('keydown', e => {
     paint();
   }
 
-  // API para ocultar/mostrar desde admin/modales
+  // API para ocultar/mostrar
   window._scrollbarSetVisible = v => {
     if (!bar) return;
     if (!v) { clearTimeout(hideTimer); bar.classList.remove('visible'); bar.style.pointerEvents = 'none'; }
@@ -355,10 +347,9 @@ document.addEventListener('keydown', e => {
     : init();
 })();
 
-// ─── CUSTOM SCROLLBAR ───
+// Custom scrollbar
 (function () {
   function initCustomScrollbar() {
-    // Crear el elemento si no existe
     if (document.getElementById('custom-scrollbar')) return;
     const bar = document.createElement('div');
     bar.id = 'custom-scrollbar';
@@ -381,7 +372,6 @@ document.addEventListener('keydown', e => {
       thumb.style.height = thumbH + 'px';
       thumb.style.top    = (8 + thumbTop) + 'px'; // 8px offset for top padding
 
-      // Ocultar si la página no es scrolleable
       bar.style.opacity = docHeight > 10 ? '1' : '0';
     }
 
@@ -389,7 +379,6 @@ document.addEventListener('keydown', e => {
     window.addEventListener('resize', updateThumb, { passive: true });
     updateThumb();
 
-    // Drag
     let isDragging = false, startY = 0, startScroll = 0;
 
     thumb.addEventListener('mousedown', e => {
@@ -419,7 +408,6 @@ document.addEventListener('keydown', e => {
       document.body.style.userSelect = '';
     });
 
-    // Click en el track para saltar
     track.addEventListener('click', e => {
       if (e.target === thumb) return;
       const rect      = track.getBoundingClientRect();
@@ -430,7 +418,6 @@ document.addEventListener('keydown', e => {
       window.scrollTo({ top: ratio * docHeight, behavior: 'smooth' });
     });
 
-    // Touch support
     let touchStart = 0, touchScroll = 0;
     thumb.addEventListener('touchstart', e => {
       touchStart  = e.touches[0].clientY;
@@ -459,9 +446,7 @@ document.addEventListener('keydown', e => {
   }
 })();
 
-// ─── Reubicar botones de paneles (Manager/Admin/Sanciones) en mobile ───
-// para liberar la esquina superior derecha y que el widget flotante del
-// usuario sea siempre accesible, sin estar tapado por esos botones.
+// Reubicar botones de paneles en mobile
 function relocatePanelButtonsForViewport() {
   const isMobile   = window.innerWidth <= 640;
   const mobileSlot = document.getElementById('navLinksPanelsMobile');

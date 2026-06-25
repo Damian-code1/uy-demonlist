@@ -1,6 +1,4 @@
-// =============================================
-// SANCTIONS.JS — Panel de Sanciones (rojo)
-// =============================================
+// SANCTIONS.JS
 
 let sanctionsUsers = [];
 let sanctionsLog    = [];
@@ -183,7 +181,7 @@ function filterSanctionsUsers(q) {
   if (clearBtn) clearBtn.style.display = q ? '' : 'none';
 }
 
-// ─── Log de sanciones ───
+// Log de sanciones
 function fmtLogDate(dateStr) {
   const d = new Date(dateStr);
   return d.toLocaleString('es-UY', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
@@ -250,7 +248,7 @@ function filterSanctionsLog(q) {
   if (clearBtn) clearBtn.style.display = q ? '' : 'none';
 }
 
-// ─── Modal de detalle de sanción ───
+// Modal de detalle de sanción
 function openSanctionDetail(logId) {
   const entry = sanctionsLog.find(l => l.id === logId);
   if (!entry) return;
@@ -331,7 +329,7 @@ function closeSanctionDetail() {
   document.getElementById('sanctionDetailModal')?.classList.remove('open');
 }
 
-// ─── Modal: detalle de un jugador (stats + historial completo de sanciones) ───
+// Modal: detalle de jugador
 function openPlayerSanctionsModal(discordId) {
   const user = sanctionsUsers.find(u => u.discord_id === discordId);
   if (!user) return;
@@ -340,8 +338,6 @@ function openPlayerSanctionsModal(discordId) {
     .filter(l => (l.target_discord_id || l.discord_id) === discordId)
     .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
-  // Stats del jugador: cruzamos con playersData (cargado globalmente en data.js),
-  // probando los mismos campos de fallback que usa el backend en /api/players.
   const candidateNames = [
     user.linked_player_name,
     user.gd_username,
@@ -491,7 +487,7 @@ window.closeSanctionDetail     = closeSanctionDetail;
 window.deleteSanctionLog       = deleteSanctionLog;
 window.confirmClearAllSanctions = confirmClearAllSanctions;
 
-// ─── Modal de sanción ───
+// Modal de sanción
 let banTargetId = null;
 
 function openBanModal(discordId, label) {
@@ -545,7 +541,6 @@ async function liftSanction(discordId) {
     await sanctionsFetch(`?discordId=${encodeURIComponent(discordId)}`, { method: 'DELETE' });
     showToast('Sanción levantada ✓', 'success');
     loadSanctionsUsers();
-    // Si el usuario sancionado es el actual, refrescar su sesión
     if (window.currentUser?.discordId === discordId && typeof checkSession === 'function') {
       window.currentUser = await checkSession();
       renderUserWidget(window.currentUser);
@@ -595,19 +590,13 @@ window.confirmBanUser       = confirmBanUser;
 window.liftSanction         = liftSanction;
 window.canManageSanctions   = canManageSanctions;
 
-// =============================================
-// COUNTDOWN FLOTANTE — visible para el usuario baneado
-// =============================================
+// Countdown flotante
 let _banCountdownInterval = null;
 
 let _banCountdownBannedUntil = null;
 let _banCountdownReason      = null;
 let _banCountdownReposObserver = null;
 
-// Recalcula la posición del countdown para que quede SIEMPRE pegado debajo
-// del widget de usuario real, sin importar si el dropdown está abierto o
-// cerrado — evita que ambos elementos floten de forma independiente y se
-// solapen quien dispare primero.
 function repositionBanCountdown() {
   const el     = document.getElementById('banCountdownFloat');
   const widget = document.getElementById('userWidget');
@@ -615,9 +604,6 @@ function repositionBanCountdown() {
 
   const dropOpen = widget.querySelector('.user-widget-dropdown')?.classList.contains('open');
 
-  // Si el dropdown del perfil está abierto, el countdown se oculta temporalmente
-  // (no tiene sentido mostrarlo flotando atrás/encima del dropdown) y reaparece
-  // automáticamente al cerrar el dropdown.
   if (dropOpen) {
     el.classList.add('hidden-by-dropdown');
     return;
@@ -629,8 +615,6 @@ function repositionBanCountdown() {
 
   el.style.position = 'fixed';
   el.style.top   = `${cardRect.bottom + 10}px`;
-  // Clampear el right calculado para que el countdown nunca quede pegado
-  // o se salga por el borde izquierdo en viewports angostos (mobile)
   const rightOffset = Math.max(10, Math.min(window.innerWidth - cardRect.right, window.innerWidth - 20));
   el.style.right = `${rightOffset}px`;
   el.style.left  = 'auto';
@@ -672,9 +656,6 @@ function showBanCountdown(bannedUntil, reason) {
   el.classList.add('visible');
   repositionBanCountdown();
 
-  // Reposicionar en cada resize/scroll y cada vez que el dropdown del perfil
-  // se abre o cierra (detectado vía MutationObserver sobre su clase 'open'),
-  // así nunca quedan desincronizados ni superpuestos.
   window.addEventListener('resize', repositionBanCountdown);
   const dropdownEl = document.querySelector('.user-widget-dropdown');
   if (dropdownEl && !_banCountdownReposObserver) {

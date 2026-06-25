@@ -1,7 +1,3 @@
-// =============================================
-// DATA.JS — UY Demonlist v2
-// =============================================
-
 const API_BASE = window.location.origin + '/api';
 const DISCORD_INVITE   = 'btnc2bjNTh';
 const DISCORD_GUILD_ID = '1487918041722392708';
@@ -11,7 +7,6 @@ let playersData = [];
 let aredlMap    = {};
 let dataLoaded  = false;
 
-// ─── Load from MySQL via API ───
 async function loadData(force = false) {
   if (dataLoaded && !force) return;
   try {
@@ -31,13 +26,9 @@ async function loadData(force = false) {
 
     applyAredlToLevels();
 
-    console.log(`✅ Loaded from DB: ${levelsData.length} niveles, ${playersData.length} jugadores`);
+    console.log(`Loaded: ${levelsData.length} niveles, ${playersData.length} jugadores`);
   } catch (e) {
-    if (force) {
-      console.error('⚠️ DB API refresh failed:', e.message);
-      throw e;
-    }
-    console.warn('⚠️ DB API not available, falling back to levels.json:', e.message);
+    if (force) { console.error('DB refresh failed:', e.message); throw e; }
     await loadFromJSON();
   }
 }
@@ -64,14 +55,12 @@ function applyAredlToLevels() {
   });
 }
 
-// ─── Refresca datos públicos y re-pinta lista + leaderboard sin F5 ───
 async function refreshPublicData(opts = {}) {
   dataLoaded = false;
   await loadData(true);
   await loadAredlMap();
   applyAredlToLevels();
 
-  // Refrescar el widget del usuario (puntos/completions pueden haber cambiado)
   if (typeof checkSession === 'function' && typeof renderUserWidget === 'function') {
     const discordId = localStorage.getItem('uy_discord_id');
     if (discordId) {
@@ -99,10 +88,6 @@ async function refreshPublicData(opts = {}) {
   if (typeof renderLeaderboard === 'function') renderLeaderboard();
   if (typeof syncHeroStats === 'function') syncHeroStats();
   if (typeof refreshOpenLevelModal === 'function') refreshOpenLevelModal(opts.levelId);
-  // El feed "En vivo" tenía su propio setInterval de 60s desincronizado del
-  // heartbeat — por eso la lista se actualizaba sola pero el feed se quedaba
-  // viejo hasta el próximo tick suyo (o un F5). Lo enganchamos acá para que
-  // se repinte en el mismo momento exacto en que se detecta el cambio real.
   if (typeof loadFeed === 'function') loadFeed();
 
   if (opts.scrollToLevelId) {
@@ -118,28 +103,21 @@ async function refreshPublicData(opts = {}) {
 }
 window.refreshPublicData = refreshPublicData;
 
-// ─── Polling de cambios en tiempo real (todos los usuarios, no solo admin) ───
 let _lastKnownChange = null;
-const REALTIME_POLL_MS = 600000; // 10 minutos — evita interrupciones durante reproducción de video
+const REALTIME_POLL_MS = 600000;
 
 async function pollForRealtimeChanges() {
   try {
     const res = await fetch(`${API_BASE}/heartbeat`, { cache: 'no-store' });
     if (!res.ok) return;
     const { lastChange } = await res.json();
-
-    if (_lastKnownChange === null) {
-      _lastKnownChange = lastChange; // primera vez: solo establece la marca, no refresca
-      return;
-    }
-
+    if (_lastKnownChange === null) { _lastKnownChange = lastChange; return; }
     if (lastChange !== _lastKnownChange) {
       _lastKnownChange = lastChange;
       await refreshPublicData();
-      // No mostrar toast en auto-refresh silencioso — solo el admin que hizo el cambio ve el toast
     }
   } catch (e) {
-    console.warn('Realtime poll falló:', e.message);
+    console.warn('Realtime poll failed:', e.message);
   }
 }
 
@@ -171,7 +149,6 @@ async function loadFromJSON() {
   }
 }
 
-// ─── AREDL map (via our own proxy, avoids CORS) ───
 async function loadAredlMap() {
   try {
     const res = await fetch(`${API_BASE}/aredl`, { cache: 'no-store' });
@@ -182,13 +159,12 @@ async function loadAredlMap() {
     });
     applyAredlToLevels();
     window.aredlMap = aredlMap;
-    console.log(`✅ AREDL: ${Object.keys(aredlMap).length} niveles mapeados`);
+    console.log(`AREDL: ${Object.keys(aredlMap).length} niveles`);
   } catch (e) {
     console.warn('AREDL unavailable:', e.message);
   }
 }
 
-// ─── GDBrowser enrichment (best-effort, per-level on demand) ───
 async function fetchGdBrowserInfo(levelName) {
   try {
     const res  = await fetch(`${API_BASE}/gdbrowser?name=${encodeURIComponent(levelName)}`);
@@ -207,7 +183,6 @@ async function fetchGdBrowserInfoById(gdLevelId) {
   } catch { return null; }
 }
 
-// ─── Getters ───
 function getLevelsData()  { return levelsData; }
 function getPlayersData() { return playersData; }
 function getGlobalStats() {
@@ -218,7 +193,6 @@ function getGlobalStats() {
   };
 }
 
-// ─── Favicon: usa el ícono del server de Discord en la pestaña ───
 function setFavicon(iconUrl) {
   if (!iconUrl) return;
   const link = document.getElementById('faviconLink') || (() => {
@@ -232,7 +206,6 @@ function setFavicon(iconUrl) {
   link.href = iconUrl;
 }
 
-// ─── Discord: logo + community card ───
 async function updateDiscordLogo() {
   try {
     const res  = await fetch(`https://discord.com/api/guilds/${DISCORD_GUILD_ID}/widget.json`);
@@ -252,7 +225,6 @@ function addDiscordLinks() {
   document.querySelectorAll('.footer-discord-link').forEach(l => { l.href = inviteUrl; });
 }
 
-// ─── Footer: ícono del server de Discord ───
 function setFooterDiscordIcon(iconUrl) {
   document.querySelectorAll('.footer-discord-link').forEach(l => {
     const img = l.querySelector('.footer-discord-icon');
@@ -260,7 +232,6 @@ function setFooterDiscordIcon(iconUrl) {
   });
 }
 
-// ─── Footer: créditos (made by) ───
 const ROLE_LABELS = { owner: 'Owner', admin: 'Admin', list_mod: 'List Mod', usuario: 'Usuario' };
 
 async function loadFooterCredits() {
@@ -294,7 +265,6 @@ async function loadDiscordWidget() {
   const inviteUrl = `https://discord.gg/${DISCORD_INVITE}`;
   let iconHash = null, guildName = 'GD Uruguay', onlineCount = null, totalCount = null;
 
-  // 1) Try the invite API first — works even if the widget feature is disabled
   try {
     const invRes  = await fetch(`https://discord.com/api/v10/invites/${DISCORD_INVITE}?with_counts=true&with_expiration=false`);
     if (invRes.ok) {
@@ -308,7 +278,6 @@ async function loadDiscordWidget() {
     }
   } catch (e) { console.warn('Discord invite API failed:', e.message); }
 
-  // 2) Try widget.json for a more accurate online count (optional enhancement)
   try {
     const res  = await fetch(`https://discord.com/api/guilds/${DISCORD_GUILD_ID}/widget.json`);
     if (res.ok) {
@@ -321,7 +290,7 @@ async function loadDiscordWidget() {
 
   const iconUrl = iconHash ? `https://cdn.discordapp.com/icons/${DISCORD_GUILD_ID}/${iconHash}.png` : null;
 
-  // Update navbar logo too
+  
   if (iconUrl) {
     const logoImg  = document.getElementById('serverLogoImg');
     const logoFlag = document.getElementById('logoFlag');
@@ -363,7 +332,6 @@ async function loadDiscordWidget() {
     </div>`;
 }
 
-// ─── Counter animation ───
 function animateCounter(el, target, duration = 1400) {
   if (!el) return;
   const start = performance.now();
@@ -386,7 +354,8 @@ function animateCounter(el, target, duration = 1400) {
   requestAnimationFrame(step);
 }
 
-// ─── Submit to API ───
+
+// Submit to API
 async function submitToAPI(data) {
   const res = await fetch(`${API_BASE}/submissions`, {
     method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
@@ -394,7 +363,8 @@ async function submitToAPI(data) {
   return res.json();
 }
 
-// ─── Admin API helpers ───
+
+// Admin API helpers
 async function adminFetch(path, opts = {}) {
   const discordId = localStorage.getItem('uy_discord_id');
   const res = await fetch(`${API_BASE}/admin${path}`, {
@@ -456,7 +426,8 @@ function esc(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-// ─── Detección de plataforma de video (no todos los links son YouTube) ───
+
+// Detección de plataforma de video
 function detectVideoPlatform(url) {
   if (!url) return null;
   const u = url.toLowerCase();
@@ -470,7 +441,8 @@ function detectVideoPlatform(url) {
 }
 window.detectVideoPlatform = detectVideoPlatform;
 
-// ─── Copiar texto al portapapeles + toast ───
+
+// Copiar al portapapeles
 async function copyToClipboard(text, successMsg = 'Copiado ✓') {
   try {
     await navigator.clipboard.writeText(text);

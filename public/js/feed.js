@@ -1,6 +1,4 @@
-// =============================================
-// FEED.JS — Completions en vivo
-// =============================================
+// FEED.JS
 
 let _feedData = [];
 let _feedInterval = null;
@@ -37,7 +35,7 @@ function buildFeedCard(item, mini = false, isFirst = false) {
 
   const videoAttr = item.videoUrl ? `onclick="window.open('${esc(item.videoUrl)}','_blank')" style="cursor:pointer" title="Ver video"` : '';
 
-  // Fuego solo para el primer elemento del feed (lo más reciente) — anillo realista
+  // Fuego para el primer elemento
   const fireHtml = isFirst ? `
     <div class="fc-fire-border">
       <span class="fc-fire-spark"></span>
@@ -97,7 +95,7 @@ function renderFeedModal(filter = '') {
     list.innerHTML = `<div class="feed-empty"><i class="fas fa-search"></i> Sin resultados para "${esc(filter)}"</div>`;
     return;
   }
-  // El fuego solo aplica al primero cuando no hay filtro activo (es el más reciente real)
+  // Fuego solo cuando no hay filtro
   list.innerHTML = items.map((item, i) => buildFeedCard(item, false, !filter.trim() && i === 0)).join('');
 }
 
