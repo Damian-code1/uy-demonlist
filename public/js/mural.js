@@ -189,7 +189,10 @@ function buildReactionBar(post, user) {
       const av = u.discord_id && u.discord_avatar
         ? `<img src="https://cdn.discordapp.com/avatars/${u.discord_id}/${u.discord_avatar}.png?size=32" alt="" class="mural-voter-avatar" onerror="this.style.display='none'">`
         : `<span class="mural-voter-avatar mural-voter-avatar-ph">${(u.name||'?')[0].toUpperCase()}</span>`;
-      return `<div class="mural-voter-row">${av}<span class="mural-voter-name">${escMural(u.name || 'Usuario')}</span></div>`;
+      const sub = u.username && u.username !== u.name
+        ? `<span class="mural-voter-sub">@${escMural(u.username)}</span>`
+        : '';
+      return `<div class="mural-voter-row">${av}<div class="mural-voter-info"><span class="mural-voter-name">${escMural(u.name || 'Usuario')}</span>${sub}</div></div>`;
     }).join('');
   }
 
@@ -489,6 +492,15 @@ window.updateMuralFormVisibility = updateMuralFormVisibility;
 async function toggleMuralReaction(postId, reaction) {
   const user = window.currentUser;
   if (!user) { if (typeof showToast === 'function') showToast('Iniciá sesión para reaccionar', 'info'); return; }
+
+
+  const clickedBtn = document.querySelector(`.mural-react-btn[data-post-id="${postId}"][data-reaction="${reaction}"]`);
+  if (clickedBtn) {
+    clickedBtn.classList.remove('reaction-pop');
+    void clickedBtn.offsetWidth; 
+    clickedBtn.classList.add('reaction-pop');
+    setTimeout(() => clickedBtn.classList.remove('reaction-pop'), 400);
+  }
 
   const discordId = localStorage.getItem('uy_discord_id') || '';
   try {

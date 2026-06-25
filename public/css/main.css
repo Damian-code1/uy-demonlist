@@ -4928,16 +4928,36 @@ body {
   -webkit-touch-callout: none;
   -webkit-tap-highlight-color: transparent;
 }
-.mural-react-btn:hover { background: rgba(255,255,255,.1); color: var(--text); transform: translateY(-1px); }
+.mural-react-btn:hover { background: rgba(255,255,255,.1); color: var(--text); transform: translateY(-2px) scale(1.06); }
+.mural-react-btn:active { transform: scale(.92); }
 .mural-like-btn.active {
   background: rgba(34,197,94,.15); border-color: rgba(34,197,94,.4);
   color: #4ade80;
 }
+.mural-like-btn.active:hover { background: rgba(34,197,94,.22); }
 .mural-dislike-btn.active {
   background: rgba(244,63,94,.15); border-color: rgba(244,63,94,.4);
   color: var(--red);
 }
-.mural-react-btn i { font-size: .72rem; }
+.mural-dislike-btn.active:hover { background: rgba(244,63,94,.22); }
+.mural-react-btn i { font-size: .72rem; transition: transform .2s cubic-bezier(.34,1.56,.64,1); }
+.mural-react-btn:hover i { transform: scale(1.25); }
+.mural-react-btn.reaction-pop i { animation: reactionPop .35s cubic-bezier(.34,1.8,.64,1) forwards; }
+@keyframes reactionPop {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.55) rotate(-8deg); }
+  70%  { transform: scale(.9) rotate(4deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+.mural-react-count { min-width: 12px; text-align: center; transition: transform .2s cubic-bezier(.34,1.56,.64,1); }
+.mural-react-btn.reaction-pop .mural-react-count {
+  animation: countBump .3s cubic-bezier(.34,1.56,.64,1) forwards;
+}
+@keyframes countBump {
+  0%   { transform: translateY(0); }
+  50%  { transform: translateY(-4px); }
+  100% { transform: translateY(0); }
+}
 .mural-react-count { min-width: 12px; text-align: center; }
 .mural-reaction-count {
   display: inline-flex; align-items: center; gap: .3rem;
@@ -5029,8 +5049,16 @@ body {
   font-size: .65rem; font-weight: 700;
   width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0;
 }
+.mural-voter-info {
+  display: flex; flex-direction: column; gap: .05rem;
+  min-width: 0;
+}
 .mural-voter-name {
   font-size: .78rem; color: var(--text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.mural-voter-sub {
+  font-size: .65rem; color: var(--text-dim);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .lm-comments-section {
@@ -5136,6 +5164,8 @@ body {
 .lm-comment-reactions {
   display: flex; align-items: center; gap: .4rem;
 }
+.lm-comment-react-btn.reaction-pop i { animation: reactionPop .35s cubic-bezier(.34,1.8,.64,1) forwards; }
+.lm-comment-react-btn.reaction-pop span { animation: countBump .3s cubic-bezier(.34,1.56,.64,1) forwards; }
 .lm-comment-react-btn {
   display: inline-flex; align-items: center; gap: .3rem;
   padding: .22rem .6rem; border-radius: 50px;

@@ -148,8 +148,10 @@ export async function POST(request) {
       rawLink:       rawLink?.trim() || null,
       notes:         notes?.trim() || null,
       discordUser: {
-        id:     u.discord_id || null,
-        avatar: u.discord_avatar || null,
+        id:          u.discord_id || null,
+        avatar:      u.discord_avatar || null,
+        username:    u.discord_username || null,
+        displayName: u.discord_display_name || null,
       },
     }).catch(e => console.error('[/api/submissions POST] Error notificando a Discord:', e.message));
 

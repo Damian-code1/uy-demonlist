@@ -66,7 +66,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   setupSubmissionAutocomplete();
 });
 
-// Hero stats
 function syncHeroStats() {
   const { totalLevels, totalPlayers, totalCompletions } = getGlobalStats();
   animateCounter(document.getElementById('statLevels'),      totalLevels);
@@ -94,8 +93,6 @@ function paintCards(levels, animated = true) {
   }
   container.classList.toggle('grid-view', currentView === 'grid');
 
-  // Insertar TODAS las cards en un DocumentFragment primero — un solo reflow
-  // en vez de 176 inserciones individuales al DOM, una por una.
   const fragment = document.createDocumentFragment();
   const cardEls  = [];
   const firstLegacyIdx = levels.findIndex(l => l.legacy);
@@ -127,14 +124,13 @@ function paintCards(levels, animated = true) {
   if (!animated) return;
 
   
-  const firstScreenCount = 14; 
+  const firstScreenCount = 14;
   cardEls.slice(0, firstScreenCount).forEach((card, i) => {
     gsap.from(card, { opacity: 0, y: 12, duration: .35, ease: 'power3.out', delay: Math.min(i * .02, .35) });
   });
 
   if (cardEls.length <= firstScreenCount) return;
 
-  
   cardEls.slice(firstScreenCount).forEach(card => {
     card.style.opacity = '1';
   });
@@ -153,10 +149,7 @@ function paintCards(levels, animated = true) {
   cardEls.slice(firstScreenCount).forEach(card => lazyObserver.observe(card));
 }
 
-// Curva de puntos tipo potencia (no lineal): el valor cae lento en el
-// top de la lista y se desploma hacia la cola, para que el esfuerzo
-// marginal de subir puestos cerca del #1 valga muchísimo más que
-// "farmear" la franja media (ver MAX_POSITION_REF/EXPONENT abajo).
+
 const POINTS_MAX           = 1000;
 const POINTS_MIN           = 1;
 const POINTS_MAX_POSITION_REF = 250; // techo de referencia fijo (no recalibra puntos si la lista crece/encoge)
@@ -216,7 +209,7 @@ function levelTierBodyColor(pos) {
 }
 window.levelTierBodyColor = levelTierBodyColor;
 
-// Build card
+
 function buildCard(level, index) {
   const pos      = level.position || (index + 1);
   const victors  = level.victors || [];
@@ -363,7 +356,7 @@ function buildCard(level, index) {
   return card;
 }
 
-// Level modal
+
 function setupLevelModal() {
   const modal = document.getElementById('levelDetailModal');
   modal?.querySelector('.modal-backdrop')?.addEventListener('click', closeLevelDetailModal);
@@ -676,7 +669,7 @@ function refreshOpenLevelModal(levelId) {
 }
 window.refreshOpenLevelModal = refreshOpenLevelModal;
 
-// Search
+
 function setupSearch() {
   const input    = document.getElementById('searchInput');
   const clearBtn = document.getElementById('listSearchClear');
@@ -722,7 +715,7 @@ function setupSearch() {
   });
 }
 
-// View toggles
+
 function setupViewToggles() {
   document.querySelectorAll('.view-btn').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.view === currentView);
@@ -738,7 +731,7 @@ function setupViewToggles() {
   });
 }
 
-// Favorites toggle
+
 function setupFavoritesToggle() {
   const btn = document.getElementById('favViewBtn');
   if (!btn) return;
@@ -757,10 +750,10 @@ function setupFavoritesToggle() {
   });
 }
 
-// Submission autocomplete
+
 function setupSubmissionAutocomplete() {}
 
-// Scroll to submissions
+
 function scrollToSubmissions(levelName) {
   const section = document.getElementById('submissions');
   const input   = document.getElementById('levelName');
@@ -1170,12 +1163,7 @@ const avatarUrl = player.discord_id && player.discord_avatar
           ? `<p class="pm-empty">Sin completions en la lista aún</p>`
           : `<div class="pm-completions-list">
               ${completions.map(({ level, victor }) => {
-                // Si el victor es el PRIMERO registrado para este nivel y no tiene
-                // video propio cargado en la tabla victors, hacemos fallback al video
-                // de Showcase del nivel (level.youtube_url) — igual que en el modal
-                // de nivel. Es el mismo caso: el primer completion casi siempre es
-                // el que se usó como showcase, pero el campo victor.videoUrl puede
-                // haber quedado vacío.
+                
                 const isFirstVictor   = (level.victors||[])[0]?.id === victor?.id;
                 const ownVideoUrl     = (victor?.videoUrl || '').trim() || null;
                 const effectiveVideoUrl = ownVideoUrl
@@ -1230,13 +1218,11 @@ const avatarUrl = player.discord_id && player.discord_avatar
       </div>
     </div>`;
 
-// Detectar videos privados de YT: thumbnail de 120x90 = placeholder "no disponible"
+
   modal.querySelectorAll('a[data-ytid]').forEach(link => {
     const ytid = link.dataset.ytid;
     if (!ytid) return;
-    // Fix: usar hqdefault (320x180) — mqdefault (120x90) es el placeholder de "no disponible"
-    // pero algunos videos legítimos también devuelven esa resolución. Usamos maxresdefault
-    // y si falla intentamos hqdefault antes de marcar como privado.
+    
     const img = new Image();
     let tried = 0;
     const sizes = ['maxresdefault', 'hqdefault', 'mqdefault'];
@@ -1275,14 +1261,14 @@ modal.classList.add('active');
   document.body.style.overflow = 'hidden';
 
   // Cargar perfil de GDBrowser en background — ícono GD va en sección propia, NO en el avatar de Discord
-  const _API = typeof API_BASE !== 'undefined' ? API_BASE : 'http://localhost:3001/api';
+  
   const _gdName = player.gd_username || playerName;
   fetch(`${_API}/gdbrowser?player=${encodeURIComponent(_gdName)}`)
     .then(r => r.json())
     .then(gd => {
       if (!gd?.found) return;
 
-      // Mostrar badge GD en el avatar
+      
       const gdBadge = box.querySelector('#pmGdBadge');
       if (gdBadge) gdBadge.style.display = 'flex';
 
@@ -1608,6 +1594,10 @@ function attachLevelCommentEvents(list, levelId) {
 
     if (el.classList.contains('lm-comment-react-btn')) {
       el.addEventListener('click', async () => {
+        el.classList.remove('reaction-pop');
+        void el.offsetWidth;
+        el.classList.add('reaction-pop');
+        setTimeout(() => el.classList.remove('reaction-pop'), 400);
         try {
           const res = await fetch('/api/level-comments', {
             method: 'PUT',
