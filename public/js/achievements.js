@@ -31,14 +31,15 @@ function initAchAuth() {
 
 function onAuthReady() {
   _currentUser = window.currentUser || null;
-  const isStaff = _currentUser && STAFF_ROLES.includes(_currentUser.role);
-  if (isStaff) {
-    document.getElementById('achAddBtn').style.display = '';
-  }
-  // Actualizar avatar en el form de comentarios
+  applyStaffUI();
   updateCommentAvatar();
-  // Re-render para mostrar botones de staff
   renderAchievements();
+}
+
+function applyStaffUI() {
+  const isStaff = _currentUser && STAFF_ROLES.includes(_currentUser.role);
+  const btn = document.getElementById('achAddBtn');
+  if (btn) btn.style.display = isStaff ? '' : 'none';
 }
 
 
@@ -122,6 +123,7 @@ async function loadAchievements() {
     const res  = await fetch(ACH_API);
     const data = await res.json();
     _achievements = data.achievements || [];
+    applyStaffUI();
     renderAchievements();
     updateHeroStats();
   } catch (e) {
