@@ -13,12 +13,13 @@ export async function GET(request) {
 
     const [rows] = await query(`
       SELECT
-        c.id, c.content, c.created_at, c.level_id,
+        c.id, c.content, c.created_at, c.level_id, c.parent_id,
         u.discord_id,
         COALESCE(u.discord_display_name, u.discord_username) AS display_name,
         u.discord_username,
         u.discord_avatar,
         u.role,
+        (SELECT COUNT(*) FROM level_comments r WHERE r.parent_id = c.id) AS reply_count,
         (SELECT COUNT(*) FROM level_comment_reactions r WHERE r.comment_id = c.id AND r.reaction = 'like') AS likes,
         (SELECT COUNT(*) FROM level_comment_reactions r WHERE r.comment_id = c.id AND r.reaction = 'dislike') AS dislikes,
         (SELECT GROUP_CONCAT(u2.discord_id SEPARATOR ',')
@@ -29,7 +30,7 @@ export async function GET(request) {
          WHERE r3.comment_id = c.id AND r3.reaction = 'dislike') AS disliked_by
       FROM level_comments c
       JOIN users u ON u.id = c.user_id
-      WHERE c.level_id = ?
+      WHERE c.level_id = ? AND c.parent_id IS NULL
       ORDER BY c.created_at DESC
       LIMIT 100
     `, [levelId]);
@@ -51,9 +52,18 @@ export async function POST(request) {
   if (!user) return Response.json({ error: 'No autenticado' }, { status: 401 });
 
   try {
-    const { level_id, content } = await request.json();
+    const { level_id, content, parent_id } = await request.json();
     if (!level_id || !content?.trim() || content.trim().length > 500)
       return Response.json({ error: 'Contenido inválido (máx. 500 chars)' }, { status: 400 });
+
+    // Si es reply, verificar que el padre existe y es un comentario raíz
+    if (parent_id) {
+      const [[parent]] = await query(
+        'SELECT id, parent_id FROM level_comments WHERE id = ? LIMIT 1', [parent_id]
+      );
+      if (!parent || parent.parent_id !== null)
+        return Response.json({ error: 'Comentario padre inválido' }, { status: 400 });
+    }
 
     const [[dbUser]] = await query(
       'SELECT id, banned_until FROM users WHERE discord_id = ? LIMIT 1',
@@ -67,8 +77,8 @@ export async function POST(request) {
     if (!level) return Response.json({ error: 'Nivel no encontrado' }, { status: 404 });
 
     await query(
-      'INSERT INTO level_comments (level_id, user_id, content) VALUES (?, ?, ?)',
-      [level_id, dbUser.id, content.trim()]
+      'INSERT INTO level_comments (level_id, user_id, content, parent_id) VALUES (?, ?, ?, ?)',
+      [level_id, dbUser.id, content.trim(), parent_id || null]
     );
     return Response.json({ success: true }, { status: 201 });
   } catch (e) {

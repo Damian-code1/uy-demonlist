@@ -1449,83 +1449,285 @@ function renderLevelComments(comments, levelId) {
     return;
   }
 
-  list.innerHTML = comments.map(c => {
-    const isOwn = user && user.id === c.discord_id;
-    const isAdmin = user && ['admin','manager','owner'].includes(user.role);
-    const canDelete = isOwn || isAdmin;
-    const iLiked    = user && c.liked_by?.includes(user.id);
-    const iDisliked = user && c.disliked_by?.includes(user.id);
-    const avatarUrl = c.discord_id && c.discord_avatar
-      ? `https://cdn.discordapp.com/avatars/${c.discord_id}/${c.discord_avatar}.png?size=64`
-      : null;
-    const ts = new Date(c.created_at).getTime();
-    const rel = (() => {
-      const d = Date.now() - ts, m = 60000;
-      if (d < m)        return 'ahora';
-      if (d < 60*m)     return `hace ${Math.floor(d/m)}m`;
-      if (d < 1440*m)   return `hace ${Math.floor(d/3600000)}h`;
-      return `hace ${Math.floor(d/86400000)}d`;
-    })();
+  list.innerHTML = comments.map(c => buildLevelCommentHTML(c, user, false)).join('');
 
-    return `
-      <div class="lm-comment" data-id="${c.id}">
-        <div class="lm-comment-header">
-          <div class="lm-comment-author">
-            ${avatarUrl
-              ? `<img class="lm-comment-avatar" src="${avatarUrl}" alt="" onerror="this.style.display='none'">`
-              : `<div class="lm-comment-avatar lm-comment-avatar-ph">${(c.display_name||'?')[0].toUpperCase()}</div>`
-            }
-            <div>
-              <span class="lm-comment-name">${c.display_name || c.discord_username || 'Usuario'}</span>
-              <span class="lm-comment-time">${rel}</span>
-            </div>
+  // Eventos delegados en el contenedor
+  attachLevelCommentEvents(list, levelId);
+}
+
+function buildLevelCommentHTML(c, user, isReply) {
+  const isOwn     = user && user.id === c.discord_id;
+  const isAdmin   = user && ['admin','manager','owner'].includes(user.role);
+  const canDelete = isOwn || isAdmin;
+  const iLiked    = user && c.liked_by?.includes(user.id);
+  const iDisliked = user && c.disliked_by?.includes(user.id);
+  const avatarUrl = c.discord_id && c.discord_avatar
+    ? `https://cdn.discordapp.com/avatars/${c.discord_id}/${c.discord_avatar}.png?size=64`
+    : null;
+  const ts  = new Date(c.created_at).getTime();
+  const rel = lcRelTime(ts);
+
+  const likeNames    = (c.liked_by    || []).length;
+  const dislikeNames = (c.disliked_by || []).length;
+
+  const reactionsHTML = user ? `
+    <button class="lm-comment-react-btn lm-like-btn${iLiked ? ' active-like' : ''}"
+      data-id="${c.id}" data-reaction="like"
+      data-names="${esc((c.liked_by||[]).join(','))}">
+      <i class="fas fa-thumbs-up"></i> <span>${c.likes || 0}</span>
+    </button>
+    <button class="lm-comment-react-btn lm-dislike-btn${iDisliked ? ' active-dislike' : ''}"
+      data-id="${c.id}" data-reaction="dislike"
+      data-names="${esc((c.disliked_by||[]).join(','))}">
+      <i class="fas fa-thumbs-down"></i> <span>${c.dislikes || 0}</span>
+    </button>` : `
+    <span class="lm-comment-react-static" data-names="${esc((c.liked_by||[]).join(','))}" data-reaction="like" style="cursor:${likeNames?'pointer':'default'}">
+      <i class="fas fa-thumbs-up"></i> ${c.likes||0}
+    </span>
+    <span class="lm-comment-react-static" data-names="${esc((c.disliked_by||[]).join(','))}" data-reaction="dislike" style="cursor:${dislikeNames?'pointer':'default'}">
+      <i class="fas fa-thumbs-down"></i> ${c.dislikes||0}
+    </span>`;
+
+  const replySection = !isReply ? `
+    <div class="lm-comment-replies-wrap" id="lc-replies-${c.id}"></div>
+    ${(c.reply_count > 0) ? `
+      <button class="lm-comment-replies-toggle" data-id="${c.id}" data-count="${c.reply_count}">
+        <i class="fas fa-comment-dots"></i> ${c.reply_count} respuesta${c.reply_count > 1 ? 's' : ''}
+      </button>` : ''}
+    ${user ? `
+      <button class="lm-comment-reply-btn" data-id="${c.id}">
+        <i class="fas fa-reply"></i> Responder
+      </button>
+      <div class="lm-reply-form hidden" id="lc-reply-form-${c.id}">
+        <textarea class="lm-comment-input lm-reply-input" id="lc-reply-input-${c.id}"
+          placeholder="Tu respuesta… (máx. 500 car.)" maxlength="500" rows="2"></textarea>
+        <div class="lm-comment-form-footer" style="padding:.3rem .5rem .35rem">
+          <span class="lm-comment-char-count" id="lc-reply-count-${c.id}">0/500</span>
+          <button class="lm-comment-reply-cancel" data-id="${c.id}">Cancelar</button>
+          <button class="lm-comment-submit lm-reply-submit" data-id="${c.id}" style="padding:.28rem .7rem;font-size:.72rem">
+            <i class="fas fa-paper-plane"></i> Responder
+          </button>
+        </div>
+      </div>` : ''}
+  ` : '';
+
+  return `
+    <div class="lm-comment${isReply ? ' lm-comment-reply' : ''}" data-id="${c.id}">
+      <div class="lm-comment-header">
+        <div class="lm-comment-author">
+          ${avatarUrl
+            ? `<img class="lm-comment-avatar" src="${avatarUrl}" alt="" onerror="this.style.display='none';this.nextElementSibling?.style.setProperty('display','flex')">`
+            : ''}
+          <div class="lm-comment-avatar lm-comment-avatar-ph" ${avatarUrl ? 'style="display:none"' : ''}>
+            ${(c.display_name||'?')[0].toUpperCase()}
           </div>
-          ${canDelete ? `<button class="lm-comment-delete" data-id="${c.id}" title="Eliminar"><i class="fas fa-trash-alt"></i></button>` : ''}
+          <div>
+            <span class="lm-comment-name">${esc(c.display_name || c.discord_username || 'Usuario')}</span>
+            <span class="lm-comment-time" data-ts="${ts}">${rel}</span>
+          </div>
         </div>
-        <div class="lm-comment-body">${c.content.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
-        <div class="lm-comment-reactions">
-          ${user ? `
-            <button class="lm-comment-react-btn${iLiked ? ' active-like' : ''}" data-id="${c.id}" data-reaction="like">
-              <i class="fas fa-thumbs-up"></i> <span>${c.likes || 0}</span>
-            </button>
-            <button class="lm-comment-react-btn${iDisliked ? ' active-dislike' : ''}" data-id="${c.id}" data-reaction="dislike">
-              <i class="fas fa-thumbs-down"></i> <span>${c.dislikes || 0}</span>
-            </button>` : `
-            <span class="lm-comment-react-static"><i class="fas fa-thumbs-up"></i> ${c.likes||0}</span>
-            <span class="lm-comment-react-static"><i class="fas fa-thumbs-down"></i> ${c.dislikes||0}</span>`
-          }
-        </div>
-      </div>`;
-  }).join('');
+        ${canDelete ? `<button class="lm-comment-delete" data-id="${c.id}" title="Eliminar"><i class="fas fa-trash-alt"></i></button>` : ''}
+      </div>
+      <div class="lm-comment-body">${esc(c.content)}</div>
+      <div class="lm-comment-reactions">${reactionsHTML}</div>
+      ${replySection}
+    </div>`;
+}
 
-  // Eventos
+function lcRelTime(ts) {
+  const d = Date.now() - ts, m = 60000;
+  if (d < m)       return 'ahora';
+  if (d < 60*m)    return `hace ${Math.floor(d/m)}m`;
+  if (d < 1440*m)  return `hace ${Math.floor(d/3600000)}h`;
+  return `hace ${Math.floor(d/86400000)}d`;
+}
+
+// Actualiza los tiempos relativos cada 30s
+let _lcTimeInterval = null;
+function startLcTimeUpdater(list) {
+  if (_lcTimeInterval) clearInterval(_lcTimeInterval);
+  _lcTimeInterval = setInterval(() => {
+    list.querySelectorAll('.lm-comment-time[data-ts]').forEach(el => {
+      el.textContent = lcRelTime(Number(el.dataset.ts));
+    });
+  }, 30000);
+}
+
+function showReactionPopup(names, type, anchorEl) {
+  document.getElementById('lcReactionPopup')?.remove();
+  if (!names?.length) return;
+
+  const popup = document.createElement('div');
+  popup.id = 'lcReactionPopup';
+  popup.className = 'lc-reaction-popup';
+  popup.innerHTML = `
+    <div class="lc-reaction-popup-title">
+      <i class="fas fa-thumbs-${type === 'like' ? 'up' : 'down'}"></i>
+      ${type === 'like' ? 'Les gustó' : 'No les gustó'}
+    </div>
+    <div class="lc-reaction-popup-list">${names.map(id =>
+      `<span class="lc-reaction-user" data-discord="${id}">@${id.slice(0,8)}…</span>`
+    ).join('')}</div>`;
+  document.body.appendChild(popup);
+
+  const rect = anchorEl.getBoundingClientRect();
+  const top  = rect.bottom + window.scrollY + 6;
+  const left = Math.min(rect.left + window.scrollX, window.innerWidth - 200);
+  popup.style.top  = top + 'px';
+  popup.style.left = left + 'px';
+
+  setTimeout(() => {
+    document.addEventListener('click', () => popup.remove(), { once: true });
+  }, 10);
+}
+
+function attachLevelCommentEvents(list, levelId) {
+  const discordId = () => localStorage.getItem('uy_discord_id') || '';
+
+  // Delete
   list.querySelectorAll('.lm-comment-delete').forEach(btn => {
     btn.addEventListener('click', async () => {
-      const id = Number(btn.dataset.id);
       btn.disabled = true;
-      const discordId = localStorage.getItem('uy_discord_id') || '';
       try {
-        const res = await fetch(`/api/level-comments?id=${id}`, {
-          method: 'DELETE', headers: { 'x-discord-id': discordId }
+        const res = await fetch(`/api/level-comments?id=${btn.dataset.id}`, {
+          method: 'DELETE', headers: { 'x-discord-id': discordId() }
         });
         if (res.ok) await loadLevelComments(levelId);
+        else btn.disabled = false;
       } catch { btn.disabled = false; }
     });
   });
 
+  // Reacciones — click reactúa, longpress/contextmenu muestra popup
   list.querySelectorAll('.lm-comment-react-btn').forEach(btn => {
     btn.addEventListener('click', async () => {
-      const discordId = localStorage.getItem('uy_discord_id') || '';
       try {
         const res = await fetch('/api/level-comments', {
           method: 'PUT',
-          headers: { 'Content-Type': 'application/json', 'x-discord-id': discordId },
+          headers: { 'Content-Type': 'application/json', 'x-discord-id': discordId() },
           body: JSON.stringify({ comment_id: Number(btn.dataset.id), reaction: btn.dataset.reaction })
         });
         if (res.ok) await loadLevelComments(levelId);
       } catch {}
     });
+    btn.addEventListener('contextmenu', e => {
+      e.preventDefault();
+      const names = (btn.dataset.names || '').split(',').filter(Boolean);
+      showReactionPopup(names, btn.dataset.reaction, btn);
+    });
   });
+
+  // Popup en reacciones estáticas (no logueado)
+  list.querySelectorAll('.lm-comment-react-static').forEach(el => {
+    el.addEventListener('click', () => {
+      const names = (el.dataset.names || '').split(',').filter(Boolean);
+      if (names.length) showReactionPopup(names, el.dataset.reaction, el);
+    });
+  });
+
+  // Toggle replies
+  list.querySelectorAll('.lm-comment-replies-toggle').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const id   = btn.dataset.id;
+      const wrap = document.getElementById(`lc-replies-${id}`);
+      if (!wrap) return;
+
+      if (wrap.dataset.loaded === '1') {
+        wrap.innerHTML = '';
+        wrap.dataset.loaded = '0';
+        btn.innerHTML = `<i class="fas fa-comment-dots"></i> ${btn.dataset.count} respuesta${btn.dataset.count > 1 ? 's' : ''}`;
+        return;
+      }
+
+      wrap.innerHTML = '<div class="lm-comments-loading" style="padding:.5rem"><i class="fas fa-spinner fa-spin"></i></div>';
+      try {
+        const res  = await fetch(`/api/level-comments/${id}`);
+        const { replies = [] } = await res.json();
+        const user = window.currentUser;
+        wrap.innerHTML = replies.map(r => buildLevelCommentHTML(r, user, true)).join('');
+        wrap.dataset.loaded = '1';
+        btn.innerHTML = `<i class="fas fa-chevron-up"></i> Ocultar respuestas`;
+        // Eventos en replies
+        attachLevelCommentEvents(wrap, levelId);
+      } catch {
+        wrap.innerHTML = '<div class="lm-comments-empty" style="padding:.5rem">Error al cargar</div>';
+      }
+    });
+  });
+
+  // Abrir/cerrar form de reply
+  list.querySelectorAll('.lm-comment-reply-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const form  = document.getElementById(`lc-reply-form-${btn.dataset.id}`);
+      const input = document.getElementById(`lc-reply-input-${btn.dataset.id}`);
+      form?.classList.toggle('hidden');
+      if (!form?.classList.contains('hidden')) input?.focus();
+    });
+  });
+
+  list.querySelectorAll('.lm-comment-reply-cancel').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.getElementById(`lc-reply-form-${btn.dataset.id}`)?.classList.add('hidden');
+    });
+  });
+
+  // Contador chars en replies
+  list.querySelectorAll('.lm-reply-input').forEach(input => {
+    const id      = input.id.replace('lc-reply-input-', '');
+    const counter = document.getElementById(`lc-reply-count-${id}`);
+    input.addEventListener('input', () => {
+      if (counter) counter.textContent = `${input.value.length}/500`;
+    });
+  });
+
+  // Submit reply
+  list.querySelectorAll('.lm-reply-submit').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const id    = btn.dataset.id;
+      const input = document.getElementById(`lc-reply-input-${id}`);
+      const text  = input?.value.trim();
+      if (!text) return;
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+      try {
+        const res = await fetch('/api/level-comments', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-discord-id': discordId() },
+          body: JSON.stringify({ level_id: levelId, content: text, parent_id: Number(id) })
+        });
+        if (res.ok) {
+          input.value = '';
+          document.getElementById(`lc-reply-form-${id}`)?.classList.add('hidden');
+          // Recargar replies si estaban abiertas
+          const wrap = document.getElementById(`lc-replies-${id}`);
+          if (wrap?.dataset.loaded === '1') {
+            wrap.dataset.loaded = '0';
+            const toggle = list.querySelector(`.lm-comment-replies-toggle[data-id="${id}"]`);
+            toggle?.click();
+          } else {
+            const toggle = list.querySelector(`.lm-comment-replies-toggle[data-id="${id}"]`);
+            if (toggle) {
+              const newCount = Number(toggle.dataset.count || 0) + 1;
+              toggle.dataset.count = newCount;
+              toggle.innerHTML = `<i class="fas fa-comment-dots"></i> ${newCount} respuesta${newCount > 1 ? 's' : ''}`;
+            } else {
+              await loadLevelComments(levelId);
+            }
+          }
+        } else {
+          const err = await res.json().catch(() => ({}));
+          if (typeof showToast === 'function') showToast(err.error || 'Error', 'error');
+        }
+      } catch {
+        if (typeof showToast === 'function') showToast('Error de red', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-paper-plane"></i> Responder';
+      }
+    });
+  });
+
+  startLcTimeUpdater(list);
 }
 
 async function postLevelComment(levelId, content) {
