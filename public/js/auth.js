@@ -141,16 +141,17 @@ function renderUserWidget(user) {
 
   const roleClass = `role-${user.role || 'usuario'}`;
   const roleLabel = {
-    owner:    '👑 OWNER',
-    manager:  '🔱 MANAGER',
-    admin:    '⚡ ADMIN',
-    list_mod: '🛡 MOD',
+    owner:    '<i class="fas fa-crown"></i> OWNER',
+    manager:  '<i class="fas fa-gem"></i> MANAGER',
+    admin:    '<i class="fas fa-bolt"></i> ADMIN',
+    list_mod: '<i class="fas fa-shield"></i> MOD',
     usuario:  'USUARIO',
   }[user.role] || 'USUARIO';
 
   const card = widget.querySelector('.user-widget-card');
   const drop = widget.querySelector('.user-widget-dropdown');
 
+  const hasDropdown = !!widget.querySelector('.user-widget-dropdown');
   if (card) {
     card.innerHTML = `
       ${avatarHtml}
@@ -158,8 +159,8 @@ function renderUserWidget(user) {
         <div class="user-widget-name">${esc(user.name || 'Usuario')}</div>
         <div class="user-widget-role ${roleClass}">${roleLabel}</div>
       </div>
-      <i class="fas fa-chevron-down user-widget-chevron"></i>`;
-    card.onclick = toggleUserDropdown;
+      ${hasDropdown ? '<i class="fas fa-chevron-down user-widget-chevron"></i>' : ''}`;
+    card.onclick = hasDropdown ? toggleUserDropdown : null;
   }
 
   
