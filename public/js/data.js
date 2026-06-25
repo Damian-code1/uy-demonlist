@@ -208,15 +208,17 @@ function setFavicon(iconUrl) {
 
 async function updateDiscordLogo() {
   try {
-    const res  = await fetch(`https://discord.com/api/guilds/${DISCORD_GUILD_ID}/widget.json`);
-    const data = await res.json();
-    if (data?.icon) {
-      const iconUrl = `https://cdn.discordapp.com/icons/${DISCORD_GUILD_ID}/${data.icon}.png`;
-      const logoImg  = document.getElementById('serverLogoImg');
-      const logoFlag = document.getElementById('logoFlag');
-      if (logoImg)  { logoImg.src = iconUrl; logoImg.style.display = 'block'; }
-      if (logoFlag) logoFlag.style.display = 'none';
-    }
+    const res  = await fetch(`https://discord.com/api/v10/invites/${DISCORD_INVITE}?with_counts=false&with_expiration=false`);
+    if (!res.ok) return;
+    const inv  = await res.json();
+    const hash = inv?.guild?.icon;
+    if (!hash) return;
+    const iconUrl = `https://cdn.discordapp.com/icons/${DISCORD_GUILD_ID}/${hash}.png`;
+    document.querySelectorAll('#serverLogoImg').forEach(img => {
+      img.src = iconUrl; img.style.display = 'block';
+    });
+    document.querySelectorAll('#logoFlag').forEach(el => el.style.display = 'none');
+    setFooterDiscordIcon(iconUrl);
   } catch {}
 }
 

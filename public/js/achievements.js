@@ -584,6 +584,7 @@ function openAchForm(id = null) {
   } else {
     document.getElementById('achFormPos').value      = _achievements.length + 1;
     document.getElementById('achFormType').value     = 'completion';
+    document.getElementById('achFormType').dispatchEvent(new Event('change'));
     document.getElementById('achFormPlayer').value   = '';
     document.getElementById('achFormLevel').value    = '';
     document.getElementById('achFormProgress').value = '';
