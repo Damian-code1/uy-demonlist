@@ -21,6 +21,8 @@
   50%      { transform: translateY(-8px) rotate(3deg); }
 }
 .ach-hero-title {
+  user-select: none;
+  -webkit-user-select: none;
   font-family: var(--font-title);
   font-size: clamp(2.5rem, 7vw, 5rem);
   letter-spacing: 3px;

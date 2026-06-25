@@ -1,6 +1,4 @@
-// =============================================
-// ACHIEVEMENTS.JS — UY Demonlist v2
-// =============================================
+// ACHIEVEMENTS.JS 
 
 const ACH_API   = '/api/achievements';
 const STAFF_ROLES = ['list_mod', 'admin', 'manager', 'owner'];
@@ -11,7 +9,7 @@ let _currentAchId  = null;
 let _currentUser   = null;
 let _searchTerm    = '';
 
-// ─── INIT ───
+
 document.addEventListener('DOMContentLoaded', () => {
   loadAchievements();
   setupSearch();
@@ -42,7 +40,7 @@ function onAuthReady() {
   renderAchievements();
 }
 
-// ─── API ───
+
 async function loadAchievements() {
   try {
     const res  = await fetch(ACH_API);
@@ -56,7 +54,6 @@ async function loadAchievements() {
   }
 }
 
-// ─── RENDER ───
 function renderAchievements() {
   const list    = document.getElementById('achList');
   const isStaff = _currentUser && STAFF_ROLES.includes(_currentUser.role);
@@ -146,7 +143,6 @@ function updateHeroStats() {
   document.getElementById('achProgressCount').textContent   = _achievements.filter(a => a.type === 'progress').length;
 }
 
-// ─── FILTROS ───
 function setFilter(filter) {
   _currentFilter = filter;
   document.querySelectorAll('.ach-filter-btn').forEach(btn => {
@@ -167,7 +163,6 @@ function setupSearch() {
   });
 }
 
-// ─── MODAL DETALLE ───
 async function openAchDetail(id) {
   const ach = _achievements.find(a => a.id === id);
   if (!ach) return;
@@ -243,7 +238,6 @@ window.handleOverlayClick = handleOverlayClick;
 window.openAchDetail  = openAchDetail;
 window.closeAchDetail = closeAchDetail;
 
-// ─── REACCIONES ───
 function getMyReaction(ach) {
   if (!_currentUser || !ach._myReaction) return null;
   return ach._myReaction;
@@ -272,7 +266,6 @@ async function reactAch(e, id, reaction) {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error);
 
-    // Actualizar local
     const ach = _achievements.find(a => a.id === id);
     if (ach) {
       ach.likes    = data.likes;
@@ -316,7 +309,6 @@ async function reactAchModal(id, reaction) {
       else                            ach._myReaction = reaction;
     }
 
-    // Actualizar botones del modal
     document.getElementById('achModalLikes').textContent    = data.likes;
     document.getElementById('achModalDislikes').textContent = data.dislikes;
     const likeBtn    = document.getElementById('achModalLikeBtn');
@@ -344,7 +336,6 @@ async function reactAchModal(id, reaction) {
 }
 window.reactAchModal = reactAchModal;
 
-// ─── COMENTARIOS ───
 function updateCommentAvatar() {
   const wrap = document.getElementById('achCommentAvatarWrap');
   if (!wrap) return;
@@ -457,7 +448,6 @@ async function submitAchComment() {
     input.value = '';
     input.style.height = 'auto';
     loadAchComments(_currentAchId);
-    // Actualizar count en la card
     const ach = _achievements.find(a => a.id === _currentAchId);
     if (ach) { ach.comment_count = (ach.comment_count || 0) + 1; renderAchievements(); }
     showToast('Comentario publicado ✓', 'success');
@@ -538,7 +528,6 @@ async function reactComment(commentId, achId, reaction) {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error);
 
-    // Actualizar contadores en UI
     document.querySelectorAll(`.likes-${commentId}`).forEach(el => el.textContent = data.likes);
     document.querySelectorAll(`.dislikes-${commentId}`).forEach(el => el.textContent = data.dislikes);
 
@@ -571,7 +560,6 @@ async function deleteAchComment(commentId, achId) {
 }
 window.deleteAchComment = deleteAchComment;
 
-// ─── FORM STAFF (add/edit) ───
 function openAchForm(id = null) {
   const isStaff = _currentUser && STAFF_ROLES.includes(_currentUser.role);
   if (!isStaff) return;
@@ -686,7 +674,6 @@ async function deleteAch(id) {
 }
 window.deleteAch = deleteAch;
 
-// ─── HELPERS ───
 function extractYTId(url) {
   if (!url) return null;
   const m = url.match(/(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/\s]{11})/);

@@ -442,6 +442,7 @@ function detectVideoPlatform(url) {
 window.detectVideoPlatform = detectVideoPlatform;
 window.updateDiscordLogo   = updateDiscordLogo;
 window.addDiscordLinks     = addDiscordLinks;
+window.loadFooterCredits   = loadFooterCredits;
 
 
 // Copiar al portapapeles
