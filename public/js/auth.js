@@ -21,6 +21,9 @@ async function initAuth() {
   currentUser = await checkSession();
   window.currentUser = currentUser;
   renderUserWidget(currentUser);
+  if (typeof updateDiscordLogo === 'function') updateDiscordLogo();
+  if (typeof addDiscordLinks   === 'function') addDiscordLinks();
+  if (typeof loadFooterCredits === 'function') loadFooterCredits();
   if (typeof refreshMySubmissions === 'function') refreshMySubmissions();
 
   if (currentUser?.isBanned && typeof showBanCountdown === 'function') {
@@ -159,22 +162,7 @@ function renderUserWidget(user) {
     card.onclick = toggleUserDropdown;
   }
 
-  const isRoulettePage = window.location.pathname.includes('roulette') ||
-                         window.location.pathname.includes('achievements');
-
-  if (isRoulettePage) {
-    if (card) {
-      card.innerHTML = `
-        ${avatarHtml}
-        <div class="user-widget-info">
-          <div class="user-widget-name">${esc(user.name || 'Usuario')}</div>
-          <div class="user-widget-role ${roleClass}">${roleLabel}</div>
-        </div>`;
-      card.onclick = null;
-    }
-    if (drop) drop.innerHTML = '';
-    return;
-  }
+  
 
   if (drop) {
     const gdSection = user.gdUsername

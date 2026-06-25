@@ -640,8 +640,11 @@ async function saveAchForm() {
   const thumb    = document.getElementById('achFormThumb').value.trim() || null;
   const notes    = document.getElementById('achFormNotes').value.trim() || null;
 
-  if (!position || !player || !level || !progress || !type) {
+  if (!position || !player || !level || !type) {
     return showToast('Completá los campos obligatorios', 'error');
+  }
+  if (type === 'progress' && !progress) {
+    return showToast('El campo Progreso es obligatorio para tipo Progreso', 'error');
   }
 
   const body = { position, player_name: player, level_name: level, progress, type, video_url: video, thumbnail_url: thumb, notes };

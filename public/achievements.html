@@ -166,7 +166,7 @@
     </div>
 
     <div class="ach-form-group">
-      <label class="ach-form-label">Progreso <span>*</span></label>
+      <label class="ach-form-label" id="achFormProgressLabel">Progreso <span id="achFormProgressRequired">*</span></label>
       <input type="text" class="ach-form-input" id="achFormProgress" placeholder="Ej: 95% o 14-96">
     </div>
 
@@ -207,6 +207,14 @@
 <script src="js/achievements.js"></script>
 <script>
   AOS.init({ duration: 500, once: true, offset: 40 });
+
+  document.getElementById('achFormType')?.addEventListener('change', function () {
+    const isCompletion = this.value === 'completion';
+    const req = document.getElementById('achFormProgressRequired');
+    const input = document.getElementById('achFormProgress');
+    if (req) req.style.display = isCompletion ? 'none' : '';
+    if (input) input.placeholder = isCompletion ? '100% (por defecto)' : 'Ej: 95% o 14-96';
+  });
 
   window.addEventListener('scroll', () => {
     document.getElementById('navbar')?.classList.toggle('scrolled', window.scrollY > 20);
