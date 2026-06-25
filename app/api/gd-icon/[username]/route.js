@@ -39,11 +39,13 @@ export async function GET(request, { params }) {
   }
 
   try {
+    console.log('[gd-icon] Fetching profile for:', username);
     const profile = await fetch(`https://gdbrowser.com/api/profile/${encodeURIComponent(username)}`, {
       headers: { 'User-Agent': 'UY-Demonlist/2.0' }
     }).then(r => r.json());
 
     if (!profile || profile.error) {
+      console.log('[gd-icon] Profile not found:', username);
       return new Response('Profile not found', { status: 404 });
     }
 
@@ -53,7 +55,10 @@ export async function GET(request, { params }) {
     const form = ICON_FORMS[profile.iconType] || 'cube';
     const iconNum = profile[PROFILE_ICON_FIELD[form]] ?? 1;
 
+    console.log('[gd-icon] Profile data:', { col1, col2, col3, form, iconNum });
+
     const iconStr = `${PIXI_FORM[form]}_${String(iconNum).padStart(2, '0')}`;
+    console.log('[gd-icon] Icon string:', iconStr);
     
     const [plistRes, atlasRes] = await Promise.all([
       fetch(`https://gdbrowser.com/iconkit/icons/${iconStr}-uhd.plist`),
@@ -61,17 +66,22 @@ export async function GET(request, { params }) {
     ]);
 
     if (!plistRes.ok || !atlasRes.ok) {
+      console.log('[gd-icon] Assets not found for:', iconStr);
       return new Response('Icon assets not found', { status: 404 });
     }
 
     const plistText = await plistRes.text();
     const frames = parsePlist(plistText);
-    const atlas = await loadImage(Buffer.from(await atlasRes.arrayBuffer()));
+    console.log('[gd-icon] Parsed frames:', Object.keys(frames).length);
+    
+    const atlasBuffer = await atlasRes.arrayBuffer();
+    const atlas = await loadImage(Buffer.from(atlasBuffer));
+    console.log('[gd-icon] Atlas loaded');
 
     const canvas = createCanvas(128, 128);
     const ctx = canvas.getContext('2d');
 
-    const glowColor = col3 || (col2.r > 0 || col2.g > 0 || col2.b > 0 ? col2 : col1);
+    const glowColor = col3 || (col2 && (col2.r > 0 || col2.g > 0 || col2.b > 0) ? col2 : col1);
     const glowFrame = frames[`${iconStr}_glow_001.png`];
     if (glowFrame) {
       drawFrame(ctx, atlas, glowFrame, 0, 0, 128, 128, glowColor);
@@ -101,12 +111,13 @@ export async function GET(request, { params }) {
 
     const buffer = await canvas.toBuffer('image/png');
     iconCache.set(key, { buffer, time: Date.now() });
+    console.log('[gd-icon] Icon rendered successfully for:', username);
 
     return new Response(buffer, {
       headers: { 'Content-Type': 'image/png', 'Cache-Control': 'public, max-age=300' }
     });
   } catch (error) {
-    console.error('[gd-icon]', error.message);
+    console.error('[gd-icon] Error:', error.message, error.stack);
     return new Response('Error rendering icon', { status: 500 });
   }
 }
