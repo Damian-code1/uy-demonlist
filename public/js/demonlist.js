@@ -1262,7 +1262,7 @@ modal.classList.add('active');
   // Cargar perfil de GDBrowser en background — ícono GD va en sección propia, NO en el avatar de Discord
   
   const _gdName = player.gd_username || playerName;
-  fetch(`${_API}/gdbrowser?player=${encodeURIComponent(_gdName)}`)
+  fetch(`/api/gdbrowser?player=${encodeURIComponent(_gdName)}`)
     .then(r => r.json())
     .then(gd => {
       if (!gd?.found) return;
