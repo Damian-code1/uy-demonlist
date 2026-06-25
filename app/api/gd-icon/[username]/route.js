@@ -1,4 +1,4 @@
-import { createCanvas, loadImage } from '@napi-rs/canvas';
+import { createCanvas, loadImage } from 'canvas';
 
 const iconCache = new Map();
 const CACHE_TTL = 1000 * 60 * 5;

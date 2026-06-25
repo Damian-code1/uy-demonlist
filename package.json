@@ -10,7 +10,7 @@
     "migrate": "node scripts/migrate.js"
   },
   "dependencies": {
-    "@napi-rs/canvas": "^1.0.1",
+    "canvas": "^3.2.3",
     "dotenv": "^16.3.1",
     "mysql2": "^3.6.5",
     "next": "14.0.4",
