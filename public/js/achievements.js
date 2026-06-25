@@ -19,11 +19,10 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function initAuth() {
-  // Esperar a que auth.js inicialice la sesión
+  // Esperar a que auth.js inicialice window.currentUser
   const poll = setInterval(() => {
-    if (typeof window._currentSession !== 'undefined') {
+    if (typeof window.currentUser !== 'undefined') {
       clearInterval(poll);
-      _currentUser = window._currentSession;
       onAuthReady();
     }
   }, 80);
@@ -32,7 +31,7 @@ function initAuth() {
 }
 
 function onAuthReady() {
-  _currentUser = window._currentSession || null;
+  _currentUser = window.currentUser || null;
   const isStaff = _currentUser && STAFF_ROLES.includes(_currentUser.role);
   if (isStaff) {
     document.getElementById('achAddBtn').style.display = '';
@@ -250,9 +249,19 @@ function getMyReaction(ach) {
   return ach._myReaction;
 }
 
+function isBanned() {
+  const u = window.currentUser;
+  return u?.isBanned === true;
+}
+function checkBan(action = 'hacer eso') {
+  if (isBanned()) { showToast(`Estás sancionado y no podés ${action}`, 'error'); return true; }
+  return false;
+}
+
 async function reactAch(e, id, reaction) {
   e.stopPropagation();
   if (!_currentUser) { showToast('Iniciá sesión para reaccionar', 'warning'); return; }
+  if (checkBan('reaccionar')) return;
 
   try {
     const res  = await fetch(`${ACH_API}/${id}/reactions`, {
@@ -288,6 +297,7 @@ window.reactAch = reactAch;
 
 async function reactAchModal(id, reaction) {
   if (!_currentUser) { showToast('Iniciá sesión para reaccionar', 'warning'); return; }
+  if (checkBan('reaccionar')) return;
 
   try {
     const res  = await fetch(`${ACH_API}/${id}/reactions`, {
@@ -431,6 +441,7 @@ function renderComment(c, achId, isReply = false) {
 
 async function submitAchComment() {
   if (!_currentUser) { showToast('Iniciá sesión para comentar', 'warning'); return; }
+  if (checkBan('comentar')) return;
   const input   = document.getElementById('achCommentInput');
   const content = input.value.trim();
   if (!content) return;
@@ -467,6 +478,7 @@ window.toggleReplyForm = toggleReplyForm;
 
 async function submitReply(parentId, achId) {
   if (!_currentUser) return;
+  if (checkBan('responder')) return;
   const input   = document.getElementById(`replyInput-${parentId}`);
   const content = input?.value.trim();
   if (!content) return;
