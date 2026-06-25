@@ -31,13 +31,27 @@
     </a>
 
     <div class="nav-links" id="navLinks">
-      <a href="index.html#lista"       class="nav-link">Lista</a>
-      <a href="index.html#submissions" class="nav-link">Submissions</a>
-      <a href="index.html#leaderboard" class="nav-link">Jugadores</a>
-      <a href="roulette.html"          class="nav-link nav-roulette active">
+      <div class="nav-dropdown-wrap">
+        <button class="nav-link nav-dropdown-btn" aria-haspopup="true" aria-expanded="false">
+          Lista <i class="fas fa-chevron-down nav-dropdown-chevron"></i>
+        </button>
+        <div class="nav-dropdown-menu" role="menu">
+          <a href="index.html#lista" class="nav-dropdown-item" role="menuitem">
+            <i class="fas fa-skull"></i>
+            <span><strong>Extreme Demons</strong><small>Lista principal de niveles</small></span>
+          </a>
+          <a href="achievements.html" class="nav-dropdown-item" role="menuitem">
+            <i class="fas fa-trophy"></i>
+            <span><strong>Hardest Achievements</strong><small>Los logros más difíciles</small></span>
+          </a>
+        </div>
+      </div>
+      <a href="roulette.html" class="nav-link nav-roulette active">
         <i class="fas fa-dice" style="margin-right:.3rem;font-size:.8rem"></i>Ruleta
       </a>
-      <a href="#comunidad"   class="nav-link">Discord</a>
+      <a href="index.html#comunidad" class="nav-link">Discord</a>
+      <a href="index.html#donaciones" class="nav-link">Donaciones</a>
+    <div class="nav-links-panels-mobile" id="navLinksPanelsMobile"></div>
     </div>
 
     <div class="nav-right">
@@ -413,6 +427,7 @@
 <!-- SCRIPTS -->
 <script src="https://cdn.jsdelivr.net/npm/toastify-js@1.12.0/src/toastify.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="js/roles.js"></script>
 <script src="js/ui.js"></script>
 <script src="js/data.js"></script>
 <script src="js/auth.js"></script>
@@ -432,6 +447,29 @@
   document.getElementById('hamburger')?.addEventListener('click', function () {
     this.classList.toggle('open');
     document.getElementById('navLinks')?.classList.toggle('open');
+  });
+
+  // Dropdown click-toggle (no hover)
+  document.querySelectorAll('.nav-dropdown-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const wrap = btn.closest('.nav-dropdown-wrap');
+      const isOpen = wrap.classList.toggle('open');
+      btn.setAttribute('aria-expanded', isOpen);
+    });
+  });
+  document.addEventListener('click', () => {
+    document.querySelectorAll('.nav-dropdown-wrap.open').forEach(w => {
+      w.classList.remove('open');
+      w.querySelector('.nav-dropdown-btn')?.setAttribute('aria-expanded', 'false');
+    });
+  });
+
+  // Logo del servidor Discord
+  document.addEventListener('DOMContentLoaded', () => {
+    if (typeof updateDiscordLogo === 'function') updateDiscordLogo();
+    if (typeof addDiscordLinks   === 'function') addDiscordLinks();
+    if (typeof relocatePanelButtonsForViewport === 'function') relocatePanelButtonsForViewport();
   });
 </script>
 
