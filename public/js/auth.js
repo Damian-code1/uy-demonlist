@@ -151,7 +151,7 @@ function renderUserWidget(user) {
   const card = widget.querySelector('.user-widget-card');
   const drop = widget.querySelector('.user-widget-dropdown');
 
-  const hasDropdown = !!widget.querySelector('.user-widget-dropdown');
+  const isSimplePage = widget.classList.contains('user-widget-simple');
   if (card) {
     card.innerHTML = `
       ${avatarHtml}
@@ -159,8 +159,8 @@ function renderUserWidget(user) {
         <div class="user-widget-name">${esc(user.name || 'Usuario')}</div>
         <div class="user-widget-role ${roleClass}">${roleLabel}</div>
       </div>
-      ${hasDropdown ? '<i class="fas fa-chevron-down user-widget-chevron"></i>' : ''}`;
-    card.onclick = hasDropdown ? toggleUserDropdown : null;
+      ${!isSimplePage ? '<i class="fas fa-chevron-down user-widget-chevron"></i>' : ''}`;
+    card.onclick = !isSimplePage ? toggleUserDropdown : null;
   }
 
   
