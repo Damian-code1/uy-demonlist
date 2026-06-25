@@ -201,9 +201,10 @@
 <!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/toastify-js@1.12.0/src/toastify.min.js"></script>
 <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+<script src="js/roles.js"></script>
 <script src="js/ui.js"></script>
+<script src="js/data.js"></script>
 <script src="js/auth.js"></script>
-<script src="js/sanctions.js"></script>
 <script src="js/achievements.js"></script>
 <script>
   AOS.init({ duration: 500, once: true, offset: 40 });
@@ -211,24 +212,12 @@
   // Navbar scroll
   window.addEventListener('scroll', () => {
     document.getElementById('navbar')?.classList.toggle('scrolled', window.scrollY > 20);
-  });
+  }, { passive: true });
+
   // Hamburger
-  document.getElementById('hamburger')?.addEventListener('click', () => {
+  document.getElementById('hamburger')?.addEventListener('click', function () {
+    this.classList.toggle('open');
     document.getElementById('navLinks')?.classList.toggle('open');
-  });
-  // Nav dropdown
-  document.querySelectorAll('.nav-dropdown-btn').forEach(btn => {
-    btn.addEventListener('click', e => {
-      e.stopPropagation();
-      const wrap = btn.closest('.nav-dropdown-wrap');
-      const isOpen = wrap.classList.contains('open');
-      document.querySelectorAll('.nav-dropdown-wrap.open').forEach(w => w.classList.remove('open'));
-      if (!isOpen) wrap.classList.add('open');
-      btn.setAttribute('aria-expanded', !isOpen);
-    });
-  });
-  document.addEventListener('click', () => {
-    document.querySelectorAll('.nav-dropdown-wrap.open').forEach(w => w.classList.remove('open'));
   });
 </script>
 </body>

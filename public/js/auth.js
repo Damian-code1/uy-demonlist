@@ -159,7 +159,8 @@ function renderUserWidget(user) {
     card.onclick = toggleUserDropdown;
   }
 
-  const isRoulettePage = window.location.pathname.includes('roulette');
+  const isRoulettePage = window.location.pathname.includes('roulette') ||
+                         window.location.pathname.includes('achievements');
 
   if (isRoulettePage) {
     if (card) {
