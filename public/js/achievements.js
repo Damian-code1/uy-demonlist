@@ -43,11 +43,9 @@ function onAuthReady() {
 function applyStaffUI() {
   const isStaff = _currentUser && STAFF_ROLES.includes(_currentUser.role);
   const btn = document.getElementById('achAddBtn');
-  if (btn) btn.style.display = isStaff ? '' : 'none';
+  if (btn) btn.style.display = isStaff ? 'inline-flex' : 'none';
 }
 
-
-// ─── PLAYER AUTOCOMPLETE ───
 let _achPlayers = null;
 async function getAchPlayers() {
   if (_achPlayers) return _achPlayers;
@@ -234,6 +232,7 @@ async function loadAchievements() {
 }
 
 function renderAchievements() {
+  applyStaffUI();
   const list    = document.getElementById('achList');
   const isStaff = _currentUser && STAFF_ROLES.includes(_currentUser.role);
 
