@@ -495,11 +495,15 @@ async function toggleMuralReaction(postId, reaction) {
   const user = window.currentUser;
   if (!user) { if (typeof showToast === 'function') showToast('Iniciá sesión para reaccionar', 'info'); return; }
 
+  const post = muralPosts.find(p => p.id === Number(postId));
+  const wasActive = reaction === 'like'
+    ? (post?.liked_by    || []).includes(user.id)
+    : (post?.disliked_by || []).includes(user.id);
 
   const clickedBtn = document.querySelector(`.mural-react-btn[data-post-id="${postId}"][data-reaction="${reaction}"]`);
   if (clickedBtn) {
     clickedBtn.classList.remove('reaction-pop');
-    void clickedBtn.offsetWidth; 
+    void clickedBtn.offsetWidth;
     clickedBtn.classList.add('reaction-pop');
     setTimeout(() => clickedBtn.classList.remove('reaction-pop'), 400);
   }
@@ -513,6 +517,14 @@ async function toggleMuralReaction(postId, reaction) {
     });
     if (!res.ok) return;
     const data = await res.json();
+
+    if (wasActive) {
+      showToast('Reacción quitada', 'info');
+    } else if (reaction === 'like') {
+      showToast('👍 ¡Le diste like!', 'success');
+    } else {
+      showToast('👎 Le diste dislike', 'info');
+    }
 
     const post = muralPosts.find(p => p.id === Number(postId));
     if (post) {

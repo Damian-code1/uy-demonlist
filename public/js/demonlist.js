@@ -1594,17 +1594,32 @@ function attachLevelCommentEvents(list, levelId) {
 
     if (el.classList.contains('lm-comment-react-btn')) {
       el.addEventListener('click', async () => {
+        const reaction = el.dataset.reaction;
+        const wasActive = reaction === 'like'
+          ? el.classList.contains('active-like')
+          : el.classList.contains('active-dislike');
+
         el.classList.remove('reaction-pop');
         void el.offsetWidth;
         el.classList.add('reaction-pop');
         setTimeout(() => el.classList.remove('reaction-pop'), 400);
+
         try {
           const res = await fetch('/api/level-comments', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json', 'x-discord-id': discordId() },
-            body: JSON.stringify({ comment_id: Number(el.dataset.id), reaction: el.dataset.reaction })
+            body: JSON.stringify({ comment_id: Number(el.dataset.id), reaction })
           });
-          if (res.ok) await loadLevelComments(levelId);
+          if (res.ok) {
+            if (wasActive) {
+              if (typeof showToast === 'function') showToast('Reacción quitada', 'info');
+            } else if (reaction === 'like') {
+              if (typeof showToast === 'function') showToast('👍 ¡Le diste like!', 'success');
+            } else {
+              if (typeof showToast === 'function') showToast('👎 Le diste dislike', 'info');
+            }
+            await loadLevelComments(levelId);
+          }
         } catch {}
       });
     } else {
