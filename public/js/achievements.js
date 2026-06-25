@@ -815,9 +815,10 @@ async function saveAchForm() {
   const body = { position, player_name: player, level_name: level, progress: progress || '100%', type, video_url: video, thumbnail_url: thumb, notes };
 
   try {
+    const discordId = _currentUser.discord_id || _currentUser.id || localStorage.getItem('uy_discord_id');
     const res = await fetch(id ? `${ACH_API}/${id}` : ACH_API, {
       method: id ? 'PUT' : 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-discord-id': _currentUser.discord_id },
+      headers: { 'Content-Type': 'application/json', 'x-discord-id': discordId },
       body: JSON.stringify(body),
     });
     const data = await res.json();

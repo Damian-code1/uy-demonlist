@@ -195,8 +195,9 @@ function renderUserWidget(user) {
            </button>
          </div>`;
 
+    const isSimplePage = widget.classList.contains('user-widget-simple');
     drop.innerHTML = `
-      ${!isRoulettePage ? `
+      ${!isSimplePage ? `
       <div class="wdd-stats-row">
         <div class="wdd-stat">
           <span class="wdd-stat-val">${(user.points || 0).toLocaleString()}</span>
@@ -214,17 +215,17 @@ function renderUserWidget(user) {
       </div>
 
       <div class="wdd-actions">
-        ${!isRoulettePage ? `
+        ${!isSimplePage ? `
         <button class="wdd-action-btn" onclick="goToMyRanking()">
           <i class="fas fa-list-ol"></i>
           <span>Mi ranking</span>
         </button>` : ''}
-        ${isAdminUser() && !isRoulettePage ? `
+        ${isAdminUser() && !isSimplePage ? `
         <button class="wdd-action-btn wdd-action-admin" onclick="openAdminPanel();closeUserDropdown()">
           <i class="fas fa-shield-alt"></i>
           <span>Admin</span>
         </button>` : ''}
-        ${isManagerRole(user.role) && !isRoulettePage ? `
+        ${isManagerRole(user.role) && !isSimplePage ? `
         <button class="wdd-action-btn wdd-action-owner" onclick="openOwnerPanel();closeUserDropdown()">
           <i class="fas fa-crown"></i>
           <span>Owner</span>
