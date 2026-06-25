@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
   loadAchievements();
   setupSearch();
   initAchAuth();
+  setupPlayerAutocomplete();
 });
 
 function initAchAuth() {
@@ -40,6 +41,81 @@ function onAuthReady() {
   renderAchievements();
 }
 
+
+// ─── PLAYER AUTOCOMPLETE ───
+let _achPlayers = null;
+async function getAchPlayers() {
+  if (_achPlayers) return _achPlayers;
+  try {
+    const res = await fetch('/api/players');
+    const data = await res.json();
+    _achPlayers = data.players || [];
+  } catch { _achPlayers = []; }
+  return _achPlayers;
+}
+
+function setupPlayerAutocomplete() {
+  const input = document.getElementById('achFormPlayer');
+  const sugg  = document.getElementById('achPlayerSugg');
+  if (!input || !sugg) return;
+  let debounce;
+  input.addEventListener('input', () => {
+    clearTimeout(debounce);
+    debounce = setTimeout(() => renderPlayerSugg(input.value.trim()), 120);
+  });
+  input.addEventListener('focus', () => {
+    if (input.value.trim().length >= 1) renderPlayerSugg(input.value.trim());
+  });
+  document.addEventListener('click', e => {
+    if (!e.target.closest('#achPlayerSugg') && e.target !== input) sugg.style.display = 'none';
+  });
+}
+
+async function renderPlayerSugg(q) {
+  const sugg = document.getElementById('achPlayerSugg');
+  if (!sugg) return;
+  if (!q) { sugg.style.display = 'none'; return; }
+  const players = await getAchPlayers();
+  const ql  = q.toLowerCase();
+  const hits = players.filter(p =>
+    p.name?.toLowerCase().includes(ql) ||
+    p.discord_display_name?.toLowerCase().includes(ql) ||
+    p.gd_username?.toLowerCase().includes(ql)
+  ).slice(0, 8);
+
+  if (!hits.length) {
+    sugg.innerHTML = `<div style="padding:.75rem 1rem;color:var(--text-dim);font-size:.82rem"><i class="fas fa-search" style="margin-right:.4rem"></i>Sin resultados</div>`;
+    sugg.style.display = 'block';
+    return;
+  }
+
+  sugg.innerHTML = hits.map(p => {
+    const avatarUrl = p.discord_id && p.discord_avatar
+      ? `https://cdn.discordapp.com/avatars/${p.discord_id}/${p.discord_avatar}.png`
+      : null;
+    const avatarHtml = avatarUrl
+      ? `<img src="${avatarUrl}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;flex-shrink:0" onerror="this.style.display='none'">`
+      : `<div style="width:32px;height:32px;border-radius:50%;background:var(--bg5);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;flex-shrink:0">${(p.name||'?')[0].toUpperCase()}</div>`;
+    const discordName = p.discord_display_name || p.discord_username || '';
+    return `<div class="ach-player-sugg-item" data-name="${esc(p.name)}" style="
+      display:flex;align-items:center;gap:.75rem;padding:.6rem 1rem;cursor:pointer;transition:background .12s
+    " onmouseover="this.style.background='var(--bg4)'" onmouseout="this.style.background=''">
+      ${avatarHtml}
+      <div style="min-width:0">
+        <div style="font-weight:700;font-size:.88rem;color:var(--text)">${esc(p.name)}</div>
+        ${discordName ? `<div style="font-size:.72rem;color:var(--text-dim)"><i class="fab fa-discord" style="margin-right:.25rem;color:#5865f2"></i>${esc(discordName)}</div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+
+  sugg.querySelectorAll('.ach-player-sugg-item').forEach(item => {
+    item.addEventListener('click', () => {
+      document.getElementById('achFormPlayer').value = item.dataset.name;
+      sugg.style.display = 'none';
+    });
+  });
+  sugg.style.display = 'block';
+}
 
 async function loadAchievements() {
   try {

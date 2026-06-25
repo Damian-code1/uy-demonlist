@@ -156,9 +156,14 @@
       </div>
     </div>
 
-    <div class="ach-form-group">
+    <div class="ach-form-group" style="position:relative">
       <label class="ach-form-label">Jugador <span>*</span></label>
-      <input type="text" class="ach-form-input" id="achFormPlayer" placeholder="Ej: Santiricca">
+      <input type="text" class="ach-form-input" id="achFormPlayer" placeholder="Buscar jugador…" autocomplete="off">
+      <div id="achPlayerSugg" style="
+        display:none; position:absolute; top:100%; left:0; right:0; z-index:999;
+        background:var(--bg3); border:1px solid var(--border); border-radius:var(--r-sm);
+        max-height:220px; overflow-y:auto; box-shadow:0 8px 24px rgba(0,0,0,.4);
+      "></div>
     </div>
 
     <div class="ach-form-group">
@@ -209,12 +214,14 @@
 <script>
   AOS.init({ duration: 500, once: true, offset: 40 });
 
-  document.getElementById('achFormType')?.addEventListener('change', function () {
-    const isCompletion = this.value === 'completion';
-    const req = document.getElementById('achFormProgressRequired');
-    const input = document.getElementById('achFormProgress');
-    if (req) req.style.display = isCompletion ? 'none' : '';
-    if (input) input.placeholder = isCompletion ? '100% (por defecto)' : 'Ej: 95% o 14-96';
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('achFormType')?.addEventListener('change', function () {
+      const isCompletion = this.value === 'completion';
+      const req   = document.getElementById('achFormProgressRequired');
+      const input = document.getElementById('achFormProgress');
+      if (req)   req.style.display  = isCompletion ? 'none' : '';
+      if (input) input.placeholder  = isCompletion ? '100% (por defecto)' : 'Ej: 95% o 14-96';
+    });
   });
 
   window.addEventListener('scroll', () => {
