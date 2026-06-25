@@ -5416,3 +5416,100 @@ body {
   display: flex; align-items: center; justify-content: center;
   font-size: .65rem; font-weight: 700; color: var(--violet);
 }
+
+
+/* =============================================
+   PLAYER PROFILE — GD Iconset completo
+   ============================================= */
+.pm-gd-section {
+  background: var(--bg3);
+  border: 1px solid var(--border-s);
+  border-radius: var(--r);
+  padding: .85rem 1rem;
+  margin-bottom: .75rem;
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+}
+
+.pm-gd-iconset-label {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  font-size: .72rem;
+  font-weight: 700;
+  color: var(--text-sub);
+  letter-spacing: .5px;
+  text-transform: uppercase;
+}
+.pm-gd-iconset-label span { color: var(--violet); font-size: .8rem; text-transform: none; letter-spacing: 0; }
+.pm-gd-global-rank {
+  display: flex; align-items: center; gap: .25rem;
+  font-size: .68rem; color: var(--text-dim);
+  margin-left: auto; font-weight: 400; text-transform: none; letter-spacing: 0;
+}
+.pm-gd-global-rank i { font-size: .6rem; }
+
+.pm-gd-iconset-row {
+  display: flex;
+  align-items: flex-end;
+  gap: .4rem;
+  overflow-x: auto;
+  padding-bottom: .25rem;
+  scrollbar-width: none;
+}
+.pm-gd-iconset-row::-webkit-scrollbar { display: none; }
+
+.pm-gd-icon-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .2rem;
+  flex-shrink: 0;
+  padding: .3rem .25rem;
+  border-radius: var(--r-sm);
+  background: var(--bg4);
+  border: 1px solid var(--border-s);
+  transition: border-color .15s;
+  min-width: 52px;
+}
+.pm-gd-icon-cell.pm-gd-icon-active {
+  border-color: rgba(139,92,246,.5);
+  background: rgba(139,92,246,.08);
+}
+.pm-gd-icon-cell img.pm-gd-icon-img {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+.pm-gd-icon-label {
+  font-size: .55rem;
+  color: var(--text-dim);
+  letter-spacing: .3px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.pm-gd-icon-active .pm-gd-icon-label {
+  color: var(--violet);
+}
+
+/* Stats en 1 fila horizontal */
+.pm-gd-stats-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+}
+.pm-gd-stat {
+  display: flex;
+  align-items: center;
+  gap: .3rem;
+  background: var(--bg4);
+  border: 1px solid var(--border-s);
+  border-radius: var(--r-sm);
+  padding: .3rem .6rem;
+  font-size: .8rem;
+}
+.pm-gd-stat i { font-size: .75rem; }
+.pm-gd-stat span { font-weight: 700; color: var(--text); }
+.pm-gd-stat small { color: var(--text-dim); font-size: .65rem; }

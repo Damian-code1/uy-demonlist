@@ -29,30 +29,61 @@ const PIXI_FORM = {
 
 export async function GET(request, { params }) {
   const { username } = params;
-  const key = username.toLowerCase().trim();
-  
+  const { searchParams } = new URL(request.url);
+  const allForms = searchParams.get('all') === '1';
+  const specificForm = searchParams.get('form'); // ?form=ship etc.
+  const key = `${username.toLowerCase().trim()}:${allForms ? 'all' : specificForm || 'active'}`;
+
   const cached = iconCache.get(key);
   if (cached && Date.now() - cached.time < CACHE_TTL) {
+    if (allForms) {
+      return Response.json(cached.data, {
+        headers: { 'Cache-Control': 'public, max-age=300' }
+      });
+    }
     return new Response(cached.buffer, {
       headers: { 'Content-Type': 'image/png', 'Cache-Control': 'public, max-age=300' }
     });
   }
 
   try {
-    console.log('[gd-icon] Fetching profile for:', username);
     const profile = await fetch(`https://gdbrowser.com/api/profile/${encodeURIComponent(username)}`, {
       headers: { 'User-Agent': 'UY-Demonlist/2.0' }
     }).then(r => r.json());
 
     if (!profile || profile.error) {
-      console.log('[gd-icon] Profile not found:', username);
-      return new Response('Profile not found', { status: 404 });
+      return allForms
+        ? Response.json({ found: false }, { status: 404 })
+        : new Response('Profile not found', { status: 404 });
     }
 
     const col1 = profile.col1RGB;
     const col2 = profile.col2RGB;
     const col3 = profile.colGRGB;
-    const form = ICON_FORMS[profile.iconType] || 'cube';
+
+    // Si piden todos los forms, devolver JSON con las URLs de cada ícono
+    if (allForms) {
+      const forms = ['cube', 'ship', 'ball', 'ufo', 'wave', 'robot', 'spider', 'swing'];
+      const activeForm = ICON_FORMS[profile.iconType] || 'cube';
+      const icons = {};
+      for (const f of forms) {
+        const num = profile[PROFILE_ICON_FIELD[f]] ?? 1;
+        icons[f] = {
+          form: f,
+          num,
+          url: `/api/gd-icon/${encodeURIComponent(username)}?form=${f}`,
+          active: f === activeForm,
+        };
+      }
+      const data = { found: true, icons, activeForm, col1, col2 };
+      iconCache.set(key, { data, time: Date.now() });
+      return Response.json(data, {
+        headers: { 'Cache-Control': 'public, max-age=300' }
+      });
+    }
+
+    // Renderizar un form específico o el activo
+    const form = specificForm || ICON_FORMS[profile.iconType] || 'cube';
     const iconNum = profile[PROFILE_ICON_FIELD[form]] ?? 1;
 
     console.log('[gd-icon] Profile data:', { col1, col2, col3, form, iconNum });
@@ -111,14 +142,13 @@ export async function GET(request, { params }) {
 
     const buffer = await canvas.toBuffer('image/png');
     iconCache.set(key, { buffer, time: Date.now() });
-    console.log('[gd-icon] Icon rendered successfully for:', username);
 
     return new Response(buffer, {
       headers: { 'Content-Type': 'image/png', 'Cache-Control': 'public, max-age=300' }
     });
   } catch (error) {
-    console.error('[gd-icon] Error:', error.message, error.stack);
-    console.log('[gd-icon] Using GDBrowser fallback due to error');
+    console.error('[gd-icon] Error:', error.message);
+    if (allForms) return Response.json({ found: false }, { status: 500 });
     return Response.redirect(`https://gdbrowser.com/icon/${encodeURIComponent(username)}`, 307);
   }
 }

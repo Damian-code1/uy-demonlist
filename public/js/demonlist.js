@@ -803,8 +803,6 @@ function renderLeaderboard() {
     row.style.animationDelay = `${Math.min(i * 30, 600)}ms`;
   row.addEventListener('click', () => openPlayerProfile(player.name));
     
-    const gdIconUrl = player.name ? `/api/gd-icon/${encodeURIComponent(player.name)}` : null;
-    
     row.innerHTML = `
       <div class="lb-pos-wrap">
         ${pos === 1
@@ -818,12 +816,11 @@ function renderLeaderboard() {
       </div>
 
       <div class="lb-avatar" style="--av-color:${playerColor(player.name)}">
-${gdIconUrl
-  ? `<img src="${esc(gdIconUrl)}" alt="" class="lb-gd-icon">`
-  : avatarUrl
-  ? `<img src="${esc(avatarUrl)}" alt="">`
-  : `<span>${initials}</span>`
+${avatarUrl
+  ? `<img src="${esc(avatarUrl)}" alt="" onerror="this.style.display='none';this.nextElementSibling?.style.setProperty('display','flex')">`
+  : ''
 }
+        <span style="${avatarUrl ? 'display:none' : ''}">${initials}</span>
       </div>
 
       <div class="lb-info">
@@ -1259,61 +1256,74 @@ const avatarUrl = player.discord_id && player.discord_avatar
 modal.classList.add('active');
   document.body.style.overflow = 'hidden';
 
-  // Cargar perfil de GDBrowser en background — ícono GD va en sección propia, NO en el avatar de Discord
+  // Cargar perfil de GDBrowser en background - ícono GD va en sección propia, NO en el avatar de Discord
   
+  // Cargar perfil GD + iconset completo
+  const _API = typeof API_BASE !== 'undefined' ? API_BASE : 'http://localhost:3001/api';
   const _gdName = player.gd_username || playerName;
-  fetch(`/api/gdbrowser?player=${encodeURIComponent(_gdName)}`)
-    .then(r => r.json())
-    .then(gd => {
-      if (!gd?.found) return;
 
-      
-      const gdBadge = box.querySelector('#pmGdBadge');
-      if (gdBadge) gdBadge.style.display = 'flex';
+  // Las dos llamadas en paralelo: stats del jugador + todos sus iconos
+  Promise.all([
+    fetch(`${_API}/gdbrowser?player=${encodeURIComponent(_gdName)}`).then(r => r.json()).catch(() => null),
+    fetch(`/api/gd-icon/${encodeURIComponent(_gdName)}?all=1`).then(r => r.json()).catch(() => null),
+  ]).then(([gd, iconData]) => {
+    if (!gd?.found && !iconData?.found) return;
 
-      const statsEl = box.querySelector('#pmGdStats');
-      if (!statsEl) return;
+    const gdBadge = box.querySelector('#pmGdBadge');
+    if (gdBadge) gdBadge.style.display = 'flex';
 
-      const chips = [
-        gd.stars     != null ? `<div class="pm-gd-chip"><i class="fas fa-star"    style="color:#f59e0b"></i><span>${Number(gd.stars).toLocaleString()}</span><small>estrellas</small></div>`         : '',
-        gd.moons     != null ? `<div class="pm-gd-chip"><i class="fas fa-moon"    style="color:#a78bfa"></i><span>${Number(gd.moons).toLocaleString()}</span><small>lunas</small></div>`             : '',
-        gd.demons    != null ? `<div class="pm-gd-chip"><i class="fas fa-skull"   style="color:var(--red)"></i><span>${Number(gd.demons).toLocaleString()}</span><small>demons</small></div>`        : '',
-        gd.diamonds  != null ? `<div class="pm-gd-chip"><i class="fas fa-gem"     style="color:#38bdf8"></i><span>${Number(gd.diamonds).toLocaleString()}</span><small>diamonds</small></div>`       : '',
-        gd.coins     != null ? `<div class="pm-gd-chip"><i class="fas fa-coins"   style="color:#f59e0b"></i><span>${gd.coins}</span><small>coins</small></div>`                                      : '',
-        gd.userCoins != null ? `<div class="pm-gd-chip"><i class="fas fa-medal"   style="color:#c2722a"></i><span>${gd.userCoins}</span><small>user coins</small></div>`                            : '',
-        gd.cp        != null ? `<div class="pm-gd-chip"><i class="fas fa-fire"    style="color:var(--red)"></i><span>${gd.cp}</span><small>creator pts</small></div>`                               : '',
-        gd.rank      != null ? `<div class="pm-gd-chip"><i class="fas fa-globe"   style="color:var(--violet)"></i><span>#${Number(gd.rank).toLocaleString()}</span><small>global</small></div>`     : '',
-      ].filter(Boolean);
+    const statsEl = box.querySelector('#pmGdStats');
+    if (!statsEl) return;
 
-      if (!chips.length) return;
+    // Fila de iconos: cube, ship, ball, ufo, wave, robot, spider, swing (mismo orden que GDB)
+    const ICON_ORDER = ['cube','ship','ball','ufo','wave','robot','spider','swing'];
+    const ICON_LABELS = { cube:'Cube', ship:'Ship', ball:'Ball', ufo:'UFO', wave:'Wave', robot:'Robot', spider:'Spider', swing:'Swing' };
 
-      statsEl.innerHTML = `
-        <div class="pm-gd-block">
-          <div class="pm-gd-block-left">
-            ${gd.iconUrl
-              ? `<div class="pm-gd-icon-wrap">
-                   <img src="${esc(gd.iconUrl)}" alt="${esc(gd.username || '')}"
-                        class="pm-gd-icon-img"
-                        onerror="this.closest('.pm-gd-icon-wrap').style.display='none'">`
-              : `<div class="pm-gd-icon-wrap pm-gd-icon-ph">
-                   <i class="fas fa-gamepad"></i>`
-            }
-                 </div>
-            <span class="pm-gd-nick">${esc(gd.username || _gdName)}</span>
-            ${gd.rank != null
-              ? `<span class="pm-gd-global-rank">
-                   <i class="fas fa-globe"></i>#${Number(gd.rank).toLocaleString()}
-                 </span>`
-              : ''
-            }
+    let iconRowHtml = '';
+    if (iconData?.found && iconData.icons) {
+      iconRowHtml = `
+        <div class="pm-gd-iconset">
+          <div class="pm-gd-iconset-label">
+            <i class="fas fa-gamepad"></i>
+            <span>${esc(_gdName)}</span>
+            ${gd?.rank != null ? `<span class="pm-gd-global-rank"><i class="fas fa-globe"></i>#${Number(gd.rank).toLocaleString()}</span>` : ''}
           </div>
-          <div class="pm-gd-chips-wrap">
-            ${chips.join('')}
+          <div class="pm-gd-iconset-row">
+            ${ICON_ORDER.map(f => {
+              const ic = iconData.icons[f];
+              if (!ic) return '';
+              return `
+                <div class="pm-gd-icon-cell${ic.active ? ' pm-gd-icon-active' : ''}" title="${ICON_LABELS[f]}">
+                  <img src="${esc(ic.url)}" alt="${f}"
+                       class="pm-gd-icon-img"
+                       onerror="this.closest('.pm-gd-icon-cell').style.opacity='.3'">
+                  <span class="pm-gd-icon-label">${ICON_LABELS[f]}</span>
+                </div>`;
+            }).join('')}
           </div>
         </div>`;
-      statsEl.style.display = 'block';
-    })
-    .catch(() => {});
+    }
+
+    // Fila de stats en horizontal
+    const chips = [
+      gd?.stars     != null ? `<div class="pm-gd-stat"><i class="fas fa-star"     style="color:#f59e0b"></i><span>${Number(gd.stars).toLocaleString()}</span><small>estrellas</small></div>`    : '',
+      gd?.moons     != null ? `<div class="pm-gd-stat"><i class="fas fa-moon"     style="color:#a78bfa"></i><span>${Number(gd.moons).toLocaleString()}</span><small>lunas</small></div>`       : '',
+      gd?.demons    != null ? `<div class="pm-gd-stat"><i class="fas fa-skull"    style="color:var(--red)"></i><span>${Number(gd.demons).toLocaleString()}</span><small>demons</small></div>`  : '',
+      gd?.diamonds  != null ? `<div class="pm-gd-stat"><i class="fas fa-gem"      style="color:#38bdf8"></i><span>${Number(gd.diamonds).toLocaleString()}</span><small>diamonds</small></div>` : '',
+      gd?.coins     != null ? `<div class="pm-gd-stat"><i class="fas fa-coins"    style="color:#f59e0b"></i><span>${gd.coins}</span><small>coins</small></div>`                                 : '',
+      gd?.userCoins != null ? `<div class="pm-gd-stat"><i class="fas fa-medal"    style="color:#c2722a"></i><span>${gd.userCoins}</span><small>user coins</small></div>`                       : '',
+      gd?.cp        != null ? `<div class="pm-gd-stat"><i class="fas fa-fire"     style="color:var(--red)"></i><span>${gd.cp}</span><small>creator pts</small></div>`                          : '',
+    ].filter(Boolean);
+
+    if (!iconRowHtml && !chips.length) return;
+
+    statsEl.innerHTML = `
+      <div class="pm-gd-section">
+        ${iconRowHtml}
+        ${chips.length ? `<div class="pm-gd-stats-row">${chips.join('')}</div>` : ''}
+      </div>`;
+    statsEl.style.display = 'block';
+  });
 
   // Animar la barra de progreso
   requestAnimationFrame(() => {
