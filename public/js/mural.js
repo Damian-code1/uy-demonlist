@@ -480,9 +480,13 @@ async function toggleMuralReaction(postId, reaction) {
   if (!user) { showToast('Iniciá sesión para reaccionar', 'info'); return; }
 
   const post = muralPosts.find(p => p.id === Number(postId));
+  const myDiscordId = String(user.discordId || user.discord_id || user.id || '');
   const wasActive = reaction === 'like'
-    ? (post?.liked_by    || []).includes(user.id)
-    : (post?.disliked_by || []).includes(user.id);
+    ? (post?.liked_by    || []).map(String).includes(myDiscordId)
+    : (post?.disliked_by || []).map(String).includes(myDiscordId);
+  const hadOpposite = reaction === 'like'
+    ? (post?.disliked_by || []).map(String).includes(myDiscordId)
+    : (post?.liked_by    || []).map(String).includes(myDiscordId);
 
   const clickedBtn = document.querySelector(`.mural-react-btn[data-post-id="${postId}"][data-reaction="${reaction}"]`);
   if (clickedBtn) {
@@ -512,7 +516,9 @@ async function toggleMuralReaction(postId, reaction) {
     }
 
     if (wasActive) {
-      showToast(reaction === 'like' ? 'Quitaste el like' : 'Quitaste el dislike', 'info');
+      showToast(reaction === 'like' ? '💔 Quitaste el like' : '✌️ Quitaste el dislike', 'info');
+    } else if (hadOpposite) {
+      showToast(reaction === 'like' ? '👍 Cambiaste a like' : '👎 Cambiaste a dislike', 'info');
     } else if (reaction === 'like') {
       showToast('👍 ¡Le diste like!', 'success');
     } else {

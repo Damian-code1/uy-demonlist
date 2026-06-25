@@ -1478,6 +1478,7 @@ function buildLevelCommentHTML(c, user, isReply) {
           </div>
           <div>
             <span class="lm-comment-name">${esc(c.display_name || c.discord_username || 'Usuario')}</span>
+            ${c.is_victor ? `<span class="lm-victor-tag"><i class="fas fa-flag-checkered"></i> Completado</span>` : ''}
             <span class="lm-comment-time" data-ts="${ts}">${rel}</span>
           </div>
         </div>
@@ -1595,9 +1596,12 @@ function attachLevelCommentEvents(list, levelId) {
     if (el.classList.contains('lm-comment-react-btn')) {
       el.addEventListener('click', async () => {
         const reaction = el.dataset.reaction;
-        const wasActive = reaction === 'like'
+        const wasActive   = reaction === 'like'
           ? el.classList.contains('active-like')
           : el.classList.contains('active-dislike');
+        const hadOpposite = reaction === 'like'
+          ? el.closest('.lm-comment')?.querySelector('.lm-dislike-btn')?.classList.contains('active-dislike')
+          : el.closest('.lm-comment')?.querySelector('.lm-like-btn')?.classList.contains('active-like');
 
         el.classList.remove('reaction-pop');
         void el.offsetWidth;
@@ -1612,7 +1616,9 @@ function attachLevelCommentEvents(list, levelId) {
           });
           if (res.ok) {
             if (wasActive) {
-              if (typeof showToast === 'function') showToast('Reacción quitada', 'info');
+              if (typeof showToast === 'function') showToast(reaction === 'like' ? '💔 Quitaste el like' : '✌️ Quitaste el dislike', 'info');
+            } else if (hadOpposite) {
+              if (typeof showToast === 'function') showToast(reaction === 'like' ? '👍 Cambiaste a like' : '👎 Cambiaste a dislike', 'info');
             } else if (reaction === 'like') {
               if (typeof showToast === 'function') showToast('👍 ¡Le diste like!', 'success');
             } else {

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hardest Achievements - UY Demonlist</title>
+  <link rel="icon" type="image/png" href="/assets/logo.png">
+  <meta name="description" content="Los logros más difíciles obtenidos por jugadores uruguayos en Geometry Dash.">
+  <meta property="og:title"       content="Hardest Achievements — UY Demonlist">
+  <meta property="og:description" content="Los logros más difíciles de Geometry Dash de la comunidad uruguaya.">
+  <meta property="og:image"       content="https://uy-demonlist.vercel.app/assets/embed.png">
+
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js@1.12.0/src/toastify.min.css">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/achievements.css">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar" id="navbar">
+  <div class="navbar-inner">
+    <a href="index.html" class="navbar-logo">
+      <img src="" alt="GD Uruguay" class="logo-img" id="serverLogoImg" style="display:none">
+      <span class="logo-flag" id="logoFlag">🇺🇾</span>
+      <span class="logo-name">DEMONLIST</span>
+    </a>
+    <div class="nav-links" id="navLinks">
+      <div class="nav-dropdown-wrap">
+        <button class="nav-link nav-dropdown-btn active" aria-haspopup="true" aria-expanded="false">
+          Lista <i class="fas fa-chevron-down nav-dropdown-chevron"></i>
+        </button>
+        <div class="nav-dropdown-menu" role="menu">
+          <a href="index.html#lista" class="nav-dropdown-item" role="menuitem">
+            <i class="fas fa-skull"></i>
+            <span><strong>Extreme Demons</strong><small>Lista principal de niveles</small></span>
+          </a>
+          <a href="achievements.html" class="nav-dropdown-item active" role="menuitem">
+            <i class="fas fa-trophy"></i>
+            <span><strong>Hardest Achievements</strong><small>Los logros más difíciles</small></span>
+          </a>
+        </div>
+      </div>
+      <a href="index.html#submissions" class="nav-link">Submissions</a>
+      <a href="index.html#leaderboard" class="nav-link">Jugadores</a>
+      <a href="roulette.html" class="nav-link nav-roulette">
+        <i class="fas fa-dice" style="margin-right:.3rem;font-size:.8rem"></i>Ruleta
+      </a>
+      <a href="index.html#comunidad"  class="nav-link">Discord</a>
+      <a href="index.html#donaciones" class="nav-link">Donaciones</a>
+    </div>
+    <div class="nav-right">
+      <button class="login-btn" id="loginBtn">
+        <i class="fab fa-discord"></i><span>Login</span>
+      </button>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="Menú">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="ach-hero">
+  <div class="ach-hero-bg"></div>
+  <div class="ach-hero-crown">🏆</div>
+  <h1 class="ach-hero-title">Hardest Achievements</h1>
+  <p class="ach-hero-sub">Los logros más difíciles obtenidos por jugadores uruguayos en Geometry Dash</p>
+  <div class="ach-hero-stats" id="achHeroStats">
+    <div class="ach-stat-pill"><i class="fas fa-trophy"></i><span><strong id="achTotalCount">—</strong> achievements</span></div>
+    <div class="ach-stat-pill"><i class="fas fa-check-circle"></i><span><strong id="achCompletionCount">—</strong> completions</span></div>
+    <div class="ach-stat-pill"><i class="fas fa-bullseye"></i><span><strong id="achProgressCount">—</strong> progresses</span></div>
+  </div>
+</section>
+
+<!-- TOOLBAR -->
+<div class="ach-toolbar" id="achToolbar">
+  <div class="ach-search-wrap">
+    <i class="fas fa-search si"></i>
+    <input type="text" class="ach-search" id="achSearch" placeholder="Buscar nivel o jugador…">
+  </div>
+  <button class="ach-filter-btn active" data-filter="all"    onclick="setFilter('all')">Todos</button>
+  <button class="ach-filter-btn"        data-filter="completion" onclick="setFilter('completion')"><i class="fas fa-trophy" style="color:var(--success)"></i> 100%</button>
+  <button class="ach-filter-btn"        data-filter="progress"   onclick="setFilter('progress')"><i class="fas fa-bullseye" style="color:var(--red)"></i> Progreso</button>
+  <button class="ach-add-btn" id="achAddBtn" style="display:none" onclick="openAchForm()">
+    <i class="fas fa-plus"></i> Agregar
+  </button>
+</div>
+
+<!-- LISTA -->
+<div class="ach-list" id="achList">
+  <div class="ach-loader"><i class="fas fa-spinner fa-spin"></i><span>Cargando achievements…</span></div>
+</div>
+
+<!-- ═══ MODAL DETALLE ═══ -->
+<div class="ach-modal-overlay" id="achDetailOverlay" onclick="handleOverlayClick(event)">
+  <div class="ach-modal" id="achDetailModal">
+    <button class="ach-modal-close" onclick="closeAchDetail()"><i class="fas fa-times"></i></button>
+
+    <!-- Header con thumbnail -->
+    <div class="ach-modal-header" id="achModalHeader">
+      <div class="ach-modal-thumb-ph"><i class="fas fa-trophy"></i></div>
+      <div class="ach-modal-header-overlay"></div>
+      <div class="ach-modal-header-content">
+        <div class="ach-modal-pos" id="achModalPos">#1</div>
+        <div class="ach-modal-level" id="achModalLevel">Nivel</div>
+      </div>
+    </div>
+
+    <!-- Cuerpo -->
+    <div class="ach-modal-body">
+      <div class="ach-modal-meta" id="achModalMeta"></div>
+      <div class="ach-modal-actions" id="achModalActions"></div>
+      <div id="achModalNotes"></div>
+
+      <!-- Comentarios -->
+      <div class="ach-comments-section">
+        <div class="ach-comments-title"><i class="fas fa-comments"></i> Comentarios <span id="achCommentCount" style="color:var(--text-dim);font-size:.75rem"></span></div>
+        <div class="ach-comment-form" id="achCommentForm" style="display:none">
+          <div class="ach-comment-avatar-ph" id="achCommentAvatarWrap">?</div>
+          <div class="ach-comment-input-wrap">
+            <textarea class="ach-comment-input" id="achCommentInput" placeholder="Escribí un comentario…" rows="1"
+              oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"></textarea>
+            <button class="ach-comment-submit" onclick="submitAchComment()">Comentar</button>
+          </div>
+        </div>
+        <div id="achCommentsList"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL FORMULARIO (add/edit) ═══ -->
+<div class="ach-form-overlay" id="achFormOverlay">
+  <div class="ach-form-modal">
+    <div class="ach-form-title"><i class="fas fa-trophy"></i> <span id="achFormTitle">Agregar Achievement</span></div>
+
+    <div class="ach-form-row">
+      <div class="ach-form-group">
+        <label class="ach-form-label">Posición <span>*</span></label>
+        <input type="number" class="ach-form-input" id="achFormPos" min="1" placeholder="1">
+      </div>
+      <div class="ach-form-group">
+        <label class="ach-form-label">Tipo <span>*</span></label>
+        <select class="ach-form-select" id="achFormType">
+          <option value="completion">✅ 100% Completion</option>
+          <option value="progress">🎯 Progreso</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="ach-form-group">
+      <label class="ach-form-label">Jugador <span>*</span></label>
+      <input type="text" class="ach-form-input" id="achFormPlayer" placeholder="Ej: Santiricca">
+    </div>
+
+    <div class="ach-form-group">
+      <label class="ach-form-label">Nivel <span>*</span></label>
+      <input type="text" class="ach-form-input" id="achFormLevel" placeholder="Ej: Slaughterhouse">
+    </div>
+
+    <div class="ach-form-group">
+      <label class="ach-form-label">Progreso <span>*</span></label>
+      <input type="text" class="ach-form-input" id="achFormProgress" placeholder="Ej: 95% o 14-96">
+    </div>
+
+    <div class="ach-form-group">
+      <label class="ach-form-label">URL del video</label>
+      <input type="text" class="ach-form-input" id="achFormVideo" placeholder="https://youtu.be/...">
+    </div>
+
+    <div class="ach-form-group">
+      <label class="ach-form-label">Thumbnail (URL YouTube para extraer)</label>
+      <input type="text" class="ach-form-input" id="achFormThumb" placeholder="https://youtu.be/... (opcional)"
+        oninput="previewAchThumb(this.value)">
+      <div class="ach-form-thumb-preview" id="achFormThumbPreview">
+        <img id="achFormThumbImg" src="" alt="">
+      </div>
+    </div>
+
+    <div class="ach-form-group">
+      <label class="ach-form-label">Notas</label>
+      <textarea class="ach-form-textarea" id="achFormNotes" placeholder="Contexto, records previos, etc."></textarea>
+    </div>
+
+    <input type="hidden" id="achFormId">
+    <div class="ach-form-footer">
+      <button class="ach-form-cancel" onclick="closeAchForm()">Cancelar</button>
+      <button class="ach-form-save"   onclick="saveAchForm()"><i class="fas fa-save"></i> Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/toastify-js@1.12.0/src/toastify.min.js"></script>
+<script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/achievements.js"></script>
+<script>
+  AOS.init({ duration: 500, once: true, offset: 40 });
+
+  // Navbar scroll
+  window.addEventListener('scroll', () => {
+    document.getElementById('navbar')?.classList.toggle('scrolled', window.scrollY > 20);
+  });
+  // Hamburger
+  document.getElementById('hamburger')?.addEventListener('click', () => {
+    document.getElementById('navLinks')?.classList.toggle('open');
+  });
+  // Nav dropdown
+  document.querySelectorAll('.nav-dropdown-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const wrap = btn.closest('.nav-dropdown-wrap');
+      const isOpen = wrap.classList.contains('open');
+      document.querySelectorAll('.nav-dropdown-wrap.open').forEach(w => w.classList.remove('open'));
+      if (!isOpen) wrap.classList.add('open');
+      btn.setAttribute('aria-expanded', !isOpen);
+    });
+  });
+  document.addEventListener('click', () => {
+    document.querySelectorAll('.nav-dropdown-wrap.open').forEach(w => w.classList.remove('open'));
+  });
+</script>
+</body>
+</html>

@@ -16,6 +16,23 @@ document.addEventListener('DOMContentLoaded', () => {
   if (!location.hash) window.scrollTo(0, 0);
 });
 
+document.querySelectorAll('.nav-dropdown-btn').forEach(btn => {
+  btn.addEventListener('click', e => {
+    e.stopPropagation();
+    const wrap = btn.closest('.nav-dropdown-wrap');
+    const isOpen = wrap.classList.toggle('open');
+    btn.setAttribute('aria-expanded', isOpen);
+  });
+});
+document.addEventListener('click', () => {
+  document.querySelectorAll('.nav-dropdown-wrap.open').forEach(w => {
+    w.classList.remove('open');
+    w.querySelector('.nav-dropdown-btn')?.setAttribute('aria-expanded', 'false');
+  });
+});
+
+
+
 // Navbar
 function setupNavbar() {
   const navbar    = document.getElementById('navbar');

@@ -20,6 +20,10 @@ export async function GET(request) {
         u.discord_avatar,
         u.role,
         (SELECT COUNT(*) FROM level_comments r WHERE r.parent_id = c.id) AS reply_count,
+        (SELECT COUNT(*) FROM victors v
+         JOIN users uv ON LOWER(uv.discord_username) = LOWER(v.player_name)
+              OR LOWER(uv.discord_display_name) = LOWER(v.player_name)
+         WHERE v.level_id = c.level_id AND uv.discord_id = u.discord_id LIMIT 1) AS is_victor,
         (SELECT COUNT(*) FROM level_comment_reactions r WHERE r.comment_id = c.id AND r.reaction = 'like') AS likes,
         (SELECT COUNT(*) FROM level_comment_reactions r WHERE r.comment_id = c.id AND r.reaction = 'dislike') AS dislikes,
         (SELECT GROUP_CONCAT(CONCAT(u2.discord_id,'|',COALESCE(u2.discord_display_name,u2.discord_username,'?'),'|',COALESCE(u2.discord_avatar,'')) SEPARATOR ';;')
@@ -43,6 +47,7 @@ export async function GET(request) {
       ...c,
       liked_by:    parseReactors(c.liked_by),
       disliked_by: parseReactors(c.disliked_by),
+      is_victor:   Number(c.is_victor) > 0,
     }));
 
     return Response.json({ comments });

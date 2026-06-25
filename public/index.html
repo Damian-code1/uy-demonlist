@@ -51,7 +51,27 @@
     </a>
 
     <div class="nav-links" id="navLinks">
-      <a href="#lista"       class="nav-link" data-section="lista">Lista</a>
+      <div class="nav-dropdown-wrap">
+        <button class="nav-link nav-dropdown-btn" data-section="lista" aria-haspopup="true" aria-expanded="false">
+          Lista <i class="fas fa-chevron-down nav-dropdown-chevron"></i>
+        </button>
+        <div class="nav-dropdown-menu" role="menu">
+          <a href="#lista" class="nav-dropdown-item" role="menuitem">
+            <i class="fas fa-skull"></i>
+            <span>
+              <strong>Extreme Demons</strong>
+              <small>Lista principal de niveles</small>
+            </span>
+          </a>
+          <a href="achievements.html" class="nav-dropdown-item" role="menuitem">
+            <i class="fas fa-trophy"></i>
+            <span>
+              <strong>Hardest Achievements</strong>
+              <small>Los logros más difíciles</small>
+            </span>
+          </a>
+        </div>
+      </div>
       <a href="#submissions" class="nav-link" data-section="submissions">Submissions</a>
       <a href="#leaderboard" class="nav-link" data-section="leaderboard">Jugadores</a>
       <a href="roulette.html" class="nav-link nav-roulette">
