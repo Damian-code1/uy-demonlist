@@ -166,9 +166,10 @@
       "></div>
     </div>
 
-    <div class="ach-form-group">
+    <div class="ach-form-group" style="position:relative">
       <label class="ach-form-label">Nivel <span>*</span></label>
-      <input type="text" class="ach-form-input" id="achFormLevel" placeholder="Ej: Slaughterhouse">
+      <input type="text" class="ach-form-input" id="achFormLevel" placeholder="Buscar nivel…" autocomplete="off">
+      <div id="achLevelSugg" style="display:none;position:absolute;top:100%;left:0;right:0;z-index:1000;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);max-height:260px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,.4)"></div>
     </div>
 
     <div class="ach-form-group">

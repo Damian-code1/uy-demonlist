@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setupSearch();
   initAchAuth();
   setupPlayerAutocomplete();
+  setupLevelAutocomplete();
 });
 
 function initAchAuth() {
@@ -53,6 +54,103 @@ async function getAchPlayers() {
     _achPlayers = data.players || [];
   } catch { _achPlayers = []; }
   return _achPlayers;
+}
+
+// ─── LEVEL AUTOCOMPLETE ───
+function setupLevelAutocomplete() {
+  const input = document.getElementById('achFormLevel');
+  const sugg  = document.getElementById('achLevelSugg');
+  if (!input || !sugg) return;
+
+  let debounce;
+  input.addEventListener('input', () => {
+    clearTimeout(debounce);
+    debounce = setTimeout(() => renderLevelSugg(input.value.trim()), 120);
+  });
+  input.addEventListener('focus', () => {
+    if (input.value.trim().length >= 1) renderLevelSugg(input.value.trim());
+  });
+  document.addEventListener('click', e => {
+    if (!e.target.closest('#achLevelSugg') && e.target !== input) sugg.style.display = 'none';
+  });
+}
+
+function scoreAchMatch(name, q) {
+  if (name === q) return 200;
+  if (name.startsWith(q)) return 150;
+  if (name.includes(q)) return 100;
+  let qi = 0;
+  for (let i = 0; i < name.length && qi < q.length; i++) {
+    if (name[i] === q[qi]) qi++;
+  }
+  if (qi === q.length) return 50;
+  return 0;
+}
+
+function renderLevelSugg(q) {
+  const sugg = document.getElementById('achLevelSugg');
+  if (!sugg) return;
+  if (!q) { sugg.style.display = 'none'; return; }
+
+  const ql     = q.toLowerCase().trim();
+  const levels = typeof getLevelsData === 'function' ? getLevelsData() : [];
+  const listHits = levels
+    .map(l => ({ ...l, score: scoreAchMatch((l.name || '').toLowerCase(), ql) }))
+    .filter(x => x.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 20);
+
+  const aredlMapData = window.aredlMap || {};
+  const listNames    = new Set(levels.map(l => l.name?.toLowerCase()));
+  const aredlHits = Object.entries(aredlMapData)
+    .map(([name, info]) => ({ score: scoreAchMatch(name, ql), name, info }))
+    .filter(x => x.score > 0 && !listNames.has(x.name))
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 10)
+    .map(x => ({ name: x.info.originalName || x.name, ...x.info }));
+
+  if (!listHits.length && !aredlHits.length) {
+    sugg.innerHTML = `<div style="padding:.75rem 1rem;color:var(--text-dim);font-size:.82rem"><i class="fas fa-search" style="margin-right:.4rem"></i>Sin resultados</div>`;
+    sugg.style.display = 'block';
+    return;
+  }
+
+  const listHtml = listHits.map(l => {
+    const thumb = l.youtube_id
+      ? `<img src="https://img.youtube.com/vi/${l.youtube_id}/default.jpg" style="width:48px;height:28px;object-fit:cover;border-radius:4px;flex-shrink:0">`
+      : `<div style="width:48px;height:28px;border-radius:4px;background:var(--bg5);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.7rem;color:var(--text-dim)"><i class="fas fa-skull"></i></div>`;
+    const aredlBadge = l.aredl_position
+      ? `<span style="font-size:.65rem;color:var(--violet)"><i class="fas fa-globe"></i> AREDL #${l.aredl_position}</span>`
+      : '';
+    return `<div class="ach-level-sugg-item" data-name="${esc(l.name)}" style="display:flex;align-items:center;gap:.7rem;padding:.55rem .9rem;cursor:pointer;transition:background .12s" onmouseover="this.style.background='var(--bg4)'" onmouseout="this.style.background=''">
+      ${thumb}
+      <div style="min-width:0">
+        <div style="font-weight:700;font-size:.85rem;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(l.name)}</div>
+        <div style="display:flex;gap:.5rem;align-items:center;font-size:.65rem;color:var(--text-dim)">
+          <span><i class="fas fa-trophy"></i> #${l.position} en la lista</span>
+          ${aredlBadge}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  const aredlHtml = aredlHits.map(a => `
+    <div class="ach-level-sugg-item" data-name="${esc(a.name)}" style="display:flex;align-items:center;gap:.7rem;padding:.55rem .9rem;cursor:pointer;transition:background .12s;opacity:.85" onmouseover="this.style.background='var(--bg4)'" onmouseout="this.style.background=''">
+      <div style="width:48px;height:28px;border-radius:4px;background:var(--bg5);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.7rem;color:var(--violet)"><i class="fas fa-globe"></i></div>
+      <div style="min-width:0">
+        <div style="font-weight:700;font-size:.85rem;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(a.name)}</div>
+        <div style="font-size:.65rem;color:var(--violet)"><i class="fas fa-globe"></i> AREDL #${a.position || '?'} — no está en la lista UY</div>
+      </div>
+    </div>`).join('');
+
+  sugg.innerHTML = listHtml + aredlHtml;
+  sugg.querySelectorAll('.ach-level-sugg-item').forEach(item => {
+    item.addEventListener('click', () => {
+      document.getElementById('achFormLevel').value = item.dataset.name;
+      sugg.style.display = 'none';
+    });
+  });
+  sugg.style.display = 'block';
 }
 
 function setupPlayerAutocomplete() {
