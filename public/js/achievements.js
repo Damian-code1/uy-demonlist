@@ -438,7 +438,7 @@ async function reactAch(e, id, reaction) {
   try {
     const res  = await fetch(`${ACH_API}/${id}/reactions`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-discord-id': _currentUser.discord_id },
+      headers: { 'Content-Type': 'application/json', 'x-discord-id': localStorage.getItem('uy_discord_id') },
       body: JSON.stringify({ reaction }),
     });
     const data = await res.json();
@@ -473,7 +473,7 @@ async function reactAchModal(id, reaction) {
   try {
     const res  = await fetch(`${ACH_API}/${id}/reactions`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-discord-id': _currentUser.discord_id },
+      headers: { 'Content-Type': 'application/json', 'x-discord-id': localStorage.getItem('uy_discord_id') },
       body: JSON.stringify({ reaction }),
     });
     const data = await res.json();
@@ -618,7 +618,7 @@ async function submitAchComment() {
   try {
     const res  = await fetch(`${ACH_API}/${_currentAchId}/comments`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-discord-id': _currentUser.discord_id },
+      headers: { 'Content-Type': 'application/json', 'x-discord-id': localStorage.getItem('uy_discord_id') },
       body: JSON.stringify({ content }),
     });
     const data = await res.json();
@@ -654,7 +654,7 @@ async function submitReply(parentId, achId) {
   try {
     const res  = await fetch(`${ACH_API}/${achId}/comments`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-discord-id': _currentUser.discord_id },
+      headers: { 'Content-Type': 'application/json', 'x-discord-id': localStorage.getItem('uy_discord_id') },
       body: JSON.stringify({ content, parent_id: parentId }),
     });
     const data = await res.json();
@@ -727,7 +727,7 @@ async function deleteAchComment(commentId, achId) {
   try {
     const res = await fetch(`${ACH_API}/${achId}/comments/${commentId}`, {
       method: 'DELETE',
-      headers: { 'x-discord-id': _currentUser.discord_id },
+      headers: { 'x-discord-id': localStorage.getItem('uy_discord_id') },
     });
     if (!res.ok) throw new Error((await res.json()).error);
     document.getElementById(`comment-${commentId}`)?.remove();
@@ -811,10 +811,23 @@ async function saveAchForm() {
     return showToast('El campo Progreso es obligatorio para tipo Progreso', 'error');
   }
 
+  // Validar URL de video
+  if (video) {
+    const validVideo = /^https?:\/\/(www\.)?(youtube\.com\/watch|youtu\.be\/|twitch\.tv\/|clips\.twitch\.tv\/|medal\.tv\/|streamable\.com\/|x\.com\/|twitter\.com\/).+/.test(video);
+    if (!validVideo) return showToast('URL de video inválida. Usá YouTube, Twitch, Medal, Streamable o Twitter/X', 'error');
+  }
+
+  // Validar URL de thumbnail (solo YouTube)
+  if (thumb) {
+    const validThumb = /^https?:\/\/(www\.)?(youtube\.com\/watch|youtu\.be\/).+/.test(thumb);
+    if (!validThumb) return showToast('El thumbnail debe ser un link de YouTube', 'error');
+  }
+
   const body = { position, player_name: player, level_name: level, progress: progress || '100%', type, video_url: video, thumbnail_url: thumb, notes };
 
   try {
-    const discordId = _currentUser.discord_id || _currentUser.id || localStorage.getItem('uy_discord_id');
+    const discordId = localStorage.getItem('uy_discord_id');
+    if (!discordId) return showToast('No hay sesión activa', 'error');
     const res = await fetch(id ? `${ACH_API}/${id}` : ACH_API, {
       method: id ? 'PUT' : 'POST',
       headers: { 'Content-Type': 'application/json', 'x-discord-id': discordId },
@@ -843,7 +856,7 @@ async function deleteAch(id) {
   try {
     const res = await fetch(`${ACH_API}/${id}`, {
       method: 'DELETE',
-      headers: { 'x-discord-id': _currentUser.discord_id },
+      headers: { 'x-discord-id': localStorage.getItem('uy_discord_id') },
     });
     if (!res.ok) throw new Error((await res.json()).error);
     showToast('Achievement eliminado', 'success');

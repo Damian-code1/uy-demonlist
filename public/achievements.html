@@ -221,7 +221,13 @@
       const req   = document.getElementById('achFormProgressRequired');
       const input = document.getElementById('achFormProgress');
       if (req)   req.style.display  = isCompletion ? 'none' : '';
-      if (input) input.placeholder  = isCompletion ? '100% (por defecto)' : 'Ej: 95% o 14-96';
+      if (input) {
+        input.placeholder = isCompletion ? '100% (automático)' : 'Ej: 95% o 14-96';
+        input.disabled    = isCompletion;
+        input.style.opacity = isCompletion ? '.4' : '';
+        input.style.cursor  = isCompletion ? 'not-allowed' : '';
+        if (isCompletion) input.value = '';
+      }
     });
   });
 
