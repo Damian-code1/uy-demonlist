@@ -4921,7 +4921,8 @@ body {
   padding: .3rem .75rem; border-radius: 50px;
   background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.08);
   color: var(--text-dim); font-size: .78rem; font-weight: 600;
-  cursor: pointer; transition: background .15s, border-color .15s, color .15s, transform .15s;
+  cursor: pointer;
+  transition: background .15s, border-color .15s, color .15s, transform .15s, box-shadow .15s;
   user-select: none;
   -webkit-user-select: none;
   touch-action: manipulation;
@@ -5177,12 +5178,16 @@ body {
   padding: .22rem .6rem; border-radius: 50px;
   background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.07);
   color: var(--text-dim); font-size: .72rem; font-weight: 600;
-  cursor: pointer; transition: background .15s, border-color .15s, color .15s;
+  cursor: pointer;
+  transition: background .15s, border-color .15s, color .15s, transform .15s, box-shadow .15s;
   user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
-.lm-comment-react-btn:hover { background: rgba(255,255,255,.09); color: var(--text); transform: translateY(-1px); }
-.lm-comment-react-btn:active { transform: scale(.93); }
-.lm-comment-react-btn i { transition: transform .2s cubic-bezier(.34,1.56,.64,1); }
+.lm-comment-react-btn:hover:not(:disabled) { background: rgba(255,255,255,.09); color: var(--text); transform: translateY(-1px) scale(1.04); }
+.lm-comment-react-btn:active { transform: scale(.93) !important; }
+.lm-comment-react-btn i { transition: transform .2s cubic-bezier(.34,1.56,.64,1), color .15s; }
 .lm-comment-react-btn:hover i { transform: scale(1.25); }
 .lm-comment-react-btn.active-like {
   background: rgba(34,197,94,.15); border-color: rgba(34,197,94,.5);

@@ -86,7 +86,21 @@ function renderMural() {
     btn.addEventListener('click', () => deletePost(btn.dataset.id));
   });
   wrap.querySelectorAll('.mural-react-btn').forEach(btn => {
+    let pressTimer;
+
     btn.addEventListener('click', () => toggleMuralReaction(btn.dataset.postId, btn.dataset.reaction));
+
+    const showVoters = () => {
+      try {
+        const voters = JSON.parse(btn.dataset.voters || '[]');
+        showMuralVoterPopup(voters, btn.dataset.reaction === 'like', btn);
+      } catch {}
+    };
+
+    btn.addEventListener('contextmenu', e => { e.preventDefault(); showVoters(); });
+    btn.addEventListener('pointerdown', () => { pressTimer = setTimeout(showVoters, 500); });
+    btn.addEventListener('pointerup',   () => clearTimeout(pressTimer));
+    btn.addEventListener('pointerleave',() => clearTimeout(pressTimer));
   });
   wrap.querySelectorAll('.mural-reply-submit').forEach(btn => {
     btn.addEventListener('click', () => submitReply(btn.dataset.id));
@@ -223,47 +237,17 @@ function buildReactionBar(post, user) {
 
   return `
     <button class="mural-react-btn mural-like-btn${iLiked ? ' active' : ''}"
-            data-post-id="${post.id}" data-reaction="like">
+            data-post-id="${post.id}" data-reaction="like"
+            data-voters='${JSON.stringify(likedUsers).replace(/'/g,"&#39;")}'>
       <i class="fas fa-thumbs-up"></i>
       <span class="mural-react-count">${post.likes || 0}</span>
     </button>
-    ${likedUsers.length > 0 ? `
-    <span class="mural-reaction-count-clickable mural-voters-trigger"
-          onclick="toggleMuralVoterDrop('${likeDropId}', event)"
-          style="position:relative">
-      <span class="mural-voters-avatars">
-        ${likedUsers.slice(0,3).map(u => u.discord_id && u.discord_avatar
-          ? `<img src="https://cdn.discordapp.com/avatars/${u.discord_id}/${u.discord_avatar}.png?size=32" class="mural-voter-mini-avatar" alt="">`
-          : `<span class="mural-voter-mini-avatar mural-voter-mini-ph">${(u.name||'?')[0].toUpperCase()}</span>`
-        ).join('')}
-        ${likedUsers.length > 3 ? `<span class="mural-voter-mini-more">+${likedUsers.length - 3}</span>` : ''}
-      </span>
-      <div class="mural-voters-drop" id="${likeDropId}">
-        <div class="mural-voters-title"><i class="fas fa-thumbs-up" style="color:#4ade80"></i> Les gustó (${likedUsers.length})</div>
-        ${buildUserDropdown(likedUsers, 'like')}
-      </div>
-    </span>` : ''}
     <button class="mural-react-btn mural-dislike-btn${iDisliked ? ' active' : ''}"
-            data-post-id="${post.id}" data-reaction="dislike">
+            data-post-id="${post.id}" data-reaction="dislike"
+            data-voters='${JSON.stringify(dislikedUsers).replace(/'/g,"&#39;")}'>
       <i class="fas fa-thumbs-down"></i>
       <span class="mural-react-count">${post.dislikes || 0}</span>
-    </button>
-    ${dislikedUsers.length > 0 ? `
-    <span class="mural-reaction-count-clickable mural-voters-trigger"
-          onclick="toggleMuralVoterDrop('${dislikeDropId}', event)"
-          style="position:relative">
-      <span class="mural-voters-avatars">
-        ${dislikedUsers.slice(0,3).map(u => u.discord_id && u.discord_avatar
-          ? `<img src="https://cdn.discordapp.com/avatars/${u.discord_id}/${u.discord_avatar}.png?size=32" class="mural-voter-mini-avatar" alt="">`
-          : `<span class="mural-voter-mini-avatar mural-voter-mini-ph">${(u.name||'?')[0].toUpperCase()}</span>`
-        ).join('')}
-        ${dislikedUsers.length > 3 ? `<span class="mural-voter-mini-more">+${dislikedUsers.length - 3}</span>` : ''}
-      </span>
-      <div class="mural-voters-drop" id="${dislikeDropId}">
-        <div class="mural-voters-title"><i class="fas fa-thumbs-down" style="color:var(--red)"></i> No les gustó (${dislikedUsers.length})</div>
-        ${buildUserDropdown(dislikedUsers, 'dislike')}
-      </div>
-    </span>` : ''}`;
+    </button>`;
 }
 
 function toggleMuralVoterDrop(id, event) {
@@ -547,7 +531,57 @@ async function toggleMuralReaction(postId, reaction) {
   }
 }
 
-window.renderMural               = renderMural;
+window.renderMural = renderMural;
+
+function showMuralVoterPopup(voters, isLike, anchorEl) {
+  document.getElementById('muralVoterPopup')?.remove();
+  if (!voters?.length) return;
+
+  const color = isLike ? '#4ade80' : '#f87171';
+  const icon  = isLike ? 'thumbs-up' : 'thumbs-down';
+  const label = isLike ? 'Les gustó' : 'No les gustó';
+
+  const popup = document.createElement('div');
+  popup.id = 'muralVoterPopup';
+  popup.className = 'lc-reaction-popup';
+  popup.innerHTML = `
+    <div class="lc-reaction-popup-title" style="color:${color}">
+      <i class="fas fa-${icon}"></i> ${label} (${voters.length})
+    </div>
+    <div class="lc-reaction-popup-list">
+      ${voters.map(u => {
+        const av = u.discord_id && u.discord_avatar
+          ? `<img src="https://cdn.discordapp.com/avatars/${u.discord_id}/${u.discord_avatar}.png?size=32" class="lc-reaction-avatar" onerror="this.style.display='none'">`
+          : `<div class="lc-reaction-avatar lc-reaction-avatar-ph">${(u.name||'?')[0].toUpperCase()}</div>`;
+        const sub = u.username && u.username !== u.name
+          ? `<span style="font-size:.65rem;color:var(--text-dim);display:block">@${escMural(u.username)}</span>`
+          : '';
+        return `<div class="lc-reaction-user" style="flex-direction:column;align-items:flex-start;gap:.1rem">
+          <div style="display:flex;align-items:center;gap:.4rem">${av}<div><span>${escMural(u.name||'Usuario')}</span>${sub}</div></div>
+        </div>`;
+      }).join('')}
+    </div>`;
+  document.body.appendChild(popup);
+
+  const rect = anchorEl.getBoundingClientRect();
+  let top  = rect.bottom + window.scrollY + 8;
+  let left = rect.left   + window.scrollX;
+  const popW = 210;
+  if (left + popW > window.innerWidth - 8) left = window.innerWidth - popW - 8;
+  if (left < 8) left = 8;
+  const estH = Math.min(voters.length * 40 + 50, 260);
+  if (rect.bottom + estH > window.innerHeight) top = rect.top + window.scrollY - estH - 8;
+  popup.style.top  = `${top}px`;
+  popup.style.left = `${left}px`;
+
+  const close = e => {
+    if (!popup.contains(e.target) && e.target !== anchorEl) {
+      popup.remove();
+      document.removeEventListener('pointerdown', close);
+    }
+  };
+  setTimeout(() => document.addEventListener('pointerdown', close), 50);
+}
 
 document.addEventListener('DOMContentLoaded', () => {
   initMuralForm();
