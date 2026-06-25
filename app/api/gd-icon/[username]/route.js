@@ -31,7 +31,7 @@ export async function GET(request, { params }) {
   const { username } = params;
   const { searchParams } = new URL(request.url);
   const allForms = searchParams.get('all') === '1';
-  const specificForm = searchParams.get('form'); // ?form=ship etc.
+  const specificForm = searchParams.get('form'); 
   const key = `${username.toLowerCase().trim()}:${allForms ? 'all' : specificForm || 'active'}`;
 
   const cached = iconCache.get(key);
@@ -82,7 +82,6 @@ export async function GET(request, { params }) {
       });
     }
 
-    // Renderizar un form específico o el activo
     const form = specificForm || ICON_FORMS[profile.iconType] || 'cube';
     const iconNum = profile[PROFILE_ICON_FIELD[form]] ?? 1;
 
@@ -91,6 +90,7 @@ export async function GET(request, { params }) {
     const iconStr = `${PIXI_FORM[form]}_${String(iconNum).padStart(2, '0')}`;
     console.log('[gd-icon] Icon string:', iconStr);
     
+    // te odio canvas
     const [plistRes, atlasRes] = await Promise.all([
       fetch(`https://gdbrowser.com/iconkit/icons/${iconStr}-uhd.plist`),
       fetch(`https://gdbrowser.com/iconkit/icons/${iconStr}-uhd.png`)
