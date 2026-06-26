@@ -104,6 +104,14 @@
 .ach-stat-pill:nth-child(3) i     { color: var(--red, #f43f5e); filter: drop-shadow(0 0 6px rgba(244,63,94,.3)); }
 .ach-stat-pill:nth-child(3) strong { color: var(--red, #f43f5e); }
 
+@keyframes achPillPop {
+  0%   { transform: scale(1); box-shadow: 0 0 0 rgba(139,92,246,0); }
+  40%  { transform: scale(1.06); box-shadow: 0 0 18px rgba(139,92,246,.3); }
+  100% { transform: scale(1); box-shadow: 0 0 0 rgba(139,92,246,0); }
+}
+.ach-pill-pop {
+  animation: achPillPop .6s cubic-bezier(.34,1.56,.64,1) forwards;
+}
 .ach-stat-pill strong {
   font-size: 1.25rem; font-weight: 800;
   font-family: var(--font-title, 'Bebas Neue', sans-serif);

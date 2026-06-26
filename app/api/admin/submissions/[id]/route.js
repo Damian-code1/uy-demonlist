@@ -133,15 +133,13 @@ export async function PUT(request, { params }) {
       let victorName = sub.username;
 
       try {
-        // 1) Buscar si el username ya existe en victors con ese nombre (preservar case exacto)
         const [existingVictor] = await query(
           'SELECT player_name FROM victors WHERE LOWER(player_name) = LOWER(?) LIMIT 1',
           [sub.username]
         );
         if (existingVictor.length) {
-          victorName = existingVictor[0].player_name; // usar nombre exacto ya existente
+          victorName = existingVictor[0].player_name; 
         } else {
-          // 2) Buscar si hay un usuario de Discord con este gd_username o linked_player_name
           const [linkedRows] = await query(
             `SELECT COALESCE(u.linked_player_name, u.gd_username) AS resolved_name
              FROM users u
@@ -181,7 +179,6 @@ export async function PUT(request, { params }) {
       }
     }
 
-    // Datos completos del nivel para el embed de Discord (posición final + número de victor)
     let finalLevelPosition = null;
     let finalAredlPosition = null;
     let victorNumber       = null;
@@ -200,7 +197,6 @@ export async function PUT(request, { params }) {
         const idx = allVictors.findIndex(v => v.player_name.toLowerCase() === victorName.toLowerCase());
         victorNumber = idx >= 0 ? idx + 1 : totalVictors;
 
-        // Buscar posición en AREDL si está mapeada
         try {
           const baseUrl = process.env.NEXTAUTH_URL
             || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
@@ -220,14 +216,36 @@ export async function PUT(request, { params }) {
     invalidatePlayersCache();
     console.log('[submissions] FINISHED OK');
 
-    // Notificar la decisión en el canal de staff (nunca debe romper la respuesta al admin)
     const staffName = admin.discord_display_name || admin.discord_username || admin.gd_username || 'Staff';
+
+    let submitterDiscordId = null;
+    let submitterDiscordUsername = null;
+    let submitterDiscordDisplayName = null;
+    try {
+      const [submitterRows] = await query(
+        `SELECT u.discord_id, u.discord_username, u.discord_display_name FROM submissions s
+         LEFT JOIN users u ON s.submitted_by = u.id
+         WHERE s.id = ? LIMIT 1`,
+        [params.id]
+      );
+      if (submitterRows[0]) {
+        const submitterDiscordId = submitterRows[0]?.discord_id || submitterDiscordId || null;
+        submitterDiscordUsername    = submitterRows[0].discord_username || null;
+        submitterDiscordDisplayName = submitterRows[0].discord_display_name || null;
+      }
+    } catch (e) {
+      console.warn('[submissions] No se pudo obtener discord_id del submitter:', e.message);
+    }
+
+    const playerDisplayName = submitterDiscordDisplayName || submitterDiscordUsername || sub.username;
+
     try {
       await notifyDecision({
         decision:        status,
         submissionId:    Number(params.id),
         levelName:       sub.level_name,
-        playerName:      sub.username,
+        playerName:      playerDisplayName,
+        playerDiscordId: submitterDiscordId,
         staffName,
         youtubeLink:     sub.youtube_url || null,
         rejectionReason: status === 'rejected' ? (rejection_reason?.trim() || null) : null,
@@ -242,15 +260,7 @@ export async function PUT(request, { params }) {
       console.error('[submissions] Error notificando decisión (no crítico):', e.message);
     }
 
-    // DM automático al jugador via el bot local — nunca debe romper la respuesta al admin
     try {
-      const [submitterRows] = await query(
-        `SELECT u.discord_id FROM submissions s
-         LEFT JOIN users u ON s.submitted_by = u.id
-         WHERE s.id = ? LIMIT 1`,
-        [params.id]
-      );
-      const submitterDiscordId = submitterRows[0]?.discord_id || null;
 
       if (submitterDiscordId) {
         await notifyBotDM({

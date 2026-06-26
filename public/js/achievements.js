@@ -328,23 +328,42 @@ function renderAchievements() {
   AOS.refresh();
 }
 
-function animateCount(el, target, duration = 900) {
+function animateCount(el, target, duration = 1100, delay = 0) {
   if (!el) return;
-  const raw   = el.textContent.trim();
-  const start = (raw === '—' || raw === '') ? 0 : (parseInt(raw) || 0);
-  if (start === target) { el.textContent = target; return; }
-  const startTs  = performance.now();
+  el.textContent = '0';
+  el.style.transform = 'scale(1)';
 
-  function easeOutExpo(t) { return t === 1 ? 1 : 1 - Math.pow(2, -10 * t); }
-  function step(now) {
-    const elapsed  = now - startTs;
-    const progress = Math.min(elapsed / duration, 1);
-    const eased    = easeOutExpo(progress);
-    el.textContent = Math.round(start + (target - start) * eased);
-    if (progress < 1) requestAnimationFrame(step);
-    else el.textContent = target;
-  }
-  requestAnimationFrame(step);
+  setTimeout(() => {
+    const startTs = performance.now();
+
+    function easeOutExpo(t) { return t === 1 ? 1 : 1 - Math.pow(2, -10 * t); }
+    function easeOutBack(t) {
+      const c1 = 1.70158, c3 = c1 + 1;
+      return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
+    }
+
+    function step(now) {
+      const elapsed  = now - startTs;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased    = easeOutExpo(progress);
+      const current  = Math.round(target * eased);
+      el.textContent = current;
+
+      if (progress > 0.85) {
+        const popT = (progress - 0.85) / 0.15;
+        const scale = 1 + 0.06 * easeOutBack(popT > 1 ? 1 : popT);
+        el.style.transform = `scale(${scale})`;
+      }
+
+      if (progress < 1) {
+        requestAnimationFrame(step);
+      } else {
+        el.textContent = target;
+        el.style.transform = 'scale(1)';
+      }
+    }
+    requestAnimationFrame(step);
+  }, delay);
 }
 
 function updateHeroStats() {
@@ -357,9 +376,17 @@ function updateHeroStats() {
     if (el && (el.textContent === '—' || el.textContent === '')) el.textContent = '0';
   });
 
-  animateCount(document.getElementById('achTotalCount'),      total);
-  animateCount(document.getElementById('achCompletionCount'), completions);
-  animateCount(document.getElementById('achProgressCount'),   progresses);
+  animateCount(document.getElementById('achTotalCount'),      total,       1100,   0);
+  animateCount(document.getElementById('achCompletionCount'), completions, 1100, 120);
+  animateCount(document.getElementById('achProgressCount'),   progresses,  1100, 240);
+
+  document.querySelectorAll('.ach-stat-pill').forEach((pill, i) => {
+    setTimeout(() => {
+      pill.classList.remove('ach-pill-pop');
+      void pill.offsetWidth;
+      pill.classList.add('ach-pill-pop');
+    }, i * 120);
+  });
 }
 
 function setFilter(filter) {
