@@ -119,7 +119,7 @@ function renderSanctionsUsers(filterQ) {
         let actionsHtml;
         if (isOwner) {
           actionsHtml = `<div class="sa-owner-protected"><i class="fas fa-crown"></i> Owner protegido</div>`;
-        } else if (isSelf) {
+        } else if (isSelf && myRole !== 'owner') {
           actionsHtml = `<div class="sa-owner-protected" title="No podés sancionarte a vos mismo"><i class="fas fa-ban"></i> No podés sancionarte a vos mismo</div>`;
         } else if (u.is_banned) {
           actionsHtml = `<button class="sa-btn sa-btn-lift" onclick="liftSanction('${esc(u.discord_id)}')">

@@ -78,7 +78,7 @@ export async function POST(request) {
     if (!targetRows.length) return Response.json({ error: 'Usuario no encontrado' }, { status: 404 });
     const target = targetRows[0];
 
-    if (target.discord_id === admin.discord_id) {
+    if (target.discord_id === admin.discord_id && admin.role !== 'owner') {
       return Response.json({ error: 'No podés sancionarte a vos mismo' }, { status: 400 });
     }
 

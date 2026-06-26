@@ -432,9 +432,15 @@ function isBanned() {
   const u = window.currentUser;
   return u?.isBanned === true;
 }
+let _banToastTs = 0;
 function checkBan(action = 'hacer eso') {
-  if (isBanned()) { showToast(`Estás sancionado y no podés ${action}`, 'error'); return true; }
-  return false;
+  if (!isBanned()) return false;
+  const now = Date.now();
+  if (now - _banToastTs > 4000) {
+    _banToastTs = now;
+    showToast(`🚫 Estás sancionado y no podés ${action}`, 'error');
+  }
+  return true;
 }
 
 async function reactAch(e, id, reaction) {
