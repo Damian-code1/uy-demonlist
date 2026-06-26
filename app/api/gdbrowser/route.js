@@ -6,9 +6,8 @@ export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const name     = searchParams.get('name');
   const player   = searchParams.get('player');
-  const levelId  = searchParams.get('id'); // GD level ID desde AREDL
+  const levelId  = searchParams.get('id');
 
-  // ─── Perfil de jugador ───
   if (player) {
     const key    = player.toLowerCase().trim();
     const cached = profileCache.get(key);
@@ -65,7 +64,6 @@ export async function GET(request) {
     }
   }
 
-  // ─── Nivel por ID (más preciso — viene de AREDL) ───
   if (levelId) {
     const key    = `id:${levelId}`;
     const cached = levelCache.get(key);
@@ -91,7 +89,6 @@ export async function GET(request) {
     }
   }
 
-  // ─── Nivel por nombre (fallback si no hay ID de AREDL) ───
   if (!name) return Response.json({ found: false });
   const key    = `name:${name.toLowerCase().trim()}`;
   const cached = levelCache.get(key);
