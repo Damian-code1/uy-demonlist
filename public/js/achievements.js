@@ -37,7 +37,7 @@ function onAuthReady() {
   _currentUser = window.currentUser || null;
   applyStaffUI();
   updateCommentAvatar();
-  renderAchievements();
+  if (_achievements.length > 0) renderAchievements();
 }
 
 function applyStaffUI() {
