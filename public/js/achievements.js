@@ -239,7 +239,6 @@ async function loadAchievements() {
 
 function renderAchievements() {
   applyStaffUI();
-  updateHeroStats(); // siempre sincronizar el contador al renderizar
   const list    = document.getElementById('achList');
   const isStaff = _currentUser && STAFF_ROLES.includes(_currentUser.role);
 
@@ -329,13 +328,13 @@ function renderAchievements() {
   AOS.refresh();
 }
 
-// Anima un número desde su valor actual hasta el target con easing
 function animateCount(el, target, duration = 900) {
   if (!el) return;
-  const start    = parseInt(el.textContent) || 0;
-  if (start === target) return;
+  const raw   = el.textContent.trim();
+  const start = (raw === '—' || raw === '') ? 0 : (parseInt(raw) || 0);
+  if (start === target) { el.textContent = target; return; }
   const startTs  = performance.now();
-  // easeOutExpo — desacelera al llegar al target, se ve natural y premium
+
   function easeOutExpo(t) { return t === 1 ? 1 : 1 - Math.pow(2, -10 * t); }
   function step(now) {
     const elapsed  = now - startTs;
@@ -352,6 +351,11 @@ function updateHeroStats() {
   const total       = _achievements.length;
   const completions = _achievements.filter(a => a.type === 'completion').length;
   const progresses  = _achievements.filter(a => a.type === 'progress').length;
+
+  ['achTotalCount','achCompletionCount','achProgressCount'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el && (el.textContent === '—' || el.textContent === '')) el.textContent = '0';
+  });
 
   animateCount(document.getElementById('achTotalCount'),      total);
   animateCount(document.getElementById('achCompletionCount'), completions);
