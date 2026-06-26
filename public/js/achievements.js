@@ -218,6 +218,8 @@ async function renderPlayerSugg(q) {
 }
 
 async function loadAchievements() {
+  document.querySelectorAll('.ach-stat-pill').forEach(p => p.classList.add('loading'));
+
   try {
     const discordId = localStorage.getItem('uy_discord_id') || '';
     const res = await fetch(ACH_API, {
@@ -226,16 +228,18 @@ async function loadAchievements() {
     const data = await res.json();
     _achievements = data.achievements || [];
     applyStaffUI();
-    renderAchievements();
-    updateHeroStats();
+    renderAchievements(); // updateHeroStats() ya se llama dentro de renderAchievements
   } catch (e) {
     document.getElementById('achList').innerHTML =
       `<div class="ach-empty"><i class="fas fa-exclamation-circle"></i><p>Error al cargar: ${e.message}</p></div>`;
+  } finally {
+    document.querySelectorAll('.ach-stat-pill').forEach(p => p.classList.remove('loading'));
   }
 }
 
 function renderAchievements() {
   applyStaffUI();
+  updateHeroStats(); // siempre sincronizar el contador al renderizar
   const list    = document.getElementById('achList');
   const isStaff = _currentUser && STAFF_ROLES.includes(_currentUser.role);
 
@@ -325,10 +329,33 @@ function renderAchievements() {
   AOS.refresh();
 }
 
+// Anima un número desde su valor actual hasta el target con easing
+function animateCount(el, target, duration = 900) {
+  if (!el) return;
+  const start    = parseInt(el.textContent) || 0;
+  if (start === target) return;
+  const startTs  = performance.now();
+  // easeOutExpo — desacelera al llegar al target, se ve natural y premium
+  function easeOutExpo(t) { return t === 1 ? 1 : 1 - Math.pow(2, -10 * t); }
+  function step(now) {
+    const elapsed  = now - startTs;
+    const progress = Math.min(elapsed / duration, 1);
+    const eased    = easeOutExpo(progress);
+    el.textContent = Math.round(start + (target - start) * eased);
+    if (progress < 1) requestAnimationFrame(step);
+    else el.textContent = target;
+  }
+  requestAnimationFrame(step);
+}
+
 function updateHeroStats() {
-  document.getElementById('achTotalCount').textContent     = _achievements.length;
-  document.getElementById('achCompletionCount').textContent = _achievements.filter(a => a.type === 'completion').length;
-  document.getElementById('achProgressCount').textContent   = _achievements.filter(a => a.type === 'progress').length;
+  const total       = _achievements.length;
+  const completions = _achievements.filter(a => a.type === 'completion').length;
+  const progresses  = _achievements.filter(a => a.type === 'progress').length;
+
+  animateCount(document.getElementById('achTotalCount'),      total);
+  animateCount(document.getElementById('achCompletionCount'), completions);
+  animateCount(document.getElementById('achProgressCount'),   progresses);
 }
 
 function setFilter(filter) {
