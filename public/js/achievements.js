@@ -226,7 +226,9 @@ async function loadAchievements() {
       headers: discordId ? { 'x-discord-id': discordId } : {},
     });
     const data = await res.json();
-    _achievements = (data.achievements || []).sort((a, b) => a.position - b.position);
+    const sorted = (data.achievements || []).sort((a, b) => a.position - b.position);
+    sorted.forEach((a, i) => { a.position = i + 1; });
+    _achievements = sorted;
     applyStaffUI();
     renderAchievements();
   } catch (e) {
