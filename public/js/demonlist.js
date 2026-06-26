@@ -1293,7 +1293,7 @@ modal.classList.add('active');
               const ic = iconData.icons[f];
               if (!ic) return '';
               return `
-                <div class="pm-gd-icon-cell${ic.active ? ' pm-gd-icon-active' : ''}" title="${ICON_LABELS[f]}">
+                <div class="pm-gd-icon-cell" title="${ICON_LABELS[f]}">
                   <img src="${esc(ic.url)}" alt="${f}"
                        class="pm-gd-icon-img"
                        onerror="this.closest('.pm-gd-icon-cell').style.opacity='.3'">
