@@ -806,11 +806,11 @@ function renderLeaderboard() {
     row.innerHTML = `
       <div class="lb-pos-wrap">
         ${pos === 1
-          ? `<div class="lb-medal lb-medal-gold"><i class="fas fa-crown"></i></div>`
+          ? `<div class="lb-medal lb-medal-gold" style="--mc:#f59e0b;--mb:rgba(245,158,11,.13)"><i class="fas fa-crown"></i></div>`
           : pos === 2
-          ? `<div class="lb-medal lb-medal-silver"><i class="fas fa-medal"></i></div>`
+          ? `<div class="lb-medal lb-medal-silver" style="--mc:#cbd5e1;--mb:rgba(203,213,225,.1)"><i class="fas fa-trophy"></i></div>`
           : pos === 3
-          ? `<div class="lb-medal lb-medal-bronze"><i class="fas fa-medal"></i></div>`
+          ? `<div class="lb-medal lb-medal-bronze" style="--mc:#c2722a;--mb:rgba(194,114,42,.1)"><i class="fas fa-award"></i></div>`
           : `<div class="lb-pos-num">#${pos}</div>`
         }
       </div>
@@ -832,18 +832,18 @@ ${avatarUrl
       </div>
 
       <div class="lb-stats-horizontal">
-        <div class="lb-stat-item">
-          <i class="fas fa-star"></i>
+        <div class="lb-stat-item si-pts">
+          <i class="fas fa-bolt-lightning"></i>
           <span>${(player.points||0).toLocaleString()}</span>
           <small>pts</small>
         </div>
-        <div class="lb-stat-item">
-          <i class="fas fa-flag-checkered"></i>
+        <div class="lb-stat-item si-comp">
+          <i class="fas fa-skull-crossbones"></i>
           <span>${player.completions||0}</span>
           <small>comps</small>
         </div>
-        <div class="lb-stat-item">
-          <i class="fas fa-chart-line"></i>
+        <div class="lb-stat-item si-prog">
+          <i class="fas fa-arrow-trend-up"></i>
           <span>${pct}%</span>
           <small>prog</small>
         </div>
