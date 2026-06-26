@@ -257,17 +257,23 @@ function renderAchievements() {
     const pos = a.position;
     const rankIcon = pos === 1 ? '🥇' : pos === 2 ? '🥈' : pos === 3 ? '🥉' : null;
 
+    const rankFa = pos === 1
+      ? `<i class="fas fa-crown" style="color:#f59e0b"></i>`
+      : pos === 2
+      ? `<i class="fas fa-medal" style="color:#cbd5e1"></i>`
+      : pos === 3
+      ? `<i class="fas fa-medal" style="color:#c2722a"></i>`
+      : `<i class="fas fa-hashtag" style="color:var(--text-dim)"></i>`;
+
     return `
-    <div class="ach-card" data-pos="${pos}" data-id="${a.id}"
-         data-aos="fade-up" data-aos-delay="${Math.min(i * 40, 300)}"
-         onclick="openAchDetail(${a.id})">
+    <div class="ach-card-wrapper" data-aos="fade-up" data-aos-delay="${Math.min(i * 40, 300)}">
+      <div class="ach-pos-col">
+        <div class="ach-pos-icon">${rankFa}</div>
+        <span class="ach-pos-num">${pos <= 3 ? '' : pos}</span>
+      </div>
+      <div class="ach-card" data-pos="${pos}" data-id="${a.id}"
+           onclick="openAchDetail(${a.id})">
       <div class="ach-card-inner">
-        <!-- Rank -->
-        <div class="ach-rank-stripe">
-          ${rankIcon
-            ? `<span class="ach-rank-icon">${rankIcon}</span>`
-            : `<span class="ach-rank-num">#${pos}</span>`}
-        </div>
         <!-- Thumb -->
         <div class="ach-thumb-wrap">
           ${thumbUrl
@@ -308,6 +314,7 @@ function renderAchievements() {
           <button class="ach-staff-btn edit" title="Editar" onclick="openAchForm(${a.id})"><i class="fas fa-pen"></i></button>
           <button class="ach-staff-btn del"  title="Eliminar" onclick="deleteAch(${a.id})"><i class="fas fa-trash"></i></button>
         </div>` : ''}
+      </div>
       </div>
     </div>`;
   }).join('');

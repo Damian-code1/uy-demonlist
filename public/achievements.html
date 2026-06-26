@@ -207,10 +207,78 @@
 <!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/toastify-js@1.12.0/src/toastify.min.js"></script>
 <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+
+<!-- PANEL DE SANCIONES -->
+<div class="admin-overlay" id="sanctionsOverlay"></div>
+<aside class="admin-panel sa-panel" id="sanctionsPanel">
+  <div class="admin-header">
+    <h2 class="admin-title">PANEL DE SANCIONES</h2>
+    <button class="admin-close" id="sanctionsClose"><i class="fas fa-times"></i></button>
+  </div>
+  <div class="admin-tabs">
+    <button class="admin-tab active" data-satab="users"><i class="fas fa-users"></i> Usuarios</button>
+    <button class="admin-tab" data-satab="log"><i class="fas fa-scroll"></i> Log</button>
+  </div>
+  <div class="admin-body">
+    <div class="admin-section active" id="sanctions-users">
+      <div class="admin-toolbar">
+        <div class="search-box enhanced-search" style="flex:1">
+          <i class="fas fa-search search-icon-left"></i>
+          <input type="text" id="sanctionsUserSearch" placeholder="Buscar usuario…" autocomplete="off" oninput="filterSanctionsUsers(this.value)">
+          <button type="button" class="search-clear-btn" id="sanctionsUserClear" style="display:none"><i class="fas fa-times-circle"></i></button>
+        </div>
+      </div>
+      <div id="sanctions-users-table"></div>
+    </div>
+    <div class="admin-section" id="sanctions-log">
+      <div class="admin-toolbar">
+        <div class="search-box enhanced-search" style="flex:1">
+          <i class="fas fa-search search-icon-left"></i>
+          <input type="text" id="sanctionsLogSearch" placeholder="Buscar…" autocomplete="off" oninput="filterSanctionsLog(this.value)">
+          <button type="button" class="search-clear-btn" id="sanctionsLogClear" style="display:none"><i class="fas fa-times-circle"></i></button>
+        </div>
+        <button class="sa-btn sa-btn-clearall" id="sanctionsClearAllBtn" onclick="confirmClearAllSanctions()" style="display:none"><i class="fas fa-trash-alt"></i></button>
+      </div>
+      <div id="sanctions-log-table"></div>
+    </div>
+  </div>
+</aside>
+<div class="admin-form-modal" id="banModal">
+  <div class="modal-backdrop"></div>
+  <div class="admin-form-box">
+    <h3 class="admin-form-title"><i class="fas fa-gavel"></i> Sancionar usuario</h3>
+    <p class="sa-modal-target">Vas a sancionar a: <strong id="banModalTarget"></strong></p>
+    <div class="admin-form-row">
+      <label class="ou-field-label">Duración</label>
+      <div class="ban-duration-fields">
+        <div class="ban-duration-field"><input type="number" id="banModalDays" class="ou-select" value="" min="0" placeholder="0"><span class="ban-duration-label">días</span></div>
+        <div class="ban-duration-field"><input type="number" id="banModalHours" class="ou-select" value="" min="0" max="23" placeholder="0"><span class="ban-duration-label">horas</span></div>
+        <div class="ban-duration-field"><input type="number" id="banModalMinutes" class="ou-select" value="" min="0" max="59" placeholder="0"><span class="ban-duration-label">minutos</span></div>
+      </div>
+    </div>
+    <div class="admin-form-row">
+      <label class="ou-field-label">Motivo</label>
+      <input type="text" id="banModalReason" class="ou-select" placeholder="Motivo (obligatorio)" required>
+    </div>
+    <div class="admin-form-actions">
+      <button class="ou-btn ou-btn-unlink" id="banModalCancel">Cancelar</button>
+      <button class="ou-btn ou-btn-save" id="banModalConfirm"><i class="fas fa-gavel"></i> Sancionar</button>
+    </div>
+  </div>
+</div>
+<div class="admin-form-modal sa-detail-modal" id="sanctionDetailModal">
+  <div class="modal-backdrop"></div>
+  <div class="admin-form-box sa-detail-box" id="sanctionDetailBox"></div>
+</div>
+<div class="admin-form-modal" id="playerSanctionsModal">
+  <div class="modal-backdrop" onclick="closePlayerSanctionsModal()"></div>
+  <div class="admin-form-box psm-box" id="playerSanctionsBox"></div>
+</div>
 <script src="js/roles.js"></script>
 <script src="js/ui.js"></script>
 <script src="js/data.js"></script>
 <script src="js/auth.js"></script>
+<script src="js/sanctions.js"></script>
 <script src="js/achievements.js"></script>
 <script>
   AOS.init({ duration: 500, once: true, offset: 40 });
