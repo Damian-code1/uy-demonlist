@@ -5031,22 +5031,32 @@ body {
 }
 .mural-react-btn:hover { background: rgba(255,255,255,.1); color: var(--text); transform: translateY(-2px) scale(1.06); }
 .mural-react-btn:active { transform: scale(.92); }
-.mural-like-btn.active {
-  background: rgba(34,197,94,.15); border-color: rgba(34,197,94,.5);
-  color: #4ade80;
-  box-shadow: 0 0 0 1px rgba(34,197,94,.2);
+
+.mural-like-btn.active,
+.mural-like-btn.active:hover,
+.mural-like-btn.active:focus {
+  background: rgba(34,197,94,.18) !important;
+  border-color: rgba(34,197,94,.6) !important;
+  color: #4ade80 !important;
+  box-shadow: 0 0 0 1px rgba(34,197,94,.25) !important;
 }
-.mural-like-btn.active i { color: #4ade80; }
-.mural-like-btn.active .mural-react-count { color: #4ade80; font-weight: 700; }
-.mural-like-btn.active:hover { background: rgba(34,197,94,.22); }
-.mural-dislike-btn.active {
-  background: rgba(244,63,94,.15); border-color: rgba(244,63,94,.5);
-  color: #f87171;
-  box-shadow: 0 0 0 1px rgba(244,63,94,.2);
+.mural-like-btn.active i,
+.mural-like-btn.active:hover i { color: #4ade80 !important; }
+.mural-like-btn.active .mural-react-count,
+.mural-like-btn.active:hover .mural-react-count { color: #4ade80 !important; font-weight: 700; }
+
+.mural-dislike-btn.active,
+.mural-dislike-btn.active:hover,
+.mural-dislike-btn.active:focus {
+  background: rgba(244,63,94,.18) !important;
+  border-color: rgba(244,63,94,.6) !important;
+  color: #f87171 !important;
+  box-shadow: 0 0 0 1px rgba(244,63,94,.25) !important;
 }
-.mural-dislike-btn.active i { color: #f87171; }
-.mural-dislike-btn.active .mural-react-count { color: #f87171; font-weight: 700; }
-.mural-dislike-btn.active:hover { background: rgba(244,63,94,.22); }
+.mural-dislike-btn.active i,
+.mural-dislike-btn.active:hover i { color: #f87171 !important; }
+.mural-dislike-btn.active .mural-react-count,
+.mural-dislike-btn.active:hover .mural-react-count { color: #f87171 !important; font-weight: 700; }
 .mural-react-btn i { font-size: .72rem; transition: transform .2s cubic-bezier(.34,1.56,.64,1); }
 .mural-react-btn:hover i { transform: scale(1.25); }
 .mural-react-btn.reaction-pop i { animation: reactionPop .35s cubic-bezier(.34,1.8,.64,1) forwards; }

@@ -20,7 +20,7 @@ export async function GET(request) {
       FROM submissions s
       LEFT JOIN users u ON s.submitted_by = u.id
       LEFT JOIN users r ON s.reviewed_by  = r.id
-      ${userId ? 'WHERE s.submitted_by = ?' : ''}
+      ${userId ? 'WHERE s.submitted_by = ? AND (s.hidden_by_user IS NULL OR s.hidden_by_user = 0)' : ''}
       ORDER BY s.created_at DESC
     `;
 
@@ -162,8 +162,6 @@ export async function POST(request) {
   }
 }
 
-// DELETE /api/submissions?id=X — el usuario elimina su propia submission del historial
-// Solo funciona si la submission le pertenece y NO está pendiente.
 export async function DELETE(request) {
   const user = await requireAuth(request);
   if (!user) return Response.json({ error: 'No autenticado' }, { status: 401 });
@@ -173,7 +171,6 @@ export async function DELETE(request) {
     const id = parseInt(searchParams.get('id'));
     if (!id) return Response.json({ error: 'ID requerido' }, { status: 400 });
 
-    // Buscar la submission junto con el id interno del usuario autenticado
     const [[dbUser]] = await query(
       'SELECT id FROM users WHERE discord_id = ? LIMIT 1',
       [user.discord_id]
@@ -186,15 +183,13 @@ export async function DELETE(request) {
     );
     if (!sub) return Response.json({ error: 'No encontrada' }, { status: 404 });
 
-    // Verificar pertenencia (submitted_by es el id interno del usuario)
     if (sub.submitted_by !== dbUser.id)
       return Response.json({ error: 'No autorizado' }, { status: 403 });
 
-    // No se puede eliminar una submission que está esperando revisión
     if (sub.status === 'pending')
       return Response.json({ error: 'pending', message: 'Esta submission está siendo revisada por el staff. No podés eliminarla mientras esté pendiente.' }, { status: 409 });
 
-    await query('DELETE FROM submissions WHERE id = ?', [id]);
+    await query('UPDATE submissions SET hidden_by_user = 1 WHERE id = ?', [id]);
     return Response.json({ success: true });
   } catch (e) {
     return Response.json({ error: e.message }, { status: 500 });

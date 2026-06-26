@@ -190,7 +190,9 @@ function buildPostHTML(post, isReply = false) {
 }
 
 function buildReactionBar(post, user) {
-  const myId      = user?.id ? String(user.id) : null;
+  const myId = user
+    ? String(user.discordId || user.discord_id || user.id || '')
+    : null;
   const iLiked    = myId && (post.liked_by    || []).map(String).includes(myId);
   const iDisliked = myId && (post.disliked_by || []).map(String).includes(myId);
 
@@ -525,15 +527,15 @@ async function toggleMuralReaction(postId, reaction) {
       showToast('👎 Le diste dislike', 'info');
     }
 
-    const bar = document.querySelector(`.mural-reactions[data-post-id="${postId}"]`);
-    if (bar) {
-      bar.innerHTML = buildReactionBar(post || {
-        id: Number(postId),
-        likes: data.likes, dislikes: data.dislikes,
-        liked_by: data.liked_by, disliked_by: data.disliked_by,
-        liked_by_users: data.liked_by_users, disliked_by_users: data.disliked_by_users,
-      }, user);
+    const updatedPost = post || {
+      id: Number(postId),
+      likes: data.likes, dislikes: data.dislikes,
+      liked_by: data.liked_by, disliked_by: data.disliked_by,
+      liked_by_users: data.liked_by_users, disliked_by_users: data.disliked_by_users,
+    };
 
+    document.querySelectorAll(`.mural-reactions[data-post-id="${postId}"]`).forEach(bar => {
+      bar.innerHTML = buildReactionBar(updatedPost, user);
       bar.querySelectorAll('.mural-react-btn').forEach(btn => {
         let pressTimer;
         btn.addEventListener('click', () => toggleMuralReaction(btn.dataset.postId, btn.dataset.reaction));
@@ -548,7 +550,8 @@ async function toggleMuralReaction(postId, reaction) {
         btn.addEventListener('pointerup',   () => clearTimeout(pressTimer));
         btn.addEventListener('pointerleave',() => clearTimeout(pressTimer));
       });
-    }
+    });
+
   } catch {
     showToast('Error al reaccionar', 'error');
   }

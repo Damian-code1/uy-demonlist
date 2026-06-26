@@ -1156,14 +1156,23 @@ async function approveSubmission(id) {
 }
 
 async function rejectSubmission(id) {
-  const reason = await uiPrompt({
-    title: 'Razón de rechazo',
-    message: 'Podés indicar opcionalmente por qué se rechaza esta submission. El jugador será notificado igual.',
-    placeholder: 'Ej: El video no muestra el completion completo...',
-    confirmText: 'Rechazar',
-    cancelText: 'Cancelar',
-  });
-  if (reason === null) return; // canceló con el botón cancelar
+  let reason = null;
+  while (true) {
+    reason = await uiPrompt({
+      title: 'Razón de rechazo',
+      message: 'Escribí la razón del rechazo. Es obligatoria y tiene que ser descriptiva (mín. 3 caracteres).',
+      placeholder: 'Ej: El video no muestra el completion completo...',
+      confirmText: 'Rechazar',
+      cancelText: 'Cancelar',
+    });
+    if (reason === null) return; // canceló
+    if (reason.trim().length >= 3) break;
+    await uiAlert({
+      title: 'RAZÓN REQUERIDA',
+      message: 'Tenés que escribir una razón válida (al menos 3 caracteres) para rechazar la submission.',
+      type: 'error',
+    });
+  }
 
   console.log('[admin] Rechazando submission', id);
 
