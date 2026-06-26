@@ -82,7 +82,7 @@ export async function POST(request) {
       return Response.json({ error: 'No podés sancionarte a vos mismo' }, { status: 400 });
     }
 
-    if (target.role === 'owner') {
+    if (target.role === 'owner' && target.discord_id !== admin.discord_id) {
       return Response.json({ error: 'No se puede sancionar al owner' }, { status: 403 });
     }
 
