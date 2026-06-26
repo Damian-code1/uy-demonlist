@@ -1160,40 +1160,31 @@ function showAchVoterPopup(voters, isLike, anchorEl) {
 }
 
 function attachVoterEvents(btn, getVoters) {
-  // Evitar duplicar listeners clonando y reinsertando
-  const fresh = btn.cloneNode(true);
-  btn.parentNode?.replaceChild(fresh, btn);
+  if (btn._voterAttached) return;
+  btn._voterAttached = true;
 
-  fresh.style.userSelect = 'none';
-  fresh.style.webkitUserSelect = 'none';
+  btn.style.userSelect = 'none';
+  btn.style.webkitUserSelect = 'none';
 
   let pressTimer;
   const trigger = () => {
     const voters = getVoters();
-    showAchVoterPopup(voters, fresh.dataset.isLike === '1', fresh);
+    showAchVoterPopup(voters, btn.dataset.isLike === '1', btn);
   };
 
-  fresh.addEventListener('contextmenu', e => {
+  btn.addEventListener('contextmenu', e => {
     e.preventDefault();
     e.stopPropagation();
     clearTimeout(pressTimer);
     trigger();
   });
 
-  fresh.addEventListener('pointerdown', e => {
+  btn.addEventListener('pointerdown', e => {
     if (e.button === 2) return;
     pressTimer = setTimeout(trigger, 500);
   });
-  fresh.addEventListener('pointerup',    () => clearTimeout(pressTimer));
-  fresh.addEventListener('pointerleave', () => clearTimeout(pressTimer));
-
-  const onclickStr = btn.getAttribute('onclick');
-  if (onclickStr) {
-    fresh.addEventListener('click', e => {
-      clearTimeout(pressTimer);
-      new Function('event', onclickStr).call(fresh, e);
-    });
-  }
+  btn.addEventListener('pointerup',    () => clearTimeout(pressTimer));
+  btn.addEventListener('pointerleave', () => clearTimeout(pressTimer));
 }
 
 document.getElementById('achFormOverlay')?.addEventListener('click', e => {

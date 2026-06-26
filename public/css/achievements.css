@@ -636,9 +636,7 @@
 .ach-pos-icon {
   font-size: 1.3rem; line-height: 1;
   filter: drop-shadow(0 0 6px currentColor);
-  transition: transform .25s cubic-bezier(.34,1.56,.64,1);
 }
-.ach-card-wrapper:hover .ach-pos-icon { transform: scale(1.2) rotate(-5deg); }
 .ach-pos-num {
   font-family: var(--font-title); font-size: .82rem;
   color: var(--text-dim); letter-spacing: .5px; line-height: 1;
@@ -706,7 +704,6 @@
   font-size: .6rem; font-weight: 700; letter-spacing: .5px; width: fit-content;
   transition: transform .2s;
 }
-.ach-card:hover .ach-type-badge { transform: translateX(2px); }
 .ach-type-completion {
   background: rgba(34,197,94,.12); color: var(--success);
   border: 1px solid rgba(34,197,94,.25);
@@ -720,7 +717,7 @@
   font-size: 1.3rem; letter-spacing: 1px; color: var(--text); line-height: 1.15;
   transition: color .2s, letter-spacing .2s;
 }
-.ach-card:hover .ach-level-name { color: #fff; letter-spacing: 1.3px; }
+.ach-card:hover .ach-level-name { color: #fff; }
 
 .ach-player-row {
   display: flex; align-items: center; gap: .45rem;
@@ -966,8 +963,6 @@
 .ach-modal-react:hover { border-color: var(--border-h); color: var(--text); }
 .ach-modal-react.like-on    { background: rgba(34,197,94,.14); border-color: rgba(34,197,94,.4); color: #4ade80; }
 .ach-modal-react.dislike-on { background: rgba(244,63,94,.14); border-color: rgba(244,63,94,.4); color: #f87171; }
-.ach-modal-react i { transition: transform .2s cubic-bezier(.34,1.56,.64,1); }
-.ach-modal-react:hover i { transform: scale(1.25); }
 .ach-modal-video-btn {
   display: flex; align-items: center; gap: .4rem;
   padding: .42rem 1rem; border-radius: 50px;
