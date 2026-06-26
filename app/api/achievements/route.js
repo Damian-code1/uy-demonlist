@@ -5,9 +5,11 @@ import { hasRole, SANCTIONS_ROLES } from '../../../lib/roles.js';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+export async function GET(request) {
   try {
     await ensureSchema();
+    const discordId = request.headers.get('x-discord-id') || null;
+
     const [rows] = await query(`
       SELECT
         a.id, a.position, a.player_name, a.level_name, a.progress,
@@ -16,9 +18,13 @@ export async function GET() {
         (SELECT COUNT(*) FROM achievement_reactions r WHERE r.achievement_id = a.id AND r.reaction = 'like') AS likes,
         (SELECT COUNT(*) FROM achievement_reactions r WHERE r.achievement_id = a.id AND r.reaction = 'dislike') AS dislikes,
         (SELECT COUNT(*) FROM achievement_comments c WHERE c.achievement_id = a.id AND c.parent_id IS NULL) AS comment_count
+        ${discordId ? `, (SELECT r2.reaction FROM achievement_reactions r2
+           JOIN users u2 ON r2.user_id = u2.id
+           WHERE r2.achievement_id = a.id AND u2.discord_id = ? LIMIT 1) AS my_reaction` : ', NULL AS my_reaction'}
       FROM hardest_achievements a
       ORDER BY a.position ASC
-    `);
+    `, discordId ? [discordId] : []);
+
     return Response.json({ achievements: rows });
   } catch (e) {
     return Response.json({ error: e.message }, { status: 500 });

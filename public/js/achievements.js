@@ -219,7 +219,10 @@ async function renderPlayerSugg(q) {
 
 async function loadAchievements() {
   try {
-    const res  = await fetch(ACH_API);
+    const discordId = localStorage.getItem('uy_discord_id') || '';
+    const res = await fetch(ACH_API, {
+      headers: discordId ? { 'x-discord-id': discordId } : {},
+    });
     const data = await res.json();
     _achievements = data.achievements || [];
     applyStaffUI();
@@ -424,8 +427,8 @@ window.openAchDetail  = openAchDetail;
 window.closeAchDetail = closeAchDetail;
 
 function getMyReaction(ach) {
-  if (!_currentUser || !ach._myReaction) return null;
-  return ach._myReaction;
+  if (!_currentUser) return null;
+  return ach._myReaction ?? ach.my_reaction ?? null;
 }
 
 function isBanned() {
@@ -443,10 +446,14 @@ function checkBan(action = 'hacer eso') {
   return true;
 }
 
+const _reactAchInFlight = new Set();
+
 async function reactAch(e, id, reaction) {
   e.stopPropagation();
   if (!_currentUser) { showToast('Iniciá sesión para reaccionar', 'warning'); return; }
   if (checkBan('reaccionar')) return;
+  if (_reactAchInFlight.has(id)) return; // anti-spam
+  _reactAchInFlight.add(id);
 
   try {
     const res  = await fetch(`${ACH_API}/${id}/reactions`, {
@@ -459,11 +466,10 @@ async function reactAch(e, id, reaction) {
 
     const ach = _achievements.find(a => a.id === id);
     if (ach) {
-      ach.likes    = data.likes;
-      ach.dislikes = data.dislikes;
-      if (data.action === 'removed')     ach._myReaction = null;
-      else if (data.action === 'added')  ach._myReaction = reaction;
-      else if (data.action === 'changed') ach._myReaction = reaction;
+      ach.likes       = data.likes;
+      ach.dislikes    = data.dislikes;
+      ach._myReaction = data.action === 'removed' ? null : reaction;
+      ach.my_reaction = ach._myReaction;
     }
     renderAchievements();
 
@@ -475,6 +481,8 @@ async function reactAch(e, id, reaction) {
     showToast(msg, 'info');
   } catch (err) {
     showToast('Error: ' + err.message, 'error');
+  } finally {
+    _reactAchInFlight.delete(id);
   }
 }
 window.reactAch = reactAch;
@@ -482,6 +490,8 @@ window.reactAch = reactAch;
 async function reactAchModal(id, reaction) {
   if (!_currentUser) { showToast('Iniciá sesión para reaccionar', 'warning'); return; }
   if (checkBan('reaccionar')) return;
+  if (_reactAchInFlight.has(id)) return; // anti-spam
+  _reactAchInFlight.add(id);
 
   try {
     const res  = await fetch(`${ACH_API}/${id}/reactions`, {
@@ -494,10 +504,10 @@ async function reactAchModal(id, reaction) {
 
     const ach = _achievements.find(a => a.id === id);
     if (ach) {
-      ach.likes    = data.likes;
-      ach.dislikes = data.dislikes;
-      if (data.action === 'removed')  ach._myReaction = null;
-      else                            ach._myReaction = reaction;
+      ach.likes       = data.likes;
+      ach.dislikes    = data.dislikes;
+      ach._myReaction = data.action === 'removed' ? null : reaction;
+      ach.my_reaction = ach._myReaction;
     }
 
     document.getElementById('achModalLikes').textContent    = data.likes;
@@ -523,6 +533,8 @@ async function reactAchModal(id, reaction) {
     showToast(msg, 'info');
   } catch (err) {
     showToast('Error: ' + err.message, 'error');
+  } finally {
+    _reactAchInFlight.delete(id);
   }
 }
 window.reactAchModal = reactAchModal;
