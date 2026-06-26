@@ -304,7 +304,7 @@ function renderAchievements() {
             <span class="ach-player-name">${esc(a.player_name)}</span>
             <span class="ach-progress-tag">${esc(a.progress)}</span>
           </div>
-          <div class="ach-card-reactions" onclick="event.stopPropagation()">
+          <div class="ach-card-reactions" onclick="event.stopPropagation()" oncontextmenu="event.stopPropagation()">
             <button class="ach-react-btn ${myReaction === 'like' ? 'like-on' : ''}"
               data-ach-voter data-is-like="1"
               data-voters='${JSON.stringify((a.liked_by||[]).map(u=>({discord_id:u.id,name:u.name,discord_avatar:u.avatar,username:u.name})))}'
