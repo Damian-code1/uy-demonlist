@@ -5220,12 +5220,13 @@ body {
 .lm-reply-form { margin-top: .4rem; }
 .lm-reply-form.hidden { display: none; }
 .lc-reaction-popup {
-  position: absolute; z-index: 9999;
+  position: fixed; z-index: 99999;
   background: var(--bg2); border: 1px solid var(--border);
   border-radius: var(--r-sm); padding: .65rem .9rem;
   box-shadow: 0 8px 32px rgba(0,0,0,.5);
   min-width: 160px; max-width: 220px;
   animation: fadeIn .15s ease;
+  pointer-events: auto;
 }
 .lc-reaction-popup-title {
   font-size: .72rem; font-weight: 700; color: var(--text-sub);
@@ -5415,12 +5416,13 @@ body {
 .lm-level-id-btn:hover .lm-level-id-copy-hint { color: var(--violet); }
 .lm-level-id-btn.copied .lm-level-id-copy-hint { color: #4ade80; }
 .lc-reaction-popup {
-  position: absolute; z-index: 9999;
+  position: fixed; z-index: 99999;
   background: var(--bg2); border: 1px solid var(--border);
   border-radius: var(--r-sm); padding: .7rem .85rem .75rem;
   box-shadow: 0 12px 40px rgba(0,0,0,.65), 0 0 0 1px rgba(255,255,255,.04);
   min-width: 180px; max-width: 230px;
   animation: fadeIn .14s ease;
+  pointer-events: auto;
 }
 .lc-reaction-popup-title {
   font-size: .7rem; font-weight: 700;

@@ -1141,13 +1141,13 @@ function showAchVoterPopup(voters, isLike, anchorEl) {
   document.body.appendChild(popup);
 
   const rect = anchorEl.getBoundingClientRect();
-  let top  = rect.bottom + window.scrollY + 8;
-  let left = rect.left   + window.scrollX;
-  const popW = 210;
+  let top  = rect.bottom + 8;
+  let left = rect.left;
+  const popW = 220;
   if (left + popW > window.innerWidth - 8) left = window.innerWidth - popW - 8;
   if (left < 8) left = 8;
-  const estH = Math.min(voters.length * 40 + 50, 260);
-  if (rect.bottom + estH > window.innerHeight) top = rect.top + window.scrollY - estH - 8;
+  const estH = Math.min(voters.length * 44 + 60, 260);
+  if (rect.bottom + estH > window.innerHeight) top = rect.top - estH - 8;
   popup.style.top  = `${top}px`;
   popup.style.left = `${left}px`;
 
