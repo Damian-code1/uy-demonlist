@@ -646,15 +646,15 @@
       <label class="ou-field-label">Duración</label>
       <div class="ban-duration-fields">
         <div class="ban-duration-field">
-          <input type="number" id="banModalDays" class="ou-select" value="" min="0" placeholder="0">
+          <input type="number" id="banModalDays" min="0" max="365" class="ou-select" value="" min="0" placeholder="0">
           <span class="ban-duration-label">días</span>
         </div>
         <div class="ban-duration-field">
-          <input type="number" id="banModalHours" class="ou-select" value="" min="0" max="23" placeholder="0">
+          <input type="number" id="banModalHours" min="0" max="24" class="ou-select" value="" min="0" max="23" placeholder="0">
           <span class="ban-duration-label">horas</span>
         </div>
         <div class="ban-duration-field">
-          <input type="number" id="banModalMinutes" class="ou-select" value="" min="0" max="59" placeholder="0">
+          <input type="number" id="banModalMinutes" min="0" max="60" class="ou-select" value="" min="0" max="59" placeholder="0">
           <span class="ban-duration-label">minutos</span>
         </div>
       </div>

@@ -116,10 +116,21 @@ function renderSanctionsUsers(filterQ) {
         const targetLevel = SANCTIONS_ROLE_LEVELS[u.role] ?? 0;
         const isHigherOrEqualRank = targetLevel >= myLevel;
 
+        const amOwner = window.currentUser?.role === 'owner';
         let actionsHtml;
-        if (isOwner) {
+        if (isSelf && amOwner) {
+          if (u.is_banned) {
+            actionsHtml = `<button class="sa-btn sa-btn-lift" onclick="liftSanction('${esc(u.discord_id)}')">
+                             <i class="fas fa-unlock"></i><span>Levantar sanción</span>
+                           </button>`;
+          } else {
+            actionsHtml = `<button class="sa-btn sa-btn-ban" onclick="openBanModal('${esc(u.discord_id)}','${esc(u.display_label)}')">
+                             <i class="fas fa-flask"></i><span>Sancionar (test)</span>
+                           </button>`;
+          }
+        } else if (isOwner) {
           actionsHtml = `<div class="sa-owner-protected"><i class="fas fa-crown"></i> Owner protegido</div>`;
-        } else if (isSelf && myRole !== 'owner') {
+        } else if (isSelf) {
           actionsHtml = `<div class="sa-owner-protected" title="No podés sancionarte a vos mismo"><i class="fas fa-ban"></i> No podés sancionarte a vos mismo</div>`;
         } else if (u.is_banned) {
           actionsHtml = `<button class="sa-btn sa-btn-lift" onclick="liftSanction('${esc(u.discord_id)}')">
@@ -508,7 +519,7 @@ function closeBanModal() {
 async function confirmBanUser() {
   if (!banTargetId) return;
 
-  if (banTargetId === window.currentUser?.discordId) {
+  if (banTargetId === window.currentUser?.discordId && window.currentUser?.role !== 'owner') {
     showToast('No podés sancionarte a vos mismo', 'error');
     closeBanModal();
     return;
@@ -520,8 +531,13 @@ async function confirmBanUser() {
   const duration = days * 1440 + hours * 60 + minutes;
   const reason   = document.getElementById('banModalReason').value.trim();
 
-  if (duration <= 0) { showToast('La duración no puede ser cero — completá al menos un campo', 'error'); document.getElementById('banModalDays').focus(); return; }
-  if (!reason) { showToast('El motivo es obligatorio', 'error'); document.getElementById('banModalReason').focus(); return; }
+  if (duration <= 0)         { showToast('La duración no puede ser cero', 'error'); document.getElementById('banModalDays').focus(); return; }
+  if (days > 365)            { showToast('Máximo 365 días', 'error'); document.getElementById('banModalDays').focus(); return; }
+  if (hours > 23)            { showToast('Las horas deben ser 0-23', 'error'); document.getElementById('banModalHours').focus(); return; }
+  if (minutes > 59)          { showToast('Los minutos deben ser 0-59', 'error'); document.getElementById('banModalMinutes').focus(); return; }
+  if (duration > 365 * 1440) { showToast('La sanción no puede superar 365 días en total', 'error'); return; }
+  if (!reason)               { showToast('El motivo es obligatorio', 'error'); document.getElementById('banModalReason').focus(); return; }
+  if (reason.length > 200)   { showToast('El motivo no puede superar 200 caracteres', 'error'); document.getElementById('banModalReason').focus(); return; }
 
   try {
     await sanctionsFetch('', {
