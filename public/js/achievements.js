@@ -306,11 +306,17 @@ function renderAchievements() {
           </div>
           <div class="ach-card-reactions" onclick="event.stopPropagation()">
             <button class="ach-react-btn ${myReaction === 'like' ? 'like-on' : ''}"
-              onclick="reactAch(event, ${a.id}, 'like')">
+              data-ach-id="${a.id}" data-is-like="1"
+              data-voters='${JSON.stringify(a.liked_by||[])}'
+              onclick="reactAch(event, ${a.id}, 'like')"
+              style="user-select:none;-webkit-user-select:none">
               <i class="fas fa-thumbs-up"></i> ${a.likes || 0}
             </button>
             <button class="ach-react-btn ${myReaction === 'dislike' ? 'dislike-on' : ''}"
-              onclick="reactAch(event, ${a.id}, 'dislike')">
+              data-ach-id="${a.id}" data-is-like="0"
+              data-voters='${JSON.stringify(a.disliked_by||[])}'
+              onclick="reactAch(event, ${a.id}, 'dislike')"
+              style="user-select:none;-webkit-user-select:none">
               <i class="fas fa-thumbs-down"></i> ${a.dislikes || 0}
             </button>
             <span class="ach-comment-count">
@@ -330,6 +336,12 @@ function renderAchievements() {
   }).join('');
 
   AOS.refresh();
+
+  document.querySelectorAll('.ach-react-btn[data-ach-id]').forEach(btn => {
+    attachVoterEvents(btn, () => {
+      try { return JSON.parse(btn.dataset.voters || '[]'); } catch { return []; }
+    });
+  });
 }
 
 function animateCount(el, target, duration = 1100, delay = 0) {
@@ -460,13 +472,14 @@ async function openAchDetail(id) {
       ${ach.type === 'completion' ? '✅ Completion' : '🎯 Progress'}
     </span>`;
 
-  // Acciones
   document.getElementById('achModalActions').innerHTML = `
     <button class="ach-modal-react ${myReaction === 'like' ? 'like-on' : ''}" id="achModalLikeBtn"
+      data-is-like="1" style="user-select:none;-webkit-user-select:none"
       onclick="reactAchModal(${id}, 'like')">
       <i class="fas fa-thumbs-up"></i> <span id="achModalLikes">${ach.likes || 0}</span>
     </button>
     <button class="ach-modal-react ${myReaction === 'dislike' ? 'dislike-on' : ''}" id="achModalDislikeBtn"
+      data-is-like="0" style="user-select:none;-webkit-user-select:none"
       onclick="reactAchModal(${id}, 'dislike')">
       <i class="fas fa-thumbs-down"></i> <span id="achModalDislikes">${ach.dislikes || 0}</span>
     </button>
@@ -479,6 +492,13 @@ async function openAchDetail(id) {
   document.getElementById('achModalNotes').innerHTML = ach.notes?.trim()
     ? `<div class="ach-modal-notes">${esc(ach.notes.trim())}</div>`
     : '';
+
+  setTimeout(() => {
+    const likeBtn    = document.getElementById('achModalLikeBtn');
+    const dislikeBtn = document.getElementById('achModalDislikeBtn');
+    if (likeBtn)    attachVoterEvents(likeBtn,    () => ach.liked_by    || []);
+    if (dislikeBtn) attachVoterEvents(dislikeBtn, () => ach.disliked_by || []);
+  }, 0);
 
   // Form de comentarios
   const commentForm = document.getElementById('achCommentForm');
@@ -642,6 +662,11 @@ async function loadAchComments(id) {
       return;
     }
     list.innerHTML = comments.map(c => renderComment(c, id)).join('');
+    list.querySelectorAll('.ach-comment-react').forEach(btn => {
+      attachVoterEvents(btn, () => {
+        try { return JSON.parse(btn.dataset.voters || '[]'); } catch { return []; }
+      });
+    });
   } catch (e) {
     list.innerHTML = `<div class="ach-comments-empty"><i class="fas fa-exclamation-circle"></i>Error al cargar comentarios</div>`;
   }
@@ -683,10 +708,12 @@ function renderComment(c, achId, isReply = false) {
       </div>
       <div class="ach-comment-text">${esc(c.content)}</div>
       <div class="ach-comment-actions">
-        <button class="ach-comment-react like-${c.id}" onclick="reactComment(${c.id}, ${achId}, 'like')">
+        <button class="ach-comment-react like-${c.id}" data-is-like="1"
+          data-voters='${JSON.stringify(c.liked_by||[])}' onclick="reactComment(${c.id}, ${achId}, 'like')">
           <i class="fas fa-thumbs-up"></i> <span class="likes-${c.id}">${c.likes||0}</span>
         </button>
-        <button class="ach-comment-react dislike-${c.id}" onclick="reactComment(${c.id}, ${achId}, 'dislike')">
+        <button class="ach-comment-react dislike-${c.id}" data-is-like="0"
+          data-voters='${JSON.stringify(c.disliked_by||[])}' onclick="reactComment(${c.id}, ${achId}, 'dislike')">
           <i class="fas fa-thumbs-down"></i> <span class="dislikes-${c.id}">${c.dislikes||0}</span>
         </button>
         ${replyBtn}
@@ -1075,7 +1102,6 @@ function fmtRelTime(date) {
   return date.toLocaleDateString('es-UY', { day:'numeric', month:'short', year:'numeric' });
 }
 
-// ─── showToast (por si ui.js no lo carga aún) ───
 function showToast(message, type = 'info') {
   if (typeof Toastify === 'undefined') return;
   const colors = { success:'linear-gradient(135deg,#16a34a,#22c55e)', error:'linear-gradient(135deg,#dc2626,#f43f5e)', warning:'linear-gradient(135deg,#d97706,#f59e0b)', info:'linear-gradient(135deg,#7c3aed,#8b5cf6)' };
@@ -1084,12 +1110,70 @@ function showToast(message, type = 'info') {
   }).showToast();
 }
 
-// Cerrar form overlay al hacer click fuera
+function showAchVoterPopup(voters, isLike, anchorEl) {
+  document.getElementById('achVoterPopup')?.remove();
+  if (!voters?.length) return;
+
+  const color = isLike ? '#4ade80' : '#f87171';
+  const icon  = isLike ? 'thumbs-up' : 'thumbs-down';
+  const label = isLike ? 'Les gustó' : 'No les gustó';
+
+  const popup = document.createElement('div');
+  popup.id = 'achVoterPopup';
+  popup.className = 'lc-reaction-popup';
+  popup.innerHTML = `
+    <div class="lc-reaction-popup-title" style="color:${color}">
+      <i class="fas fa-${icon}"></i> ${label} (${voters.length})
+    </div>
+    <div class="lc-reaction-popup-list">
+      ${voters.map(u => {
+        const av = u.discord_id && u.avatar
+          ? `<img src="https://cdn.discordapp.com/avatars/${u.discord_id}/${u.avatar}.png?size=32" class="lc-reaction-avatar" onerror="this.style.display='none'">`
+          : `<div class="lc-reaction-avatar lc-reaction-avatar-ph">${(u.name||'?')[0].toUpperCase()}</div>`;
+        const sub = u.username && u.username !== u.name
+          ? `<span style="font-size:.65rem;color:var(--text-dim);display:block">@${esc(u.username)}</span>`
+          : '';
+        return `<div class="lc-reaction-user" style="flex-direction:column;align-items:flex-start;gap:.1rem">
+          <div style="display:flex;align-items:center;gap:.4rem">${av}<div><span>${esc(u.name||'Usuario')}</span>${sub}</div></div>
+        </div>`;
+      }).join('')}
+    </div>`;
+  document.body.appendChild(popup);
+
+  const rect = anchorEl.getBoundingClientRect();
+  let top  = rect.bottom + window.scrollY + 8;
+  let left = rect.left   + window.scrollX;
+  const popW = 210;
+  if (left + popW > window.innerWidth - 8) left = window.innerWidth - popW - 8;
+  if (left < 8) left = 8;
+  const estH = Math.min(voters.length * 40 + 50, 260);
+  if (rect.bottom + estH > window.innerHeight) top = rect.top + window.scrollY - estH - 8;
+  popup.style.top  = `${top}px`;
+  popup.style.left = `${left}px`;
+
+  const close = e => {
+    if (!popup.contains(e.target) && e.target !== anchorEl) {
+      popup.remove();
+      document.removeEventListener('pointerdown', close);
+    }
+  };
+  setTimeout(() => document.addEventListener('pointerdown', close), 50);
+}
+
+function attachVoterEvents(btn, getVoters) {
+  let pressTimer;
+  btn.style.userSelect = 'none';
+  btn.style.webkitUserSelect = 'none';
+  btn.addEventListener('contextmenu', e => { e.preventDefault(); showAchVoterPopup(getVoters(), btn.dataset.isLike === '1', btn); });
+  btn.addEventListener('pointerdown', () => { pressTimer = setTimeout(() => showAchVoterPopup(getVoters(), btn.dataset.isLike === '1', btn), 500); });
+  btn.addEventListener('pointerup',    () => clearTimeout(pressTimer));
+  btn.addEventListener('pointerleave', () => clearTimeout(pressTimer));
+}
+
 document.getElementById('achFormOverlay')?.addEventListener('click', e => {
   if (e.target === document.getElementById('achFormOverlay')) closeAchForm();
 });
 
-// ESC cierra modales
 document.addEventListener('keydown', e => {
   if (e.key !== 'Escape') return;
   if (document.getElementById('achFormOverlay')?.classList.contains('open')) { closeAchForm(); return; }
