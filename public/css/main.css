@@ -5470,20 +5470,20 @@ input, textarea, [contenteditable] {
 }
 .pm-stats-grid-v2 {
   display: grid; grid-template-columns: repeat(4, 1fr);
-  gap: .6rem; margin-bottom: 1.1rem; padding: 0 1.5rem;
+  gap: .5rem; margin-bottom: 1.1rem; padding: 0 1.5rem;
 }
 .pm-stat-card-v2 {
   background: linear-gradient(160deg, var(--bg3), var(--bg4));
   border: 1px solid var(--border-s); border-radius: var(--r);
-  padding: .85rem .5rem;
-  display: flex; flex-direction: column; align-items: center; gap: .25rem;
+  padding: .6rem .4rem;
+  display: flex; flex-direction: column; align-items: center; gap: .15rem;
   text-align: center; position: relative; overflow: hidden;
   transition: border-color .2s, transform .2s;
 }
 .pm-stat-card-v2:hover { border-color: var(--border-h); transform: translateY(-2px); }
-.pm-stat-icon { font-size: .9rem; margin-bottom: .1rem; opacity: .85; }
-.pm-stat-card-v2 .pm-stat-val { font-family: var(--font-title); font-size: 1.6rem; line-height: 1; }
-.pm-stat-card-v2 .pm-stat-lbl { font-size: .6rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text-dim); }
+.pm-stat-icon { font-size: .8rem; margin-bottom: .05rem; opacity: .85; }
+.pm-stat-card-v2 .pm-stat-val { font-family: var(--font-title); font-size: 1.25rem; line-height: 1; }
+.pm-stat-card-v2 .pm-stat-lbl { font-size: .55rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text-dim); }
 
 /* GD icons V2 */
 .pm-gd-block-v2 {
@@ -5548,6 +5548,7 @@ input, textarea, [contenteditable] {
 .pm-content .pm-progress-section { padding: 0 1.5rem; margin-bottom: 1.25rem; }
 .pm-content .pm-gd-stats { margin: 0 1.5rem 1.1rem; }
 .pm-content .pm-completions-section { padding: 0 1.5rem 1.5rem; }
+.pm-content .pm-gd-section { margin: 0 1.5rem 1rem; }
 
 @media (max-width: 500px) {
   .pm-stats-grid-v2 { grid-template-columns: repeat(2, 1fr); padding: 0 1rem; }
@@ -5600,10 +5601,23 @@ input, textarea, [contenteditable] {
   align-items: flex-end;
   gap: .4rem;
   overflow-x: auto;
-  padding-bottom: .25rem;
-  scrollbar-width: none;
+  padding-bottom: .35rem;
+  padding-top: .1rem;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(139,92,246,.35) transparent;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
 }
-.pm-gd-iconset-row::-webkit-scrollbar { display: none; }
+.pm-gd-iconset-row::-webkit-scrollbar {
+  height: 3px;
+}
+.pm-gd-iconset-row::-webkit-scrollbar-track {
+  background: transparent;
+}
+.pm-gd-iconset-row::-webkit-scrollbar-thumb {
+  background: rgba(139,92,246,.4);
+  border-radius: 3px;
+}
 
 .pm-gd-icon-cell {
   display: flex;
