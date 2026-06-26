@@ -1,6 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: false,
+  experimental: {
+    serverComponentsExternalPackages: ['@napi-rs/canvas'],
+  },
   // Allow CORS for the static frontend calling the API
   async headers() {
     return [
