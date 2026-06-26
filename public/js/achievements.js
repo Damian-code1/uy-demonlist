@@ -220,8 +220,17 @@ async function renderPlayerSugg(q) {
 async function loadAchievements() {
   document.querySelectorAll('.ach-stat-pill').forEach(p => p.classList.add('loading'));
 
+  await new Promise(resolve => {
+    if (typeof window.currentUser !== 'undefined') { resolve(); return; }
+    const t = setInterval(() => {
+      if (typeof window.currentUser !== 'undefined') { clearInterval(t); resolve(); }
+    }, 50);
+    setTimeout(() => { clearInterval(t); resolve(); }, 2500);
+  });
+  _currentUser = window.currentUser || null;
+
   try {
-    const discordId = localStorage.getItem('uy_discord_id') || '';
+    const discordId = _currentUser?.discord_id || localStorage.getItem('uy_discord_id') || '';
     const res = await fetch(ACH_API + '?_t=' + Date.now(), {
       headers: discordId ? { 'x-discord-id': discordId } : {},
     });
@@ -306,15 +315,13 @@ function renderAchievements() {
           </div>
           <div class="ach-card-reactions" onclick="event.stopPropagation()" oncontextmenu="event.stopPropagation()">
             <button class="ach-react-btn ${myReaction === 'like' ? 'like-on' : ''}"
-              data-ach-voter data-is-like="1"
-              data-voters='${JSON.stringify((a.liked_by||[]).map(u=>({discord_id:u.id,name:u.name,discord_avatar:u.avatar,username:u.name})))}'
-              onclick="reactAch(event, ${a.id}, 'like')">
+              data-ach-voter data-is-like="1" data-ach-id="${a.id}" data-reaction="like"
+              data-voters='${JSON.stringify((a.liked_by||[]).map(u=>({discord_id:u.id,name:u.name,discord_avatar:u.avatar,username:u.name})))}'>
               <i class="fas fa-thumbs-up"></i> ${a.likes || 0}
             </button>
             <button class="ach-react-btn ${myReaction === 'dislike' ? 'dislike-on' : ''}"
-              data-ach-voter data-is-like="0"
-              data-voters='${JSON.stringify((a.disliked_by||[]).map(u=>({discord_id:u.id,name:u.name,discord_avatar:u.avatar,username:u.name})))}'
-              onclick="reactAch(event, ${a.id}, 'dislike')">
+              data-ach-voter data-is-like="0" data-ach-id="${a.id}" data-reaction="dislike"
+              data-voters='${JSON.stringify((a.disliked_by||[]).map(u=>({discord_id:u.id,name:u.name,discord_avatar:u.avatar,username:u.name})))}'>
               <i class="fas fa-thumbs-down"></i> ${a.dislikes || 0}
             </button>
             <span class="ach-comment-count">
@@ -473,13 +480,11 @@ async function openAchDetail(id) {
 
   document.getElementById('achModalActions').innerHTML = `
     <button class="ach-modal-react ${myReaction === 'like' ? 'like-on' : ''}" id="achModalLikeBtn"
-      data-is-like="1" style="user-select:none;-webkit-user-select:none"
-      onclick="reactAchModal(${id}, 'like')">
+      data-is-like="1" style="user-select:none;-webkit-user-select:none">
       <i class="fas fa-thumbs-up"></i> <span id="achModalLikes">${ach.likes || 0}</span>
     </button>
     <button class="ach-modal-react ${myReaction === 'dislike' ? 'dislike-on' : ''}" id="achModalDislikeBtn"
-      data-is-like="0" style="user-select:none;-webkit-user-select:none"
-      onclick="reactAchModal(${id}, 'dislike')">
+      data-is-like="0" style="user-select:none;-webkit-user-select:none">
       <i class="fas fa-thumbs-down"></i> <span id="achModalDislikes">${ach.dislikes || 0}</span>
     </button>
     ${ach.video_url ? `
@@ -495,8 +500,16 @@ async function openAchDetail(id) {
   setTimeout(() => {
     const likeBtn    = document.getElementById('achModalLikeBtn');
     const dislikeBtn = document.getElementById('achModalDislikeBtn');
-    if (likeBtn)    attachVoterEvents(likeBtn,    () => (ach.liked_by    || []).map(u => ({ discord_id: u.id||u.discord_id, name: u.name||u.display_name, discord_avatar: u.avatar||u.discord_avatar, username: u.username||u.name })));
-    if (dislikeBtn) attachVoterEvents(dislikeBtn, () => (ach.disliked_by || []).map(u => ({ discord_id: u.id||u.discord_id, name: u.name||u.display_name, discord_avatar: u.avatar||u.discord_avatar, username: u.username||u.name })));
+    if (likeBtn) {
+      likeBtn._voterAttached = false;
+      likeBtn.addEventListener('click', e => { if (e.button === 0) reactAchModal(id, 'like'); }, { once: false });
+      attachVoterEvents(likeBtn, () => (ach.liked_by || []).map(u => ({ discord_id: u.id||u.discord_id, name: u.name||u.display_name, discord_avatar: u.avatar||u.discord_avatar })));
+    }
+    if (dislikeBtn) {
+      dislikeBtn._voterAttached = false;
+      dislikeBtn.addEventListener('click', e => { if (e.button === 0) reactAchModal(id, 'dislike'); }, { once: false });
+      attachVoterEvents(dislikeBtn, () => (ach.disliked_by || []).map(u => ({ discord_id: u.id||u.discord_id, name: u.name||u.display_name, discord_avatar: u.avatar||u.discord_avatar })));
+    }
   }, 50);
 
   // Form de comentarios
@@ -1171,6 +1184,14 @@ function attachVoterEvents(btn, getVoters) {
     const voters = getVoters();
     showAchVoterPopup(voters, btn.dataset.isLike === '1', btn);
   };
+
+  if (btn.dataset.achId) {
+    btn.addEventListener('click', e => {
+      if (e.button !== 0) return;
+      clearTimeout(pressTimer);
+      reactAch(e, Number(btn.dataset.achId), btn.dataset.reaction);
+    });
+  }
 
   btn.addEventListener('contextmenu', e => {
     e.preventDefault();
