@@ -74,9 +74,9 @@
   <h1 class="ach-hero-title">Hardest Achievements</h1>
   <p class="ach-hero-sub">Los logros más difíciles obtenidos por jugadores uruguayos en Geometry Dash</p>
   <div class="ach-hero-stats" id="achHeroStats">
-    <div class="ach-stat-pill"><i class="fas fa-trophy"></i><span><strong id="achTotalCount">—</strong> achievements</span></div>
-    <div class="ach-stat-pill"><i class="fas fa-check-circle"></i><span><strong id="achCompletionCount">—</strong> completions</span></div>
-    <div class="ach-stat-pill"><i class="fas fa-bullseye"></i><span><strong id="achProgressCount">—</strong> progresses</span></div>
+    <div class="ach-stat-pill"><i class="fas fa-trophy"></i><strong id="achTotalCount">—</strong><span>achievements</span></div>
+    <div class="ach-stat-pill"><i class="fas fa-check-circle" style="color:var(--success)"></i><strong id="achCompletionCount">—</strong><span>completions</span></div>
+    <div class="ach-stat-pill"><i class="fas fa-bullseye" style="color:var(--red)"></i><strong id="achProgressCount">—</strong><span>progresses</span></div>
   </div>
 </section>
 
@@ -84,11 +84,11 @@
 <div class="ach-toolbar" id="achToolbar">
   <div class="ach-search-wrap">
     <i class="fas fa-search si"></i>
-    <input type="text" class="ach-search" id="achSearch" placeholder="Buscar nivel o jugador…">
+    <input type="text" class="ach-search" id="achSearch" placeholder="Buscar nivel o jugador…" autocomplete="off">
   </div>
-  <button class="ach-filter-btn active" data-filter="all"    onclick="setFilter('all')">Todos</button>
-  <button class="ach-filter-btn"        data-filter="completion" onclick="setFilter('completion')"><i class="fas fa-trophy" style="color:var(--success)"></i> 100%</button>
-  <button class="ach-filter-btn"        data-filter="progress"   onclick="setFilter('progress')"><i class="fas fa-bullseye" style="color:var(--red)"></i> Progreso</button>
+  <button class="ach-filter-btn active" data-filter="all" onclick="setFilter('all')"><i class="fas fa-list"></i> Todos</button>
+  <button class="ach-filter-btn" data-filter="completion" onclick="setFilter('completion')"><i class="fas fa-trophy" style="color:var(--success)"></i> 100%</button>
+  <button class="ach-filter-btn" data-filter="progress"   onclick="setFilter('progress')"><i class="fas fa-bullseye" style="color:var(--red)"></i> Progreso</button>
   <button class="ach-add-btn" id="achAddBtn" style="display:none" onclick="openAchForm()">
     <i class="fas fa-plus"></i> Agregar
   </button>

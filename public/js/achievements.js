@@ -222,13 +222,13 @@ async function loadAchievements() {
 
   try {
     const discordId = localStorage.getItem('uy_discord_id') || '';
-    const res = await fetch(ACH_API, {
+    const res = await fetch(ACH_API + '?_t=' + Date.now(), {
       headers: discordId ? { 'x-discord-id': discordId } : {},
     });
     const data = await res.json();
-    _achievements = data.achievements || [];
+    _achievements = (data.achievements || []).sort((a, b) => a.position - b.position);
     applyStaffUI();
-    renderAchievements(); // updateHeroStats() ya se llama dentro de renderAchievements
+    renderAchievements();
   } catch (e) {
     document.getElementById('achList').innerHTML =
       `<div class="ach-empty"><i class="fas fa-exclamation-circle"></i><p>Error al cargar: ${e.message}</p></div>`;
@@ -399,10 +399,30 @@ function setupSearch() {
   const input = document.getElementById('achSearch');
   if (!input) return;
   let deb;
+
   input.addEventListener('input', () => {
     _searchTerm = input.value.trim();
     clearTimeout(deb);
     deb = setTimeout(renderAchievements, 150);
+  });
+
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && _searchTerm) {
+      input.value = '';
+      _searchTerm = '';
+      renderAchievements();
+      input.blur();
+    }
+  });
+
+  document.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+      const overlayOpen = document.querySelector('.ach-modal-overlay.open, .ach-form-overlay.open');
+      if (overlayOpen) return;
+      e.preventDefault();
+      input.focus();
+      input.select();
+    }
   });
 }
 
@@ -952,6 +972,9 @@ function previewAchThumb(url) {
 window.previewAchThumb = previewAchThumb;
 
 async function saveAchForm() {
+  const saveBtn = document.querySelector('.ach-form-save');
+  if (saveBtn) { saveBtn.disabled = true; saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando…'; }
+
   const id       = document.getElementById('achFormId').value;
   const position = parseInt(document.getElementById('achFormPos').value);
   const type     = document.getElementById('achFormType').value;
@@ -997,9 +1020,12 @@ async function saveAchForm() {
     showToast(id ? 'Achievement actualizado ✓' : 'Achievement agregado ✓', 'success');
     clearFormDraft();
     closeAchForm();
-    loadAchievements();
+    _achievements = [];
+    await loadAchievements();
   } catch (e) {
     showToast('Error: ' + e.message, 'error');
+  } finally {
+    if (saveBtn) { saveBtn.disabled = false; saveBtn.innerHTML = '<i class="fas fa-save"></i> Guardar'; }
   }
 }
 window.saveAchForm = saveAchForm;
@@ -1018,8 +1044,9 @@ async function deleteAch(id) {
       headers: { 'x-discord-id': localStorage.getItem('uy_discord_id') },
     });
     if (!res.ok) throw new Error((await res.json()).error);
+    _achievements = [];
     showToast('Achievement eliminado', 'success');
-    loadAchievements();
+    await loadAchievements();
   } catch (e) {
     showToast('Error: ' + e.message, 'error');
   }

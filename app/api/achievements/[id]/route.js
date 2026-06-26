@@ -39,6 +39,12 @@ export async function PUT(request, { params }) {
       [position || null, player_name?.trim() || null, level_name?.trim() || null,
        progress?.trim() || null, type || null, video_url || null, thumbnail_url || null, notes || null, params.id]
     );
+
+    const [allRows] = await query('SELECT id FROM hardest_achievements ORDER BY position ASC, id ASC');
+    for (let i = 0; i < allRows.length; i++) {
+      await query('UPDATE hardest_achievements SET position = ? WHERE id = ?', [i + 1, allRows[i].id]);
+    }
+
     return Response.json({ success: true });
   } catch (e) {
     return Response.json({ error: e.message }, { status: 500 });
@@ -55,8 +61,11 @@ export async function DELETE(request, { params }) {
     if (!ach) return Response.json({ error: 'No encontrado' }, { status: 404 });
 
     await query('DELETE FROM hardest_achievements WHERE id = ?', [params.id]);
-    // Reordenar posiciones
-    await query('UPDATE hardest_achievements SET position = position - 1 WHERE position > ?', [ach.position]);
+
+    const [remaining] = await query('SELECT id FROM hardest_achievements ORDER BY position ASC');
+    for (let i = 0; i < remaining.length; i++) {
+      await query('UPDATE hardest_achievements SET position = ? WHERE id = ?', [i + 1, remaining[i].id]);
+    }
 
     return Response.json({ success: true });
   } catch (e) {
