@@ -1287,6 +1287,7 @@ modal.classList.add('active');
             <i class="fas fa-gamepad"></i>
             <span>${esc(_gdName)}</span>
             ${gd?.rank != null ? `<span class="pm-gd-global-rank"><i class="fas fa-globe"></i>#${Number(gd.rank).toLocaleString()}</span>` : ''}
+            <span style="margin-left:auto;font-size:.58rem;color:var(--text-dim);opacity:.45;font-weight:400;letter-spacing:0;text-transform:none;font-style:italic">made by ft8d :3</span>
           </div>
           <div class="pm-gd-iconset-row">
             ${ICON_ORDER.map(f => {
