@@ -16,7 +16,7 @@ function openSanctionsPanel() {
   document.getElementById('sanctionsOverlay')?.classList.add('open');
   document.body.style.overflow = 'hidden';
   window._scrollbarSetVisible?.(false);
-  loadSanctionsUsers();
+  loadSanctionsTab('users');
 }
 
 function closeSanctionsPanel() {
