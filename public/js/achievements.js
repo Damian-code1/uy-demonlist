@@ -306,17 +306,15 @@ function renderAchievements() {
           </div>
           <div class="ach-card-reactions" onclick="event.stopPropagation()">
             <button class="ach-react-btn ${myReaction === 'like' ? 'like-on' : ''}"
-              data-ach-id="${a.id}" data-is-like="1"
-              data-voters='${JSON.stringify(a.liked_by||[])}'
-              onclick="reactAch(event, ${a.id}, 'like')"
-              style="user-select:none;-webkit-user-select:none">
+              data-ach-voter data-is-like="1"
+              data-voters='${JSON.stringify((a.liked_by||[]).map(u=>({discord_id:u.id,name:u.name,discord_avatar:u.avatar,username:u.name})))}'
+              onclick="reactAch(event, ${a.id}, 'like')">
               <i class="fas fa-thumbs-up"></i> ${a.likes || 0}
             </button>
             <button class="ach-react-btn ${myReaction === 'dislike' ? 'dislike-on' : ''}"
-              data-ach-id="${a.id}" data-is-like="0"
-              data-voters='${JSON.stringify(a.disliked_by||[])}'
-              onclick="reactAch(event, ${a.id}, 'dislike')"
-              style="user-select:none;-webkit-user-select:none">
+              data-ach-voter data-is-like="0"
+              data-voters='${JSON.stringify((a.disliked_by||[]).map(u=>({discord_id:u.id,name:u.name,discord_avatar:u.avatar,username:u.name})))}'
+              onclick="reactAch(event, ${a.id}, 'dislike')">
               <i class="fas fa-thumbs-down"></i> ${a.dislikes || 0}
             </button>
             <span class="ach-comment-count">
@@ -337,7 +335,8 @@ function renderAchievements() {
 
   AOS.refresh();
 
-  document.querySelectorAll('.ach-react-btn[data-ach-id]').forEach(btn => {
+
+  document.querySelectorAll('.ach-react-btn[data-ach-voter]').forEach(btn => {
     attachVoterEvents(btn, () => {
       try { return JSON.parse(btn.dataset.voters || '[]'); } catch { return []; }
     });
@@ -496,9 +495,9 @@ async function openAchDetail(id) {
   setTimeout(() => {
     const likeBtn    = document.getElementById('achModalLikeBtn');
     const dislikeBtn = document.getElementById('achModalDislikeBtn');
-    if (likeBtn)    attachVoterEvents(likeBtn,    () => ach.liked_by    || []);
-    if (dislikeBtn) attachVoterEvents(dislikeBtn, () => ach.disliked_by || []);
-  }, 0);
+    if (likeBtn)    attachVoterEvents(likeBtn,    () => (ach.liked_by    || []).map(u => ({ discord_id: u.id||u.discord_id, name: u.name||u.display_name, discord_avatar: u.avatar||u.discord_avatar, username: u.username||u.name })));
+    if (dislikeBtn) attachVoterEvents(dislikeBtn, () => (ach.disliked_by || []).map(u => ({ discord_id: u.id||u.discord_id, name: u.name||u.display_name, discord_avatar: u.avatar||u.discord_avatar, username: u.username||u.name })));
+  }, 50);
 
   // Form de comentarios
   const commentForm = document.getElementById('achCommentForm');
@@ -1161,13 +1160,40 @@ function showAchVoterPopup(voters, isLike, anchorEl) {
 }
 
 function attachVoterEvents(btn, getVoters) {
+  // Evitar duplicar listeners clonando y reinsertando
+  const fresh = btn.cloneNode(true);
+  btn.parentNode?.replaceChild(fresh, btn);
+
+  fresh.style.userSelect = 'none';
+  fresh.style.webkitUserSelect = 'none';
+
   let pressTimer;
-  btn.style.userSelect = 'none';
-  btn.style.webkitUserSelect = 'none';
-  btn.addEventListener('contextmenu', e => { e.preventDefault(); showAchVoterPopup(getVoters(), btn.dataset.isLike === '1', btn); });
-  btn.addEventListener('pointerdown', () => { pressTimer = setTimeout(() => showAchVoterPopup(getVoters(), btn.dataset.isLike === '1', btn), 500); });
-  btn.addEventListener('pointerup',    () => clearTimeout(pressTimer));
-  btn.addEventListener('pointerleave', () => clearTimeout(pressTimer));
+  const trigger = () => {
+    const voters = getVoters();
+    showAchVoterPopup(voters, fresh.dataset.isLike === '1', fresh);
+  };
+
+  fresh.addEventListener('contextmenu', e => {
+    e.preventDefault();
+    e.stopPropagation();
+    clearTimeout(pressTimer);
+    trigger();
+  });
+
+  fresh.addEventListener('pointerdown', e => {
+    if (e.button === 2) return;
+    pressTimer = setTimeout(trigger, 500);
+  });
+  fresh.addEventListener('pointerup',    () => clearTimeout(pressTimer));
+  fresh.addEventListener('pointerleave', () => clearTimeout(pressTimer));
+
+  const onclickStr = btn.getAttribute('onclick');
+  if (onclickStr) {
+    fresh.addEventListener('click', e => {
+      clearTimeout(pressTimer);
+      new Function('event', onclickStr).call(fresh, e);
+    });
+  }
 }
 
 document.getElementById('achFormOverlay')?.addEventListener('click', e => {
