@@ -251,6 +251,8 @@ function renderAchievements() {
     return true;
   });
 
+  updateHeroStats();
+
   if (!filtered.length) {
     list.innerHTML = `<div class="ach-empty"><i class="fas fa-trophy"></i><p>No hay achievements que mostrar.</p></div>`;
     return;
@@ -334,6 +336,7 @@ function animateCount(el, target, duration = 1100, delay = 0) {
   el.style.transform = 'scale(1)';
 
   setTimeout(() => {
+    if (target === 0) { el.textContent = 0; return; }
     const startTs = performance.now();
 
     function easeOutExpo(t) { return t === 1 ? 1 : 1 - Math.pow(2, -10 * t); }
@@ -346,19 +349,18 @@ function animateCount(el, target, duration = 1100, delay = 0) {
       const elapsed  = now - startTs;
       const progress = Math.min(elapsed / duration, 1);
       const eased    = easeOutExpo(progress);
-      const current  = Math.round(target * eased);
-      el.textContent = current;
+      el.textContent = Math.round(target * eased);
 
       if (progress > 0.85) {
-        const popT = (progress - 0.85) / 0.15;
-        const scale = 1 + 0.06 * easeOutBack(popT > 1 ? 1 : popT);
+        const popT  = Math.min((progress - 0.85) / 0.15, 1);
+        const scale = 1 + 0.07 * easeOutBack(popT);
         el.style.transform = `scale(${scale})`;
       }
 
       if (progress < 1) {
         requestAnimationFrame(step);
       } else {
-        el.textContent = target;
+        el.textContent    = target;
         el.style.transform = 'scale(1)';
       }
     }
@@ -370,11 +372,6 @@ function updateHeroStats() {
   const total       = _achievements.length;
   const completions = _achievements.filter(a => a.type === 'completion').length;
   const progresses  = _achievements.filter(a => a.type === 'progress').length;
-
-  ['achTotalCount','achCompletionCount','achProgressCount'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el && (el.textContent === '—' || el.textContent === '')) el.textContent = '0';
-  });
 
   animateCount(document.getElementById('achTotalCount'),      total,       1100,   0);
   animateCount(document.getElementById('achCompletionCount'), completions, 1100, 120);
