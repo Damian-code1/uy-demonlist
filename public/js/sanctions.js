@@ -39,7 +39,8 @@ function loadSanctionsTab(tab) {
   const clearAllBtn = document.getElementById('sanctionsClearAllBtn');
   if (clearAllBtn) clearAllBtn.style.display = (tab === 'log' && isOwner) ? '' : 'none';
 
-  if (tab === 'log') renderSanctionsLog('');
+  if (tab === 'log')   renderSanctionsLog('');
+  if (tab === 'users') loadSanctionsUsers();
 }
 
 async function sanctionsFetch(path, opts = {}) {
