@@ -17,9 +17,6 @@ export async function GET(request) {
       ORDER BY (banned_until IS NOT NULL AND banned_until > NOW()) DESC, updated_at DESC
     `);
 
-    // Conteo histórico de sanciones por usuario (incluye levantadas y vencidas,
-    // no solo la activa) — se usa para mostrar "N sanciones" en vez de
-    // "Sin sanciones" cuando el usuario tiene historial aunque hoy esté limpio.
     const [sanctionCounts] = await query(`
       SELECT target_discord_id, COUNT(*) AS total
       FROM sanctions_log
@@ -91,7 +88,8 @@ export async function POST(request) {
     const ROLE_LEVELS = { usuario: 0, list_mod: 1, admin: 2, manager: 3, owner: 4 };
     const adminLevel  = ROLE_LEVELS[admin.role]  ?? 0;
     const targetLevel = ROLE_LEVELS[target.role] ?? 0;
-    if (targetLevel >= adminLevel) {
+    // El owner bypasea todos los checks de jerarquía
+    if (admin.role !== 'owner' && targetLevel >= adminLevel) {
       return Response.json({
         error: 'No podés sancionar a alguien con tu mismo rango o uno mayor',
       }, { status: 403 });
