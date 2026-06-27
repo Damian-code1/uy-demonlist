@@ -4502,7 +4502,6 @@ body {
 .lc-fav-btn.active { color: #f59e0b; }
 .lc-fav-btn.active i { animation: favPop .35s cubic-bezier(.34,1.56,.64,1); }
 
-/* ── Buscador con filtro de lista ── */
 .list-search-group {
   display: flex; align-items: center; gap: 0;
   flex: 1; min-width: 0; max-width: 420px;
@@ -4511,6 +4510,11 @@ body {
   border-radius: 50px;
   overflow: visible;
   transition: border-color .2s, box-shadow .2s;
+  position: relative; z-index: 100;
+}
+.list-filter-dropdown {
+  position: relative; flex-shrink: 0;
+  z-index: 101;
 }
 .list-search-group:focus-within {
   border-color: var(--violet);
@@ -4537,7 +4541,7 @@ body {
 .list-filter-chevron.rotated { transform: rotate(180deg); }
 
 .list-filter-menu {
-  position: fixed;
+  position: absolute; top: calc(100% + 8px); left: 0;
   min-width: 190px;
   background: var(--bg3);
   border: 1px solid var(--border);

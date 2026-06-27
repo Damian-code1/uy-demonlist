@@ -760,39 +760,17 @@ function _repositionListFilterMenu() {
   menu.style.left = r.left + 'px';
 }
 
-function _repositionListFilterMenu() {
-  const btn  = document.getElementById('listFilterBtn');
-  const menu = document.getElementById('listFilterMenu');
-  if (!btn || !menu) return;
-  const r = btn.getBoundingClientRect();
-  menu.style.top  = (r.bottom + 8) + 'px';
-  menu.style.left = r.left + 'px';
-}
-
 function toggleListFilterMenu() {
   const menu    = document.getElementById('listFilterMenu');
   const chevron = document.getElementById('listFilterChevron');
   const btn     = document.getElementById('listFilterBtn');
   if (!menu) return;
   const isOpen = menu.classList.contains('open');
-  if (!isOpen) _repositionListFilterMenu();
   menu.classList.toggle('open', !isOpen);
   chevron?.classList.toggle('rotated', !isOpen);
   btn?.classList.toggle('open', !isOpen);
 }
 window.toggleListFilterMenu = toggleListFilterMenu;
-
-window.addEventListener('scroll', () => {
-  if (document.getElementById('listFilterMenu')?.classList.contains('open')) {
-    _repositionListFilterMenu();
-  }
-}, { passive: true });
-
-window.addEventListener('resize', () => {
-  if (document.getElementById('listFilterMenu')?.classList.contains('open')) {
-    _repositionListFilterMenu();
-  }
-}, { passive: true });
 
 function closeListFilterMenu() {
   document.getElementById('listFilterMenu')?.classList.remove('open');
