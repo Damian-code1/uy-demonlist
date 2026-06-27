@@ -20,10 +20,17 @@ export async function GET(request) {
       try {
         res = await fetch(url, {
           headers: {
-            'User-Agent': 'Mozilla/5.0 (compatible; UY-Demonlist/2.0)',
-            'Accept': 'application/json',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+            'Accept': 'application/json, text/plain, */*',
+            'Accept-Language': 'en-US,en;q=0.9',
             'Referer': 'https://aredl.net/',
             'Origin': 'https://aredl.net',
+            'sec-ch-ua': '"Google Chrome";v="125"',
+            'sec-ch-ua-mobile': '?0',
+            'sec-ch-ua-platform': '"Windows"',
+            'sec-fetch-dest': 'empty',
+            'sec-fetch-mode': 'cors',
+            'sec-fetch-site': 'same-origin',
           },
           cache: 'no-store',
         });
