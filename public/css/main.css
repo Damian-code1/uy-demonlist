@@ -4514,7 +4514,7 @@ body {
 }
 .list-filter-dropdown {
   position: relative; flex-shrink: 0;
-  z-index: 101;
+  z-index: 12000;
 }
 .list-search-group:focus-within {
   border-color: var(--violet);
