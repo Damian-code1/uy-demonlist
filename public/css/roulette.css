@@ -1627,3 +1627,32 @@ input[type="range"]::-moz-range-progress {
   color: #fff; transform: translateY(-1px);
   box-shadow: 0 4px 16px rgba(244,63,94,.3);
 }
+
+.rl-keyboard-hints {
+  display: flex; align-items: center; justify-content: center;
+  gap: .75rem; flex-wrap: wrap;
+  margin-top: .5rem;
+  opacity: .45;
+  transition: opacity .2s;
+}
+.rl-keyboard-hints:hover { opacity: .8; }
+.rl-kbd-hint {
+  display: flex; align-items: center; gap: .3rem;
+  font-size: .68rem; color: var(--text-dim);
+}
+kbd {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: .15rem .4rem;
+  background: var(--bg3);
+  border: 1px solid rgba(255,255,255,.12);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: .65rem;
+  color: var(--text-sub);
+  min-width: 22px;
+}
+
+@media (max-width: 480px) {
+  .rl-keyboard-hints { display: none; }
+}

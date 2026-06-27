@@ -179,7 +179,15 @@ function rebuildPool() {
 
 function updatePoolStats() {
   const el = document.getElementById('rlPoolInfo');
-  if (el) el.textContent = `${RL.pool.length} niveles disponibles`;
+  if (!el) return;
+  const count = RL.pool.length;
+  if (count === 0) {
+    el.innerHTML = `<span style="color:var(--red)"><i class="fas fa-exclamation-circle"></i> Sin niveles disponibles con estos filtros</span>`;
+  } else if (count < 5) {
+    el.innerHTML = `<span style="color:var(--gold)"><i class="fas fa-exclamation-triangle"></i> Solo ${count} nivel${count > 1 ? 'es' : ''} disponible${count > 1 ? 's' : ''}</span>`;
+  } else {
+    el.textContent = `${count} niveles disponibles`;
+  }
 }
 
 // Percentage helpers
@@ -334,14 +342,17 @@ if (rangeMax) {
       const totalAredl = RL.aredlLevels.length + RL.levels.filter(l => l.aredl_position).length;
       RL.filterRange = [1, totalAredl || RL.filterRange[1]];
       if (rangeEl) { rangeEl.max = RL.filterRange[1]; rangeEl.value = RL.filterRange[1]; }
+      showRlToast(`✓ AREDL activado — ${totalAredl} niveles disponibles`, 'success');
     } else {
       const totalUY = RL.levels.length || 1;
       RL.filterRange = [1, totalUY];
       if (rangeEl) { rangeEl.max = totalUY; rangeEl.value = totalUY; }
+      showRlToast(`Lista UY — ${totalUY} niveles disponibles`, 'info');
     }
     syncManualFromSlider();
     updateRangeDisplay();
     rebuildPool();
+    updatePoolStats();
     saveSession();
   });
 
@@ -353,6 +364,15 @@ if (rangeMax) {
       if (allAredlCb) allAredlCb.checked = false;
     }
     rebuildPool();
+    updatePoolStats();
+    updateRangeDisplay();
+    const count = RL.pool.length;
+    showRlToast(
+      RL.filterAredlOnly
+        ? `Solo niveles en AREDL — ${count} disponibles`
+        : `Filtro AREDL desactivado — ${count} disponibles`,
+      'info'
+    );
     saveSession();
   });
 
@@ -404,6 +424,34 @@ if (rangeMax) {
     });
   }
 
+  // Atajos de teclado
+  document.addEventListener('keydown', e => {
+    if (['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)) return;
+    if (document.querySelector('.rl-pct-modal.open, .rl-finish-modal.open')) return;
+
+    switch (e.key) {
+      case ' ':
+      case 'Enter':
+        e.preventDefault();
+        if (!RL.current && !RL.spinning && !isSessionEnded()) {
+          document.getElementById('rlBtnSpin')?.click();
+        }
+        break;
+      case 'c':
+      case 'C':
+        if (RL.current && !isSessionEnded()) document.getElementById('rlBtnComplete')?.click();
+        break;
+      case 'f':
+      case 'F':
+        if (RL.current && !isSessionEnded()) document.getElementById('rlBtnFail')?.click();
+        break;
+      case 's':
+      case 'S':
+        if (RL.current && !isSessionEnded()) document.getElementById('rlBtnSkip')?.click();
+        break;
+    }
+  });
+
   updateProgressUI();
   updateButtons();
 }
@@ -441,7 +489,14 @@ function hideSurrenderBanner() {
 
 function _getSliderTotal() {
   if (RL.filterAllAredl) {
-    return RL.aredlLevels.length + RL.levels.filter(l => l.aredl_position).length || 1;
+    const uyAredlPositions = new Set(
+      RL.levels.filter(l => l.aredl_position).map(l => l.aredl_position)
+    );
+    const uniqueAredlCount = RL.aredlLevels.filter(
+      l => l.aredl_position && !uyAredlPositions.has(l.aredl_position)
+    ).length;
+    const total = RL.levels.filter(l => l.aredl_position).length + uniqueAredlCount;
+    return total || RL.levels.length || 1;
   }
   return RL.levels.length || parseInt(document.getElementById('rlRangeMax')?.max, 10) || 1;
 }
@@ -456,6 +511,9 @@ function updateRangeDisplay() {
       : `#1 – #${current} de ${total}`;
   }
 }
+
+// syncManualFromSlider ahora está definida a nivel de módulo (arriba de loadSession)
+  // para evitar el ReferenceError cuando se llama desde listeners externos.
 
 function saveSession() {
   const data = {
@@ -543,8 +601,8 @@ function loadSession() {
       range.min   = minVal;
       range.value = maxVal;
     }
-    updateRangeLabel();
-    buildPool();
+    updateRangeDisplay();
+    rebuildPool();
     saveSession();
 
     applyBtn?.classList.add('rl-applied');
@@ -561,8 +619,8 @@ function loadSession() {
     if (range) { range.min = 1; range.value = total; }
     if (manualMin) manualMin.value = 1;
     if (manualMax) { manualMax.value = total; manualMax.max = total; }
-    updateRangeLabel();
-    buildPool();
+    updateRangeDisplay();
+    rebuildPool();
     saveSession();
     if (typeof showToast === 'function') showToast('Rango restablecido a full lista', 'info');
   });
@@ -587,7 +645,7 @@ function loadSession() {
         range.value = validMax;
       }
       RL.filterRange = [validMin, validMax];
-      updateRangeLabel();
+      updateRangeDisplay();
       applyBtn?.classList.remove('rl-applied', 'rl-error');
     });
   });
