@@ -403,70 +403,98 @@ function paintGdStats(gd) {
   statsEl.style.display = 'flex';
 }
 
+// Mapeo de difficulty de GDBrowser → nombre del archivo en diff-faces
+const DIFF_FACE_MAP = {
+  'auto':           'auto',
+  'easy':           'easy',
+  'normal':         'normal',
+  'hard':           'hard',
+  'harder':         'harder',
+  'insane':         'insane',
+  'easy demon':     'easy-demon',
+  'medium demon':   'medium-demon',
+  'hard demon':     'hard-demon',
+  'insane demon':   'insane-demon',
+  'extreme demon':  'extreme-demon',
+  'na':             'na',
+};
+
+const DIFF_FACE_BASE = 'https://autonick.github.io/diff-faces/faces';
+
+function getDiffFaceUrl(gd) {
+  const raw  = (gd.difficultyFace || gd.difficulty || '').toLowerCase().trim();
+  const key  = DIFF_FACE_MAP[raw] || raw.replace(/\s+/g, '-');
+  // Si es featured/epic/legendary/mythic usamos la variante especial
+  if (gd.mythic)    return `${DIFF_FACE_BASE}/difficulty_mythic.png`;
+  if (gd.legendary) return `${DIFF_FACE_BASE}/difficulty_legendary.png`;
+  if (gd.epic)      return `${DIFF_FACE_BASE}/difficulty_epic.png`;
+  if (gd.featured)  return `${DIFF_FACE_BASE}/difficulty_featured.png`;
+  return key ? `${DIFF_FACE_BASE}/difficulty_${key}.png` : null;
+}
+
 function buildGdStatsHtml(gd) {
-  const diffName   = (gd.difficultyFace || gd.difficulty || '').toLowerCase().replace(/\s+/g, '-');
-  const diffFaceUrl = diffName
-    ? `https://autonick.github.io/diff-faces/faces/${diffName}.png`
-    : null;
+  const diffFaceUrl = getDiffFaceUrl(gd);
+  const thumbUrl    = gd.id ? `https://gd-level-api.liamt.xyz/thumbnail/${gd.id}` : null;
 
-  const thumbUrl = gd.id
-    ? `https://gd-level-api.liamt.xyz/thumbnail/${gd.id}`
-    : null;
+  // Rating label
+  const ratingLabel = gd.mythic    ? 'Mythic'
+    : gd.legendary ? 'Legendary'
+    : gd.epic      ? 'Epic'
+    : gd.featured  ? 'Featured'
+    : gd.stars     ? 'Rated'
+    : 'Sin rating';
+  const ratingClass = gd.mythic ? 'mythic' : gd.legendary ? 'legendary' : gd.epic ? 'epic' : gd.featured ? 'featured' : gd.stars ? 'rated' : 'unrated';
 
-  const ratingBadges = [];
-  if (gd.mythic)    ratingBadges.push(`<span class="lm-gd-rating mythic"><img src="https://autonick.github.io/diff-faces/faces/mythic.png" style="width:14px;height:14px;object-fit:contain"> Mythic</span>`);
-  else if (gd.legendary) ratingBadges.push(`<span class="lm-gd-rating legendary"><img src="https://autonick.github.io/diff-faces/faces/legendary.png" style="width:14px;height:14px;object-fit:contain"> Legendary</span>`);
-  else if (gd.epic) ratingBadges.push(`<span class="lm-gd-rating epic"><i class="fas fa-fire"></i> Epic</span>`);
-  else if (gd.featured) ratingBadges.push(`<span class="lm-gd-rating featured"><i class="fas fa-star"></i> Featured</span>`);
+  // Coins
+  const coinSrc  = gd.verifiedCoins
+    ? `${DIFF_FACE_BASE}/coin_b01_001.png`
+    : `${DIFF_FACE_BASE}/secretCoin_b_001.png`;
+  const coinsHtml = gd.coins > 0
+    ? Array(Math.min(gd.coins, 3)).fill(
+        `<img src="${coinSrc}" class="lm-gd-coin-img"
+          onerror="this.src='${DIFF_FACE_BASE}/secretCoin_b_001.png'">`
+      ).join('')
+    : '';
 
-  let coinsHtml = '';
-  if (gd.coins > 0) {
-    const coinIcon = gd.verifiedCoins
-      ? `<img src="https://autonick.github.io/diff-faces/faces/coin-gold.png" onerror="this.src='https://autonick.github.io/diff-faces/faces/coin.png'" style="width:14px;height:14px;object-fit:contain">`
-      : `<img src="https://autonick.github.io/diff-faces/faces/coin.png" style="width:14px;height:14px;object-fit:contain">`;
-    const coinTitle = gd.verifiedCoins ? 'User coins verificadas' : 'User coins sin verificar';
-    coinsHtml = `<span class="lm-gd-coins" title="${coinTitle}">${Array(gd.coins).fill(coinIcon).join('')}</span>`;
-  }
-
+  // Chips secundarias
   const chips = [];
-  if (gd.author) chips.push(`<span class="lm-gd-chip"><i class="fas fa-user-edit"></i> ${esc(gd.author)}</span>`);
-  if (gd.length) chips.push(`<span class="lm-gd-chip"><i class="fas fa-ruler-horizontal"></i> ${esc(gd.length)}</span>`);
-  if (gd.song)   chips.push(`<span class="lm-gd-chip"><i class="fas fa-music"></i> ${esc(gd.song)}</span>`);
-  if (gd.objects) chips.push(`<span class="lm-gd-chip"><i class="fas fa-cube"></i> ${Number(gd.objects).toLocaleString()} obj</span>`);
+  if (gd.author)    chips.push(`<span class="lm-gd-chip"><i class="fas fa-user-edit"></i> ${esc(gd.author)}</span>`);
+  if (gd.length)    chips.push(`<span class="lm-gd-chip"><i class="fas fa-ruler-horizontal"></i> ${esc(gd.length)}</span>`);
+  if (gd.song)      chips.push(`<span class="lm-gd-chip"><i class="fas fa-music"></i> ${esc(gd.song)}</span>`);
+  if (gd.objects)   chips.push(`<span class="lm-gd-chip"><i class="fas fa-cube"></i> ${Number(gd.objects).toLocaleString()} obj</span>`);
   if (gd.downloads) chips.push(`<span class="lm-gd-chip"><i class="fas fa-download"></i> ${Number(gd.downloads).toLocaleString()}</span>`);
-  if (gd.likes) chips.push(`<span class="lm-gd-chip"><i class="fas fa-thumbs-up"></i> ${Number(gd.likes).toLocaleString()}</span>`);
+  if (gd.likes)     chips.push(`<span class="lm-gd-chip"><i class="fas fa-thumbs-up"></i> ${Number(gd.likes).toLocaleString()}</span>`);
 
   return `
   <div class="lm-gd-divider"></div>
-  <div class="lm-gd-info-section">
-    <div class="lm-gd-left">
-      ${diffFaceUrl ? `
-      <div class="lm-gd-diff-wrap">
-        <img class="lm-gd-diff-face" src="${diffFaceUrl}"
-          onerror="this.closest('.lm-gd-diff-wrap').style.display='none'"
+  <div class="lm-gd-ingame-card">
+    <div class="lm-gd-ingame-left">
+      <div class="lm-gd-face-col">
+        <img class="lm-gd-face-img"
+          src="${diffFaceUrl || `${DIFF_FACE_BASE}/difficulty_extreme-demon.png`}"
+          onerror="this.style.display='none'"
           alt="${esc(gd.difficulty || '')}">
-        ${gd.stars ? `<span class="lm-gd-stars"><i class="fas fa-star"></i> ${gd.stars}</span>` : ''}
-      </div>` : ''}
-      <div class="lm-gd-main-info">
-        ${gd.difficulty ? `<div class="lm-gd-diff-label">${esc(gd.difficulty)}</div>` : ''}
-        <div class="lm-gd-badges-row">
-          ${ratingBadges.join('')}
-          ${coinsHtml}
+        ${coinsHtml ? `<div class="lm-gd-coins-row">${coinsHtml}</div>` : ''}
+      </div>
+      <div class="lm-gd-ingame-info">
+        <div class="lm-gd-ingame-diff">${esc(gd.difficulty || 'Extreme Demon')}</div>
+        <div class="lm-gd-ingame-rating lm-gd-rating-${ratingClass}">
+          ${ratingLabel}
         </div>
+        ${gd.stars ? `
+        <div class="lm-gd-ingame-stars">
+          <i class="fas fa-star" style="color:#f59e0b;font-size:.7rem"></i>
+          <span>${gd.stars}</span>
+        </div>` : ''}
       </div>
     </div>
     ${thumbUrl ? `
     <div class="lm-gd-thumb-wrap">
-      <img class="lm-gd-thumb"
-        src="${thumbUrl}"
-        alt="Thumbnail"
-        loading="lazy"
+      <img class="lm-gd-thumb" src="${thumbUrl}" loading="lazy"
         onerror="this.closest('.lm-gd-thumb-wrap').style.display='none'">
     </div>` : ''}
   </div>
-  <div class="lm-gd-chips-row">
-    ${chips.join('')}
-  </div>`;
+  ${chips.length ? `<div class="lm-gd-chips-row">${chips.join('')}</div>` : ''}`;
 }
 
 let _lmCurrentVideoId  = null;

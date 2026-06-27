@@ -2055,55 +2055,67 @@ ul { list-style: none; }
   transition: background .18s;
 }
 .lm-edit-level-btn:hover { background: rgba(139,92,246,.2); }
+/* ─── GD Info Section — estilo in-game ─── */
 .lm-gd-divider {
-  height: 1px; background: var(--border-s);
-  margin: .75rem 0;
+  height: 1px; background: var(--border-s); margin: .85rem 0;
 }
-.lm-gd-info-section {
+.lm-gd-ingame-card {
   display: flex; align-items: center; justify-content: space-between;
-  gap: 1rem; margin-bottom: .65rem;
+  gap: .75rem;
+  background: rgba(0,0,0,.35);
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 10px;
+  padding: .65rem .85rem;
+  margin-bottom: .65rem;
 }
-.lm-gd-left {
-  display: flex; align-items: center; gap: .75rem; flex: 1;
+.lm-gd-ingame-left {
+  display: flex; align-items: center; gap: .75rem; flex: 1; min-width: 0;
 }
-.lm-gd-diff-wrap {
-  display: flex; flex-direction: column; align-items: center; gap: .2rem;
+.lm-gd-face-col {
+  display: flex; flex-direction: column; align-items: center; gap: .28rem;
   flex-shrink: 0;
 }
-.lm-gd-diff-face {
-  width: 48px; height: 48px; object-fit: contain;
-  filter: drop-shadow(0 2px 8px rgba(0,0,0,.5));
+.lm-gd-face-img {
+  width: 62px; height: 62px; object-fit: contain;
   image-rendering: pixelated;
+  filter: drop-shadow(0 0 10px rgba(0,0,0,.7));
 }
-.lm-gd-stars {
-  font-size: .65rem; color: #f59e0b; font-weight: 700;
-  display: flex; align-items: center; gap: .2rem;
+.lm-gd-coins-row {
+  display: flex; align-items: center; gap: .22rem;
 }
-.lm-gd-main-info {
-  display: flex; flex-direction: column; gap: .3rem;
+.lm-gd-coin-img {
+  width: 16px; height: 16px; object-fit: contain;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 1px 3px rgba(0,0,0,.6));
 }
-.lm-gd-diff-label {
-  font-size: .78rem; font-weight: 700; color: var(--text-sub);
+.lm-gd-ingame-info {
+  display: flex; flex-direction: column; gap: .3rem; min-width: 0;
 }
-.lm-gd-badges-row {
-  display: flex; align-items: center; gap: .4rem; flex-wrap: wrap;
+.lm-gd-ingame-diff {
+  font-size: .88rem; font-weight: 800; color: var(--text);
+  letter-spacing: .3px;
 }
-.lm-gd-rating {
+.lm-gd-ingame-rating {
   display: inline-flex; align-items: center; gap: .28rem;
-  padding: .14rem .55rem; border-radius: 50px;
-  font-size: .65rem; font-weight: 700; letter-spacing: .4px;
+  padding: .12rem .55rem; border-radius: 50px;
+  font-size: .65rem; font-weight: 700; letter-spacing: .5px;
+  width: fit-content;
 }
-.lm-gd-rating.featured  { background: rgba(245,158,11,.15); color: #f59e0b; border: 1px solid rgba(245,158,11,.3); }
-.lm-gd-rating.epic      { background: rgba(139,92,246,.15); color: #a78bfa; border: 1px solid rgba(139,92,246,.3); }
-.lm-gd-rating.legendary { background: rgba(251,146,60,.15); color: #fb923c; border: 1px solid rgba(251,146,60,.3); }
-.lm-gd-rating.mythic    { background: rgba(244,63,94,.15);  color: #f87171; border: 1px solid rgba(244,63,94,.3);  }
-.lm-gd-coins {
-  display: inline-flex; align-items: center; gap: .18rem;
+.lm-gd-rating-featured  { background: rgba(245,158,11,.2);  color: #fbbf24; border: 1px solid rgba(245,158,11,.4); }
+.lm-gd-rating-epic      { background: rgba(139,92,246,.2);  color: #c4b5fd; border: 1px solid rgba(139,92,246,.4); }
+.lm-gd-rating-legendary { background: rgba(251,146,60,.2);  color: #fdba74; border: 1px solid rgba(251,146,60,.4); }
+.lm-gd-rating-mythic    { background: rgba(244,63,94,.2);   color: #fca5a5; border: 1px solid rgba(244,63,94,.4);  }
+.lm-gd-rating-rated     { background: rgba(34,197,94,.15);  color: #86efac; border: 1px solid rgba(34,197,94,.3);  }
+.lm-gd-rating-unrated   { background: rgba(255,255,255,.06); color: var(--text-dim); border: 1px solid var(--border-s); }
+.lm-gd-ingame-stars {
+  display: flex; align-items: center; gap: .25rem;
+  font-size: .75rem; font-weight: 700; color: #fbbf24;
 }
 .lm-gd-thumb-wrap {
-  flex-shrink: 0; width: 110px; height: 62px;
-  border-radius: var(--r-sm); overflow: hidden;
-  border: 1px solid var(--border-s);
+  flex-shrink: 0; width: 120px; height: 68px;
+  border-radius: 8px; overflow: hidden;
+  border: 1px solid rgba(255,255,255,.1);
+  box-shadow: 0 4px 16px rgba(0,0,0,.5);
 }
 .lm-gd-thumb {
   width: 100%; height: 100%; object-fit: cover;
