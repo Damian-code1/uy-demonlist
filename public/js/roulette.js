@@ -458,15 +458,11 @@ function updateRangeDisplay() {
 
 function saveSession() {
   const data = {
-    session: RL.session,
-    current: RL.current,
+    session:      RL.session,
+    current:      RL.current,
     sessionActive: RL.sessionActive,
-    surrendered: RL.surrendered,
-    totalGoal: RL.totalGoal,
-    filterRange: RL.filterRange,
-    filterAredlOnly: RL.filterAredlOnly,
-    filterAllAredl:  RL.filterAllAredl,
-    revealHidden: RL.revealHidden
+    surrendered:  RL.surrendered,
+    totalGoal:    RL.totalGoal,
   };
 
   console.log('[ROULETTE SAVE]', data);
@@ -493,13 +489,11 @@ function loadSession() {
     const total = RL.levels.length || RL.filterRange[1];
 
     RL.totalGoal = hasSessionToResume ? (data.totalGoal || 100) : 100;
-    RL.filterRange = hasSessionToResume && data.filterRange
-      ? [1, Math.min(data.filterRange[1] || total, total)]
-      : [1, total];
-    RL.filterAredlOnly = hasSessionToResume ? !!data.filterAredlOnly : false;
-    RL.filterAllAredl = !!data.filterAllAredl;
+    RL.filterRange    = [1, total];
+    RL.filterAredlOnly = false;
+    RL.filterAllAredl  = false;
     const allAredlCb = document.getElementById('rlAllAredl');
-    if (allAredlCb) allAredlCb.checked = RL.filterAllAredl;
+    if (allAredlCb) allAredlCb.checked = false;
     RL.revealHidden = !!data.revealHidden;
     const slider = document.getElementById('rlGoalSlider');
     const value = document.getElementById('rlGoalVal');
@@ -507,7 +501,99 @@ function loadSession() {
     if (slider) slider.value = RL.totalGoal;
     if (value) value.textContent = RL.totalGoal;
     const range = document.getElementById('rlRangeMax');
-    if (range) range.value = RL.filterRange[1];
+  if (range) range.value = RL.filterRange[1];
+
+  const manualMin   = document.getElementById('rlManualMin');
+  const manualMax   = document.getElementById('rlManualMax');
+  const applyBtn    = document.getElementById('rlManualApply');
+  const resetBtn    = document.getElementById('rlManualReset');
+
+  function syncManualFromSlider() {
+    const total   = _getSliderTotal();
+    const current = RL.filterRange[1];
+    if (manualMin) manualMin.value = RL.filterRange[0] || 1;
+    if (manualMax) {
+      manualMax.value = current;
+      manualMax.max   = total;
+      manualMax.placeholder = String(total);
+    }
+    if (applyBtn) {
+      applyBtn.classList.remove('rl-applied', 'rl-error');
+    }
+  }
+
+  function applyManualRange() {
+    const total  = _getSliderTotal();
+    const rawMin = parseInt(manualMin?.value || '1', 10);
+    const rawMax = parseInt(manualMax?.value  || String(total), 10);
+
+    const minVal = Math.max(1, isNaN(rawMin) ? 1 : rawMin);
+    const maxVal = Math.min(total, isNaN(rawMax) ? total : rawMax);
+
+    if (minVal > maxVal) {
+      applyBtn?.classList.add('rl-error');
+      setTimeout(() => applyBtn?.classList.remove('rl-error'), 800);
+      if (typeof showToast === 'function') showToast('El mínimo no puede ser mayor al máximo', 'error');
+      return;
+    }
+
+    RL.filterRange = [minVal, maxVal];
+    if (range) {
+      range.min   = minVal;
+      range.value = maxVal;
+    }
+    updateRangeLabel();
+    buildPool();
+    saveSession();
+
+    applyBtn?.classList.add('rl-applied');
+    setTimeout(() => applyBtn?.classList.remove('rl-applied'), 1200);
+    if (typeof showToast === 'function')
+      showToast(`Rango aplicado: #${minVal} – #${maxVal}`, 'success');
+  }
+
+  if (applyBtn) applyBtn.addEventListener('click', applyManualRange);
+
+  if (resetBtn) resetBtn.addEventListener('click', () => {
+    const total = _getSliderTotal();
+    RL.filterRange = [1, total];
+    if (range) { range.min = 1; range.value = total; }
+    if (manualMin) manualMin.value = 1;
+    if (manualMax) { manualMax.value = total; manualMax.max = total; }
+    updateRangeLabel();
+    buildPool();
+    saveSession();
+    if (typeof showToast === 'function') showToast('Rango restablecido a full lista', 'info');
+  });
+
+  [manualMin, manualMax].forEach(inp => {
+    if (!inp) return;
+    inp.addEventListener('keydown', e => {
+      if (e.key === 'Enter') applyManualRange();
+    });
+    inp.addEventListener('input', () => {
+      const total  = _getSliderTotal();
+      let rawMin   = parseInt(manualMin?.value || '1', 10);
+      let rawMax   = parseInt(manualMax?.value  || String(total), 10);
+
+      if (!isNaN(rawMax) && rawMax > total) { manualMax.value = total; rawMax = total; }
+      if (!isNaN(rawMin) && rawMin < 1)     { manualMin.value = 1;     rawMin = 1;     }
+
+      const validMin = isNaN(rawMin) ? 1     : Math.max(1,     Math.min(rawMin, total));
+      const validMax = isNaN(rawMax) ? total : Math.max(validMin, Math.min(rawMax, total));
+      if (range) {
+        range.min   = validMin;
+        range.value = validMax;
+      }
+      RL.filterRange = [validMin, validMax];
+      updateRangeLabel();
+      applyBtn?.classList.remove('rl-applied', 'rl-error');
+    });
+  });
+
+  if (range) range.addEventListener('input', syncManualFromSlider);
+
+  syncManualFromSlider();
 
     const aredl = document.getElementById('rlAredlOnly');
     if (aredl) aredl.checked = RL.filterAredlOnly;

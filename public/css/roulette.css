@@ -327,6 +327,85 @@
   font-weight: 600;
   color: var(--text-sub);
 }
+/* ── Manual range inputs ── */
+.rl-manual-range {
+  display: flex; align-items: center; gap: .5rem;
+  margin-top: .75rem; flex-wrap: wrap;
+}
+.rl-manual-field {
+  display: flex; flex-direction: column; gap: .25rem;
+}
+.rl-manual-label {
+  font-size: .6rem; font-weight: 700; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--text-dim);
+}
+.rl-manual-input-wrap {
+  display: flex; align-items: center;
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(139,92,246,.25);
+  border-radius: 8px; overflow: hidden;
+  transition: border-color .18s, box-shadow .18s;
+}
+.rl-manual-input-wrap:focus-within {
+  border-color: var(--violet);
+  box-shadow: 0 0 0 3px rgba(139,92,246,.15);
+}
+.rl-manual-hash {
+  padding: 0 .4rem; color: var(--violet);
+  font-size: .8rem; font-weight: 700;
+  border-right: 1px solid rgba(139,92,246,.2);
+  user-select: none;
+}
+.rl-manual-input {
+  width: 62px; padding: .45rem .5rem;
+  background: none; border: none; outline: none;
+  color: var(--text); font-size: .85rem; font-weight: 600;
+  font-family: var(--font-mono, monospace);
+}
+.rl-manual-input::-webkit-inner-spin-button,
+.rl-manual-input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+.rl-manual-sep {
+  color: var(--text-dim); font-size: .9rem; padding-top: 1.2rem;
+}
+.rl-manual-apply,
+.rl-manual-reset {
+  display: flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px; border-radius: 8px;
+  border: 1px solid; cursor: pointer;
+  font-size: .78rem;
+  transition: transform .15s, box-shadow .15s, background .15s;
+  margin-top: 1.1rem;
+}
+.rl-manual-apply {
+  background: rgba(139,92,246,.2); border-color: rgba(139,92,246,.4);
+  color: var(--violet);
+}
+.rl-manual-apply:hover {
+  background: rgba(139,92,246,.35); transform: scale(1.08);
+  box-shadow: 0 0 12px rgba(139,92,246,.3);
+}
+.rl-manual-reset {
+  background: rgba(255,255,255,.05); border-color: rgba(255,255,255,.15);
+  color: var(--text-dim);
+}
+.rl-manual-reset:hover {
+  background: rgba(255,255,255,.1); transform: scale(1.08);
+  color: var(--text);
+}
+.rl-manual-apply.rl-applied {
+  background: rgba(34,197,94,.2); border-color: rgba(34,197,94,.5);
+  color: #4ade80;
+}
+.rl-manual-apply.rl-error {
+  background: rgba(244,63,94,.2); border-color: rgba(244,63,94,.5);
+  color: #f87171; animation: rl-shake .3s ease;
+}
+@keyframes rl-shake {
+  0%,100% { transform: translateX(0); }
+  25%     { transform: translateX(-4px); }
+  75%     { transform: translateX(4px); }
+}
+
 .rl-range-val {
   font-family: var(--font-mono);
   color: var(--violet);
