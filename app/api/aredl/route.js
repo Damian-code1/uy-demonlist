@@ -1,11 +1,8 @@
 let cache = null;
 let cacheTime = 0;
-const TTL = 1000 * 60 * 5; // 5 minutos
+const TTL = 1000 * 60 * 5;
 
-const AREDL_URLS = [
-  'https://api.aredl.net/v2/api/aredl/levels',
-  'https://api.aredl.net/api/aredl/levels',
-];
+const AREDL_URL = 'https://api.aredl.net/v2/api/aredl/levels';
 
 export async function GET(request) {
   const force = new URL(request.url).searchParams.get('force') === '1';
@@ -15,49 +12,33 @@ export async function GET(request) {
       return Response.json({ levels: cache, cached: true });
     }
 
-    let res = null;
-    for (const url of AREDL_URLS) {
-      try {
-        res = await fetch(url, {
-          headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
-            'Accept': 'application/json, text/plain, */*',
-            'Accept-Language': 'en-US,en;q=0.9',
-            'Referer': 'https://aredl.net/',
-            'Origin': 'https://aredl.net',
-            'sec-ch-ua': '"Google Chrome";v="125"',
-            'sec-ch-ua-mobile': '?0',
-            'sec-ch-ua-platform': '"Windows"',
-            'sec-fetch-dest': 'empty',
-            'sec-fetch-mode': 'cors',
-            'sec-fetch-site': 'same-origin',
-          },
-          cache: 'no-store',
-        });
-        if (res.ok) break;
-        console.warn(`[AREDL] ${url} → HTTP ${res.status}`);
-        res = null;
-      } catch (e) {
-        console.warn(`[AREDL] ${url} → ${e.message}`);
-      }
-    }
+    const res = await fetch(AREDL_URL, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+        'Accept': 'application/json, text/plain, */*',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Referer': 'https://aredl.net/',
+        'Origin': 'https://aredl.net',
+      },
+      cache: 'no-store',
+    });
 
-    if (!res) {
-      console.error('[AREDL] Todos los endpoints fallaron');
-      return Response.json({ levels: cache || [], error: 'All endpoints failed' });
+    if (!res.ok) {
+      console.error(`[AREDL] HTTP ${res.status} — ${await res.text().catch(() => '')}`);
+      return Response.json({ levels: cache || [], error: `HTTP ${res.status}` });
     }
 
     const raw = await res.json();
-    const list = Array.isArray(raw)
-      ? raw
+
+    // v2 devuelve array directo
+    const list = Array.isArray(raw) ? raw
       : Array.isArray(raw?.data)    ? raw.data
       : Array.isArray(raw?.levels)  ? raw.levels
-      : Array.isArray(raw?.results) ? raw.results
       : null;
 
     if (!list) {
-      console.error('[AREDL] Unexpected shape:', JSON.stringify(raw).slice(0, 300));
-      return Response.json({ levels: cache || [], error: 'Unexpected response shape' });
+      console.error('[AREDL] Shape inesperado:', JSON.stringify(raw).slice(0, 300));
+      return Response.json({ levels: cache || [], error: 'Unexpected shape' });
     }
 
     cache = list.map(e => ({
@@ -65,7 +46,7 @@ export async function GET(request) {
       position: e.position,
       level_id: e.level_id,
       points:   e.points,
-      video_id: e.video_id || null, 
+      video_id: e.video_id || null,
     }));
     cacheTime = Date.now();
 
