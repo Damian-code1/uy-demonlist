@@ -404,12 +404,69 @@ function paintGdStats(gd) {
 }
 
 function buildGdStatsHtml(gd) {
-  const parts = [];
-  if (gd.author)     parts.push(`<span class="lm-gd-chip"><i class="fas fa-user-edit"></i> ${esc(gd.author)}</span>`);
-  if (gd.difficulty) parts.push(`<span class="lm-gd-chip"><i class="fas fa-skull"></i> ${esc(gd.difficulty)}</span>`);
-  if (gd.length)     parts.push(`<span class="lm-gd-chip"><i class="fas fa-ruler-horizontal"></i> ${esc(gd.length)}</span>`);
-  if (gd.song)       parts.push(`<span class="lm-gd-chip"><i class="fas fa-music"></i> ${esc(gd.song)}</span>`);
-  return parts.join('');
+  const diffName   = (gd.difficultyFace || gd.difficulty || '').toLowerCase().replace(/\s+/g, '-');
+  const diffFaceUrl = diffName
+    ? `https://autonick.github.io/diff-faces/faces/${diffName}.png`
+    : null;
+
+  const thumbUrl = gd.id
+    ? `https://gd-level-api.liamt.xyz/thumbnail/${gd.id}`
+    : null;
+
+  const ratingBadges = [];
+  if (gd.mythic)    ratingBadges.push(`<span class="lm-gd-rating mythic"><img src="https://autonick.github.io/diff-faces/faces/mythic.png" style="width:14px;height:14px;object-fit:contain"> Mythic</span>`);
+  else if (gd.legendary) ratingBadges.push(`<span class="lm-gd-rating legendary"><img src="https://autonick.github.io/diff-faces/faces/legendary.png" style="width:14px;height:14px;object-fit:contain"> Legendary</span>`);
+  else if (gd.epic) ratingBadges.push(`<span class="lm-gd-rating epic"><i class="fas fa-fire"></i> Epic</span>`);
+  else if (gd.featured) ratingBadges.push(`<span class="lm-gd-rating featured"><i class="fas fa-star"></i> Featured</span>`);
+
+  let coinsHtml = '';
+  if (gd.coins > 0) {
+    const coinIcon = gd.verifiedCoins
+      ? `<img src="https://autonick.github.io/diff-faces/faces/coin-gold.png" onerror="this.src='https://autonick.github.io/diff-faces/faces/coin.png'" style="width:14px;height:14px;object-fit:contain">`
+      : `<img src="https://autonick.github.io/diff-faces/faces/coin.png" style="width:14px;height:14px;object-fit:contain">`;
+    const coinTitle = gd.verifiedCoins ? 'User coins verificadas' : 'User coins sin verificar';
+    coinsHtml = `<span class="lm-gd-coins" title="${coinTitle}">${Array(gd.coins).fill(coinIcon).join('')}</span>`;
+  }
+
+  const chips = [];
+  if (gd.author) chips.push(`<span class="lm-gd-chip"><i class="fas fa-user-edit"></i> ${esc(gd.author)}</span>`);
+  if (gd.length) chips.push(`<span class="lm-gd-chip"><i class="fas fa-ruler-horizontal"></i> ${esc(gd.length)}</span>`);
+  if (gd.song)   chips.push(`<span class="lm-gd-chip"><i class="fas fa-music"></i> ${esc(gd.song)}</span>`);
+  if (gd.objects) chips.push(`<span class="lm-gd-chip"><i class="fas fa-cube"></i> ${Number(gd.objects).toLocaleString()} obj</span>`);
+  if (gd.downloads) chips.push(`<span class="lm-gd-chip"><i class="fas fa-download"></i> ${Number(gd.downloads).toLocaleString()}</span>`);
+  if (gd.likes) chips.push(`<span class="lm-gd-chip"><i class="fas fa-thumbs-up"></i> ${Number(gd.likes).toLocaleString()}</span>`);
+
+  return `
+  <div class="lm-gd-divider"></div>
+  <div class="lm-gd-info-section">
+    <div class="lm-gd-left">
+      ${diffFaceUrl ? `
+      <div class="lm-gd-diff-wrap">
+        <img class="lm-gd-diff-face" src="${diffFaceUrl}"
+          onerror="this.closest('.lm-gd-diff-wrap').style.display='none'"
+          alt="${esc(gd.difficulty || '')}">
+        ${gd.stars ? `<span class="lm-gd-stars"><i class="fas fa-star"></i> ${gd.stars}</span>` : ''}
+      </div>` : ''}
+      <div class="lm-gd-main-info">
+        ${gd.difficulty ? `<div class="lm-gd-diff-label">${esc(gd.difficulty)}</div>` : ''}
+        <div class="lm-gd-badges-row">
+          ${ratingBadges.join('')}
+          ${coinsHtml}
+        </div>
+      </div>
+    </div>
+    ${thumbUrl ? `
+    <div class="lm-gd-thumb-wrap">
+      <img class="lm-gd-thumb"
+        src="${thumbUrl}"
+        alt="Thumbnail"
+        loading="lazy"
+        onerror="this.closest('.lm-gd-thumb-wrap').style.display='none'">
+    </div>` : ''}
+  </div>
+  <div class="lm-gd-chips-row">
+    ${chips.join('')}
+  </div>`;
 }
 
 let _lmCurrentVideoId  = null;
@@ -1724,7 +1781,7 @@ function attachLevelCommentEvents(list, levelId) {
         if (res.ok) {
           input.value = '';
           document.getElementById(`lc-reply-form-${id}`)?.classList.add('hidden');
-          // Recargar replies si estaban abiertas
+          
           const wrap = document.getElementById(`lc-replies-${id}`);
           if (wrap?.dataset.loaded === '1') {
             wrap.dataset.loaded = '0';
@@ -1778,15 +1835,12 @@ window.openLevelModal        = openLevelModal;
 window.closeLevelDetailModal = closeLevelDetailModal;
 window.scrollToSubmissions   = scrollToSubmissions;
 
-// ─── IR A MI RANKING en el leaderboard ───
 function goToMyRanking() {
   if (typeof closeUserDropdown === 'function') closeUserDropdown();
-  // Intentar con linkedPlayer primero (nombre en la lista), luego gdUsername, luego name de Discord
   const name = window.currentUser?.linkedPlayer
     || window.currentUser?.gdUsername
     || window.currentUser?.name;
 
-  // Si estamos en roulette.html u otra página, redirigir con parámetro
   if (!document.getElementById('leaderboardBody')) {
     window.location.href = name
       ? `index.html#leaderboard?highlight=${encodeURIComponent(name)}`
@@ -1794,10 +1848,6 @@ function goToMyRanking() {
     return;
   }
 
-  // Resaltar la fila del jugador actual.
-  // Un solo scroll (directo a la fila, no a la sección + la fila), para
-  // evitar que dos animaciones de scroll compitan y se sienta como un
-  // salto/teletransporte en vez de un desplazamiento suave.
   if (name) {
     let found = false;
     document.querySelectorAll('.lb-row').forEach(row => {
