@@ -3,6 +3,7 @@
 // State
 const RL = {
   levels:       [],
+  aredlLevels:  [],
   pool:         [],
   session:      [],
   current:      null,
@@ -12,6 +13,7 @@ const RL = {
   revealHidden: false,
   filterRange: [1, 1],
   filterAredlOnly: false,
+  filterAllAredl:  false, 
   spinning:     false,
   surrendered:  false,
   confettiCtx:  null,
@@ -59,7 +61,6 @@ if (RL.current) {
 }
 });
 
-// Fetch levels
 async function fetchLevels() {
   const API = typeof API_BASE !== 'undefined' ? API_BASE : 'http://localhost:3001/api';
   try {
@@ -83,6 +84,23 @@ async function fetchLevels() {
         const k = l.name?.toLowerCase().trim();
         if (k && map[k]) { l.aredl_position = map[k].position; l.aredl_level_id = map[k].level_id; }
       });
+
+      const listNames = new Set(RL.levels.map(l => l.name?.toLowerCase().trim()));
+      RL.aredlLevels = (d.levels || [])
+        .filter(e => e.name && !listNames.has(e.name.toLowerCase().trim()))
+        .map(e => ({
+          id:             `aredl_${e.level_id || e.position}`,
+          name:           e.name,
+          position:       null,         
+          aredl_position: e.position,
+          aredl_level_id: e.level_id || null,
+          victors:        [],
+          points:         null,
+          thumb_url: e.level_id
+            ? `https://gd-level-api.liamt.xyz/thumbnail/${e.level_id}`
+            : null,
+          _fromAredlOnly: true,
+        }));
     }
   } catch (e) {
     console.warn('[Roulette] API not available, trying levels.json fallback');
@@ -110,6 +128,25 @@ async function fetchLevels() {
 
 // Build pool
 function rebuildPool() {
+  if (RL.filterAllAredl) {
+    const [minAredl, maxAredl] = RL.filterRange;
+    const fromList = RL.levels.filter(l => {
+      if (!l.aredl_position) return false;
+      return l.aredl_position >= minAredl && l.aredl_position <= maxAredl;
+    });
+    const fromAredl = RL.aredlLevels.filter(l => {
+      if (!l.aredl_position) return false;
+      return l.aredl_position >= minAredl && l.aredl_position <= maxAredl;
+    });
+    RL.pool = [...fromList, ...fromAredl];
+    RL.pool.sort((a, b) => (a.aredl_position || 9999) - (b.aredl_position || 9999));
+
+    document.getElementById('rlStatPool').textContent = RL.pool.length;
+    const el = document.getElementById('rlPoolCount');
+    if (el) el.textContent = `${RL.pool.length} niveles disponibles`;
+    return;
+  }
+
   const [minPos, maxPos] = RL.filterRange;
   RL.pool = RL.levels.filter(l => {
     const pos = l.position || 999;
@@ -274,8 +311,27 @@ if (rangeMax) {
   });
 }
 
+  document.getElementById('rlAllAredl')?.addEventListener('change', e => {
+    RL.filterAllAredl = e.target.checked;
+    if (RL.filterAllAredl) {
+      RL.filterAredlOnly = false;
+      const aredlOnlyCb = document.getElementById('rlAredlOnly');
+      if (aredlOnlyCb) aredlOnlyCb.checked = false;
+      const totalAredl = RL.aredlLevels.length + RL.levels.filter(l => l.aredl_position).length;
+      RL.filterRange = [1, totalAredl || RL.filterRange[1]];
+    } else {
+      RL.filterRange = [1, RL.levels.length || 1];
+    }
+    rebuildPool();
+  });
+
   document.getElementById('rlAredlOnly')?.addEventListener('change', e => {
     RL.filterAredlOnly = e.target.checked;
+    if (RL.filterAredlOnly) {
+      RL.filterAllAredl = false;
+      const allAredlCb = document.getElementById('rlAllAredl');
+      if (allAredlCb) allAredlCb.checked = false;
+    }
     rebuildPool();
   });
 
@@ -370,6 +426,7 @@ function saveSession() {
     totalGoal: RL.totalGoal,
     filterRange: RL.filterRange,
     filterAredlOnly: RL.filterAredlOnly,
+    filterAllAredl:  RL.filterAllAredl,
     revealHidden: RL.revealHidden
   };
 
@@ -401,6 +458,11 @@ function loadSession() {
       ? [1, Math.min(data.filterRange[1] || total, total)]
       : [1, total];
     RL.filterAredlOnly = hasSessionToResume ? !!data.filterAredlOnly : false;
+    RL.filterAllAredl  = hasSessionToResume ? !!data.filterAllAredl  : false;
+    if (RL.filterAllAredl) {
+      const allAredlCb = document.getElementById('rlAllAredl');
+      if (allAredlCb) allAredlCb.checked = true;
+    }
     RL.revealHidden = !!data.revealHidden;
     const slider = document.getElementById('rlGoalSlider');
     const value = document.getElementById('rlGoalVal');

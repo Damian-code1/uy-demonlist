@@ -747,6 +747,14 @@ function setListFilter(filter, label, el) {
 }
 window.setListFilter = setListFilter;
 
+function _ensureMenuInBody() {
+  const menu = document.getElementById('listFilterMenu');
+  if (!menu || menu.parentElement === document.body) return;
+  document.body.appendChild(menu);
+  menu.style.position = 'fixed';
+  menu.style.zIndex   = '99999';
+}
+
 function _repositionListFilterMenu() {
   const btn  = document.getElementById('listFilterBtn');
   const menu = document.getElementById('listFilterMenu');
@@ -754,14 +762,20 @@ function _repositionListFilterMenu() {
   const r = btn.getBoundingClientRect();
   menu.style.top  = (r.bottom + 8) + 'px';
   menu.style.left = r.left + 'px';
+  const menuW = menu.offsetWidth || 200;
+  if (r.left + menuW > window.innerWidth - 8) {
+    menu.style.left = (window.innerWidth - menuW - 8) + 'px';
+  }
 }
 
 function toggleListFilterMenu() {
+  _ensureMenuInBody();
   const menu    = document.getElementById('listFilterMenu');
   const chevron = document.getElementById('listFilterChevron');
   const btn     = document.getElementById('listFilterBtn');
   if (!menu) return;
   const isOpen = menu.classList.contains('open');
+  if (!isOpen) _repositionListFilterMenu();
   menu.classList.toggle('open', !isOpen);
   chevron?.classList.toggle('rotated', !isOpen);
   btn?.classList.toggle('open', !isOpen);
@@ -775,7 +789,20 @@ function closeListFilterMenu() {
 }
 
 document.addEventListener('click', e => {
-  if (!e.target.closest('#listFilterDropdown')) closeListFilterMenu();
+  if (!e.target.closest('#listFilterDropdown') && !e.target.closest('#listFilterMenu')) {
+    closeListFilterMenu();
+  }
+});
+
+window.addEventListener('scroll', () => {
+  if (document.getElementById('listFilterMenu')?.classList.contains('open')) {
+    _repositionListFilterMenu();
+  }
+}, { passive: true });
+window.addEventListener('resize', () => {
+  if (document.getElementById('listFilterMenu')?.classList.contains('open')) {
+    _repositionListFilterMenu();
+  }
 });
 
 function applyListSearch() {
