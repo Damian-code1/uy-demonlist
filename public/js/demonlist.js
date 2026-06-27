@@ -187,10 +187,6 @@ function levelTierAccent(pos) {
 }
 window.levelTierAccent = levelTierAccent;
 
-// Versión "fondo" del color por tier: misma franja de posiciones que
-// levelTierAccent, pero con luminosidad baja y saturación contenida para
-// que funcione como background detrás de texto blanco sin verse encandilante
-// ni competir visualmente con la miniatura del nivel.
 function levelTierBodyColor(pos) {
   if (pos <= 10) {
     const t = (pos - 1) / 9;
