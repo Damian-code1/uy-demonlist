@@ -453,12 +453,12 @@ function buildGdStatsHtml(gd) {
           src="${diffFaceUrl}"
           onerror="this.closest('.lm-gd-face-col').style.display='none'"
           alt="${esc(gd.difficulty || 'Extreme Demon')}">
+        ${gd.stars ? `<div class="lm-gd-face-stars"><i class="fas fa-star" style="font-size:.65rem"></i> ${gd.stars}</div>` : ''}
+        ${gd.moons ? `<div class="lm-gd-face-moons"><i class="fas fa-moon" style="font-size:.65rem"></i> ${gd.moons}</div>` : ''}
       </div>
       <div class="lm-gd-ingame-info">
         <div class="lm-gd-ingame-diff">${esc(gd.difficulty || 'Extreme Demon')}</div>
         <div class="lm-gd-ingame-rating lm-gd-rating-${ratingClass}">${ratingLabel}</div>
-        ${gd.stars ? `<div class="lm-gd-ingame-stars"><i class="fas fa-star" style="color:#f59e0b;font-size:.7rem"></i> ${gd.stars}</div>` : ''}
-        ${gd.moons ? `<div class="lm-gd-ingame-stars"><i class="fas fa-moon" style="color:#a78bfa;font-size:.7rem"></i> ${gd.moons}</div>` : ''}
       </div>
     </div>
     ${thumbUrl ? `

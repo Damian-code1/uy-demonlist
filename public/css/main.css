@@ -2055,30 +2055,39 @@ ul { list-style: none; }
   transition: background .18s;
 }
 .lm-edit-level-btn:hover { background: rgba(139,92,246,.2); }
-/* ─── GD Info Section — estilo in-game ─── */
 .lm-gd-divider {
   height: 1px; background: var(--border-s); margin: .85rem 0;
 }
 .lm-gd-ingame-card {
   display: flex; align-items: center; justify-content: space-between;
-  gap: .75rem;
+  gap: 1rem;
   background: rgba(0,0,0,.35);
-  border: 1px solid rgba(255,255,255,.07);
-  border-radius: 10px;
-  padding: .65rem .85rem;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 12px;
+  padding: .85rem 1rem;
   margin-bottom: .65rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 .lm-gd-ingame-left {
   display: flex; align-items: center; gap: .75rem; flex: 1; min-width: 0;
 }
 .lm-gd-face-col {
-  display: flex; flex-direction: column; align-items: center; gap: .28rem;
+  display: flex; flex-direction: column; align-items: center; gap: .3rem;
   flex-shrink: 0;
 }
+.lm-gd-face-stars {
+  display: flex; align-items: center; gap: .2rem;
+  font-size: .72rem; font-weight: 700; color: #fbbf24;
+}
+.lm-gd-face-moons {
+  display: flex; align-items: center; gap: .2rem;
+  font-size: .72rem; font-weight: 700; color: #a78bfa;
+}
 .lm-gd-face-img {
-  width: 62px; height: 62px; object-fit: contain;
+  width: 80px; height: 80px; object-fit: contain;
   image-rendering: pixelated;
-  filter: drop-shadow(0 0 10px rgba(0,0,0,.7));
+  filter: drop-shadow(0 0 12px rgba(0,0,0,.8));
 }
 .lm-gd-coins-row {
   display: flex; align-items: center; gap: .22rem;
@@ -2112,10 +2121,10 @@ ul { list-style: none; }
   font-size: .75rem; font-weight: 700; color: #fbbf24;
 }
 .lm-gd-thumb-wrap {
-  flex-shrink: 0; width: 120px; height: 68px;
-  border-radius: 8px; overflow: hidden;
-  border: 1px solid rgba(255,255,255,.1);
-  box-shadow: 0 4px 16px rgba(0,0,0,.5);
+  flex-shrink: 0; width: 200px; height: 112px;
+  border-radius: 10px; overflow: hidden;
+  border: 1px solid rgba(255,255,255,.12);
+  box-shadow: 0 6px 24px rgba(0,0,0,.6);
 }
 .lm-gd-thumb {
   width: 100%; height: 100%; object-fit: cover;
