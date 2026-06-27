@@ -5,6 +5,7 @@ let currentView      = localStorage.getItem('preferredView') || 'list';
 let activeModalLevel = null;
 let activeVictorIdx  = 0;
 let _lmGdStatsCache = {};
+const _gdClientCache = new Map();
 let favoritesView    = false;
 let userFavorites    = JSON.parse(localStorage.getItem('favorites') || '[]');
 
@@ -53,6 +54,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   await loadAredlMap();
   syncHeroStats();
   await syncFavoritesWithDB();
+  setTimeout(() => preloadGdStats?.(), 2500);
   renderLevels();
   setupSearch();
   setupViewToggles();
@@ -403,9 +405,7 @@ function paintGdStats(gd) {
   statsEl.style.display = 'flex';
 }
 
-// Mapeo de difficulty de GDBrowser → nombre del archivo en diff-faces
-// ─── diff-faces URL builder (estructura correcta del repo) ───
-// URL: https://autonick.github.io/diff-faces/levels/{type}/{difficulty}/{coins}/{rating}.png
+
 const _DF = 'https://autonick.github.io/diff-faces';
 
 const _DF_DIFF_MAP = {

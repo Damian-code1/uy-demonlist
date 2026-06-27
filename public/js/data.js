@@ -182,23 +182,50 @@ async function loadAredlMap() {
   }
 }
 
+const _gdClientCache = new Map();
+
 async function fetchGdBrowserInfo(levelName) {
+  const url = `${API_BASE}/gdbrowser?name=${encodeURIComponent(levelName)}`;
   try {
-    const res  = await fetch(`${API_BASE}/gdbrowser?name=${encodeURIComponent(levelName)}`);
+    if (_gdClientCache.has(url)) { const c = _gdClientCache.get(url); return c?.found ? c : null; }
+    const res  = await fetch(url);
     if (!res.ok) return null;
     const data = await res.json();
+    _gdClientCache.set(url, data);
     return data.found ? data : null;
   } catch { return null; }
 }
 
 async function fetchGdBrowserInfoById(gdLevelId) {
+  const url = `${API_BASE}/gdbrowser?id=${encodeURIComponent(gdLevelId)}`;
   try {
-    const res  = await fetch(`${API_BASE}/gdbrowser?id=${encodeURIComponent(gdLevelId)}`);
+    if (_gdClientCache.has(url)) { const c = _gdClientCache.get(url); return c?.found ? c : null; }
+    const res  = await fetch(url);
     if (!res.ok) return null;
     const data = await res.json();
+    _gdClientCache.set(url, data);
     return data.found ? data : null;
   } catch { return null; }
 }
+
+async function preloadGdStats() {
+  const levels = getLevelsData().slice(0, 40);
+  const BATCH  = 3;
+  for (let i = 0; i < levels.length; i += BATCH) {
+    await Promise.allSettled(levels.slice(i, i + BATCH).map(l => {
+      const url = l.gd_level_id
+        ? `${API_BASE}/gdbrowser?id=${encodeURIComponent(l.gd_level_id)}`
+        : `${API_BASE}/gdbrowser?name=${encodeURIComponent(l.name)}`;
+      if (_gdClientCache.has(url)) return Promise.resolve();
+      return fetch(url)
+        .then(r => r.ok ? r.json() : null)
+        .then(d => { if (d) _gdClientCache.set(url, d); })
+        .catch(() => {});
+    }));
+    await new Promise(r => setTimeout(r, 150));
+  }
+}
+window.preloadGdStats = preloadGdStats;
 
 function getLevelsData()  { return levelsData; }
 function getPlayersData() { return playersData; }
