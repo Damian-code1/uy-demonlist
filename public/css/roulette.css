@@ -534,6 +534,14 @@ input[type="range"]::-moz-range-progress {
   padding: 1.5rem 2rem 1.75rem;
   z-index: 2;
   transition: opacity .3s;
+  background: linear-gradient(
+    to top,
+    rgba(0,0,0,.82) 0%,
+    rgba(0,0,0,.55) 55%,
+    transparent 100%
+  );
+  user-select: none;
+  -webkit-user-select: none;
 }
 .rl-slot-machine.spinning .rl-slot-info { opacity: 0; }
 
@@ -556,16 +564,30 @@ input[type="range"]::-moz-range-progress {
   display: inline-flex;
   align-items: center;
   gap: .45rem;
-  padding: .25rem .8rem;
-  background: rgba(124,58,237,.2);
-  border: 1px solid rgba(124,58,237,.4);
+  padding: .28rem .9rem;
+  background: rgba(0,0,0,.55);
+  border: 1px solid rgba(124,58,237,.55);
   border-radius: 50px;
   font-size: .7rem;
   font-weight: 700;
   letter-spacing: .8px;
-  color: var(--violet);
+  color: #c4b5fd;
   text-transform: uppercase;
   margin-bottom: .3rem;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  user-select: none;
+  -webkit-user-select: none;
+}
+.rl-slot-pos-badge-notlisted {
+  border-color: rgba(148,163,184,.35);
+  color: #94a3b8;
+}
+.rl-slot-aredl-sub {
+  opacity: .75;
+  font-weight: 600;
+  letter-spacing: .3px;
+  text-transform: none;
 }
 .rl-slot-name {
   font-family: var(--font-title);
@@ -587,14 +609,21 @@ input[type="range"]::-moz-range-progress {
   align-items: center;
   gap: .35rem;
   padding: .22rem .65rem;
-  background: rgba(0,0,0,.4);
-  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(0,0,0,.55);
+  border: 1px solid rgba(255,255,255,.15);
   border-radius: 50px;
   font-size: .75rem;
-  color: rgba(255,255,255,.85);
-  backdrop-filter: blur(4px);
+  color: rgba(255,255,255,.9);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  user-select: none;
+  -webkit-user-select: none;
 }
 .rl-slot-chip i { font-size: .65rem; }
+.rl-slot-chip-nopts {
+  border-color: rgba(148,163,184,.25);
+  color: rgba(148,163,184,.7);
+}
 
 /* CONTROLES */
 .rl-controls {

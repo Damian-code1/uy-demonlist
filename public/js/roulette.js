@@ -602,9 +602,12 @@ async function animateSlotMachine(target) {
 
 function renderCurrentLevel(level) {
   const thumb    = level.thumb_url || null;
-  const pos      = level.position || '?';
+  const pos      = level.position || null;
   const aredlPos = level.aredl_position || null;
-  const pts      = level.points != null ? level.points : (typeof computeAutoPoints === 'function' ? computeAutoPoints(pos) : 1);
+  const inList   = pos !== null;
+  const pts      = !inList ? null
+    : level.points != null ? level.points
+    : (typeof computeAutoPoints === 'function' ? computeAutoPoints(pos) : null);
   const ytId     = level.youtube_id || extractYoutubeId(level.youtube_url);
 
   const thumbEl = document.getElementById('rlSlotThumb');
@@ -617,21 +620,25 @@ function renderCurrentLevel(level) {
   const infoEl = document.getElementById('rlSlotInfo');
   if (infoEl) {
     infoEl.innerHTML = `
-      <div class="rl-slot-pos-badge">
-        <i class="fas fa-list"></i> #${pos} en la lista
-        ${aredlPos ? `<span style="opacity:.7">· AREDL #${aredlPos}</span>` : ''}
+      <div class="rl-slot-pos-badge${!inList ? ' rl-slot-pos-badge-notlisted' : ''}">
+        ${inList
+          ? `<i class="fas fa-list"></i> #${pos} en la lista`
+          : `<i class="fas fa-globe"></i> No está en la lista UY`
+        }
+        ${aredlPos ? `<span class="rl-slot-aredl-sub">· AREDL #${aredlPos}</span>` : ''}
       </div>
       <div class="rl-slot-name">${esc(level.name)}</div>
       <div class="rl-slot-meta">
-        <span class="rl-slot-chip"><i class="fas fa-star" style="color:var(--gold)"></i>${pts.toLocaleString()} pts</span>
+        ${pts !== null
+          ? `<span class="rl-slot-chip"><i class="fas fa-star" style="color:var(--gold)"></i>${pts.toLocaleString()} pts</span>`
+          : `<span class="rl-slot-chip rl-slot-chip-nopts"><i class="fas fa-minus-circle"></i> Sin puntos</span>`
+        }
         ${level.victors?.length ? `<span class="rl-slot-chip"><i class="fas fa-flag-checkered" style="color:var(--violet)"></i>${level.victors.length} completion${level.victors.length !== 1 ? 's' : ''}</span>` : ''}
         ${level.aredl_level_id ? `
-<button class="rl-slot-chip rl-copy-id-btn" onclick="copyLevelId('${level.aredl_level_id}')">
-  <i class="fas fa-copy"></i> ID ${level.aredl_level_id}
-</button>
-` : ''}
-
-${ytId ? `<a href="https://youtube.com/watch?v=${ytId}" target="_blank" class="rl-slot-chip" style="color:var(--red);text-decoration:none;border-color:rgba(244,63,94,.3)"><i class="fab fa-youtube"></i> Ver showcase</a>` : ''}
+          <button class="rl-slot-chip rl-copy-id-btn" onclick="copyLevelId('${level.aredl_level_id}')">
+            <i class="fas fa-copy"></i> ID ${level.aredl_level_id}
+          </button>` : ''}
+        ${ytId ? `<a href="https://youtube.com/watch?v=${ytId}" target="_blank" class="rl-slot-chip" style="color:var(--red);text-decoration:none;border-color:rgba(244,63,94,.3)"><i class="fab fa-youtube"></i> Ver showcase</a>` : ''}
       </div>
     `;
   }
