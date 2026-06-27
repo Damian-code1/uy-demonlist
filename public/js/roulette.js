@@ -136,15 +136,25 @@ async function fetchLevels() {
 
 // Build pool
 function rebuildPool() {
+  const doneIds = new Set(
+    RL.session
+      .filter(s => s.status === 'completed' || s.status === 'failed' || s.status === 'skipped')
+      .map(s => s.level.id)
+  );
+
   if (RL.filterAllAredl) {
     const [minAredl, maxAredl] = RL.filterRange;
     const fromList = RL.levels.filter(l => {
       if (!l.aredl_position) return false;
-      return l.aredl_position >= minAredl && l.aredl_position <= maxAredl;
+      if (l.aredl_position < minAredl || l.aredl_position > maxAredl) return false;
+      if (doneIds.has(l.id)) return false;
+      return true;
     });
     const fromAredl = RL.aredlLevels.filter(l => {
       if (!l.aredl_position) return false;
-      return l.aredl_position >= minAredl && l.aredl_position <= maxAredl;
+      if (l.aredl_position < minAredl || l.aredl_position > maxAredl) return false;
+      if (doneIds.has(l.id)) return false;
+      return true;
     });
     RL.pool = [...fromList, ...fromAredl];
     RL.pool.sort((a, b) => (a.aredl_position || 9999) - (b.aredl_position || 9999));
@@ -160,12 +170,7 @@ function rebuildPool() {
     const pos = l.position || 999;
     if (pos < minPos || pos > maxPos) return false;
     if (RL.filterAredlOnly && !l.aredl_position) return false;
-    if (
-  RL.session.some(
-    s => s.level.id === l.id &&
-    (s.status === 'completed' || s.status === 'failed' || s.status === 'skipped')
-  )
-) return false;
+    if (doneIds.has(l.id)) return false;
     return true;
   });
   document.getElementById('rlStatPool').textContent = RL.pool.length;
@@ -492,11 +497,9 @@ function loadSession() {
       ? [1, Math.min(data.filterRange[1] || total, total)]
       : [1, total];
     RL.filterAredlOnly = hasSessionToResume ? !!data.filterAredlOnly : false;
-    RL.filterAllAredl  = hasSessionToResume ? !!data.filterAllAredl  : false;
-    if (RL.filterAllAredl) {
-      const allAredlCb = document.getElementById('rlAllAredl');
-      if (allAredlCb) allAredlCb.checked = true;
-    }
+    RL.filterAllAredl = !!data.filterAllAredl;
+    const allAredlCb = document.getElementById('rlAllAredl');
+    if (allAredlCb) allAredlCb.checked = RL.filterAllAredl;
     RL.revealHidden = !!data.revealHidden;
     const slider = document.getElementById('rlGoalSlider');
     const value = document.getElementById('rlGoalVal');
