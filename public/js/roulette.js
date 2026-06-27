@@ -339,6 +339,7 @@ if (rangeMax) {
       RL.filterRange = [1, totalUY];
       if (rangeEl) { rangeEl.max = totalUY; rangeEl.value = totalUY; }
     }
+    syncManualFromSlider();
     updateRangeDisplay();
     rebuildPool();
     saveSession();
