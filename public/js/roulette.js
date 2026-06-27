@@ -321,16 +321,22 @@ if (rangeMax) {
 
   document.getElementById('rlAllAredl')?.addEventListener('change', e => {
     RL.filterAllAredl = e.target.checked;
+    const rangeEl = document.getElementById('rlRangeMax');
     if (RL.filterAllAredl) {
       RL.filterAredlOnly = false;
       const aredlOnlyCb = document.getElementById('rlAredlOnly');
       if (aredlOnlyCb) aredlOnlyCb.checked = false;
       const totalAredl = RL.aredlLevels.length + RL.levels.filter(l => l.aredl_position).length;
       RL.filterRange = [1, totalAredl || RL.filterRange[1]];
+      if (rangeEl) { rangeEl.max = RL.filterRange[1]; rangeEl.value = RL.filterRange[1]; }
     } else {
-      RL.filterRange = [1, RL.levels.length || 1];
+      const totalUY = RL.levels.length || 1;
+      RL.filterRange = [1, totalUY];
+      if (rangeEl) { rangeEl.max = totalUY; rangeEl.value = totalUY; }
     }
+    updateRangeDisplay();
     rebuildPool();
+    saveSession();
   });
 
   document.getElementById('rlAredlOnly')?.addEventListener('change', e => {
@@ -406,9 +412,19 @@ function showSurrenderBanner() {
     banner = document.createElement('div');
     banner.id = 'rlSurrenderBanner';
     banner.className = 'rl-surrender-banner';
-    banner.innerHTML = '<i class="fas fa-skull-crossbones"></i> Sesión terminada — te rendiste. Iniciá una nueva sesión para continuar.';
     document.getElementById('rlSlotSection')?.prepend(banner);
   }
+  banner.innerHTML = `
+    <div class="rl-surrender-banner-left">
+      <i class="fas fa-skull-crossbones"></i>
+      <div>
+        <div class="rl-surrender-title">Sesión terminada</div>
+        <div class="rl-surrender-sub">Te rendiste. Para continuar necesitás limpiar e iniciar de nuevo.</div>
+      </div>
+    </div>
+    <button class="rl-surrender-clear-btn" onclick="document.getElementById('rlHistoryClear')?.click()">
+      <i class="fas fa-trash-alt"></i> Limpiar y empezar de nuevo
+    </button>`;
   banner.style.display = '';
 }
 
@@ -417,12 +433,21 @@ function hideSurrenderBanner() {
   if (banner) banner.style.display = 'none';
 }
 
+function _getSliderTotal() {
+  if (RL.filterAllAredl) {
+    return RL.aredlLevels.length + RL.levels.filter(l => l.aredl_position).length || 1;
+  }
+  return RL.levels.length || parseInt(document.getElementById('rlRangeMax')?.max, 10) || 1;
+}
+
 function updateRangeDisplay() {
-  const maxEl = document.getElementById('rlRangeMaxVal');
-  const total = RL.levels.length || parseInt(document.getElementById('rlRangeMax')?.max, 10) || 1;
+  const maxEl   = document.getElementById('rlRangeMaxVal');
+  const total   = _getSliderTotal();
   const current = RL.filterRange[1];
   if (maxEl) {
-    maxEl.textContent = current >= total ? `${total} de ${total}` : `#1 – #${current} de ${total}`;
+    maxEl.textContent = current >= total
+      ? `Full lista (${total} niveles)`
+      : `#1 – #${current} de ${total}`;
   }
 }
 
@@ -684,9 +709,28 @@ function resetSlotDisplay() {
 }
 
 // Complete / fail / skip
+function _getEffectiveCompletedCount() {
+  let count = 0;
+  let prevPct = null;
+  const ordered = [...RL.session].reverse().filter(s => s.status === 'completed');
+  for (const s of ordered) {
+    const pct = s.percentage ?? 100;
+    if (prevPct === null) {
+      count++;
+    } else {
+      const skipped = Math.max(0, pct - prevPct - 1);
+      count += skipped + 1;
+    }
+    prevPct = pct;
+  }
+  return count;
+}
+
 function finalizeComplete(percentage) {
   if (isSessionEnded()) return;
   if (!RL.current) return;
+
+  const prevPct = getLastRecordedPercentage();
   const entry = RL.session.find(s => s.level.id === RL.current.id);
   if (entry) {
     entry.status     = 'completed';
@@ -694,18 +738,22 @@ function finalizeComplete(percentage) {
     entry.timestamp  = Date.now();
   }
 
-  const completedCount = RL.session.filter(s => s.status === 'completed').length;
-  const isFull = percentage >= 100;
+  const effectiveCount = _getEffectiveCompletedCount();
+  const isFull  = percentage >= 100;
+  const skipped = prevPct != null ? Math.max(0, percentage - prevPct - 1) : 0;
 
-  showRlToast(
-    isFull ? `¡${RL.current.name} completado al 100%! 🔥` : `${RL.current.name} — ${percentage}% registrado ✓`,
-    'success'
-  );
+  let toastMsg = isFull
+    ? `¡${RL.current.name} completado al 100%! 🔥`
+    : `${RL.current.name} — ${percentage}% registrado ✓`;
+  if (skipped > 0) {
+    toastMsg += ` · ${skipped} porcentaje${skipped > 1 ? 's' : ''} saltado${skipped > 1 ? 's' : ''} (quedan ${Math.max(0, RL.totalGoal - effectiveCount)})`;
+  }
+
+  showRlToast(toastMsg, 'success');
   if (isFull) launchConfetti();
-  console.trace('SAVE');
   saveSession();
 
-  if (completedCount >= RL.totalGoal) {
+  if (effectiveCount >= RL.totalGoal) {
     setTimeout(showFinishModal, 800);
     return;
   }
@@ -716,7 +764,6 @@ function finalizeComplete(percentage) {
   updateSessionStats();
 
   RL.current = null;
-  console.trace('SAVE');
   saveSession();
   resetSlotDisplay();
   updateButtons();
@@ -781,11 +828,11 @@ function handleSkip() {
 
 // Progress UI
 function updateProgressUI() {
-  const completed = RL.session.filter(s => s.status === 'completed').length;
+  const completed = _getEffectiveCompletedCount();
   const skipped   = RL.session.filter(s => s.status === 'skipped').length;
   const failed    = RL.session.filter(s => s.status === 'failed').length;
   const total     = RL.totalGoal;
-  const pct       = total > 0 ? Math.round((completed / total) * 100) : 0;
+  const pct       = total > 0 ? Math.min(100, Math.round((completed / total) * 100)) : 0;
 
   const bar = document.getElementById('rlProgressFill');
   if (bar) bar.style.width = pct + '%';
@@ -892,12 +939,17 @@ function renderHistory() {
   list.style.display = '';
 
   list.innerHTML = RL.session.map((entry, i) => {
-    const level  = entry.level;
-    const thumb  = level.thumb_url || null;
-    const ytId   = level.youtube_id || extractYoutubeId(level.youtube_url);
-    const pos    = level.position || '?';
-    const pts    = level.points != null ? level.points : (typeof computeAutoPoints === 'function' ? computeAutoPoints(pos) : 1);
-    const num    = RL.session.length - i;
+    const level   = entry.level;
+    const thumb   = level.thumb_url || null;
+    const ytId    = level.youtube_id || extractYoutubeId(level.youtube_url);
+    const inList  = level.position != null && !isNaN(level.position);
+    const pos     = inList ? level.position : null;
+    const pts     = inList
+      ? (level.points != null ? level.points : (typeof computeAutoPoints === 'function' ? computeAutoPoints(pos) : null))
+      : null;
+    const num     = RL.session.length - i;
+    const posLabel = inList ? `#${pos} en la lista` : 'No está en la lista UY';
+    const ptsLabel = pts != null ? `${pts.toLocaleString()} pts` : 'Sin puntos';
 
     let statusHtml;
     const pctBadge = entry.percentage != null
@@ -923,9 +975,9 @@ function renderHistory() {
         <div class="rl-history-info">
           <div class="rl-history-name">${esc(level.name)}</div>
           <div class="rl-history-meta">
-            <span>#${pos} en lista</span>
+            <span>${posLabel}</span>
             <span>·</span>
-            <span>${pts.toLocaleString()} pts</span>
+            <span>${ptsLabel}</span>
             ${level.aredl_position ? `<span>· AREDL #${level.aredl_position}</span>` : ''}
           </div>
         </div>
