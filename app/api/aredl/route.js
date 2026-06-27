@@ -22,10 +22,18 @@ export async function GET(request) {
       return Response.json({ levels: cache || [], error: `HTTP ${res.status}` });
     }
 
-    const list = await res.json();
-    if (!Array.isArray(list)) {
-      console.error('[AREDL] Unexpected shape:', JSON.stringify(list).slice(0, 200));
-      return Response.json({ levels: cache || [], error: 'Unexpected response' });
+    const raw = await res.json();
+    // La API puede devolver el array directo o { data: [...] } o { levels: [...] }
+    const list = Array.isArray(raw)
+      ? raw
+      : Array.isArray(raw?.data)    ? raw.data
+      : Array.isArray(raw?.levels)  ? raw.levels
+      : Array.isArray(raw?.results) ? raw.results
+      : null;
+
+    if (!list) {
+      console.error('[AREDL] Unexpected shape:', JSON.stringify(raw).slice(0, 300));
+      return Response.json({ levels: cache || [], error: 'Unexpected response shape' });
     }
 
     cache = list.map(e => ({
