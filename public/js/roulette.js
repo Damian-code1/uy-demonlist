@@ -323,14 +323,16 @@ function initControls() {
   });
 
   const rangeMax = document.getElementById('rlRangeMax');
+  if (rangeMax) {
+    rangeMax.addEventListener('input', () => {
+      RL.filterRange[1] = parseInt(rangeMax.value, 10);
+      updateRangeDisplay();
+      rebuildPool();
+      updatePoolStats();
+    });
+  }
 
-if (rangeMax) {
-  rangeMax.addEventListener('input', () => {
-    RL.filterRange[1] = parseInt(rangeMax.value, 10);
-    updateRangeDisplay();
-    rebuildPool();
-  });
-}
+  initManualRange();
 
   document.getElementById('rlAllAredl')?.addEventListener('change', e => {
     RL.filterAllAredl = e.target.checked;
@@ -512,159 +514,127 @@ function updateRangeDisplay() {
   }
 }
 
-// syncManualFromSlider ahora está definida a nivel de módulo (arriba de loadSession)
-  // para evitar el ReferenceError cuando se llama desde listeners externos.
+
+function syncManualFromSlider() {
+  const manualMin = document.getElementById('rlManualMin');
+  const manualMax = document.getElementById('rlManualMax');
+  const total     = _getSliderTotal();
+  const current   = RL.filterRange[1];
+  if (manualMin) manualMin.value = RL.filterRange[0] || 1;
+  if (manualMax) {
+    manualMax.value       = current;
+    manualMax.max         = total;
+    manualMax.placeholder = String(total);
+  }
+}
 
 function saveSession() {
-  const data = {
-    session:      RL.session,
-    current:      RL.current,
+  localStorage.setItem(RL_STORAGE_KEY, JSON.stringify({
+    session:       RL.session,
+    current:       RL.current,
     sessionActive: RL.sessionActive,
-    surrendered:  RL.surrendered,
-    totalGoal:    RL.totalGoal,
-  };
-
-  console.log('[ROULETTE SAVE]', data);
-
-  localStorage.setItem(
-    RL_STORAGE_KEY,
-    JSON.stringify(data)
-  );
+    surrendered:   RL.surrendered,
+    totalGoal:     RL.totalGoal,
+  }));
 }
 
 function loadSession() {
   try {
     const raw = localStorage.getItem(RL_STORAGE_KEY);
     if (!raw) return;
-
     const data = JSON.parse(raw);
 
-    RL.session = data.session || [];
-    RL.current = data.current || null;
+    RL.session       = data.session || [];
+    RL.current       = data.current || null;
     RL.sessionActive = !!data.sessionActive;
-    RL.surrendered = !!data.surrendered || RL.session.some(s => s.status === 'failed');
+    RL.surrendered   = !!data.surrendered || RL.session.some(s => s.status === 'failed');
 
-    const hasSessionToResume = RL.sessionActive || RL.session.length > 0;
     const total = RL.levels.length || RL.filterRange[1];
-
-    RL.totalGoal = hasSessionToResume ? (data.totalGoal || 100) : 100;
-    RL.filterRange    = [1, total];
+    RL.totalGoal       = (RL.sessionActive || RL.session.length > 0) ? (data.totalGoal || 100) : 100;
+    RL.filterRange     = [1, total];
     RL.filterAredlOnly = false;
     RL.filterAllAredl  = false;
-    const allAredlCb = document.getElementById('rlAllAredl');
-    if (allAredlCb) allAredlCb.checked = false;
-    RL.revealHidden = !!data.revealHidden;
+    RL.revealHidden    = !!data.revealHidden;
+
     const slider = document.getElementById('rlGoalSlider');
-    const value = document.getElementById('rlGoalVal');
+    const valEl  = document.getElementById('rlGoalVal');
+    const range  = document.getElementById('rlRangeMax');
+    if (slider) slider.value      = RL.totalGoal;
+    if (valEl)  valEl.textContent = RL.totalGoal;
+    if (range)  range.value       = RL.filterRange[1];
 
-    if (slider) slider.value = RL.totalGoal;
-    if (value) value.textContent = RL.totalGoal;
-    const range = document.getElementById('rlRangeMax');
-  if (range) range.value = RL.filterRange[1];
+    document.getElementById('rlAllAredl').checked  = false;
+    document.getElementById('rlAredlOnly').checked = false;
+    const hide = document.getElementById('rlHideLevel');
+    if (hide) hide.checked = RL.revealHidden;
 
-  const manualMin   = document.getElementById('rlManualMin');
-  const manualMax   = document.getElementById('rlManualMax');
-  const applyBtn    = document.getElementById('rlManualApply');
-  const resetBtn    = document.getElementById('rlManualReset');
+    syncManualFromSlider();
 
-  function syncManualFromSlider() {
-    const total   = _getSliderTotal();
-    const current = RL.filterRange[1];
-    if (manualMin) manualMin.value = RL.filterRange[0] || 1;
-    if (manualMax) {
-      manualMax.value = current;
-      manualMax.max   = total;
-      manualMax.placeholder = String(total);
-    }
-    if (applyBtn) {
-      applyBtn.classList.remove('rl-applied', 'rl-error');
-    }
+    if (RL.surrendered) showSurrenderBanner();
+  } catch (err) {
+    console.error('Roulette save corrupted', err);
   }
+}
+
+function initManualRange() {
+  const manualMin = document.getElementById('rlManualMin');
+  const manualMax = document.getElementById('rlManualMax');
+  const resetBtn  = document.getElementById('rlManualReset');
+  const range     = document.getElementById('rlRangeMax');
 
   function applyManualRange() {
     const total  = _getSliderTotal();
     const rawMin = parseInt(manualMin?.value || '1', 10);
-    const rawMax = parseInt(manualMax?.value  || String(total), 10);
-
+    const rawMax = parseInt(manualMax?.value || String(total), 10);
     const minVal = Math.max(1, isNaN(rawMin) ? 1 : rawMin);
     const maxVal = Math.min(total, isNaN(rawMax) ? total : rawMax);
-
     if (minVal > maxVal) {
-      applyBtn?.classList.add('rl-error');
-      setTimeout(() => applyBtn?.classList.remove('rl-error'), 800);
-      if (typeof showToast === 'function') showToast('El mínimo no puede ser mayor al máximo', 'error');
+      showRlToast('El mínimo no puede ser mayor al máximo', 'error');
       return;
     }
-
     RL.filterRange = [minVal, maxVal];
-    if (range) {
-      range.min   = minVal;
-      range.value = maxVal;
-    }
+    if (range) { range.min = minVal; range.value = maxVal; }
     updateRangeDisplay();
     rebuildPool();
+    updatePoolStats();
     saveSession();
-
-    applyBtn?.classList.add('rl-applied');
-    setTimeout(() => applyBtn?.classList.remove('rl-applied'), 1200);
-    if (typeof showToast === 'function')
-      showToast(`Rango aplicado: #${minVal} – #${maxVal}`, 'success');
+    showRlToast(`Rango: #${minVal} – #${maxVal} (${RL.pool.length} niveles)`, 'success');
   }
 
-  if (applyBtn) applyBtn.addEventListener('click', applyManualRange);
-
-  if (resetBtn) resetBtn.addEventListener('click', () => {
+  resetBtn?.addEventListener('click', () => {
     const total = _getSliderTotal();
     RL.filterRange = [1, total];
-    if (range) { range.min = 1; range.value = total; }
-    if (manualMin) manualMin.value = 1;
+    if (range)     { range.min = 1; range.value = total; }
+    if (manualMin)   manualMin.value = 1;
     if (manualMax) { manualMax.value = total; manualMax.max = total; }
     updateRangeDisplay();
     rebuildPool();
+    updatePoolStats();
     saveSession();
-    if (typeof showToast === 'function') showToast('Rango restablecido a full lista', 'info');
+    showRlToast('Rango restablecido a full lista', 'info');
   });
 
   [manualMin, manualMax].forEach(inp => {
     if (!inp) return;
-    inp.addEventListener('keydown', e => {
-      if (e.key === 'Enter') applyManualRange();
-    });
+    inp.addEventListener('keydown', e => { if (e.key === 'Enter') applyManualRange(); });
     inp.addEventListener('input', () => {
       const total  = _getSliderTotal();
       let rawMin   = parseInt(manualMin?.value || '1', 10);
-      let rawMax   = parseInt(manualMax?.value  || String(total), 10);
-
+      let rawMax   = parseInt(manualMax?.value || String(total), 10);
       if (!isNaN(rawMax) && rawMax > total) { manualMax.value = total; rawMax = total; }
       if (!isNaN(rawMin) && rawMin < 1)     { manualMin.value = 1;     rawMin = 1;     }
-
-      const validMin = isNaN(rawMin) ? 1     : Math.max(1,     Math.min(rawMin, total));
+      const validMin = isNaN(rawMin) ? 1     : Math.max(1, Math.min(rawMin, total));
       const validMax = isNaN(rawMax) ? total : Math.max(validMin, Math.min(rawMax, total));
-      if (range) {
-        range.min   = validMin;
-        range.value = validMax;
-      }
+      if (range) { range.min = validMin; range.value = validMax; }
       RL.filterRange = [validMin, validMax];
       updateRangeDisplay();
-      applyBtn?.classList.remove('rl-applied', 'rl-error');
+      rebuildPool();
+      updatePoolStats();
     });
   });
 
-  if (range) range.addEventListener('input', syncManualFromSlider);
-
+  range?.addEventListener('input', syncManualFromSlider);
   syncManualFromSlider();
-
-    const aredl = document.getElementById('rlAredlOnly');
-    if (aredl) aredl.checked = RL.filterAredlOnly;
-
-    const hide = document.getElementById('rlHideLevel');
-    if (hide) hide.checked = RL.revealHidden;
-
-    if (RL.surrendered) showSurrenderBanner();
-
-  } catch (err) {
-    console.error('Roulette save corrupted', err);
-  }
 }
 
 // Session management
@@ -686,20 +656,17 @@ function startSession() {
 }
 
 function resetSession() {
-  RL.session = [];
+  RL.session       = [];
   RL.sessionActive = false;
-  RL.surrendered = false;
-  RL.current = null;
+  RL.surrendered   = false;
+  RL.current       = null;
   hideSurrenderBanner();
-  console.trace('SAVE');
   resetSlotDisplay();
   updateButtons();
   rebuildPool();
   renderHistory();
   updateProgressUI();
   updateSessionStats();
-  resetSlotDisplay();
-  console.trace('SAVE');
   saveSession();
 }
 
@@ -751,7 +718,6 @@ if (RL.current) {
 
   const chosen = RL.pool[Math.floor(Math.random() * RL.pool.length)];
   RL.current = chosen;
-  console.trace('SAVE');
   saveSession();
 
   const machine = document.getElementById('rlSlotMachine');
@@ -839,7 +805,6 @@ const existing = RL.session.find(
   renderHistory();
   updateProgressUI();
   updateSessionStats();
-  console.trace('SAVE');
   saveSession();
 }
 
@@ -968,7 +933,6 @@ function handleSkip() {
   updateSessionStats();
 
   RL.current = null;
-  console.trace('SAVE');
   saveSession();
   resetSlotDisplay();
   updateButtons();
