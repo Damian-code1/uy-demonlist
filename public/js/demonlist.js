@@ -459,7 +459,7 @@ function buildGdStatsHtml(gd) {
       </div>
     </div>
     ${thumbUrl ? `
-    <div class="lm-gd-thumb-wrap">
+    <div class="lm-gd-thumb-wrap" onclick="openThumbPopup('${esc(thumbUrl)}')" title="Ver thumbnail completa">
       <img class="lm-gd-thumb" src="${thumbUrl}" loading="lazy"
         onerror="this.closest('.lm-gd-thumb-wrap').style.display='none'">
     </div>` : ''}
@@ -725,6 +725,108 @@ function refreshOpenLevelModal(levelId) {
 window.refreshOpenLevelModal = refreshOpenLevelModal;
 
 
+let _listFilter = 'all';
+
+function setListFilter(filter, label, el) {
+  _listFilter = filter;
+  document.getElementById('listFilterLabel').textContent = label;
+  document.querySelectorAll('.list-filter-option').forEach(b => b.classList.remove('active'));
+  el?.classList.add('active');
+  closeListFilterMenu();
+
+  // Actualizar placeholder del input
+  const input = document.getElementById('searchInput');
+  if (input) {
+    const placeholders = {
+      all:       'Buscar nivel o jugador…',
+      level:     'Buscar por nombre de nivel…',
+      player:    'Buscar por jugador / victor…',
+      top3:      '',
+      withvideo: '',
+    };
+    input.placeholder = placeholders[filter] ?? 'Buscar…';
+  }
+
+  applyListSearch();
+}
+window.setListFilter = setListFilter;
+
+function toggleListFilterMenu() {
+  const menu    = document.getElementById('listFilterMenu');
+  const chevron = document.getElementById('listFilterChevron');
+  const btn     = document.getElementById('listFilterBtn');
+  const isOpen  = menu.classList.toggle('open');
+  chevron?.classList.toggle('rotated', isOpen);
+  btn?.classList.toggle('open', isOpen);
+}
+window.toggleListFilterMenu = toggleListFilterMenu;
+
+function closeListFilterMenu() {
+  document.getElementById('listFilterMenu')?.classList.remove('open');
+  document.getElementById('listFilterChevron')?.classList.remove('rotated');
+  document.getElementById('listFilterBtn')?.classList.remove('open');
+}
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('#listFilterDropdown')) closeListFilterMenu();
+});
+
+function applyListSearch() {
+  const input = document.getElementById('searchInput');
+  const q     = (input?.value || '').trim();
+  const ql    = q.toLowerCase();
+
+  const normalize = typeof normalizeForSearch === 'function'
+    ? normalizeForSearch
+    : s => s.replace(/[\uff01-\uff5e]/g, c =>
+        String.fromCharCode(c.charCodeAt(0) - 0xfee0)
+      ).replace(/\u3000/g, ' ').toLowerCase().trim();
+
+  let base = [...getLevelsData()];
+
+  // Filtros sin texto
+  if (_listFilter === 'top3') {
+    filteredLevels = base.filter(l => (l.position || 999) <= 3);
+    paintCards(filteredLevels, false);
+    return;
+  }
+  if (_listFilter === 'withvideo') {
+    filteredLevels = base.filter(l =>
+      l.youtube_url || (l.victors || []).some(v => v.videoUrl)
+    );
+    paintCards(filteredLevels, false);
+    return;
+  }
+
+  if (!q) {
+    filteredLevels = base;
+    paintCards(filteredLevels, false);
+    return;
+  }
+
+  const qlNorm = ql.replace(/\s+/g, '');
+  const qlFull = normalize(ql);
+
+  filteredLevels = base.filter(l => {
+    const name     = l.name?.toLowerCase() || '';
+    const nameNorm = name.replace(/\s+/g, '');
+    const nameFull = normalize(l.name || '');
+
+    const matchName = name.includes(ql) || nameNorm.includes(qlNorm) ||
+      nameFull.includes(qlFull);
+
+    const matchPlayer = (l.victors || []).some(v =>
+      v.name?.toLowerCase().includes(ql)
+    );
+
+    if (_listFilter === 'level')  return matchName;
+    if (_listFilter === 'player') return matchPlayer;
+    return matchName || matchPlayer;
+  });
+
+  paintCards(filteredLevels, false);
+}
+
 function setupSearch() {
   const input    = document.getElementById('searchInput');
   const clearBtn = document.getElementById('listSearchClear');
@@ -735,30 +837,7 @@ function setupSearch() {
     const q = input.value.trim();
     if (clearBtn) clearBtn.style.display = q ? '' : 'none';
     clearTimeout(debounce);
-    debounce = setTimeout(() => {
-      const ql = q.toLowerCase().trim();
-      const qlNorm = ql.replace(/\s+/g, '');
-      const normalize = typeof normalizeForSearch === 'function'
-        ? normalizeForSearch
-        : s => s.replace(/[\uff01-\uff5e]/g, c =>
-            String.fromCharCode(c.charCodeAt(0) - 0xfee0)
-          ).replace(/\u3000/g, ' ').toLowerCase().trim();
-      const qlFull = normalize(ql);
-      filteredLevels = !ql
-        ? [...getLevelsData()]
-        : getLevelsData().filter(l => {
-            const name = l.name?.toLowerCase() || '';
-            const nameNorm = name.replace(/\s+/g, '');
-            const nameFull = normalize(l.name || '');
-            const nameFullNorm = nameFull.replace(/\s+/g, '');
-            return name.includes(ql) ||
-              nameNorm.includes(qlNorm) ||
-              nameFull.includes(qlFull) ||
-              nameFullNorm.includes(qlFull.replace(/\s+/g, '')) ||
-              (l.victors||[]).some(v => v.name?.toLowerCase().includes(ql));
-          });
-      paintCards(filteredLevels, false);
-    }, 200);
+    debounce = setTimeout(applyListSearch, 200);
   });
 
   clearBtn?.addEventListener('click', () => {
@@ -1832,6 +1911,21 @@ async function postLevelComment(levelId, content) {
 window.openLevelModal        = openLevelModal;
 window.closeLevelDetailModal = closeLevelDetailModal;
 window.scrollToSubmissions   = scrollToSubmissions;
+
+function openThumbPopup(url) {
+  const existing = document.getElementById('lmThumbPopup');
+  if (existing) existing.remove();
+  const overlay = document.createElement('div');
+  overlay.id = 'lmThumbPopup';
+  overlay.className = 'lm-thumb-popup-overlay';
+  overlay.innerHTML = `<img class="lm-thumb-popup-img" src="${url}" alt="Thumbnail">`;
+  overlay.addEventListener('click', () => overlay.remove());
+  document.addEventListener('keydown', function esc(e) {
+    if (e.key === 'Escape') { overlay.remove(); document.removeEventListener('keydown', esc); }
+  });
+  document.body.appendChild(overlay);
+}
+window.openThumbPopup = openThumbPopup;
 
 function goToMyRanking() {
   if (typeof closeUserDropdown === 'function') closeUserDropdown();

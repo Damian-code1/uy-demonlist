@@ -233,12 +233,38 @@
     </div>
 
     <div class="list-controls" data-aos="fade-up" data-aos-delay="80">
-      <div class="search-box enhanced-search" id="listSearchWrap">
-        <i class="fas fa-search search-icon-left"></i>
-        <input type="text" id="searchInput" placeholder="Buscar nivel…" autocomplete="off">
-        <button type="button" class="search-clear-btn" id="listSearchClear" style="display:none" title="Limpiar búsqueda">
-          <i class="fas fa-times-circle"></i>
-        </button>
+      <div class="list-search-group">
+        <div class="list-filter-dropdown" id="listFilterDropdown">
+          <button class="list-filter-btn" id="listFilterBtn" onclick="toggleListFilterMenu()">
+            <i class="fas fa-filter"></i>
+            <span id="listFilterLabel">Todo</span>
+            <i class="fas fa-chevron-down list-filter-chevron" id="listFilterChevron"></i>
+          </button>
+          <div class="list-filter-menu" id="listFilterMenu">
+            <button class="list-filter-option active" data-filter="all" onclick="setListFilter('all', 'Todo', this)">
+              <i class="fas fa-border-all"></i> Todo
+            </button>
+            <button class="list-filter-option" data-filter="level" onclick="setListFilter('level', 'Nivel', this)">
+              <i class="fas fa-skull"></i> Nombre del nivel
+            </button>
+            <button class="list-filter-option" data-filter="player" onclick="setListFilter('player', 'Jugador', this)">
+              <i class="fas fa-user"></i> Jugador / Victor
+            </button>
+            <button class="list-filter-option" data-filter="top3" onclick="setListFilter('top3', 'Top 3', this)">
+              <i class="fas fa-crown"></i> Solo top 3
+            </button>
+            <button class="list-filter-option" data-filter="withvideo" onclick="setListFilter('withvideo', 'Con video', this)">
+              <i class="fab fa-youtube"></i> Con video
+            </button>
+          </div>
+        </div>
+        <div class="search-box enhanced-search list-search-box" id="listSearchWrap">
+          <i class="fas fa-search search-icon-left"></i>
+          <input type="text" id="searchInput" placeholder="Buscar nivel…" autocomplete="off">
+          <button type="button" class="search-clear-btn" id="listSearchClear" style="display:none" title="Limpiar búsqueda">
+            <i class="fas fa-times-circle"></i>
+          </button>
+        </div>
       </div>
       <div class="list-controls-right">
         <button class="fav-view-btn" id="favViewBtn" title="Ver favoritos">

@@ -209,8 +209,8 @@ async function fetchGdBrowserInfoById(gdLevelId) {
 }
 
 async function preloadGdStats() {
-  const levels = getLevelsData().slice(0, 40);
-  const BATCH  = 3;
+  const levels = getLevelsData();
+  const BATCH  = 5;
   let loaded = 0;
   for (let i = 0; i < levels.length; i += BATCH) {
     await Promise.allSettled(levels.slice(i, i + BATCH).map(l => {
@@ -223,7 +223,7 @@ async function preloadGdStats() {
         .then(d => { if (d) { _gdClientCache.set(url, d); loaded++; } })
         .catch(() => {});
     }));
-    await new Promise(r => setTimeout(r, 150));
+    await new Promise(r => setTimeout(r, 80));
   }
   console.log(`GDBrowser: ${loaded} niveles precargados`);
 }
