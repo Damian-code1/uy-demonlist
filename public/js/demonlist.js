@@ -5,7 +5,6 @@ let currentView      = localStorage.getItem('preferredView') || 'list';
 let activeModalLevel = null;
 let activeVictorIdx  = 0;
 let _lmGdStatsCache = {};
-const _gdClientCache = new Map();
 let favoritesView    = false;
 let userFavorites    = JSON.parse(localStorage.getItem('favorites') || '[]');
 
