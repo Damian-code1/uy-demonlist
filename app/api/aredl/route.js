@@ -3,8 +3,8 @@ let cacheTime = 0;
 const TTL = 1000 * 60 * 5; // 5 minutos
 
 const AREDL_URLS = [
+  'https://api.aredl.net/v2/api/aredl/levels',
   'https://api.aredl.net/api/aredl/levels',
-  'https://aredl.net/api/aredl/levels',
 ];
 
 export async function GET(request) {
@@ -48,7 +48,6 @@ export async function GET(request) {
     }
 
     const raw = await res.json();
-    // La API puede devolver el array directo o { data: [...] } o { levels: [...] }
     const list = Array.isArray(raw)
       ? raw
       : Array.isArray(raw?.data)    ? raw.data
@@ -66,7 +65,7 @@ export async function GET(request) {
       position: e.position,
       level_id: e.level_id,
       points:   e.points,
-      video_id: e.video_id || null, // ID del video de YouTube del showcase en AREDL
+      video_id: e.video_id || null, 
     }));
     cacheTime = Date.now();
 
