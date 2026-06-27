@@ -116,12 +116,20 @@ async function fetchLevels() {
   document.getElementById('rlStatAredl').textContent = withAredl;
 
   const total = RL.levels.length || 1;
-  RL.filterRange[1] = total;
-  const rangeEl = document.getElementById('rlRangeMax');
-  if (rangeEl) {
-    rangeEl.max   = total;
-    rangeEl.value = total;
+
+  if (RL.filterAllAredl) {
+    const totalAredl = RL.aredlLevels.length + RL.levels.filter(l => l.aredl_position).length;
+    RL.filterRange = [1, totalAredl || total];
+    const allAredlCb = document.getElementById('rlAllAredl');
+    if (allAredlCb) allAredlCb.checked = true;
+    const rangeEl = document.getElementById('rlRangeMax');
+    if (rangeEl) { rangeEl.max = RL.filterRange[1]; rangeEl.value = RL.filterRange[1]; }
+  } else {
+    RL.filterRange[1] = total;
+    const rangeEl = document.getElementById('rlRangeMax');
+    if (rangeEl) { rangeEl.max = total; rangeEl.value = total; }
   }
+
   updateRangeDisplay();
   rebuildPool();
 }
@@ -333,6 +341,7 @@ if (rangeMax) {
       if (allAredlCb) allAredlCb.checked = false;
     }
     rebuildPool();
+    saveSession();
   });
 
   document.getElementById('rlHideLevel')?.addEventListener('change', e => {
@@ -453,7 +462,7 @@ function loadSession() {
     const hasSessionToResume = RL.sessionActive || RL.session.length > 0;
     const total = RL.levels.length || RL.filterRange[1];
 
-    RL.totalGoal = hasSessionToResume ? (data.totalGoal || 50) : 50;
+    RL.totalGoal = hasSessionToResume ? (data.totalGoal || 100) : 100;
     RL.filterRange = hasSessionToResume && data.filterRange
       ? [1, Math.min(data.filterRange[1] || total, total)]
       : [1, total];
