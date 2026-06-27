@@ -2,7 +2,10 @@ let cache = null;
 let cacheTime = 0;
 const TTL = 1000 * 60 * 5; // 5 minutos
 
-const AREDL_URL = 'https://api.aredl.net/api/aredl/levels';
+const AREDL_URLS = [
+  'https://api.aredl.net/api/aredl/levels',
+  'https://aredl.net/api/aredl/levels',
+];
 
 export async function GET(request) {
   const force = new URL(request.url).searchParams.get('force') === '1';
@@ -12,14 +15,29 @@ export async function GET(request) {
       return Response.json({ levels: cache, cached: true });
     }
 
-    const res = await fetch(AREDL_URL, {
-      headers: { 'User-Agent': 'UY-Demonlist/2.0', Accept: 'application/json' },
-      cache: 'no-store',
-    });
+    let res = null;
+    for (const url of AREDL_URLS) {
+      try {
+        res = await fetch(url, {
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (compatible; UY-Demonlist/2.0)',
+            'Accept': 'application/json',
+            'Referer': 'https://aredl.net/',
+            'Origin': 'https://aredl.net',
+          },
+          cache: 'no-store',
+        });
+        if (res.ok) break;
+        console.warn(`[AREDL] ${url} → HTTP ${res.status}`);
+        res = null;
+      } catch (e) {
+        console.warn(`[AREDL] ${url} → ${e.message}`);
+      }
+    }
 
-    if (!res.ok) {
-      console.error(`[AREDL] HTTP ${res.status}`);
-      return Response.json({ levels: cache || [], error: `HTTP ${res.status}` });
+    if (!res) {
+      console.error('[AREDL] Todos los endpoints fallaron');
+      return Response.json({ levels: cache || [], error: 'All endpoints failed' });
     }
 
     const raw = await res.json();

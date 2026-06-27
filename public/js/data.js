@@ -151,9 +151,24 @@ async function loadFromJSON() {
 
 async function loadAredlMap() {
   try {
-    const res = await fetch(`${API_BASE}/aredl`, { cache: 'no-store' });
-    if (!res.ok) return;
-    const data = await res.json();
+    // Intentar primero directo desde el browser (no bloqueado por AREDL)
+    let data = null;
+    try {
+      const direct = await fetch('https://api.aredl.net/api/aredl/levels', {
+        headers: { 'Accept': 'application/json' },
+      });
+      if (direct.ok) {
+        const raw = await direct.json();
+        data = { levels: Array.isArray(raw) ? raw : (raw?.data || raw?.levels || []) };
+      }
+    } catch {}
+
+    // Fallback al proxy del servidor
+    if (!data || !data.levels?.length) {
+      const res = await fetch(`${API_BASE}/aredl`, { cache: 'no-store' });
+      if (!res.ok) return;
+      data = await res.json();
+    }
     (data.levels || []).forEach(e => {
       if (e.name) aredlMap[e.name.toLowerCase().trim()] = { position: e.position, level_id: e.level_id, video_id: e.video_id || null, originalName: e.name.trim() };
     });
