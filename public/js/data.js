@@ -151,11 +151,28 @@ async function loadFromJSON() {
 
 async function loadAredlMap() {
   try {
-    const res = await fetch(`${API_BASE}/aredl`, { cache: 'no-store' });
-    if (!res.ok) return;
-    const data = await res.json();
-    (data.levels || []).forEach(e => {
-      if (e.name) aredlMap[e.name.toLowerCase().trim()] = { position: e.position, level_id: e.level_id, video_id: e.video_id || null, originalName: e.name.trim() };
+    const res = await fetch('https://api.aredl.net/v2/api/aredl/levels', {
+      headers: { 'Accept': 'application/json' },
+    });
+    if (!res.ok) {
+      console.warn(`AREDL: HTTP ${res.status}`);
+      return;
+    }
+    const raw = await res.json();
+    const list = Array.isArray(raw) ? raw
+      : Array.isArray(raw?.data)   ? raw.data
+      : Array.isArray(raw?.levels) ? raw.levels
+      : [];
+
+    list.forEach(e => {
+      if (!e.name) return;
+      const key = e.name.toLowerCase().trim();
+      aredlMap[key] = {
+        position:     e.position,
+        level_id:     e.level_id,
+        video_id:     e.video_id || null,
+        originalName: e.name.trim(),
+      };
     });
     applyAredlToLevels();
     window.aredlMap = aredlMap;
