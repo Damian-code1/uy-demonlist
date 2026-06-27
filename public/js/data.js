@@ -211,19 +211,21 @@ async function fetchGdBrowserInfoById(gdLevelId) {
 async function preloadGdStats() {
   const levels = getLevelsData().slice(0, 40);
   const BATCH  = 3;
+  let loaded = 0;
   for (let i = 0; i < levels.length; i += BATCH) {
     await Promise.allSettled(levels.slice(i, i + BATCH).map(l => {
       const url = l.gd_level_id
         ? `${API_BASE}/gdbrowser?id=${encodeURIComponent(l.gd_level_id)}`
         : `${API_BASE}/gdbrowser?name=${encodeURIComponent(l.name)}`;
-      if (_gdClientCache.has(url)) return Promise.resolve();
+      if (_gdClientCache.has(url)) { loaded++; return Promise.resolve(); }
       return fetch(url)
         .then(r => r.ok ? r.json() : null)
-        .then(d => { if (d) _gdClientCache.set(url, d); })
+        .then(d => { if (d) { _gdClientCache.set(url, d); loaded++; } })
         .catch(() => {});
     }));
     await new Promise(r => setTimeout(r, 150));
   }
+  console.log(`GDBrowser: ${loaded} niveles precargados`);
 }
 window.preloadGdStats = preloadGdStats;
 
@@ -500,4 +502,5 @@ async function copyToClipboard(text, successMsg = 'Copiado ✓') {
     if (typeof showToast === 'function') showToast('No se pudo copiar', 'error');
   }
 }
-window.copyToClipboard = copyToClipboard;
+window.copyToClipboard  = copyToClipboard;
+window.preloadGdStats   = preloadGdStats;
