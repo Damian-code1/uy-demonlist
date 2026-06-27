@@ -1616,11 +1616,11 @@ ul { list-style: none; }
 .video-popup-sep { color: var(--text-dim); }
 .form-field { position: relative; }
 .level-suggestions {
-  position: absolute; top: 100%; left: 0; right: 0; z-index: 200;
+  position: fixed; top: auto; left: auto; right: auto; z-index: 9999;
   background: var(--bg3); border: 1px solid var(--border);
-  border-top: none; border-radius: 0 0 var(--r-sm) var(--r-sm);
+  border-radius: 0 0 var(--r-sm) var(--r-sm);
   max-height: 220px; overflow-y: auto;
-  box-shadow: 0 8px 24px rgba(0,0,0,.5);
+  box-shadow: 0 8px 32px rgba(0,0,0,.6);
   display: none;
 }
 .suggestion-item {
@@ -1746,7 +1746,7 @@ ul { list-style: none; }
   border: 1px solid var(--border-s);
   border-left: 3px solid color-mix(in srgb, var(--card-accent, var(--border-s)) 55%, transparent);
   transition: border-color .18s, border-left-color .18s;
-  contain: layout style paint;
+  contain: layout style;
   content-visibility: auto;
   contain-intrinsic-size: auto 96px;
 }
@@ -4537,17 +4537,18 @@ body {
 .list-filter-chevron.rotated { transform: rotate(180deg); }
 
 .list-filter-menu {
-  position: absolute; top: calc(100% + 8px); left: 0;
+  position: fixed;
   min-width: 190px;
   background: var(--bg3);
   border: 1px solid var(--border);
   border-radius: 14px;
-  box-shadow: 0 12px 36px rgba(0,0,0,.5);
+  box-shadow: 0 12px 36px rgba(0,0,0,.55), 0 0 0 1px rgba(139,92,246,.08);
   overflow: hidden;
-  z-index: 1200;
+  z-index: 9999;
   opacity: 0; pointer-events: none;
   transform: translateY(-6px) scale(.97);
-  transition: opacity .18s, transform .18s;
+  transform-origin: top left;
+  transition: opacity .18s, transform .22s cubic-bezier(.34,1.2,.64,1);
 }
 .list-filter-menu.open {
   opacity: 1; pointer-events: auto;
