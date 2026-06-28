@@ -626,11 +626,8 @@ async function savePlayerForm() {
     await adminRenamePlayer(oldName, newName);
     closePlayerModal();
     showToast(`Jugador renombrado: "${oldName}" → "${newName}" ✓`, 'success');
-    // Invalida caché y fuerza recarga completa de niveles + jugadores en la UI pública
-    // para que el cambio se vea en el leaderboard, modales de nivel y cards
     await refreshPublicData({ force: true });
     loadAdminPlayers();
-    // Si el modal de un nivel está abierto y tiene victors con ese nombre, refrescarlo
     if (typeof refreshOpenLevelModal === 'function') refreshOpenLevelModal();
   } catch (e) {
     showToast('Error: ' + e.message, 'error');
@@ -1464,11 +1461,13 @@ async function saveReorderVictors() {
 
   try {
     await adminReorderVictors(_reorderLevelId, order);
-    showToast('Orden guardado ✓', 'success');
-    refreshPublicData();
-    // Recargar para confirmar el orden desde la DB
+    await refreshPublicData({ levelId: parseInt(_reorderLevelId) });
+
+    showToast('Orden guardado ✓ — modal actualizado', 'success');
+
     await loadReorderVictors(_reorderLevelId);
-    document.getElementById('reorderLevelSelect').value = _reorderLevelId;
+    const sel = document.getElementById('reorderLevelSelect');
+    if (sel) sel.value = _reorderLevelId;
   } catch (e) {
     showToast('Error: ' + e.message, 'error');
   } finally {
