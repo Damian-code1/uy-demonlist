@@ -781,7 +781,12 @@ function renderCurrentLevel(level) {
           ? `<span class="rl-slot-chip"><i class="fas fa-star" style="color:var(--gold)"></i>${pts.toLocaleString()} pts</span>`
           : `<span class="rl-slot-chip rl-slot-chip-nopts"><i class="fas fa-minus-circle"></i> Sin puntos</span>`
         }
-        ${level.victors?.length ? `<span class="rl-slot-chip"><i class="fas fa-flag-checkered" style="color:var(--violet)"></i>${level.victors.length} completion${level.victors.length !== 1 ? 's' : ''}</span>` : ''}
+        ${level.victors?.length ? `
+          <button class="rl-slot-chip rl-victors-chip" onclick="openRlVictorsPopup()" style="cursor:pointer;border-color:rgba(124,58,237,.4);color:var(--violet)">
+            <i class="fas fa-users"></i>
+            ${level.victors.length} victor${level.victors.length !== 1 ? 's' : ''}
+            <i class="fas fa-chevron-right" style="font-size:.55rem;opacity:.6"></i>
+          </button>` : ''}
         ${level.aredl_level_id ? `
           <button class="rl-slot-chip rl-copy-id-btn" onclick="copyLevelId('${level.aredl_level_id}')">
             <i class="fas fa-copy"></i> ID ${level.aredl_level_id}
@@ -1514,6 +1519,97 @@ function copyLevelId(id) {
     'success'
   );
 }
+
+
+function openRlVictorsPopup() {
+  const level = RL.current;
+  if (!level?.victors?.length) return;
+
+  document.getElementById('rlVictorsPopup')?.remove();
+
+  const victors = level.victors;
+  const pos     = level.position;
+  const pts     = level.points != null ? level.points
+    : (typeof computeAutoPoints === 'function' ? computeAutoPoints(pos) : null);
+
+  const popup = document.createElement('div');
+  popup.id = 'rlVictorsPopup';
+  popup.className = 'rl-victors-popup-overlay';
+  popup.innerHTML = `
+    <div class="rl-victors-popup" role="dialog" aria-modal="true">
+      <div class="rl-victors-popup-glow"></div>
+
+      <div class="rl-victors-popup-header">
+        <div class="rl-victors-popup-title-wrap">
+          <div class="rl-victors-popup-icon"><i class="fas fa-users"></i></div>
+          <div>
+            <div class="rl-victors-popup-level">${esc(level.name)}</div>
+            <div class="rl-victors-popup-sub">
+              ${pos ? `<span><i class="fas fa-list"></i> #${pos}</span>` : ''}
+              ${pts ? `<span><i class="fas fa-star"></i> ${pts.toLocaleString()} pts</span>` : ''}
+              <span><i class="fas fa-flag-checkered"></i> ${victors.length} completion${victors.length !== 1 ? 's' : ''}</span>
+            </div>
+          </div>
+        </div>
+        <button class="rl-victors-popup-close" onclick="closeRlVictorsPopup()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <div class="rl-victors-popup-list">
+        ${victors.map((v, i) => {
+          const ytId = v.videoId || (v.videoUrl ? v.videoUrl.match(/(?:v=|youtu\.be\/)([^&\s]{11})/)?.[1] : null);
+          const isFirst = i === 0;
+          return `
+            <div class="rl-victors-popup-item${isFirst ? ' rl-victor-first' : ''}">
+              <div class="rl-victor-rank ${isFirst ? 'rl-victor-rank-gold' : ''}">
+                ${isFirst ? '<i class="fas fa-crown"></i>' : `<span>${i + 1}</span>`}
+              </div>
+              <div class="rl-victor-name-wrap">
+                <span class="rl-victor-name">${esc(v.name)}</span>
+                ${isFirst ? `<span class="rl-victor-first-badge"><i class="fas fa-trophy"></i> Primer completion</span>` : ''}
+              </div>
+              ${ytId
+                ? `<a href="https://youtube.com/watch?v=${ytId}" target="_blank" rel="noopener"
+                     class="rl-victor-video-btn" onclick="event.stopPropagation()">
+                     <i class="fab fa-youtube"></i>
+                     <span>Ver</span>
+                   </a>`
+                : `<span class="rl-victor-novideo"><i class="fas fa-video-slash"></i></span>`
+              }
+            </div>`;
+        }).join('')}
+      </div>
+
+      <div class="rl-victors-popup-footer">
+        <button class="rl-victors-popup-close-btn" onclick="closeRlVictorsPopup()">
+          <i class="fas fa-times"></i> Cerrar
+        </button>
+      </div>
+    </div>`;
+
+  document.body.appendChild(popup);
+  requestAnimationFrame(() => popup.classList.add('open'));
+
+  popup.addEventListener('pointerdown', e => {
+    if (e.target === popup) closeRlVictorsPopup();
+  });
+  document.addEventListener('keydown', _rlVictorsEsc);
+}
+
+function _rlVictorsEsc(e) {
+  if (e.key === 'Escape') { closeRlVictorsPopup(); document.removeEventListener('keydown', _rlVictorsEsc); }
+}
+
+function closeRlVictorsPopup() {
+  const popup = document.getElementById('rlVictorsPopup');
+  if (!popup) return;
+  popup.classList.remove('open');
+  setTimeout(() => popup.remove(), 280);
+  document.removeEventListener('keydown', _rlVictorsEsc);
+}
+window.openRlVictorsPopup  = openRlVictorsPopup;
+window.closeRlVictorsPopup = closeRlVictorsPopup;
 
 function esc(s) {
   if (!s) return '';
