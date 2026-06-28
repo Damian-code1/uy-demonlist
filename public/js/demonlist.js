@@ -53,7 +53,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   await loadAredlMap();
   syncHeroStats();
   await syncFavoritesWithDB();
-  setTimeout(() => preloadGdStats?.(), 2500);
   renderLevels();
   setupSearch();
   setupViewToggles();
@@ -279,8 +278,8 @@ function buildCard(level, index) {
     const firstVictorName = victors[0]?.name || null;
   const extraVictors    = victors.length > 1 ? victors.length - 1 : 0;
 
-  const cardAccent = levelTierAccent(pos);
   const cardBodyColor = levelTierBodyColor(pos);
+  const cardAccent    = levelTierAccent(pos);
   card.style.setProperty('--card-accent', cardAccent);
   card.style.setProperty('--card-body-color', cardBodyColor);
 
