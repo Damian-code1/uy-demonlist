@@ -1749,38 +1749,38 @@ ul { list-style: none; }
 .level-card {
   position: relative;
   display: flex; align-items: stretch;
-  height: 96px;
-  padding-left: 185px;
+  height: 122px;
+  padding-left: 270px;
   border-radius: 12px;
   overflow: hidden;
   cursor: pointer;
-  background: var(--bg4);
-  border: 1px solid var(--border-s);
-  border-left: 3px solid color-mix(in srgb, var(--card-accent, var(--border-s)) 55%, transparent);
-  transition: border-color .18s, border-left-color .18s;
-  contain: layout style;
+  background: rgba(14,14,24,.75);
+  border: 1px solid rgba(255,255,255,.06);
+  border-left: 3px solid var(--card-accent, rgba(139,92,246,.5));
+  box-shadow: inset 0 0 0 0 transparent;
+  transition: border-color .2s, border-left-color .2s, box-shadow .2s, transform .18s;
+  contain: layout style paint;
   content-visibility: auto;
-  contain-intrinsic-size: auto 96px;
+  contain-intrinsic-size: auto 122px;
+  backdrop-filter: blur(2px);
 }
 .level-card.top-3 { border-color: rgba(139,92,246,.35); }
 .level-card:focus-visible { outline: 2px solid var(--violet); outline-offset: 2px; }
 @media (hover: hover) and (pointer: fine) {
   .level-card {
-    transition: transform .18s, box-shadow .18s, border-color .18s, border-left-color .18s;
+    transition: transform .2s cubic-bezier(.22,1,.36,1), box-shadow .2s, border-color .2s, background .2s;
   }
   .level-card:hover {
-    transform: translateY(-2px) translateZ(0);
-    box-shadow: 0 10px 32px rgba(0,0,0,.6), 0 0 0 1px var(--card-accent, var(--border-h));
-    border-color: var(--card-accent, var(--border-h));
-    border-left-color: var(--card-accent, var(--border-h));
-    will-change: transform, box-shadow;
+    transform: translateX(4px) translateZ(0);
+    background: rgba(20,18,36,.9);
+    box-shadow:
+      0 8px 32px rgba(0,0,0,.5),
+      -3px 0 20px color-mix(in srgb, var(--card-accent, rgba(139,92,246,.3)) 20%, transparent),
+      0 0 0 1px rgba(255,255,255,.08);
+    border-color: rgba(255,255,255,.1);
+    will-change: transform;
   }
-  .level-card:active { transform: scale(.99) translateZ(0); }
-  .level-card.top-3:hover { box-shadow: 0 12px 40px rgba(139,92,246,.25); }
-  .level-card:nth-child(-n+10) {
-    transform: translateZ(0);
-    will-change: transform, box-shadow;
-  }
+  .level-card:active { transform: translateX(2px) scale(.99) translateZ(0); }
 }
 @media (hover: none) {
   .level-card:active { opacity: .85; }
@@ -1795,39 +1795,40 @@ ul { list-style: none; }
 .level-card::before {
   content: '';
   position: absolute; inset: 0; left: 220px;
-  background: var(--card-body-color, var(--bg4));
+  background: rgba(10,10,18,.82);
   z-index: 0; pointer-events: none;
 }
 .level-card::after {
   content: '';
-  position: absolute; left: 0; top: 0; bottom: 0; width: 246px;
+  position: absolute; left: 0; top: 0; bottom: 0; width: 310px;
   background: linear-gradient(to right,
     transparent 0%,
-    transparent 78%,
-    var(--card-body-color, var(--bg4)) 100%
+    transparent 65%,
+    rgba(10,10,18,.85) 88%,
+    rgba(10,10,18,.92) 100%
   );
   z-index: 1; pointer-events: none;
 }
 .lc-rank {
   position: relative; z-index: 2;
-  font-family: var(--font-rank); font-size: 1.55rem; font-weight: 900;
-  letter-spacing: 1.5px;
-  color: #fff;
-  text-shadow: 0 0 18px rgba(167,139,250,.55), 0 2px 8px rgba(0,0,0,.9);
+  font-family: var(--font-title); font-size: 1.65rem; font-weight: 900;
+  letter-spacing: 1px;
+  color: rgba(255,255,255,.9);
+  text-shadow: 0 2px 10px rgba(0,0,0,.9);
   padding: .45rem 1rem;
   margin: 0 .65rem 0 1rem;
   flex-shrink: 0; min-width: 52px;
   display: flex; align-items: center; justify-content: center;
-  background: linear-gradient(160deg, rgba(109,40,217,.35), rgba(30,27,75,.6));
-  border: 1px solid rgba(167,139,250,.25);
+  background: rgba(10,8,20,.6);
+  border: 1px solid rgba(139,92,246,.2);
   border-radius: 10px;
-  backdrop-filter: blur(6px);
-  box-shadow: 0 0 14px rgba(109,40,217,.2), 0 2px 10px rgba(0,0,0,.5);
-  transition: text-shadow .25s, box-shadow .25s;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 2px 12px rgba(0,0,0,.4);
+  transition: border-color .2s, box-shadow .2s;
 }
 .level-card:hover .lc-rank {
-  text-shadow: 0 0 24px rgba(167,139,250,.85), 0 2px 8px rgba(0,0,0,.9);
-  box-shadow: 0 0 22px rgba(109,40,217,.35), 0 2px 10px rgba(0,0,0,.5);
+  border-color: rgba(167,139,250,.4);
+  box-shadow: 0 0 16px rgba(109,40,217,.25), 0 2px 12px rgba(0,0,0,.4);
 }
 .lc-body {
   position: relative; z-index: 2;
@@ -1838,16 +1839,12 @@ ul { list-style: none; }
   display: flex; align-items: center; gap: .6rem; flex-wrap: wrap;
 }
 .lc-name {
-  font-family: var(--font-level);
-  font-size: 1.38rem; font-weight: 700; color: #fff; line-height: 1.15;
-  text-shadow: 0 1px 10px rgba(0,0,0,.8);
-  letter-spacing: .8px;
-  transition: color .2s, text-shadow .2s;
+  font-size: 1.28rem; font-weight: 800; color: rgba(255,255,255,.92); line-height: 1.2;
+  text-shadow: 0 1px 8px rgba(0,0,0,.7);
+  letter-spacing: .25px;
+  transition: color .2s;
 }
-.level-card:hover .lc-name {
-  color: #ede9fe;
-  text-shadow: 0 0 18px rgba(167,139,250,.35), 0 1px 10px rgba(0,0,0,.8);
-}
+.level-card:hover .lc-name { color: #ede9fe; }
 .lc-meta-row {
   display: flex; align-items: center; gap: .6rem;
   font-size: .9rem; color: rgba(255,255,255,.65);
@@ -1973,8 +1970,8 @@ ul { list-style: none; }
   background: linear-gradient(
     to bottom,
     transparent 30%,
-    color-mix(in srgb, var(--card-body-color, #07070d) 70%, #07070d) 70%,
-    #07070d 100%
+    rgba(10,10,18,.85) 70%,
+    rgba(7,7,13,1) 100%
   );
 }
 .levels-container.grid-view .lc-rank {
@@ -1997,7 +1994,7 @@ ul { list-style: none; }
 .levels-container.grid-view .level-card::after { display: none; }
 .levels-container.grid-view .level-card::before {
   left: 0; top: 55%;
-  background: linear-gradient(to bottom, transparent 0%, var(--card-body-color, var(--bg4)) 100%);
+  background: linear-gradient(to bottom, transparent 0%, rgba(10,10,18,.95) 100%);
 }
 .levels-container.grid-view .lc-rank {
   position: absolute; top: 8px; left: 10px; width: auto; font-size: 1.3rem;
@@ -3481,9 +3478,9 @@ body {
   font-weight: 800;
   letter-spacing: .5px;
 }
-.lc-rank-gold   { color: #f59e0b; text-shadow: 0 0 14px rgba(245,158,11,.6); }
-.lc-rank-silver { color: #cbd5e1; text-shadow: 0 0 14px rgba(203,213,225,.5); }
-.lc-rank-bronze { color: #c2722a; text-shadow: 0 0 14px rgba(194,114,42,.5); }
+.lc-rank-gold   { color: #e9d5ff; text-shadow: 0 0 20px rgba(192,132,252,.9), 0 0 40px rgba(139,92,246,.4); }
+.lc-rank-silver { color: #c4b5fd; text-shadow: 0 0 14px rgba(167,139,250,.7); }
+.lc-rank-bronze { color: #a78bfa; text-shadow: 0 0 12px rgba(139,92,246,.5); }
 .lc-thumb-ph {
   position: absolute; left: 0; top: 0; bottom: 0;
   width: 258px; height: 100%;
@@ -3501,46 +3498,39 @@ body {
   font-size: .75rem;
   font-weight: 600;
 }
+
 .lc-pts-badge {
   display: inline-flex;
   align-items: center;
-  gap: .3rem;
-  padding: .24rem .7rem;
+  gap: .32rem;
+  padding: .26rem .75rem;
   border-radius: 50px;
-  font-size: .74rem;
+  font-size: .75rem;
   font-weight: 700;
   font-family: var(--font-mono);
-  background: var(--list-pts-bg);
-  border: 1px solid var(--list-pts-border);
-  color: var(--list-accent);
+  background: rgba(139,92,246,.1);
+  border: 1px solid rgba(139,92,246,.28);
+  color: #c4b5fd;
   margin-left: auto;
   white-space: nowrap;
   flex-shrink: 0;
   transition: border-color .18s, transform .18s, box-shadow .18s;
-  box-shadow: 0 0 0 rgba(167,139,250,0);
 }
+@media (hover: hover) and (pointer: fine) {
+  .level-card:hover .lc-pts-badge {
+    border-color: rgba(167,139,250,.55);
+    box-shadow: 0 0 10px rgba(139,92,246,.2);
+  }
+}
+.lc-pts-badge i { font-size: .64rem; color: #a78bfa; }
+
 .level-card:hover .lc-pts-badge {
   border-color: rgba(167,139,250,.6);
   transform: scale(1.04);
   box-shadow: 0 0 12px rgba(167,139,250,.2);
 }
-.lc-pts-badge i {
-  font-size: .64rem;
-  color: var(--list-accent);
-}
-@media (hover: hover) and (pointer: fine) {
-  .level-card:hover .lc-pts-badge {
-    border-color: rgba(245,158,11,.8);
-    transform: scale(1.04);
-    box-shadow: 0 2px 10px rgba(245,158,11,.25);
-  }
-}
 
-.level-card {
-  height: 122px;
-  padding-left: 270px;
-  contain-intrinsic-size: auto 122px;
-}
+
 .lc-thumb {
   width: 258px;
 }

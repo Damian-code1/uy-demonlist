@@ -168,40 +168,17 @@ function levelPoints(level) {
 }
 
 function levelTierAccent(pos) {
-  if (pos <= 10) {
-    const t = (pos - 1) / 9;
-    return `hsl(${Math.round(16 - t * 16)}, 90%, ${Math.round(58 - t * 5)}%)`; // ascua → rojo intenso
-  }
-  if (pos <= 75) {
-    const t = (pos - 11) / 64;
-    return `hsl(${Math.round(272 - t * 16)}, 78%, ${Math.round(65 - t * 7)}%)`; // violeta
-  }
-  if (pos <= 150) {
-    const t = (pos - 76) / 74;
-    return `hsl(${Math.round(206 - t * 16)}, 75%, ${Math.round(58 - t * 8)}%)`; // celeste
-  }
-  const restTotal = Math.max((getLevelsData().length || 250) - 150, 1);
-  const t = Math.min((pos - 151) / restTotal, 1);
-  return `hsl(${Math.round(150 - t * 55)}, 45%, ${Math.round(44 - t * 6)}%)`; // verde → gris-verde apagado
+  const total = Math.max(getLevelsData().length || 200, 1);
+  const t     = Math.min((pos - 1) / (total - 1), 1);
+  const hue = Math.round(280 - t * 40);
+  const sat = Math.round(85  - t * 50);
+  const lit = Math.round(68  - t * 23);
+  return `hsl(${hue}, ${sat}%, ${lit}%)`;
 }
 window.levelTierAccent = levelTierAccent;
 
 function levelTierBodyColor(pos) {
-  if (pos <= 10) {
-    const t = (pos - 1) / 9;
-    return `hsl(${Math.round(16 - t * 16)}, 55%, ${Math.round(16 - t * 3)}%)`; // ascua → rojo, oscuro
-  }
-  if (pos <= 75) {
-    const t = (pos - 11) / 64;
-    return `hsl(${Math.round(272 - t * 16)}, 42%, ${Math.round(15 - t * 2)}%)`; // violeta oscuro
-  }
-  if (pos <= 150) {
-    const t = (pos - 76) / 74;
-    return `hsl(${Math.round(206 - t * 16)}, 38%, ${Math.round(14 - t * 2)}%)`; // celeste oscuro
-  }
-  const restTotal = Math.max((getLevelsData().length || 250) - 150, 1);
-  const t = Math.min((pos - 151) / restTotal, 1);
-  return `hsl(${Math.round(150 - t * 55)}, 26%, ${Math.round(13 - t * 2)}%)`; // verde apagado, oscuro
+  return 'transparent';
 }
 window.levelTierBodyColor = levelTierBodyColor;
 
