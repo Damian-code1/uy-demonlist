@@ -1282,62 +1282,66 @@ async function loadAdminReorder() {
     window._reorderLevels = levels;
 
     container.innerHTML = `
-      <div class="reorder-hero">
-        <div class="reorder-hero-icon"><i class="fas fa-sort-amount-down"></i></div>
-        <div>
-          <div class="reorder-hero-title">Reordenar Victors</div>
-          <div class="reorder-hero-sub">Buscá un nivel y arrastrá los victors para reordenarlos. Los primeros aparecen en el modal del nivel.</div>
+      <div class=\"reorder-hero\">
+        <div class=\"reorder-hero-icon\"><i class=\"fas fa-sort-amount-down\"></i></div>
+        <div style=\"flex:1\">
+          <div class=\"reorder-hero-title\">Reordenar Victors</div>
+          <div class=\"reorder-hero-sub\">Seleccioná un nivel y arrastrá los victors para reordenarlos.</div>
         </div>
-        <div class="reorder-hero-count">${levels.length} <span>niveles con<br>2+ victors</span></div>
+        <div class=\"reorder-hero-count\">${levels.length} <span>niveles con<br>2+ victors</span></div>
       </div>
 
-      <div class="reorder-search-section">
-        <label class="reorder-label"><i class="fas fa-search"></i> Buscar nivel</label>
-        <div class="reorder-search-wrap" id="reorderSearchWrap">
-          <i class="fas fa-search reorder-search-icon"></i>
-          <input
-            type="text"
-            id="reorderSearchInput"
-            class="reorder-search-input"
-            placeholder="Escribí el nombre del nivel…"
-            autocomplete="off"
-            spellcheck="false">
-          <button class="reorder-search-clear" id="reorderSearchClear" style="display:none" title="Limpiar">
-            <i class="fas fa-times"></i>
-          </button>
+      <div class=\"reorder-layout\">
+        <!-- Panel izquierdo: lista de niveles -->
+        <div class=\"reorder-levels-panel\">
+          <div class=\"reorder-levels-search-wrap\">
+            <i class=\"fas fa-search\" style=\"color:var(--text-dim);font-size:.8rem\"></i>
+            <input type=\"text\" id=\"reorderSearchInput\" class=\"reorder-levels-search\"
+              placeholder=\"Buscar nivel…\" autocomplete=\"off\" spellcheck=\"false\">
+          </div>
+          <div class=\"reorder-levels-list\" id=\"reorderLevelsList\">
+            ${levels.map(l => {
+              const tierColor = l.position <= 10 ? '#f97316' : l.position <= 75 ? '#a855f7' : l.position <= 150 ? '#38bdf8' : '#4ade80';
+              return `<div class=\"reorder-level-item\" data-id=\"${l.id}\" data-name=\"${esc(l.name)}\" data-pos=\"${l.position}\" data-count=\"${l.victorCount || 0}\" onclick=\"selectReorderLevel('${l.id}','${esc(l.name)}','${l.position}','${l.victorCount || 0}')\">
+                <span class=\"reorder-level-pos\" style=\"background:${tierColor}22;color:${tierColor};border-color:${tierColor}44\">#${l.position}</span>
+                <div class=\"reorder-level-info\">
+                  <span class=\"reorder-level-name\">${esc(l.name)}</span>
+                  <span class=\"reorder-level-vcount\"><i class=\"fas fa-flag-checkered\"></i> ${l.victorCount} victor${l.victorCount !== 1 ? 's' : ''}</span>
+                </div>
+              </div>`;
+            }).join('')}
+          </div>
         </div>
-        <div class="reorder-suggestions" id="reorderSuggestions"></div>
 
-        <!-- Nivel seleccionado -->
-        <div class="reorder-selected-level" id="reorderSelectedLevel" style="display:none">
-          <div class="reorder-selected-inner">
-            <div class="reorder-selected-badge"><i class="fas fa-skull"></i></div>
-            <div class="reorder-selected-info">
-              <span class="reorder-selected-name" id="reorderSelectedName">—</span>
-              <span class="reorder-selected-meta" id="reorderSelectedMeta"></span>
+        <!-- Panel derecho: victors del nivel seleccionado -->
+        <div class=\"reorder-right-panel\">
+          <div class=\"reorder-selected-level\" id=\"reorderSelectedLevel\" style=\"display:none\">
+            <div class=\"reorder-selected-inner\">
+              <img class=\"reorder-selected-thumb\" id=\"reorderSelectedThumb\" src=\"\" alt=\"\" style=\"display:none\">
+              <div class=\"reorder-selected-badge\" id=\"reorderSelectedBadge\"><i class=\"fas fa-skull\"></i></div>
+              <div class=\"reorder-selected-info\">
+                <span class=\"reorder-selected-name\" id=\"reorderSelectedName\">—</span>
+                <span class=\"reorder-selected-meta\" id=\"reorderSelectedMeta\"></span>
+              </div>
             </div>
-            <button class="reorder-selected-change" onclick="clearReorderSelection()">
-              <i class="fas fa-times"></i> Cambiar
+          </div>
+
+          <div id=\"reorderVictorsList\" class=\"reorder-list-wrap\">
+            <div class=\"reorder-empty-state\">
+              <i class=\"fas fa-hand-pointer\"></i>
+              <p>Seleccioná un nivel para ver y reordenar sus victors</p>
+            </div>
+          </div>
+
+          <div class=\"reorder-actions\" id=\"reorderActions\" style=\"display:none\">
+            <div class=\"reorder-hint\"><i class=\"fas fa-grip-vertical\"></i> Arrastrá para reordenar</div>
+            <button class=\"reorder-save-btn\" id=\"reorderSaveBtn\" onclick=\"saveReorderVictors()\">
+              <i class=\"fas fa-save\"></i> Guardar orden
             </button>
           </div>
         </div>
-      </div>
-
-      <div id="reorderVictorsList" class="reorder-list-wrap">
-        <div class="reorder-empty-state">
-          <i class="fas fa-hand-pointer"></i>
-          <p>Buscá y seleccioná un nivel para ver sus victors</p>
-        </div>
-      </div>
-
-      <div class="reorder-actions" id="reorderActions" style="display:none">
-        <div class="reorder-hint"><i class="fas fa-grip-vertical"></i> Arrastrá para reordenar · los cambios se aplican al guardar</div>
-        <button class="reorder-save-btn" id="reorderSaveBtn" onclick="saveReorderVictors()">
-          <i class="fas fa-save"></i> Guardar orden
-        </button>
       </div>`;
 
-    // Inicializar buscador
     initReorderSearch(levels);
   } catch (e) {
     container.innerHTML = adminError('Error: ' + e.message);
@@ -1368,25 +1372,39 @@ async function loadReorderVictors(levelId) {
       return;
     }
 
+    const levelData = (window._reorderLevels || []).find(l => String(l.id) === String(levelId));
+    const showcaseUrl = levelData?.youtube_url || null;
+
     list.innerHTML = `
-      <div class="reorder-list" id="reorderDragList">
-        ${victors.map((v, i) => `
-          <div class="reorder-item" draggable="true" data-id="${v.id}">
-            <div class="reorder-drag-handle" title="Arrastrar">
-              <i class="fas fa-grip-vertical"></i>
+      <div class=\"reorder-list\" id=\"reorderDragList\">
+        ${victors.map((v, i) => {
+          const videoUrl = v.video_url || v.effective_video_url || null;
+          const fallbackUrl = !videoUrl ? showcaseUrl : null;
+          let videoHtml;
+          if (videoUrl) {
+            videoHtml = `<a href=\"${esc(videoUrl)}\" target=\"_blank\" class=\"reorder-item-video\" onclick=\"event.stopPropagation()\">
+              <i class=\"fab fa-youtube\"></i> Video
+            </a>`;
+          } else if (fallbackUrl) {
+            videoHtml = `<a href=\"${esc(fallbackUrl)}\" target=\"_blank\" class=\"reorder-item-video reorder-item-video-showcase\" onclick=\"event.stopPropagation()\" title=\"Video del showcase del nivel\">
+              <i class=\"fab fa-youtube\"></i> Showcase
+            </a>`;
+          } else {
+            videoHtml = `<span class=\"reorder-item-novideo\"><i class=\"fas fa-video-slash\"></i> Sin video</span>`;
+          }
+          return `
+          <div class=\"reorder-item\" draggable=\"true\" data-id=\"${v.id}\">
+            <div class=\"reorder-drag-handle\" title=\"Arrastrar\">
+              <i class=\"fas fa-grip-vertical\"></i>
             </div>
-            <div class="reorder-item-num">${i + 1}</div>
-            <div class="reorder-item-info">
-              <span class="reorder-item-name">${esc(v.player_name)}</span>
-              ${v.video_url
-                ? `<a href="${esc(v.video_url)}" target="_blank" class="reorder-item-video" onclick="event.stopPropagation()">
-                     <i class="fab fa-youtube"></i> Video
-                   </a>`
-                : `<span class="reorder-item-novideo"><i class="fas fa-video-slash"></i> Sin video</span>`
-              }
+            <div class=\"reorder-item-num\">${i + 1}</div>
+            <div class=\"reorder-item-info\">
+              <span class=\"reorder-item-name\">${esc(v.player_name)}</span>
+              ${videoHtml}
             </div>
-            <div class="reorder-item-badge">#${i + 1}</div>
-          </div>`).join('')}
+            <div class=\"reorder-item-badge\">#${i + 1}</div>
+          </div>`;
+        }).join('')}
       </div>`;
 
     if (actions) actions.style.display = '';
@@ -1397,31 +1415,19 @@ async function loadReorderVictors(levelId) {
 }
 
 function initReorderSearch(levels) {
-  const input   = document.getElementById('reorderSearchInput');
-  const clearBtn = document.getElementById('reorderSearchClear');
-  const sugg    = document.getElementById('reorderSuggestions');
+  const input = document.getElementById('reorderSearchInput');
   if (!input) return;
 
   let debounce;
   input.addEventListener('input', () => {
-    const q = input.value.trim();
-    clearBtn.style.display = q ? '' : 'none';
+    const q  = input.value.trim().toLowerCase();
     clearTimeout(debounce);
-    debounce = setTimeout(() => renderReorderSuggestions(q, levels, sugg), 120);
-  });
-
-  clearBtn.addEventListener('click', () => {
-    input.value = '';
-    clearBtn.style.display = 'none';
-    sugg.innerHTML = '';
-    sugg.classList.remove('open');
-  });
-
-  document.addEventListener('pointerdown', e => {
-    if (!e.target.closest('#reorderSearchWrap') && !e.target.closest('#reorderSuggestions')) {
-      sugg.classList.remove('open');
-      sugg.innerHTML = '';
-    }
+    debounce = setTimeout(() => {
+      document.querySelectorAll('.reorder-level-item').forEach(el => {
+        const match = !q || el.dataset.name.toLowerCase().includes(q);
+        el.style.display = match ? '' : 'none';
+      });
+    }, 120);
   });
 }
 
@@ -1465,19 +1471,33 @@ function renderReorderSuggestions(q, levels, sugg) {
 }
 
 function selectReorderLevel(id, name, pos, count) {
-  const input  = document.getElementById('reorderSearchInput');
-  const wrap   = document.getElementById('reorderSearchWrap');
-  const selDiv = document.getElementById('reorderSelectedLevel');
+  const selDiv  = document.getElementById('reorderSelectedLevel');
   const selName = document.getElementById('reorderSelectedName');
   const selMeta = document.getElementById('reorderSelectedMeta');
+  const selThumb = document.getElementById('reorderSelectedThumb');
+  const selBadge = document.getElementById('reorderSelectedBadge');
 
-  if (input) { input.value = ''; }
-  document.getElementById('reorderSearchClear').style.display = 'none';
-
-  if (wrap)    wrap.style.display  = 'none';
   if (selDiv)  selDiv.style.display = '';
   if (selName) selName.textContent  = name;
-  if (selMeta) selMeta.innerHTML    = `<i class="fas fa-list"></i> #${pos} en la lista &nbsp;·&nbsp; <i class="fas fa-flag-checkered"></i> ${count} victors`;
+  if (selMeta) selMeta.innerHTML    = `<i class=\"fas fa-list\"></i> #${pos} en la lista &nbsp;·&nbsp; <i class=\"fas fa-flag-checkered\"></i> ${count} victor${count != 1 ? 's' : ''}`;
+
+  const levelData = (window._reorderLevels || []).find(l => String(l.id) === String(id));
+  const ytUrl = levelData?.youtube_url || null;
+  const ytId  = ytUrl ? ytUrl.match(/(?:v=|youtu\.be\/)([^&\s]{11})/)?.[1] : null;
+
+  if (selThumb && ytId) {
+    selThumb.src = `https://img.youtube.com/vi/${ytId}/mqdefault.jpg`;
+    selThumb.style.display = '';
+    if (selBadge) selBadge.style.display = 'none';
+  } else if (selThumb) {
+    selThumb.style.display = 'none';
+    if (selBadge) selBadge.style.display = '';
+  }
+
+  // Marcar activo en la lista
+  document.querySelectorAll('.reorder-level-item').forEach(el => {
+    el.classList.toggle('active', el.dataset.id === String(id));
+  });
 
   loadReorderVictors(id);
 }

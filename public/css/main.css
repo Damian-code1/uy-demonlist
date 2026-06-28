@@ -5706,6 +5706,107 @@ body {
   font-size: .65rem; font-weight: 700; color: var(--violet);
 }
 
+/* ── REORDER VICTORS REWORK ── */
+.reorder-layout {
+  display: grid; grid-template-columns: 280px 1fr; gap: 1rem;
+  align-items: start; margin-top: 1rem;
+}
+.reorder-levels-panel {
+  background: var(--bg3); border: 1px solid var(--border-s);
+  border-radius: var(--r); overflow: hidden;
+  display: flex; flex-direction: column;
+  max-height: 520px;
+}
+.reorder-levels-search-wrap {
+  display: flex; align-items: center; gap: .5rem;
+  padding: .6rem .85rem;
+  border-bottom: 1px solid var(--border-s);
+  background: var(--bg4);
+}
+.reorder-levels-search {
+  flex: 1; background: none; border: none; outline: none;
+  color: var(--text); font-size: .82rem;
+}
+.reorder-levels-search::placeholder { color: var(--text-dim); }
+.reorder-levels-list {
+  overflow-y: auto; flex: 1;
+  scrollbar-width: thin; scrollbar-color: var(--border-s) transparent;
+}
+.reorder-level-item {
+  display: flex; align-items: center; gap: .65rem;
+  padding: .55rem .85rem;
+  cursor: pointer; transition: background .15s;
+  border-bottom: 1px solid var(--border-s);
+}
+.reorder-level-item:last-child { border-bottom: none; }
+.reorder-level-item:hover { background: rgba(139,92,246,.07); }
+.reorder-level-item.active {
+  background: rgba(139,92,246,.14); border-left: 3px solid var(--violet);
+}
+.reorder-level-pos {
+  flex-shrink: 0; font-size: .65rem; font-weight: 800; letter-spacing: .5px;
+  padding: .15rem .4rem; border-radius: 5px; border: 1px solid;
+  font-family: var(--font-mono); min-width: 36px; text-align: center;
+}
+.reorder-level-info { flex: 1; min-width: 0; }
+.reorder-level-name {
+  display: block; font-size: .82rem; font-weight: 700; color: var(--text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.reorder-level-vcount {
+  font-size: .65rem; color: var(--text-dim);
+  display: flex; align-items: center; gap: .25rem; margin-top: .1rem;
+}
+.reorder-level-vcount i { color: var(--violet); font-size: .6rem; }
+.reorder-right-panel { display: flex; flex-direction: column; gap: .75rem; }
+.reorder-selected-inner {
+  display: flex; align-items: center; gap: .85rem;
+  padding: .75rem 1rem;
+  background: var(--bg3); border: 1px solid rgba(139,92,246,.25);
+  border-radius: var(--r); border-left: 3px solid var(--violet);
+}
+.reorder-selected-thumb {
+  width: 80px; height: 48px; border-radius: var(--r-sm);
+  object-fit: cover; flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,.4);
+}
+.reorder-selected-badge {
+  width: 40px; height: 40px; border-radius: var(--r-sm);
+  background: rgba(139,92,246,.15); border: 1px solid rgba(139,92,246,.3);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--violet); font-size: 1rem; flex-shrink: 0;
+}
+.reorder-selected-name {
+  font-size: .95rem; font-weight: 800; color: var(--text);
+  display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.reorder-selected-meta {
+  font-size: .72rem; color: var(--text-dim);
+  display: flex; align-items: center; gap: .35rem; margin-top: .18rem;
+}
+.reorder-item-video {
+  display: inline-flex; align-items: center; gap: .28rem;
+  font-size: .7rem; color: #f87171; font-weight: 600;
+  padding: .12rem .45rem; border-radius: 50px;
+  background: rgba(244,63,94,.1); border: 1px solid rgba(244,63,94,.25);
+  transition: background .15s;
+}
+.reorder-item-video:hover { background: rgba(244,63,94,.2); }
+.reorder-item-video-showcase {
+  color: #f59e0b;
+  background: rgba(245,158,11,.1); border-color: rgba(245,158,11,.25);
+}
+.reorder-item-video-showcase:hover { background: rgba(245,158,11,.2); }
+.reorder-item-novideo {
+  font-size: .68rem; color: var(--text-dim);
+  display: inline-flex; align-items: center; gap: .25rem;
+}
+
+@media (max-width: 680px) {
+  .reorder-layout { grid-template-columns: 1fr; }
+  .reorder-levels-panel { max-height: 220px; }
+}
+
 /* ── USER-SELECT NONE GLOBAL (sin romper inputs/textareas) ── */
 body, .level-card, .lb-row, .lb-player-name, .lb-stat-pill,
 .lc-name, .lc-rank, .lm-title, .mural-post, .mural-content,
