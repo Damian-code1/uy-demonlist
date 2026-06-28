@@ -59,11 +59,17 @@ try {
         l.created_at,
         l.created_from_submission,
         l.became_top1_at,
-        v.id         AS victor_id,
+        v.id            AS victor_id,
         v.player_name,
-        v.video_url
+        v.video_url,
+        u.discord_id    AS victor_discord_id,
+        u.discord_avatar AS victor_discord_avatar
       FROM levels l
       LEFT JOIN victors v ON v.level_id = l.id
+      LEFT JOIN users u ON (
+        u.linked_player_name = v.player_name
+        OR u.gd_username     = v.player_name
+      )
       ORDER BY l.legacy ASC, l.position ASC, v.sort_order ASC, v.id ASC
     `);
     // Agrupar los victors dentro de cada nivel en JS (mucho más rápido que N+1 queries)
@@ -91,11 +97,16 @@ try {
 
       if (row.victor_id) {
         const videoUrl = row.video_url || null;
+        const avatarUrl = (row.victor_discord_id && row.victor_discord_avatar)
+          ? `https://cdn.discordapp.com/avatars/${row.victor_discord_id}/${row.victor_discord_avatar}.png?size=64`
+          : null;
         levelMap.get(row.id).victors.push({
-          id:       row.victor_id,
-          name:     row.player_name,
-          videoUrl: videoUrl,
-          videoId:  extractYTId(videoUrl),
+          id:         row.victor_id,
+          name:       row.player_name,
+          videoUrl:   videoUrl,
+          videoId:    extractYTId(videoUrl),
+          avatarUrl:  avatarUrl,
+          discordId:  row.victor_discord_id || null,
         });
       }
     }

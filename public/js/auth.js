@@ -21,6 +21,7 @@ async function initAuth() {
   currentUser = await checkSession();
   window.currentUser = currentUser;
   renderUserWidget(currentUser);
+  if (typeof closeRlVictorsPopup === 'function') closeRlVictorsPopup();
   if (typeof updateDiscordLogo === 'function') updateDiscordLogo();
   if (typeof addDiscordLinks   === 'function') addDiscordLinks();
   if (typeof loadFooterCredits === 'function') loadFooterCredits();

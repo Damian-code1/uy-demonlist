@@ -1532,38 +1532,52 @@ function openRlVictorsPopup() {
   const pts     = level.points != null ? level.points
     : (typeof computeAutoPoints === 'function' ? computeAutoPoints(pos) : null);
 
+  // Video del showcase del nivel como fallback para el primer victor sin video propio
+  const levelShowcaseId = level.youtube_id || extractYoutubeId(level.youtube_url);
+
   const popup = document.createElement('div');
   popup.id = 'rlVictorsPopup';
   popup.className = 'rl-victors-popup-overlay';
   popup.innerHTML = `
     <div class="rl-victors-popup" role="dialog" aria-modal="true">
-      <div class="rl-victors-popup-glow"></div>
-
       <div class="rl-victors-popup-header">
         <div class="rl-victors-popup-title-wrap">
           <div class="rl-victors-popup-icon"><i class="fas fa-users"></i></div>
-          <div>
+          <div class="rl-victors-popup-title-info">
             <div class="rl-victors-popup-level">${esc(level.name)}</div>
             <div class="rl-victors-popup-sub">
-              ${pos ? `<span><i class="fas fa-list"></i> #${pos}</span>` : ''}
+              ${pos ? `<span><i class="fas fa-list-ol"></i> #${pos}</span>` : ''}
               ${pts ? `<span><i class="fas fa-star"></i> ${pts.toLocaleString()} pts</span>` : ''}
               <span><i class="fas fa-flag-checkered"></i> ${victors.length} completion${victors.length !== 1 ? 's' : ''}</span>
             </div>
           </div>
         </div>
-        <button class="rl-victors-popup-close" onclick="closeRlVictorsPopup()">
+        <button class="rl-victors-popup-close" onclick="closeRlVictorsPopup()" aria-label="Cerrar">
           <i class="fas fa-times"></i>
         </button>
       </div>
 
       <div class="rl-victors-popup-list">
         ${victors.map((v, i) => {
-          const ytId = v.videoId || (v.videoUrl ? v.videoUrl.match(/(?:v=|youtu\.be\/)([^&\s]{11})/)?.[1] : null);
+          // Fallback al showcase del nivel si el primer victor no tiene video propio
+          const ownYtId = v.videoId || extractYoutubeId(v.videoUrl);
+          const ytId    = ownYtId || (i === 0 ? levelShowcaseId : null);
           const isFirst = i === 0;
+          const avatarUrl = v.avatarUrl || null;
+          const initials  = (v.name || '?')[0].toUpperCase();
+
           return `
             <div class="rl-victors-popup-item${isFirst ? ' rl-victor-first' : ''}">
               <div class="rl-victor-rank ${isFirst ? 'rl-victor-rank-gold' : ''}">
                 ${isFirst ? '<i class="fas fa-crown"></i>' : `<span>${i + 1}</span>`}
+              </div>
+              <div class="rl-victor-avatar-wrap">
+                ${avatarUrl
+                  ? `<img class="rl-victor-avatar" src="${esc(avatarUrl)}" alt="${esc(v.name)}"
+                       onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+                  : ''
+                }
+                <div class="rl-victor-avatar-ph" style="${avatarUrl ? 'display:none' : ''}">${initials}</div>
               </div>
               <div class="rl-victor-name-wrap">
                 <span class="rl-victor-name">${esc(v.name)}</span>
@@ -1572,8 +1586,7 @@ function openRlVictorsPopup() {
               ${ytId
                 ? `<a href="https://youtube.com/watch?v=${ytId}" target="_blank" rel="noopener"
                      class="rl-victor-video-btn" onclick="event.stopPropagation()">
-                     <i class="fab fa-youtube"></i>
-                     <span>Ver</span>
+                     <i class="fab fa-youtube"></i> Ver
                    </a>`
                 : `<span class="rl-victor-novideo"><i class="fas fa-video-slash"></i></span>`
               }

@@ -152,7 +152,7 @@ function paintCards(levels, animated = true) {
 
 const POINTS_MAX           = 1000;
 const POINTS_MIN           = 1;
-const POINTS_MAX_POSITION_REF = 250; // techo de referencia fijo (no recalibra puntos si la lista crece/encoge)
+const POINTS_MAX_POSITION_REF = 250; 
 const POINTS_EXPONENT       = 3;
 
 function computeAutoPoints(position) {
