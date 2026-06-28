@@ -34,6 +34,7 @@ function loadAdminTab(tab) {
     case 'submissions': loadAdminSubmissions(); break;
     case 'thumbnails':  loadAdminThumbnails();  break;
     case 'sync':        loadAdminSyncTab();     break;
+    case 'reorder':     loadAdminReorder();     break;
 }
 }
 
@@ -619,13 +620,18 @@ async function savePlayerForm() {
   const oldName = document.getElementById('playerFormOldName')?.value;
   const newName = document.getElementById('playerFormName')?.value.trim();
   if (!newName) return showToast('El nombre es requerido', 'error');
+  if (oldName === newName) { closePlayerModal(); return; }
 
   try {
     await adminRenamePlayer(oldName, newName);
     closePlayerModal();
-    showToast('Jugador renombrado ✓', 'success');
+    showToast(`Jugador renombrado: "${oldName}" → "${newName}" ✓`, 'success');
+    // Invalida caché y fuerza recarga completa de niveles + jugadores en la UI pública
+    // para que el cambio se vea en el leaderboard, modales de nivel y cards
+    await refreshPublicData({ force: true });
     loadAdminPlayers();
-    refreshPublicData();
+    // Si el modal de un nivel está abierto y tiene victors con ese nombre, refrescarlo
+    if (typeof refreshOpenLevelModal === 'function') refreshOpenLevelModal();
   } catch (e) {
     showToast('Error: ' + e.message, 'error');
   }
@@ -1260,6 +1266,219 @@ document.addEventListener('DOMContentLoaded', () => {
 // =============================================
 // SYNC POSICIONES CON AREDL
 // =============================================
+// =============================================
+// REORDER VICTORS
+// =============================================
+
+let _reorderLevelId = null;
+let _reorderDragSrc = null;
+
+async function loadAdminReorder() {
+  const container = document.getElementById('admin-reorder-table');
+  if (!container) return;
+  container.innerHTML = adminLoading();
+
+  try {
+    const data   = await adminGetLevels();
+    const levels = (data.levels || []).filter(l => (l.victorCount || 0) > 1);
+
+    container.innerHTML = `
+      <div class="reorder-hero">
+        <div class="reorder-hero-icon"><i class="fas fa-sort-amount-down"></i></div>
+        <div>
+          <div class="reorder-hero-title">Reordenar Victors</div>
+          <div class="reorder-hero-sub">Elegí un nivel y arrastrá los victors para cambiar el orden en que aparecen en la lista.</div>
+        </div>
+      </div>
+
+      <div class="reorder-level-select-wrap">
+        <label class="reorder-label"><i class="fas fa-skull"></i> Nivel</label>
+        <div class="reorder-select-inner">
+          <select id="reorderLevelSelect" class="reorder-select" onchange="loadReorderVictors(this.value)">
+            <option value="">— Elegí un nivel con más de 1 victor —</option>
+            ${levels.map(l => `<option value="${l.id}">${l.position}. ${esc(l.name)} (${l.victorCount} victors)</option>`).join('')}
+          </select>
+          <i class="fas fa-chevron-down reorder-select-arrow"></i>
+        </div>
+      </div>
+
+      <div id="reorderVictorsList" class="reorder-list-wrap">
+        <div class="reorder-empty-state">
+          <i class="fas fa-hand-pointer"></i>
+          <p>Elegí un nivel para ver y reordenar sus victors</p>
+        </div>
+      </div>
+
+      <div class="reorder-actions" id="reorderActions" style="display:none">
+        <div class="reorder-hint"><i class="fas fa-info-circle"></i> Arrastrá las filas para cambiar el orden. Los cambios se guardan con el botón.</div>
+        <button class="reorder-save-btn" id="reorderSaveBtn" onclick="saveReorderVictors()">
+          <i class="fas fa-save"></i> Guardar orden
+        </button>
+      </div>`;
+  } catch (e) {
+    container.innerHTML = adminError('Error: ' + e.message);
+  }
+}
+
+async function loadReorderVictors(levelId) {
+  const list    = document.getElementById('reorderVictorsList');
+  const actions = document.getElementById('reorderActions');
+  if (!list) return;
+  _reorderLevelId = levelId || null;
+
+  if (!levelId) {
+    list.innerHTML = `<div class="reorder-empty-state"><i class="fas fa-hand-pointer"></i><p>Elegí un nivel para ver y reordenar sus victors</p></div>`;
+    if (actions) actions.style.display = 'none';
+    return;
+  }
+
+  list.innerHTML = `<div class="reorder-loading"><i class="fas fa-spinner fa-spin"></i> Cargando victors…</div>`;
+
+  try {
+    const data    = await adminGetVictors(levelId);
+    const victors = data.victors || [];
+
+    if (!victors.length) {
+      list.innerHTML = `<div class="reorder-empty-state"><i class="fas fa-ghost"></i><p>Este nivel no tiene victors</p></div>`;
+      if (actions) actions.style.display = 'none';
+      return;
+    }
+
+    list.innerHTML = `
+      <div class="reorder-list" id="reorderDragList">
+        ${victors.map((v, i) => `
+          <div class="reorder-item" draggable="true" data-id="${v.id}">
+            <div class="reorder-drag-handle" title="Arrastrar">
+              <i class="fas fa-grip-vertical"></i>
+            </div>
+            <div class="reorder-item-num">${i + 1}</div>
+            <div class="reorder-item-info">
+              <span class="reorder-item-name">${esc(v.player_name)}</span>
+              ${v.video_url
+                ? `<a href="${esc(v.video_url)}" target="_blank" class="reorder-item-video" onclick="event.stopPropagation()">
+                     <i class="fab fa-youtube"></i> Video
+                   </a>`
+                : `<span class="reorder-item-novideo"><i class="fas fa-video-slash"></i> Sin video</span>`
+              }
+            </div>
+            <div class="reorder-item-badge">#${i + 1}</div>
+          </div>`).join('')}
+      </div>`;
+
+    if (actions) actions.style.display = '';
+    initReorderDragDrop();
+  } catch (e) {
+    list.innerHTML = adminError('Error: ' + e.message);
+  }
+}
+
+function initReorderDragDrop() {
+  const list = document.getElementById('reorderDragList');
+  if (!list) return;
+
+  list.querySelectorAll('.reorder-item').forEach(item => {
+    item.addEventListener('dragstart', e => {
+      _reorderDragSrc = item;
+      item.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    });
+    item.addEventListener('dragend', () => {
+      item.classList.remove('dragging');
+      list.querySelectorAll('.reorder-item').forEach(i => i.classList.remove('drag-over'));
+      updateReorderNumbers();
+    });
+    item.addEventListener('dragover', e => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      if (item === _reorderDragSrc) return;
+      list.querySelectorAll('.reorder-item').forEach(i => i.classList.remove('drag-over'));
+      item.classList.add('drag-over');
+
+      const rect   = item.getBoundingClientRect();
+      const midY   = rect.top + rect.height / 2;
+      const after  = e.clientY > midY;
+      if (after) {
+        item.after(_reorderDragSrc);
+      } else {
+        item.before(_reorderDragSrc);
+      }
+    });
+    item.addEventListener('drop', e => { e.preventDefault(); });
+  });
+
+  // Touch support para mobile
+  let touchDrag = null;
+  let touchClone = null;
+  list.querySelectorAll('.reorder-item').forEach(item => {
+    item.addEventListener('touchstart', e => {
+      touchDrag = item;
+      item.classList.add('dragging');
+      touchClone = item.cloneNode(true);
+      touchClone.style.cssText = `position:fixed;opacity:.8;pointer-events:none;z-index:9999;width:${item.offsetWidth}px;left:${item.getBoundingClientRect().left}px`;
+      document.body.appendChild(touchClone);
+    }, { passive: true });
+
+    item.addEventListener('touchmove', e => {
+      if (!touchDrag) return;
+      e.preventDefault();
+      const t = e.touches[0];
+      if (touchClone) { touchClone.style.top = `${t.clientY - 30}px`; }
+      const els = document.elementsFromPoint(t.clientX, t.clientY);
+      const target = els.find(el => el.classList.contains('reorder-item') && el !== touchDrag);
+      if (target) {
+        list.querySelectorAll('.reorder-item').forEach(i => i.classList.remove('drag-over'));
+        target.classList.add('drag-over');
+        const rect  = target.getBoundingClientRect();
+        const after = t.clientY > rect.top + rect.height / 2;
+        if (after) target.after(touchDrag); else target.before(touchDrag);
+      }
+    }, { passive: false });
+
+    item.addEventListener('touchend', () => {
+      touchDrag?.classList.remove('dragging');
+      touchClone?.remove();
+      list.querySelectorAll('.reorder-item').forEach(i => i.classList.remove('drag-over'));
+      touchDrag = null; touchClone = null;
+      updateReorderNumbers();
+    });
+  });
+}
+
+function updateReorderNumbers() {
+  document.querySelectorAll('#reorderDragList .reorder-item').forEach((item, i) => {
+    const numEl   = item.querySelector('.reorder-item-num');
+    const badgeEl = item.querySelector('.reorder-item-badge');
+    if (numEl)   numEl.textContent   = i + 1;
+    if (badgeEl) badgeEl.textContent = `#${i + 1}`;
+  });
+}
+
+async function saveReorderVictors() {
+  const btn = document.getElementById('reorderSaveBtn');
+  if (!_reorderLevelId) return;
+
+  const items = [...document.querySelectorAll('#reorderDragList .reorder-item')];
+  const order = items.map(el => parseInt(el.dataset.id));
+
+  if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando…'; }
+
+  try {
+    await adminReorderVictors(_reorderLevelId, order);
+    showToast('Orden guardado ✓', 'success');
+    refreshPublicData();
+    // Recargar para confirmar el orden desde la DB
+    await loadReorderVictors(_reorderLevelId);
+    document.getElementById('reorderLevelSelect').value = _reorderLevelId;
+  } catch (e) {
+    showToast('Error: ' + e.message, 'error');
+  } finally {
+    if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-save"></i> Guardar orden'; }
+  }
+}
+
+window.loadReorderVictors  = loadReorderVictors;
+window.saveReorderVictors  = saveReorderVictors;
+
 async function syncPositionsWithAredl() {
   const btn = document.getElementById('syncPositionsBtn');
   if (btn) {

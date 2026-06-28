@@ -449,6 +449,7 @@ async function adminGetVictors(levelId)      { return adminFetch(levelId ? `/vic
 async function adminAddVictor(data)          { return adminFetch('/victors', { method: 'POST', body: JSON.stringify(data) }); }
 async function adminUpdateVictor(id, data)   { return adminFetch(`/victors/${id}`, { method: 'PUT', body: JSON.stringify(data) }); }
 async function adminDeleteVictor(id)         { return adminFetch(`/victors/${id}`, { method: 'DELETE' }); }
+async function adminReorderVictors(levelId, order) { return adminFetch('/victors/reorder', { method: 'PUT', body: JSON.stringify({ levelId, order }) }); }
 
 async function adminGetPlayers()             { return adminFetch('/players'); }
 async function adminRenamePlayer(name, newName) { return adminFetch(`/players/by-name/${encodeURIComponent(name)}`, { method: 'PUT', body: JSON.stringify({ newName }) }); }

@@ -29,14 +29,14 @@ export async function GET(request) {
            FROM victors v
            JOIN levels l ON v.level_id = l.id
            WHERE v.level_id = ?
-           ORDER BY v.id ASC`,
+           ORDER BY v.sort_order ASC, v.id ASC`,
           [levelId]
         )
       : await query(
           `SELECT v.*, l.name AS level_name, l.youtube_url AS level_youtube_url
            FROM victors v
            JOIN levels l ON v.level_id = l.id
-           ORDER BY l.position ASC, v.id ASC`
+           ORDER BY l.position ASC, v.sort_order ASC, v.id ASC`
         );
 
     const victors = markFirstVictorPerLevel(rows);
