@@ -315,12 +315,7 @@ function submitPctModal() {
 function initControls() {
   const goalSlider = document.getElementById('rlGoalSlider');
 
-  goalSlider?.addEventListener('input', () => {
-    RL.totalGoal = parseInt(goalSlider.value, 10);
-    document.getElementById('rlGoalVal').textContent = RL.totalGoal;
-    updateProgressUI();
-    saveSession();
-  });
+  RL.totalGoal = 100;
 
   const rangeMax = document.getElementById('rlRangeMax');
   if (rangeMax) {
@@ -379,7 +374,11 @@ function initControls() {
   });
 
   document.getElementById('rlHideLevel')?.addEventListener('change', e => {
-    RL.revealHidden = e.target.checked;
+    RL.hideMode = e.target.checked;
+    const pdfBtn = document.getElementById('rlBtnDownloadPdf');
+    if (pdfBtn) pdfBtn.style.display = RL.hideMode ? 'none' : '';
+    renderHistory();
+    if (RL.current) renderCurrentLevel(RL.current);
   });
 
   document.getElementById('rlBtnSpin')?.addEventListener('click', handleSpin);
@@ -535,6 +534,7 @@ function saveSession() {
     sessionActive: RL.sessionActive,
     surrendered:   RL.surrendered,
     totalGoal:     RL.totalGoal,
+    hideMode:      RL.hideMode,
   }));
 }
 
@@ -550,11 +550,15 @@ function loadSession() {
     RL.surrendered   = !!data.surrendered || RL.session.some(s => s.status === 'failed');
 
     const total = RL.levels.length || RL.filterRange[1];
-    RL.totalGoal       = (RL.sessionActive || RL.session.length > 0) ? (data.totalGoal || 100) : 100;
+    RL.totalGoal = 100;
     RL.filterRange     = [1, total];
     RL.filterAredlOnly = false;
     RL.filterAllAredl  = false;
-    RL.revealHidden    = !!data.revealHidden;
+    RL.hideMode = !!data.hideMode;
+    const hideEl = document.getElementById('rlHideLevel');
+    if (hideEl) hideEl.checked = RL.hideMode;
+    const pdfBtn = document.getElementById('rlBtnDownloadPdf');
+    if (pdfBtn) pdfBtn.style.display = RL.hideMode ? 'none' : '';
 
     const slider = document.getElementById('rlGoalSlider');
     const valEl  = document.getElementById('rlGoalVal');
@@ -563,8 +567,10 @@ function loadSession() {
     if (valEl)  valEl.textContent = RL.totalGoal;
     if (range)  range.value       = RL.filterRange[1];
 
-    document.getElementById('rlAllAredl').checked  = false;
-    document.getElementById('rlAredlOnly').checked = false;
+    const allAredlEl  = document.getElementById('rlAllAredl');
+    const aredlOnlyEl = document.getElementById('rlAredlOnly');
+    if (allAredlEl)  allAredlEl.checked  = false;
+    if (aredlOnlyEl) aredlOnlyEl.checked = false;
     const hide = document.getElementById('rlHideLevel');
     if (hide) hide.checked = RL.revealHidden;
 
@@ -641,6 +647,7 @@ function initManualRange() {
 function startSession() {
   RL.session = [];
   RL.sessionActive = true;
+  RL._sessionWasHidden = RL.hideMode;
   RL.surrendered = false;
   RL.current = null;
   hideSurrenderBanner();
@@ -762,7 +769,7 @@ function renderCurrentLevel(level) {
   if (thumbEl) {
     thumbEl.src = thumb || '';
     thumbEl.style.display = thumb ? '' : 'none';
-    thumbEl.className = `rl-slot-thumb${RL.revealHidden ? ' hidden-thumb' : ''}`;
+    thumbEl.className = `rl-slot-thumb${RL.hideMode ? ' rl-thumb-hidden-mode' : ''}`;
   }
 
   const infoEl = document.getElementById('rlSlotInfo');
@@ -775,7 +782,7 @@ function renderCurrentLevel(level) {
         }
         ${aredlPos ? `<span class="rl-slot-aredl-sub">· AREDL #${aredlPos}</span>` : ''}
       </div>
-      <div class="rl-slot-name">${esc(level.name)}</div>
+      <div class="rl-slot-name">${RL.hideMode ? '<span style="filter:blur(8px);user-select:none">???</span>' : esc(level.name)}</div>
       <div class="rl-slot-meta">
         ${pts !== null
           ? `<span class="rl-slot-chip"><i class="fas fa-star" style="color:var(--gold)"></i>${pts.toLocaleString()} pts</span>`
@@ -1085,13 +1092,15 @@ function renderHistory() {
     return `
       <div class="rl-history-item">
         <span class="rl-history-num">${num}</span>
-        ${thumb
-          ? `<img class="rl-history-thumb" src="${thumb}" alt="" onerror="this.className='rl-history-thumb rl-history-thumb-ph';this.src='';">`
-          : `<div class="rl-history-thumb rl-history-thumb-ph"></div>`
+        ${RL.hideMode
+          ? `<div class="rl-history-thumb rl-history-thumb-hidden"><i class="fas fa-eye-slash"></i></div>`
+          : thumb
+            ? `<img class="rl-history-thumb" src="${thumb}" alt="" onerror="this.className='rl-history-thumb rl-history-thumb-ph';this.src='';">`
+            : `<div class="rl-history-thumb rl-history-thumb-ph"></div>`
         }
         <div class="rl-history-info">
-          <div class="rl-history-name">${esc(level.name)}</div>
-          <div class="rl-history-meta">
+          <div class="rl-history-name">${RL.hideMode ? '???' : esc(level.name)}</div>
+          <div class="rl-history-meta" ${RL.hideMode ? 'style="filter:blur(6px);user-select:none"' : ''}>
             <span>${posLabel}</span>
             <span>·</span>
             <span>${ptsLabel}</span>
@@ -1157,10 +1166,13 @@ function showFinishModal() {
   launchConfetti();
 }
 
-// PDF export
-function downloadSessionPdf() {
+  function downloadSessionPdf() {
   if (!RL.session.length) {
     showRlToast('No hay datos de sesión para exportar', 'error');
+    return;
+  }
+  if (RL.hideMode) {
+    showRlToast('Desactivá "Ocultar nivel" para poder descargar el PDF', 'error');
     return;
   }
 
@@ -1235,6 +1247,15 @@ function downloadSessionPdf() {
   rect(0, 32, W, 1);
 
   let y = 44;
+
+  // Badge modo oculto
+  if (RL._sessionWasHidden) {
+    setFill(124, 58, 237);
+    roundRect(W - MR - 52, 5, 52, 12, 2);
+    setFont('bold', 7);
+    setTxt(...C.white);
+    doc.text('MODO OCULTO', W - MR - 26, 13, { align: 'center' });
+  }
 
   // ── STATS GRID ──
   const completed = RL.session.filter(s => s.status === 'completed').length;
@@ -1559,9 +1580,8 @@ function openRlVictorsPopup() {
 
       <div class="rl-victors-popup-list">
         ${victors.map((v, i) => {
-          // Fallback al showcase del nivel si el primer victor no tiene video propio
           const ownYtId = v.videoId || extractYoutubeId(v.videoUrl);
-          const ytId    = ownYtId || (i === 0 ? levelShowcaseId : null);
+          const ytId    = ownYtId || levelShowcaseId;
           const isFirst = i === 0;
           const avatarUrl = v.avatarUrl || null;
           const initials  = (v.name || '?')[0].toUpperCase();

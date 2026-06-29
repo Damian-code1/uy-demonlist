@@ -125,22 +125,8 @@
   <!-- CONFIG PANEL -->
   <div class="rl-config-panel" id="rlConfigPanel">
 
-    <!-- Niveles a completar -->
-    <div class="rl-config-group">
-      <div class="rl-config-label">
-        <i class="fas fa-target"></i> Meta de niveles
-      </div>
-      <div class="rl-range-wrap">
-        <input type="range" id="rlGoalSlider" min="50" max="100" value="100" step="1">
-        <div class="rl-range-labels"><span>50</span><span>100</span></div>
-        <div class="rl-range-val">
-          <span id="rlGoalVal">100</span> niveles
-        </div>
-      </div>
-    </div>
-
     <!-- Rango de posiciones -->
-    <div class="rl-config-group">
+    <div class="rl-config-group rl-config-group-range">
       <div class="rl-config-label">
         <i class="fas fa-filter"></i> Rango de dificultad
       </div>
@@ -149,7 +135,6 @@
         <div class="rl-range-labels"><span>#1</span><span>Full lista</span></div>
         <div class="rl-range-val" id="rlRangeMaxVal">— de —</div>
       </div>
-      <!-- Inputs manuales de rango -->
       <div class="rl-manual-range">
         <div class="rl-manual-field">
           <label class="rl-manual-label">Desde</label>
@@ -172,39 +157,43 @@
       </div>
     </div>
 
-    <!-- Toggles -->
+    <!-- Opciones -->
     <div class="rl-config-group">
       <div class="rl-config-label">
         <i class="fas fa-sliders-h"></i> Opciones
       </div>
-      <div style="display:flex;flex-direction:column;gap:.75rem;padding-top:.3rem">
+      <div class="rl-toggle-list">
         <div class="rl-toggle-row">
           <label class="rl-toggle">
             <input type="checkbox" id="rlAllAredl">
             <span class="rl-toggle-slider"></span>
           </label>
-          <span class="rl-toggle-label">Incluir toda la AREDL <span style="font-size:.72rem;color:var(--text-dim)">(no solo UY lista)</span></span>
+          <div class="rl-toggle-info">
+            <span class="rl-toggle-label">Incluir toda la AREDL</span>
+            <span class="rl-toggle-sub">Niveles fuera de la lista UY también</span>
+          </div>
         </div>
+        <div class="rl-toggle-divider"></div>
         <div class="rl-toggle-row">
           <label class="rl-toggle">
             <input type="checkbox" id="rlHideLevel">
             <span class="rl-toggle-slider"></span>
           </label>
-          <span class="rl-toggle-label">Ocultar nivel hasta el giro</span>
+          <div class="rl-toggle-info">
+            <span class="rl-toggle-label">Modo sorpresa <span class="rl-toggle-badge">ANTI-TRAMPA</span></span>
+            <span class="rl-toggle-sub">Solo muestra la ID — descubrís el nivel en GD</span>
+          </div>
         </div>
       </div>
     </div>
 
     <!-- Pool info -->
-    <div class="rl-config-group" style="align-self:flex-end">
+    <div class="rl-config-group rl-config-group-pool">
       <div class="rl-config-label">
         <i class="fas fa-database"></i> Pool actual
       </div>
-      <div style="font-size:1.4rem;font-family:var(--font-title);letter-spacing:2px;
-                  background:linear-gradient(135deg,var(--violet),var(--roulette-fire));
-                  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent"
-           id="rlPoolInfo">Cargando…</div>
-      <div class="rl-config-label" style="margin-top:.3rem;font-style:italic;letter-spacing:0;text-transform:none">
+      <div class="rl-pool-count-big" id="rlPoolInfo">Cargando…</div>
+      <div class="rl-config-label" style="margin-top:.3rem;font-style:italic;letter-spacing:0;text-transform:none;opacity:.6">
         Se actualiza con cada spin
       </div>
     </div>
