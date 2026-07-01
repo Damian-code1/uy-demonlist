@@ -782,8 +782,21 @@ function renderCurrentLevel(level) {
         }
         ${aredlPos ? `<span class="rl-slot-aredl-sub">· AREDL #${aredlPos}</span>` : ''}
       </div>
-      <div class="rl-slot-name">${RL.hideMode ? '<span style="filter:blur(8px);user-select:none">???</span>' : esc(level.name)}</div>
+      <div class="rl-slot-name">${RL.hideMode ? `<span class="rl-blind-name">
+        <i class="fas fa-eye-slash"></i> NIVEL OCULTO
+      </span>` : esc(level.name)}</div>
       <div class="rl-slot-meta">
+        ${RL.hideMode
+          ? `<span class="rl-slot-chip rl-blind-chip">
+               <i class="fas fa-lock"></i> Modo ciego activo — jugá sin spoilers
+             </span>
+             ${level.aredl_level_id
+               ? `<button class="rl-slot-chip rl-copy-id-btn" onclick="copyLevelId('${level.aredl_level_id}')">
+                    <i class="fas fa-copy"></i> Copiar ID
+                  </button>`
+               : ''}
+             `
+          : `
         ${pts !== null
           ? `<span class="rl-slot-chip"><i class="fas fa-star" style="color:var(--gold)"></i>${pts.toLocaleString()} pts</span>`
           : `<span class="rl-slot-chip rl-slot-chip-nopts"><i class="fas fa-minus-circle"></i> Sin puntos</span>`
@@ -799,6 +812,7 @@ function renderCurrentLevel(level) {
             <i class="fas fa-copy"></i> ID ${level.aredl_level_id}
           </button>` : ''}
         ${ytId ? `<a href="https://youtube.com/watch?v=${ytId}" target="_blank" class="rl-slot-chip" style="color:var(--red);text-decoration:none;border-color:rgba(244,63,94,.3)"><i class="fab fa-youtube"></i> Ver showcase</a>` : ''}
+          `}
       </div>
     `;
   }

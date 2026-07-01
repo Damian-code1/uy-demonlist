@@ -109,29 +109,27 @@
   </div>
 </nav>
 
-<!-- FLOATING ACTIONS -->
 <div class="floating-ui-stack">
+  <div class="user-widget" id="userWidget">
+    <div class="user-widget-card">
+    </div>
+    <div class="user-widget-dropdown">
+    </div>
+  </div>
+</div>
   <div class="perf-widget" id="perfWidget">
     <button type="button" class="perf-widget-btn" id="perfModeToggle" aria-pressed="false" title="Modo rendimiento">
       <span class="perf-widget-icon"><i class="fas fa-bolt"></i></span>
       <span class="perf-widget-copy">
-        <strong>Modo rendimiento</strong>
+        <strong>Rendimiento</strong>
         <small>Menos animaciones</small>
       </span>
-      <span class="perf-widget-state"><i class="fas fa-circle"></i></span>
+      <span class="perf-widget-state"></span>
     </button>
   </div>
-  <div class="user-widget" id="userWidget">
-    <div class="user-widget-card">
-      <!-- Filled by auth.js -->
-    </div>
-    <div class="user-widget-dropdown">
-      <!-- Filled by auth.js -->
-    </div>
-  </div>
 </div>
+<!-- END FLOATING -->
 
-<!-- HERO -->
 <section class="hero" id="hero">
   <canvas id="particleCanvas"></canvas>
   <div class="hero-glow"></div>

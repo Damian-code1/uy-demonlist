@@ -572,8 +572,13 @@ input[type="range"]::-moz-range-progress {
   transition: opacity .4s, filter .4s, transform .4s;
   filter: blur(0px) brightness(1);
 }
+.rl-slot-thumb.rl-thumb-hidden-mode {
+  filter: blur(32px) brightness(.15) saturate(.05);
+  transform: scale(1.08);
+  transition: filter .3s ease, transform .3s ease;
+}
 .rl-slot-thumb.hidden-thumb {
-  filter: blur(12px) brightness(.4) saturate(.3);
+  filter: blur(32px) brightness(.15) saturate(.05);
   transform: scale(1.06);
 }
 .rl-slot-overlay {
@@ -1697,4 +1702,19 @@ kbd {
 }
 @media (max-width: 768px) {
   .rl-config-panel { grid-template-columns: 1fr !important; }
+}
+
+/* ── Modo ciego ── */
+.rl-blind-name {
+  display: inline-flex; align-items: center; gap: .55rem;
+  color: rgba(255,255,255,.3);
+  font-size: .95rem; letter-spacing: 2px; text-transform: uppercase;
+  font-style: italic;
+}
+.rl-blind-name i { opacity: .5; }
+.rl-blind-chip {
+  background: rgba(245,158,11,.08) !important;
+  border-color: rgba(245,158,11,.25) !important;
+  color: #f59e0b !important;
+  font-size: .72rem !important;
 }
