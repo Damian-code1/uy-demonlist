@@ -306,7 +306,7 @@ function buildCard(level, index) {
           ${aredlPos ? `<span class="aredl-pos" title="Posición en AREDL (lista global)"><i class="fas fa-globe"></i>#${aredlPos}</span>` : ''}
           ${isNewTop1
             ? `<span class="lc-top1-badge"><i class="fas fa-fire"></i><span class="lc-top1-label">TOP 1</span><span class="lc-top1-spark"></span><span class="lc-top1-spark"></span><span class="lc-top1-spark"></span><span class="lc-top1-spark"></span><span class="lc-top1-spark"></span></span>`
-            : (isNew ? `<span class="lc-new-badge">NUEVO</span>` : '')}
+            : ''}
         </div>
       </div>
 
