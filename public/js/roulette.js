@@ -798,9 +798,9 @@ function renderCurrentLevel(level) {
       <div class="rl-slot-name rl-blind-name-pulse">??? NIVEL OCULTO ???</div>
       <div class="rl-slot-meta">
         <span class="rl-slot-chip rl-blind-chip"><i class="fas fa-lock"></i> Completá el nivel para revelar</span>
-        ${level.aredl_level_id
-          ? `<button class="rl-slot-chip rl-copy-id-btn" onclick="copyLevelId('${level.aredl_level_id}')">
-               <i class="fas fa-copy"></i> Copiar ID para GD
+        ${level.aredl_level_id || level.gd_level_id
+          ? `<button class="rl-slot-chip rl-copy-id-btn rl-blind-chip" onclick="copyLevelId('${level.aredl_level_id || level.gd_level_id}')">
+               <i class="fas fa-copy"></i> Copiar ID ${level.aredl_level_id || level.gd_level_id}
              </button>`
           : '<span class="rl-slot-chip rl-blind-chip" style="opacity:.5"><i class="fas fa-exclamation-triangle"></i> Sin ID disponible</span>'
         }
@@ -820,9 +820,9 @@ function renderCurrentLevel(level) {
             <i class="fas fa-users"></i> ${level.victors.length} victor${level.victors.length !== 1 ? 's' : ''}
             <i class="fas fa-chevron-right" style="font-size:.55rem;opacity:.6"></i>
           </button>` : ''}
-        ${level.aredl_level_id ? `
-          <button class="rl-slot-chip rl-copy-id-btn" onclick="copyLevelId('${level.aredl_level_id}')">
-            <i class="fas fa-copy"></i> ID ${level.aredl_level_id}
+        ${level.aredl_level_id || level.gd_level_id ? `
+          <button class="rl-slot-chip rl-copy-id-btn" onclick="copyLevelId('${level.aredl_level_id || level.gd_level_id}')">
+            <i class="fas fa-copy"></i> ID ${level.aredl_level_id || level.gd_level_id}
           </button>` : ''}
         ${ytId ? `<a href="https://youtube.com/watch?v=${ytId}" target="_blank" class="rl-slot-chip" style="color:var(--red);text-decoration:none;border-color:rgba(244,63,94,.3)"><i class="fab fa-youtube"></i> Ver showcase</a>` : ''}
       </div>`;
