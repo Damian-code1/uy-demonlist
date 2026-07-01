@@ -301,6 +301,19 @@
   .footer-bottom { flex-direction: column; align-items: flex-start; gap: .6rem; }
   .footer-credit { flex-wrap: wrap; }
 }
+
+/* Mobile - ensure level names are always visible */
+@media (max-width: 640px) {
+  .lc-name { 
+    font-size: clamp(0.7rem, 4.5vw, 0.85rem) !important;
+    line-height: 1.2;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    word-break: break-word;
+  }
+}
+
 /* Extra small */
 @media (max-width: 400px) {
   .lb-row { padding: .55rem .6rem; gap: .4rem; }
@@ -314,21 +327,29 @@
   .lb-stat-pill { padding: .22rem .42rem; font-size: .62rem; }
   .lb-stat-pill i { font-size: .58rem; }
 
-  .level-card  { height: 76px; padding-left: 105px; }
-  .lc-thumb, .lc-thumb-ph { width: 105px; }
-  .level-card::after  { width: 150px; }
-  .level-card::before { left: 105px; }
-  .lc-body { padding: 0 .8rem 0 0; }
-  .lc-title-row { gap: .4rem; }
-  .lc-rank { padding: 0 .35rem; font-size: .95rem; min-width: 42px; }
-  .lc-meta-row { gap: .4rem; font-size: .75rem; flex-wrap: nowrap; }
-  .lc-victor-count { font-size: .7rem; padding: .2rem .5rem; }
+  .level-card  { height: auto; min-height: 92px; padding-left: 110px; }
+  .lc-thumb, .lc-thumb-ph { width: 110px; }
+  .level-card::after  { width: 160px; }
+  .level-card::before { left: 110px; }
+  .lc-body { padding: 0.6rem 0.75rem; gap: 0.3rem; }
+  .lc-title-row { gap: 0.35rem; }
+  .lc-name { 
+    font-size: clamp(0.7rem, 4vw, 0.85rem);
+    line-height: 1.2;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    word-break: break-word;
+  }
+  .lc-rank { padding: 0 .28rem; font-size: .85rem; min-width: 36px; }
+  .lc-meta-row { gap: .3rem; font-size: .7rem; flex-wrap: wrap; }
+  .lc-victor-count { font-size: .65rem; padding: .15rem .4rem; }
   .lc-first-victor { display: none; }
-  .lc-pts-badge { font-size: .65rem; padding: .15rem .4rem; }
+  .lc-pts-badge { font-size: .6rem; padding: .12rem .35rem; }
   .lc-new-badge { display: none; }
-  .lc-top1-badge { font-size: .64rem; padding: .18rem .5rem; }
-  .aredl-pos { font-size: .7rem; padding: .2rem .5rem; display: none; }
-  .lc-fav-btn { opacity: 1; width: 24px; height: 24px; font-size: .7rem; }
+  .lc-top1-badge { font-size: .58rem; padding: .15rem .42rem; }
+  .aredl-pos { font-size: .65rem; padding: .15rem .4rem; display: none; }
+  .lc-fav-btn { opacity: 1; width: 22px; height: 22px; font-size: .65rem; }
 
   .admin-table { font-size: .64rem; }
   .admin-table th, .admin-table td { padding: .4rem .4rem; }
@@ -368,8 +389,8 @@
   .lc-thumb, .lc-thumb-ph { width: 92px; }
   .level-card::after { width: 130px; }
   .level-card::before { left: 92px; }
-  .lc-rank { padding: 0 .28rem; font-size: .85rem; min-width: 38px; }
-  .lc-body { padding: 0 .6rem 0 0; gap: .25rem; }
+  .lc-rank { padding: 0 .24rem; font-size: .75rem; min-width: 34px; }
+  .lc-body { padding: 0.4rem 0.5rem; gap: 0.2rem; }
   .lc-name { font-size: .7rem; }
   .lc-meta-row { font-size: .64rem; gap: .25rem; }
   .lc-victor-count { font-size: .62rem; padding: .12rem .35rem; }
