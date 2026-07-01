@@ -788,47 +788,41 @@ function renderCurrentLevel(level) {
 
   const infoEl = document.getElementById('rlSlotInfo');
   if (infoEl) {
-    infoEl.innerHTML = `
-      <div class="rl-slot-pos-badge${!inList ? ' rl-slot-pos-badge-notlisted' : ''}">
-        ${inList
-          ? `<i class="fas fa-list"></i> #${pos} en la lista`
-          : `<i class="fas fa-globe"></i> No está en la lista UY`
+    infoEl.innerHTML = RL.hideMode ? `
+      <div class="rl-slot-pos-badge rl-blind-badge">
+        <i class="fas fa-eye-slash"></i> Modo ciego activo
+      </div>
+      <div class="rl-slot-name rl-blind-name-pulse">??? NIVEL OCULTO ???</div>
+      <div class="rl-slot-meta">
+        <span class="rl-slot-chip rl-blind-chip"><i class="fas fa-lock"></i> Completá el nivel para revelar</span>
+        ${level.aredl_level_id
+          ? `<button class="rl-slot-chip rl-copy-id-btn" onclick="copyLevelId('${level.aredl_level_id}')">
+               <i class="fas fa-copy"></i> Copiar ID para GD
+             </button>`
+          : '<span class="rl-slot-chip rl-blind-chip" style="opacity:.5"><i class="fas fa-exclamation-triangle"></i> Sin ID disponible</span>'
         }
+      </div>` : `
+      <div class="rl-slot-pos-badge${!inList ? ' rl-slot-pos-badge-notlisted' : ''}">
+        ${inList ? `<i class="fas fa-list"></i> #${pos} en la lista` : `<i class="fas fa-globe"></i> No está en la lista UY`}
         ${aredlPos ? `<span class="rl-slot-aredl-sub">· AREDL #${aredlPos}</span>` : ''}
       </div>
-      <div class="rl-slot-name">${RL.hideMode ? `<span class="rl-blind-name">
-        <i class="fas fa-eye-slash"></i> NIVEL OCULTO
-      </span>` : esc(level.name)}</div>
+      <div class="rl-slot-name">${esc(level.name)}</div>
       <div class="rl-slot-meta">
-        ${RL.hideMode
-          ? `<span class="rl-slot-chip rl-blind-chip">
-               <i class="fas fa-lock"></i> Modo ciego activo — jugá sin spoilers
-             </span>
-             ${level.aredl_level_id
-               ? `<button class="rl-slot-chip rl-copy-id-btn" onclick="copyLevelId('${level.aredl_level_id}')">
-                    <i class="fas fa-copy"></i> Copiar ID
-                  </button>`
-               : ''}
-             `
-          : `
         ${pts !== null
           ? `<span class="rl-slot-chip"><i class="fas fa-star" style="color:var(--gold)"></i>${pts.toLocaleString()} pts</span>`
           : `<span class="rl-slot-chip rl-slot-chip-nopts"><i class="fas fa-minus-circle"></i> Sin puntos</span>`
         }
-        ${!RL.hideMode && level.victors?.length ? `
+        ${level.victors?.length ? `
           <button class="rl-slot-chip rl-victors-chip" onclick="openRlVictorsPopup()" style="cursor:pointer;border-color:rgba(124,58,237,.4);color:var(--violet)">
-            <i class="fas fa-users"></i>
-            ${level.victors.length} victor${level.victors.length !== 1 ? 's' : ''}
+            <i class="fas fa-users"></i> ${level.victors.length} victor${level.victors.length !== 1 ? 's' : ''}
             <i class="fas fa-chevron-right" style="font-size:.55rem;opacity:.6"></i>
           </button>` : ''}
         ${level.aredl_level_id ? `
           <button class="rl-slot-chip rl-copy-id-btn" onclick="copyLevelId('${level.aredl_level_id}')">
             <i class="fas fa-copy"></i> ID ${level.aredl_level_id}
           </button>` : ''}
-        ${!RL.hideMode && ytId ? `<a href="https://youtube.com/watch?v=${ytId}" target="_blank" class="rl-slot-chip" style="color:var(--red);text-decoration:none;border-color:rgba(244,63,94,.3)"><i class="fab fa-youtube"></i> Ver showcase</a>` : ''}
-          `}
-      </div>
-    `;
+        ${ytId ? `<a href="https://youtube.com/watch?v=${ytId}" target="_blank" class="rl-slot-chip" style="color:var(--red);text-decoration:none;border-color:rgba(244,63,94,.3)"><i class="fab fa-youtube"></i> Ver showcase</a>` : ''}
+      </div>`;
   }
 
   RL.session = RL.session.filter(
@@ -1051,15 +1045,16 @@ function updateSessionStats() {
   }
 
   detail.innerHTML = RL.session.map((entry, i) => {
-    const num    = RL.session.length - i;
-    const level  = entry.level;
-    const pos    = level.position || '?';
-    const status = statusLabel(entry);
-    const pctStr = entry.percentage != null ? ` · ${entry.percentage}%` : '';
-    const blind  = RL.revealHidden && entry.status === 'pending';
+    const num      = RL.session.length - i;
+    const level    = entry.level;
+    const pos      = level.position || '?';
+    const status   = statusLabel(entry);
+    const pctStr   = entry.percentage != null ? ` · ${entry.percentage}%` : '';
+    const isDone   = entry.status === 'completed' || entry.status === 'failed' || entry.status === 'skipped';
+    const blind    = RL.hideMode && !isDone;
     return `<div class="rl-stats-row">
       <span class="rl-stats-row-num">${num}</span>
-      <span class="rl-stats-row-name">${blind ? '???' : esc(level.name)}</span>
+      <span class="rl-stats-row-name">${blind ? '<i class="fas fa-eye-slash" style="opacity:.4;margin-right:.25rem"></i>???' : esc(level.name)}</span>
       <span class="rl-stats-row-pos">${blind ? '—' : '#' + pos}</span>
       <span class="rl-stats-row-status ${entry.status}">${status}${pctStr}</span>
     </div>`;
@@ -1115,7 +1110,8 @@ function renderHistory() {
       statusHtml = `<span class="rl-history-status rl-status-pending">⏳ Pendiente</span>`;
     }
 
-    const blind = RL.revealHidden && entry.status === 'pending';
+    const isCompleted = entry.status === 'completed' || entry.status === 'failed' || entry.status === 'skipped';
+    const blind = RL.hideMode && !isCompleted;
     return `
       <div class="rl-history-item${blind ? ' rl-history-blind' : ''}">
         <span class="rl-history-num">${num}</span>
@@ -1126,13 +1122,13 @@ function renderHistory() {
             : `<div class="rl-history-thumb rl-history-thumb-ph"></div>`
         }
         <div class="rl-history-info">
-          <div class="rl-history-name">${blind ? '???' : esc(level.name)}</div>
+          <div class="rl-history-name">${blind ? '<i class="fas fa-eye-slash" style="opacity:.4;margin-right:.3rem"></i> ???' : esc(level.name)}</div>
           ${!blind ? `<div class="rl-history-meta">
             <span>${posLabel}</span>
             <span>·</span>
             <span>${ptsLabel}</span>
             ${level.aredl_position ? `<span>· AREDL #${level.aredl_position}</span>` : ''}
-          </div>` : ''}
+          </div>` : '<div class="rl-history-meta" style="color:var(--text-dim);font-style:italic">Nivel oculto — completá para revelar</div>'}
         </div>
         ${statusHtml}
         ${!blind && ytId && entry.status !== 'pending'
