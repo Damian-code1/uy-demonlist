@@ -1,6 +1,6 @@
-// ROULETTE.JS
+﻿
 
-// State
+
 const RL = {
   levels:       [],
   aredlLevels:  [],
@@ -23,7 +23,7 @@ const RL = {
 
 const RL_STORAGE_KEY = 'uydl_roulette_session_v1';
 
-// Init
+
 document.addEventListener('DOMContentLoaded', async () => {
   buildEmbers();
   if (typeof loadDiscordWidget === 'function') loadDiscordWidget();
@@ -134,7 +134,7 @@ async function fetchLevels() {
   rebuildPool();
 }
 
-// Build pool
+
 function rebuildPool() {
   const doneIds = new Set(
     RL.session
@@ -190,7 +190,7 @@ function updatePoolStats() {
   }
 }
 
-// Percentage helpers
+
 function getLastRecordedPercentage() {
   for (const s of RL.session) {
     if (s.percentage != null && (s.status === 'completed' || s.status === 'failed')) {
@@ -205,9 +205,9 @@ function validatePercentage(value, mode) {
   if (isNaN(num) || num < 0 || num > 100) {
     return { ok: false, msg: 'Ingresá un porcentaje válido entre 0 y 100.' };
   }
-  // Al rendirse/abandonar, el porcentaje es un intento nuevo e independiente:
-  // no tiene por qué ser mayor al de un nivel anterior (ej. llegaste al 35% en
-  // un nivel y te rendiste al 26% en otro). Solo se exige que esté en [0, 100].
+  
+  
+  
   if (mode === 'fail') {
     return { ok: true, value: num };
   }
@@ -218,7 +218,7 @@ function validatePercentage(value, mode) {
   return { ok: true, value: num };
 }
 
-// Percentage modal
+
 function initPctModal() {
   document.getElementById('rlPctCancel')?.addEventListener('click', closePctModal);
   document.getElementById('rlPctBackdrop')?.addEventListener('click', closePctModal);
@@ -311,7 +311,7 @@ function submitPctModal() {
 }
 
 
-// Init controls
+
 function initControls() {
   const goalSlider = document.getElementById('rlGoalSlider');
 
@@ -377,8 +377,11 @@ function initControls() {
     RL.hideMode = e.target.checked;
     const pdfBtn = document.getElementById('rlBtnDownloadPdf');
     if (pdfBtn) pdfBtn.style.display = RL.hideMode ? 'none' : '';
+    
     renderHistory();
+    updateSessionStats(); 
     if (RL.current) renderCurrentLevel(RL.current);
+    saveSession();
   });
 
   document.getElementById('rlBtnSpin')?.addEventListener('click', handleSpin);
@@ -425,7 +428,7 @@ function initControls() {
     });
   }
 
-  // Atajos de teclado
+  
   document.addEventListener('keydown', e => {
     if (['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)) return;
     if (document.querySelector('.rl-pct-modal.open, .rl-finish-modal.open')) return;
@@ -641,7 +644,7 @@ function initManualRange() {
   syncManualFromSlider();
 }
 
-// Session management
+
 function startSession() {
   RL.session = [];
   RL.sessionActive = true;
@@ -691,7 +694,7 @@ function checkActiveSession() {
   }
 }
 
-// Spin
+
 async function handleSpin() {
   if (isSessionEnded()) {
     showRlToast('La sesión terminó porque te rendiste.', 'error');
@@ -968,7 +971,7 @@ function handleSkip() {
   updateButtons();
 }
 
-// Progress UI
+
 function updateProgressUI() {
   const completed = _getEffectiveCompletedCount();
   const skipped   = RL.session.filter(s => s.status === 'skipped').length;
@@ -1004,7 +1007,7 @@ function updateProgressUI() {
   if (infoEl) infoEl.textContent = `${completed} completados · ${failed} rendidos · ${skipped} salteados`;
 }
 
-// Session stats
+
 function updateSessionStats() {
   const completed = RL.session.filter(s => s.status === 'completed').length;
   const failed    = RL.session.filter(s => s.status === 'failed').length;
@@ -1051,7 +1054,9 @@ function updateSessionStats() {
     const status   = statusLabel(entry);
     const pctStr   = entry.percentage != null ? ` · ${entry.percentage}%` : '';
     const isDone   = entry.status === 'completed' || entry.status === 'failed' || entry.status === 'skipped';
+    
     const blind    = RL.hideMode && !isDone;
+    
     return `<div class="rl-stats-row">
       <span class="rl-stats-row-num">${num}</span>
       <span class="rl-stats-row-name">${blind ? '<i class="fas fa-eye-slash" style="opacity:.4;margin-right:.25rem"></i>???' : esc(level.name)}</span>
@@ -1068,7 +1073,7 @@ function statusLabel(entry) {
   return '⏳ Pendiente';
 }
 
-// History
+
 function renderHistory() {
   const list  = document.getElementById('rlHistoryList');
   const empty = document.getElementById('rlHistoryEmpty');
@@ -1111,7 +1116,9 @@ function renderHistory() {
     }
 
     const isCompleted = entry.status === 'completed' || entry.status === 'failed' || entry.status === 'skipped';
+    
     const blind = RL.hideMode && !isCompleted;
+    
     return `
       <div class="rl-history-item${blind ? ' rl-history-blind' : ''}">
         <span class="rl-history-num">${num}</span>
@@ -1141,7 +1148,7 @@ function renderHistory() {
   }).join('');
 }
 
-// Buttons state
+
 function updateButtons() {
   const ended       = isSessionEnded();
   const spinBtn     = document.getElementById('rlBtnSpin');
@@ -1169,7 +1176,7 @@ function updateButtons() {
   if (heroCta)     heroCta.disabled     = ended;
 }
 
-// Finish modal
+
 function showFinishModal() {
   const modal = document.getElementById('rlFinishModal');
   if (!modal) return;
@@ -1222,11 +1229,11 @@ function showFinishModal() {
   const doc  = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   const W    = doc.internal.pageSize.getWidth();
   const H    = doc.internal.pageSize.getHeight();
-  const ML   = 14;   // margin left
-  const MR   = 14;   // margin right
+  const ML   = 14;   
+  const MR   = 14;   
   const CW   = W - ML - MR;
 
-  // Colors
+  
   const C = {
     violet:    [124, 58, 237],
     red:       [244, 63, 94],
@@ -1254,16 +1261,16 @@ function showFinishModal() {
     doc.roundedRect(x, y, w, h, r, r, 'F');
   }
 
-  // ── HEADER ──
+  
   setFill(...C.bg);
   rect(0, 0, W, H);
 
-  // Header gradient bar (violet → red simulation via two rects)
+  
   setFill(...C.violet);
   rect(0, 0, W * .6, 32);
   setFill(...C.red);
   rect(W * .4, 0, W * .6, 32);
-  // Overlay dark to blend
+  
   setFill(7, 7, 13);
   doc.setGState(doc.GState({ opacity: 0.35 }));
   rect(0, 0, W, 32);
@@ -1279,13 +1286,13 @@ function showFinishModal() {
   setTxt(...C.textDim);
   doc.text(new Date().toLocaleString('es-UY', { dateStyle: 'full', timeStyle: 'short' }), W - MR, 20, { align: 'right' });
 
-  // Decorative line below header
+  
   setFill(...C.violet);
   rect(0, 32, W, 1);
 
   let y = 44;
 
-  // Badge modo oculto
+  
   if (RL._sessionWasHidden) {
     setFill(124, 58, 237);
     roundRect(W - MR - 52, 5, 52, 12, 2);
@@ -1294,7 +1301,7 @@ function showFinishModal() {
     doc.text('MODO OCULTO', W - MR - 26, 13, { align: 'center' });
   }
 
-  // ── STATS GRID ──
+  
   const completed = RL.session.filter(s => s.status === 'completed').length;
   const failed    = RL.session.filter(s => s.status === 'failed').length;
   const skipped   = RL.session.filter(s => s.status === 'skipped').length;
@@ -1335,7 +1342,7 @@ function showFinishModal() {
     setFill(...C.bg3);
     roundRect(cx, cy, cardW, cardH, 2);
 
-    // Left color bar
+    
     setFill(...s.color);
     roundRect(cx, cy, 2.5, cardH, 1);
 
@@ -1350,7 +1357,7 @@ function showFinishModal() {
 
   y += Math.ceil(statCards.length / cols) * (cardH + gap) + 8;
 
-  // Config info row
+  
   setFill(...C.bg2);
   roundRect(ML, y, CW, 8, 2);
   setFont('normal', 7);
@@ -1359,7 +1366,7 @@ function showFinishModal() {
   doc.text(configStr, W / 2, y + 5, { align: 'center' });
   y += 14;
 
-  // ── TABLE HEADER ──
+  
   setFont('bold', 9);
   setTxt(...C.textSub);
   doc.text('HISTORIAL DE NIVELES', ML, y);
@@ -1375,7 +1382,7 @@ function showFinishModal() {
     { label: '%',       w: 12, align: 'center'  },
   ];
 
-  // Table header background
+  
   setFill(...C.violet);
   rect(ML, y, CW, 7);
 
@@ -1389,12 +1396,12 @@ function showFinishModal() {
   });
   y += 7;
 
-  // ── TABLE ROWS ──
+  
   const visibleEntries = RL.session.filter(s => s.status !== 'pending');
 
   visibleEntries.forEach((entry, idx) => {
     if (y > H - 20) {
-      // Footer before new page
+      
       setFont('normal', 7);
       setTxt(...C.textDim);
       doc.text(`Página ${doc.internal.getCurrentPageInfo().pageNumber}`, W - MR, H - 8, { align: 'right' });
@@ -1407,11 +1414,11 @@ function showFinishModal() {
     const rowH = 8;
     const isEven = idx % 2 === 0;
 
-    // Row background
+    
     setFill(...(isEven ? C.bg2 : C.bg3));
     rect(ML, y, CW, rowH);
 
-    // Status color accent on left
+    
     let statusColor = C.textDim;
     let statusStr   = '—';
     if (entry.status === 'completed') { statusColor = C.green;  statusStr = 'Completado'; }
@@ -1452,7 +1459,7 @@ function showFinishModal() {
     y += rowH;
   });
 
-  // ── FOOTER ON LAST PAGE ──
+  
   y += 8;
   if (y > H - 22) {
     doc.addPage();
@@ -1461,7 +1468,7 @@ function showFinishModal() {
     y = 15;
   }
 
-  // Signature line
+  
   setFill(...C.border);
   rect(ML, y, CW, 0.5);
   y += 5;
@@ -1470,7 +1477,7 @@ function showFinishModal() {
   setTxt(...C.violet);
   doc.text('Uruguay Demonlist', W / 2, y, { align: 'center' });
 
-  // Page number footer on last page
+  
   setFont('normal', 7);
   setTxt(...C.textDim);
   doc.text(`Página ${doc.internal.getCurrentPageInfo().pageNumber}`, W - MR, H - 8, { align: 'right' });
@@ -1479,7 +1486,7 @@ function showFinishModal() {
   showRlToast('📄 PDF descargado ✓', 'success');
 }
 
-// ─── CONFETTI ───
+
 function launchConfetti() {
   const canvas = document.getElementById('confettiCanvas');
   const ctx    = RL.confettiCtx;
@@ -1526,7 +1533,7 @@ function launchConfetti() {
   requestAnimationFrame(draw);
 }
 
-// ─── EMBERS BACKGROUND ───
+
 function buildEmbers() {
   const container = document.getElementById('rlEmbers');
   if (!container) return;
@@ -1543,7 +1550,7 @@ function buildEmbers() {
   }
 }
 
-// ─── TOAST ───
+
 let rlToastTimer;
 function showRlToast(msg, type = 'info') {
   let toast = document.getElementById('rlToast');
@@ -1560,7 +1567,7 @@ function showRlToast(msg, type = 'info') {
   rlToastTimer = setTimeout(() => toast.classList.remove('show'), 2800);
 }
 
-// ─── UTILS ───
+
 function extractYoutubeId(url) {
   if (!url) return null;
   const m = url.match(/(?:v=|youtu\.be\/)([^&\s]{11})/);
@@ -1568,12 +1575,24 @@ function extractYoutubeId(url) {
 }
 
 function copyLevelId(id) {
-  navigator.clipboard.writeText(id);
-
-  showRlToast(
-    `ID ${id} copiada al portapapeles`,
-    'success'
-  );
+  navigator.clipboard.writeText(id).then(() => {
+    showRlToast(
+      `ID ${id} copiada al portapapeles`,
+      'success'
+    );
+    
+    
+    const buttons = document.querySelectorAll('.rl-copy-id-btn');
+    buttons.forEach(btn => {
+      if (btn.textContent.includes(id)) {
+        btn.classList.add('copied');
+        setTimeout(() => btn.classList.remove('copied'), 500);
+      }
+    });
+  }).catch(err => {
+    console.error('Error al copiar ID:', err);
+    showRlToast('Error al copiar ID', 'error');
+  });
 }
 
 
@@ -1588,7 +1607,7 @@ function openRlVictorsPopup() {
   const pts     = level.points != null ? level.points
     : (typeof computeAutoPoints === 'function' ? computeAutoPoints(pos) : null);
 
-  // Video del showcase del nivel como fallback para el primer victor sin video propio
+  
   const levelShowcaseId = level.youtube_id || extractYoutubeId(level.youtube_url);
 
   const popup = document.createElement('div');

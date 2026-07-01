@@ -1,4 +1,4 @@
-// MY-SUBMISSIONS.JS
+﻿
 (function () {
   'use strict';
 
@@ -202,10 +202,10 @@
 
     const reviewer = sub.reviewer;
 
-    // Tarjeta del staff responsable — mismo estilo visual que el panel manager
-    // (avatar circular, displayname, @username). Se muestra DENTRO del bloque
-    // de nota de éxito/rechazo, justo debajo de la nota, para que quede claro
-    // quién fue el responsable de esa decisión puntual.
+    
+    
+    
+    
     function reviewerCardHtml() {
       if (!reviewer) return '';
       const avatarHtml = reviewer.avatarUrl

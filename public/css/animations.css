@@ -1,9 +1,9 @@
-/* ANIMATIONS.CSS */
+﻿
 
-/* AOS overrides */
+
 [data-aos].aos-animate { will-change: transform, opacity; }
 
-/* Fade in up */
+
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(20px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -12,17 +12,17 @@
   animation: fadeInUp .55s ease both;
 }
 
-/* Particle canvas glow */
+
 @keyframes hero-glow-pulse {
   0%,100% { opacity: .7; }
   50% { opacity: 1; }
 }
 .hero-glow { animation: hero-glow-pulse 4s ease-in-out infinite; }
 
-/* Count-up animation */
+
 .stat-num { transition: all .1s; }
 
-/* Level card entrance */
+
 @keyframes cardIn {
   from { opacity: 0; transform: translateX(-12px); }
   to   { opacity: 1; transform: translateX(0); }
@@ -31,13 +31,13 @@
   animation: cardIn .32s ease both;
 }
 
-/* ─── Spinner ─── */
+
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
 .fa-spin { animation: spin .8s linear infinite; }
 
-/* Victor chip hover glow */
+
 .victor-chip.has-video::before {
   content: '';
   position: absolute; inset: 0; border-radius: inherit;
@@ -48,12 +48,12 @@
 .victor-chip { position: relative; overflow: hidden; }
 .victor-chip.has-video:hover::before { opacity: 1; }
 
-/* Admin panel slide */
+
 .admin-panel {
   box-shadow: -16px 0 64px rgba(0,0,0,.7);
 }
 
-/* Reduced motion */
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.15s !important;
@@ -61,11 +61,11 @@
     transition-duration: 0.1s !important;
     scroll-behavior: auto !important;
   }
-  /* Spinner sigue girando */
+  
   .fa-spin {
     animation: spin 0.8s linear infinite !important;
   }
-  /* AOS no debe quedar invisible */
+  
   [data-aos] {
     opacity: 1 !important;
     transform: none !important;

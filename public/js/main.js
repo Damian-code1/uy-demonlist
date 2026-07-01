@@ -1,4 +1,4 @@
-// MAIN.JS
+﻿
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -83,7 +83,7 @@ document.addEventListener('click', () => {
 
 
 
-// Navbar
+
 function setupNavbar() {
   const navbar    = document.getElementById('navbar');
   const hamburger = document.getElementById('hamburger');
@@ -153,7 +153,7 @@ function updateActiveLink() {
   });
 }
 
-// Smooth scroll
+
 function initSmoothScroll() {
   document.querySelectorAll('a[href^="#"]').forEach(a => {
     if (a.classList.contains('nav-link')) return;
@@ -170,7 +170,7 @@ function initSmoothScroll() {
   });
 }
 
-// Particles
+
 function initParticles() {
   const canvas = document.getElementById('particleCanvas');
   if (!canvas) return;
@@ -279,7 +279,7 @@ function initParticles() {
   frame();
 }
 
-// Back to top
+
 document.addEventListener('DOMContentLoaded', () => {
   const btn = document.getElementById('backToTop');
   if (!btn) return;
@@ -289,7 +289,7 @@ document.addEventListener('DOMContentLoaded', () => {
   btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 });
 
-// Keyboard nav for level modal
+
 document.addEventListener('keydown', e => {
   const modal = document.getElementById('levelDetailModal');
   if (!modal?.classList.contains('active')) return;
@@ -297,7 +297,7 @@ document.addEventListener('keydown', e => {
   if (e.key === 'ArrowRight') document.getElementById('lmNextBtn')?.click();
 });
 
-// Custom scrollbar fluida
+
 (function () {
   let bar, thumb, track;
   let rafId = null, isDragging = false;
@@ -381,7 +381,7 @@ document.addEventListener('keydown', e => {
       window.scrollTo({ top: ((e.clientY - r.top) / r.height) * scrollMax(), behavior: 'smooth' });
     });
 
-    // Touch
+    
     let tStartY = 0, tStartSc = 0;
     thumb.addEventListener('touchstart', e => {
       tStartY = e.touches[0].clientY; tStartSc = window.scrollY;
@@ -402,7 +402,7 @@ document.addEventListener('keydown', e => {
     paint();
   }
 
-  // API para ocultar/mostrar
+  
   window._scrollbarSetVisible = v => {
     if (!bar) return;
     if (!v) { clearTimeout(hideTimer); bar.classList.remove('visible'); bar.style.pointerEvents = 'none'; }
@@ -414,7 +414,7 @@ document.addEventListener('keydown', e => {
     : init();
 })();
 
-// Custom scrollbar
+
 (function () {
   function initCustomScrollbar() {
     if (document.getElementById('custom-scrollbar')) return;
@@ -429,7 +429,7 @@ document.addEventListener('keydown', e => {
     function updateThumb() {
       const scrollTop  = window.scrollY;
       const docHeight  = document.documentElement.scrollHeight - window.innerHeight;
-      const trackH     = window.innerHeight - 16; // 8px padding top+bottom
+      const trackH     = window.innerHeight - 16; 
       const minThumb   = 40;
       const ratio      = docHeight > 0 ? window.innerHeight / document.documentElement.scrollHeight : 1;
       const thumbH     = Math.max(minThumb, ratio * trackH);
@@ -437,7 +437,7 @@ document.addEventListener('keydown', e => {
       const thumbTop   = docHeight > 0 ? (scrollTop / docHeight) * maxTop : 0;
 
       thumb.style.height = thumbH + 'px';
-      thumb.style.top    = (8 + thumbTop) + 'px'; // 8px offset for top padding
+      thumb.style.top    = (8 + thumbTop) + 'px'; 
 
       bar.style.opacity = docHeight > 10 ? '1' : '0';
     }
@@ -513,7 +513,7 @@ document.addEventListener('keydown', e => {
   }
 })();
 
-// Reubicar botones de paneles en mobile
+
 function relocatePanelButtonsForViewport() {
   const isMobile   = window.innerWidth <= 640;
   const mobileSlot = document.getElementById('navLinksPanelsMobile');

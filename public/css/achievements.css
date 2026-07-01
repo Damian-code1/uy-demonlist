@@ -1,4 +1,4 @@
-
+﻿
 .ach-hero {
   position: relative;
   padding: 6rem 1.5rem 3.5rem;
@@ -133,7 +133,7 @@
 
 .ach-stat-pill i { font-size: 1rem; flex-shrink: 0; }
 
-/* Loading state — pulso mientras los datos llegan */
+
 .ach-stat-pill.loading strong {
   animation: ach-num-pulse .9s ease-in-out infinite;
   opacity: .4;

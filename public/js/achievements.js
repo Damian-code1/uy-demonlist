@@ -1,4 +1,4 @@
-// ACHIEVEMENTS.JS 
+﻿
 
 const ACH_API   = '/api/achievements';
 const STAFF_ROLES = ['list_mod', 'admin', 'manager', 'owner'];
@@ -22,14 +22,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 function initAchAuth() {
-  // Esperar a que auth.js inicialice window.currentUser
+  
   const poll = setInterval(() => {
     if (typeof window.currentUser !== 'undefined') {
       clearInterval(poll);
       onAuthReady();
     }
   }, 80);
-  // timeout de seguridad
+  
   setTimeout(() => { clearInterval(poll); onAuthReady(); }, 3000);
 }
 
@@ -57,7 +57,7 @@ async function getAchPlayers() {
   return _achPlayers;
 }
 
-// ─── LEVEL AUTOCOMPLETE ───
+
 function setupLevelAutocomplete() {
   const input = document.getElementById('achFormLevel');
   const sugg  = document.getElementById('achLevelSugg');
@@ -455,7 +455,7 @@ async function openAchDetail(id) {
   overlay.classList.add('open');
   document.body.style.overflow = 'hidden';
 
-  // Header
+  
   const ytId     = extractYTId(ach.thumbnail_url || ach.video_url);
   const thumbUrl = ytId ? `https://img.youtube.com/vi/${ytId}/maxresdefault.jpg` : null;
   const header   = document.getElementById('achModalHeader');
@@ -469,7 +469,7 @@ async function openAchDetail(id) {
       <div class="ach-modal-level" id="achModalLevel">${esc(ach.level_name)}</div>
     </div>`;
 
-  // Meta
+  
   const myReaction = getMyReaction(ach);
   document.getElementById('achModalMeta').innerHTML = `
     <div class="ach-modal-player"><i class="fas fa-user"></i> ${esc(ach.player_name)}</div>
@@ -492,7 +492,7 @@ async function openAchDetail(id) {
       <i class="fab fa-youtube"></i> Ver video
     </a>` : ''}`;
 
-  // Notas
+  
   document.getElementById('achModalNotes').innerHTML = ach.notes?.trim()
     ? `<div class="ach-modal-notes">${esc(ach.notes.trim())}</div>`
     : '';
@@ -512,13 +512,13 @@ async function openAchDetail(id) {
     }
   }, 50);
 
-  // Form de comentarios
+  
   const commentForm = document.getElementById('achCommentForm');
   commentForm.style.display = _currentUser ? '' : 'none';
   updateCommentAvatar();
   document.getElementById('achCommentInput').value = '';
 
-  // Cargar comentarios
+  
   loadAchComments(id);
 }
 
@@ -561,7 +561,7 @@ async function reactAch(e, id, reaction) {
   e.stopPropagation();
   if (!_currentUser) { showToast('Iniciá sesión para reaccionar', 'warning'); return; }
   if (checkBan('reaccionar')) return;
-  if (_reactAchInFlight.has(id)) return; // anti-spam
+  if (_reactAchInFlight.has(id)) return; 
   _reactAchInFlight.add(id);
 
   try {
@@ -599,7 +599,7 @@ window.reactAch = reactAch;
 async function reactAchModal(id, reaction) {
   if (!_currentUser) { showToast('Iniciá sesión para reaccionar', 'warning'); return; }
   if (checkBan('reaccionar')) return;
-  if (_reactAchInFlight.has(id)) return; // anti-spam
+  if (_reactAchInFlight.has(id)) return; 
   _reactAchInFlight.add(id);
 
   try {
@@ -882,7 +882,7 @@ window.deleteAchComment = deleteAchComment;
 const ACH_FORM_DRAFT_KEY = 'ach_form_draft';
 
 function saveFormDraft() {
-  if (document.getElementById('achFormId')?.value) return; // no guardar en edición
+  if (document.getElementById('achFormId')?.value) return; 
   const draft = {
     pos:      document.getElementById('achFormPos')?.value,
     type:     document.getElementById('achFormType')?.value,
@@ -1033,13 +1033,13 @@ async function saveAchForm() {
     return showToast('El campo Progreso es obligatorio para tipo Progreso', 'error');
   }
 
-  // Validar URL de video
+  
   if (video) {
     const validVideo = /^https?:\/\/(www\.)?(youtube\.com\/watch|youtu\.be\/|twitch\.tv\/|clips\.twitch\.tv\/|medal\.tv\/|streamable\.com\/|x\.com\/|twitter\.com\/).+/.test(video);
     if (!validVideo) return showToast('URL de video inválida. Usá YouTube, Twitch, Medal, Streamable o Twitter/X', 'error');
   }
 
-  // Validar URL de thumbnail (solo YouTube)
+  
   if (thumb) {
     const validThumb = /^https?:\/\/(www\.)?(youtube\.com\/watch|youtu\.be\/).+/.test(thumb);
     if (!validThumb) return showToast('El thumbnail debe ser un link de YouTube', 'error');

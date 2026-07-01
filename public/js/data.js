@@ -1,4 +1,4 @@
-const API_BASE = window.location.origin + '/api';
+﻿const API_BASE = window.location.origin + '/api';
 const DISCORD_INVITE   = 'btnc2bjNTh';
 const DISCORD_GUILD_ID = '1487918041722392708';
 
@@ -404,7 +404,7 @@ function animateCounter(el, target, duration = 1400) {
 }
 
 
-// Submit to API
+
 async function submitToAPI(data) {
   const res = await fetch(`${API_BASE}/submissions`, {
     method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
@@ -413,7 +413,7 @@ async function submitToAPI(data) {
 }
 
 
-// Admin API helpers
+
 async function adminFetch(path, opts = {}) {
   const discordId = localStorage.getItem('uy_discord_id');
   const res = await fetch(`${API_BASE}/admin${path}`, {

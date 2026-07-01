@@ -1,4 +1,4 @@
-let currentUser = null;
+﻿let currentUser = null;
 
 document.addEventListener('DOMContentLoaded', () => {
   initAuth();

@@ -1,4 +1,4 @@
-// SUBMISSIONS.JS
+﻿
 (function () {
   'use strict';
 

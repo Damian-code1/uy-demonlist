@@ -1,4 +1,4 @@
-// MANAGER.JS
+﻿
 
 let ownerUsers = [];
 let ownerLeaderboardNames = [];
@@ -41,7 +41,7 @@ async function loadOwnerUsers() {
   }
 }
 
-// ROLE_META en roles.js
+
 
 function renderOwnerUsers(filterQ) {
   const container = document.getElementById('owner-users-table');

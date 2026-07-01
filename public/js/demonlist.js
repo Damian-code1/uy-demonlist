@@ -1,4 +1,4 @@
-// DEMONLIST.JS
+﻿
 
 let filteredLevels   = [];
 let currentView      = localStorage.getItem('preferredView') || 'list';
@@ -614,7 +614,7 @@ function renderModalContent(level, opts = {}) {
     renderLmPlayer(videoId, videoUrl);
   }
 
-  // Cargar comentarios del nivel
+  
   setTimeout(() => initLevelComments(level.id), 50);
 
   if (_lmGdStatsCache[level.id]) {
@@ -639,7 +639,7 @@ function renderModalContent(level, opts = {}) {
  
   box.querySelectorAll('.lm-victor-tab').forEach(tab => {
     tab.addEventListener('click', e => {
-      if (e.target.closest('.lm-victor-edit-icon')) return; // handled separately
+      if (e.target.closest('.lm-victor-edit-icon')) return; 
       activeVictorIdx = parseInt(tab.dataset.idx);
       renderModalContent(level);
     });
@@ -663,7 +663,7 @@ function renderModalContent(level, opts = {}) {
     });
   }
 
-  // Prev/next nav
+  
   box.querySelector('#lmPrevBtn')?.addEventListener('click', () => {
     activeVictorIdx = (activeVictorIdx - 1 + victors.length) % victors.length;
     renderModalContent(level);
@@ -724,7 +724,7 @@ function setListFilter(filter, label, el) {
   el?.classList.add('active');
   closeListFilterMenu();
 
-  // Actualizar placeholder del input
+  
   const input = document.getElementById('searchInput');
   if (input) {
     const placeholders = {
@@ -812,7 +812,7 @@ function applyListSearch() {
 
   let base = [...getLevelsData()];
 
-  // Filtros sin texto
+  
   if (_listFilter === 'top3') {
     filteredLevels = base.filter(l => (l.position || 999) <= 3);
     window.filteredLevels = filteredLevels;
@@ -1224,7 +1224,7 @@ const avatarUrl = player.discord_id && player.discord_avatar
   ];
   const rankLabel = rank <= 3 ? rankIcons[rank-1] : `#${rank}`;
 
-  // Crear o reusar el modal
+  
   let modal = document.getElementById('playerProfileModal');
   if (!modal) {
     modal = document.createElement('div');
@@ -1393,7 +1393,7 @@ const avatarUrl = player.discord_id && player.discord_avatar
     const sizes = ['maxresdefault', 'hqdefault', 'mqdefault'];
     function tryNext() {
       if (tried >= sizes.length) {
-        // No se pudo cargar ninguna miniatura — marcar como sin video
+        
         link.innerHTML = '<i class="fas fa-video-slash"></i> Sin video';
         link.style.cssText += ';opacity:.5;pointer-events:none;cursor:default';
         return;
@@ -1402,12 +1402,12 @@ const avatarUrl = player.discord_id && player.discord_avatar
       tried++;
     }
     img.onload = function() {
-      // mqdefault 120x90 = placeholder de YT = video privado/borrado
+      
       if (sizes[tried-1] === 'mqdefault' && this.naturalWidth === 120 && this.naturalHeight === 90) {
-        // Verificar si tiene videoUrl directa antes de marcar como privado
+        
         const directHref = link.href;
         if (directHref && directHref !== '#') {
-          // Tiene URL directa válida, mostrar link aunque no haya miniatura
+          
           link.innerHTML = '<i class="fab fa-youtube"></i> Ver video';
           link.style.opacity = '1';
           link.style.pointerEvents = '';
@@ -1416,7 +1416,7 @@ const avatarUrl = player.discord_id && player.discord_avatar
           link.style.cssText += ';opacity:.5;pointer-events:none;filter:grayscale(1);cursor:default';
         }
       }
-      // Si cargó bien, no hacer nada — el link ya tiene el texto correcto
+      
     };
     img.onerror = tryNext;
     tryNext();
@@ -1425,13 +1425,13 @@ const avatarUrl = player.discord_id && player.discord_avatar
 modal.classList.add('active');
   document.body.style.overflow = 'hidden';
 
-  // Cargar perfil de GDBrowser en background - ícono GD va en sección propia, NO en el avatar de Discord
   
-  // Cargar perfil GD + iconset completo
+  
+  
   const _API = typeof API_BASE !== 'undefined' ? API_BASE : 'http://localhost:3001/api';
   const _gdName = player.gd_username || playerName;
 
-  // Las dos llamadas en paralelo: stats del jugador + todos sus iconos
+  
   Promise.all([
     fetch(`${_API}/gdbrowser?player=${encodeURIComponent(_gdName)}`).then(r => r.json()).catch(() => null),
     fetch(`/api/gd-icon/${encodeURIComponent(_gdName)}?all=1`).then(r => r.json()).catch(() => null),
@@ -1444,7 +1444,7 @@ modal.classList.add('active');
     const statsEl = box.querySelector('#pmGdStats');
     if (!statsEl) return;
 
-    // Fila de iconos: cube, ship, ball, ufo, wave, robot, spider, swing (mismo orden que GDB)
+    
     const ICON_ORDER = ['cube','ship','ball','ufo','wave','robot','spider','swing'];
     const ICON_LABELS = { cube:'Cube', ship:'Ship', ball:'Ball', ufo:'UFO', wave:'Wave', robot:'Robot', spider:'Spider', swing:'Swing' };
 
@@ -1474,7 +1474,7 @@ modal.classList.add('active');
         </div>`;
     }
 
-    // Fila de stats en horizontal
+    
     const chips = [
       gd?.stars     != null ? `<div class="pm-gd-stat"><i class="fas fa-star"     style="color:#f59e0b"></i><span>${Number(gd.stars).toLocaleString()}</span><small>estrellas</small></div>`    : '',
       gd?.moons     != null ? `<div class="pm-gd-stat"><i class="fas fa-moon"     style="color:#a78bfa"></i><span>${Number(gd.moons).toLocaleString()}</span><small>lunas</small></div>`       : '',
@@ -1495,7 +1495,7 @@ modal.classList.add('active');
     statsEl.style.display = 'block';
   });
 
-  // Animar la barra de progreso
+  
   requestAnimationFrame(() => {
     setTimeout(() => {
       const fill = box.querySelector('.pm-progress-fill');
@@ -1511,7 +1511,7 @@ function closePlayerProfile() {
 
 window.closePlayerProfile = closePlayerProfile;
 
-// ─── UTILS ───
+
 function extractYTId(url) {
   if (!url) return null;
   const m = url.match(/(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/\s]{11})/);
@@ -1522,7 +1522,7 @@ function esc(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-// ─── COMENTARIOS DEL MODAL DE NIVEL ───
+
 async function initLevelComments(levelId) {
   const user = window.currentUser;
   const form  = document.getElementById('lmCommentForm');
@@ -1530,7 +1530,7 @@ async function initLevelComments(levelId) {
   if (form)   form.style.display   = user ? '' : 'none';
   if (prompt) prompt.style.display = user ? 'none' : '';
 
-  // Contador de caracteres
+  
   const input = document.getElementById('lmCommentInput');
   const counter = document.getElementById('lmCommentCount');
   if (input && counter) {
@@ -1539,7 +1539,7 @@ async function initLevelComments(levelId) {
     });
   }
 
-  // Submit
+  
   const submitBtn = document.getElementById('lmCommentSubmit');
   if (submitBtn) {
     submitBtn.addEventListener('click', async () => {
@@ -1583,7 +1583,7 @@ function renderLevelComments(comments, levelId) {
 
   list.innerHTML = comments.map(c => buildLevelCommentHTML(c, user, false)).join('');
 
-  // Eventos delegados en el contenedor
+  
   attachLevelCommentEvents(list, levelId);
 }
 
@@ -1677,7 +1677,7 @@ function lcRelTime(ts) {
   return `hace ${Math.floor(d/86400000)}d`;
 }
 
-// Actualiza los tiempos relativos cada 30s
+
 let _lcTimeInterval = null;
 function startLcTimeUpdater(list) {
   if (_lcTimeInterval) clearInterval(_lcTimeInterval);
@@ -1719,7 +1719,7 @@ function showLcReactionPopup(reactors, type, anchorEl) {
   const popW = 210;
   if (left + popW > window.innerWidth - 8) left = window.innerWidth - popW - 8;
   if (left < 8) left = 8;
-  // Si el popup quedaría fuera de la pantalla por abajo, mostrarlo arriba
+  
   const estH = Math.min(reactors.length * 36 + 50, 250);
   if (rect.bottom + estH > window.innerHeight) top = rect.top + window.scrollY - estH - 8;
   popup.style.top  = `${top}px`;
@@ -1732,7 +1732,7 @@ function showLcReactionPopup(reactors, type, anchorEl) {
 function attachLevelCommentEvents(list, levelId) {
   const discordId = () => localStorage.getItem('uy_discord_id') || '';
 
-  // Delete con confirmación diferenciada por rol
+  
   list.querySelectorAll('.lm-comment-delete').forEach(btn => {
     btn.addEventListener('click', async () => {
       const isOwn   = btn.dataset.own === '1';
@@ -1762,7 +1762,7 @@ function attachLevelCommentEvents(list, levelId) {
     });
   });
 
-  // Reacciones — click = toggle, longpress/contextmenu = popup de usuarios
+  
   list.querySelectorAll('.lm-comment-react-btn, .lm-comment-react-static').forEach(el => {
     const getReactors = () => {
       try { return JSON.parse(el.dataset.reactors || '[]'); } catch { return []; }
@@ -1808,11 +1808,11 @@ function attachLevelCommentEvents(list, levelId) {
         } catch {}
       });
     } else {
-      // Estático (no logueado): click directo muestra popup
+      
       el.addEventListener('click', showPopup);
     }
 
-    // Longpress mobile + contextmenu desktop en ambos tipos
+    
     let pressTimer;
     el.addEventListener('pointerdown', () => { pressTimer = setTimeout(showPopup, 500); });
     el.addEventListener('pointerup',   () => clearTimeout(pressTimer));
@@ -1820,7 +1820,7 @@ function attachLevelCommentEvents(list, levelId) {
     el.addEventListener('contextmenu', e => { e.preventDefault(); showPopup(); });
   });
 
-  // Toggle replies
+  
   list.querySelectorAll('.lm-comment-replies-toggle').forEach(btn => {
     btn.addEventListener('click', async () => {
       const id   = btn.dataset.id;
@@ -1842,7 +1842,7 @@ function attachLevelCommentEvents(list, levelId) {
         wrap.innerHTML = replies.map(r => buildLevelCommentHTML(r, user, true)).join('');
         wrap.dataset.loaded = '1';
         btn.innerHTML = `<i class="fas fa-chevron-up"></i> Ocultar respuestas`;
-        // Eventos en replies
+        
         attachLevelCommentEvents(wrap, levelId);
       } catch {
         wrap.innerHTML = '<div class="lm-comments-empty" style="padding:.5rem">Error al cargar</div>';
@@ -1850,7 +1850,7 @@ function attachLevelCommentEvents(list, levelId) {
     });
   });
 
-  // Abrir/cerrar form de reply
+  
   list.querySelectorAll('.lm-comment-reply-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const form  = document.getElementById(`lc-reply-form-${btn.dataset.id}`);
@@ -1866,7 +1866,7 @@ function attachLevelCommentEvents(list, levelId) {
     });
   });
 
-  // Contador chars en replies
+  
   list.querySelectorAll('.lm-reply-input').forEach(input => {
     const id      = input.id.replace('lc-reply-input-', '');
     const counter = document.getElementById(`lc-reply-count-${id}`);
@@ -1875,7 +1875,7 @@ function attachLevelCommentEvents(list, levelId) {
     });
   });
 
-  // Submit reply
+  
   list.querySelectorAll('.lm-reply-submit').forEach(btn => {
     btn.addEventListener('click', async () => {
       const id    = btn.dataset.id;
@@ -1989,7 +1989,7 @@ function goToMyRanking() {
     if (found) return;
   }
 
-  // Sin nombre o no se encontró la fila: scroll genérico a la sección
+  
   const section = document.getElementById('leaderboard');
   if (section) {
     const navbar = document.getElementById('navbar');
@@ -1999,13 +1999,13 @@ function goToMyRanking() {
 }
 window.goToMyRanking = goToMyRanking;
 
-// Leer parámetro ?highlight= al cargar index.html
+
 document.addEventListener('DOMContentLoaded', () => {
   const hash   = window.location.hash || '';
   const match  = hash.match(/highlight=([^&]+)/);
   if (!match) return;
   const name = decodeURIComponent(match[1]);
-  // Esperar a que el leaderboard se renderice
+  
   setTimeout(() => {
     document.querySelectorAll('.lb-row').forEach(row => {
       const rowName = row.querySelector('.lb-player-name')?.textContent?.trim().toLowerCase();
@@ -2018,7 +2018,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }, 1200);
 });
 
-// ─── Helper: rol meta para player profile ───
+
 function getRoleMeta(role) {
   const map = {
     owner:    { icon: 'fa-crown',       label: 'Owner'   },

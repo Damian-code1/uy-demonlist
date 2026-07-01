@@ -1,4 +1,4 @@
-// SANCTIONS.JS
+﻿
 
 let sanctionsUsers = [];
 let sanctionsLog    = [];
@@ -193,7 +193,7 @@ function filterSanctionsUsers(q) {
   if (clearBtn) clearBtn.style.display = q ? '' : 'none';
 }
 
-// Log de sanciones
+
 function fmtLogDate(dateStr) {
   const d = new Date(dateStr);
   return d.toLocaleString('es-UY', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
@@ -260,7 +260,7 @@ function filterSanctionsLog(q) {
   if (clearBtn) clearBtn.style.display = q ? '' : 'none';
 }
 
-// Modal de detalle de sanción
+
 function openSanctionDetail(logId) {
   const entry = sanctionsLog.find(l => l.id === logId);
   if (!entry) return;
@@ -341,7 +341,7 @@ function closeSanctionDetail() {
   document.getElementById('sanctionDetailModal')?.classList.remove('open');
 }
 
-// Modal: detalle de jugador
+
 function openPlayerSanctionsModal(discordId) {
   const user = sanctionsUsers.find(u => u.discord_id === discordId);
   if (!user) return;
@@ -499,7 +499,7 @@ window.closeSanctionDetail     = closeSanctionDetail;
 window.deleteSanctionLog       = deleteSanctionLog;
 window.confirmClearAllSanctions = confirmClearAllSanctions;
 
-// Modal de sanción
+
 let banTargetId = null;
 
 function openBanModal(discordId, label) {
@@ -607,7 +607,7 @@ window.confirmBanUser       = confirmBanUser;
 window.liftSanction         = liftSanction;
 window.canManageSanctions   = canManageSanctions;
 
-// Countdown flotante
+
 let _banCountdownInterval = null;
 
 let _banCountdownBannedUntil = null;

@@ -1,4 +1,4 @@
-// UI.JS
+﻿
 
 function uiAlert({ title, message, type = 'info', confirmText = 'Aceptar' }) {
   return new Promise(resolve => {

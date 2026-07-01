@@ -1,6 +1,6 @@
-/* FIRE.CSS */
+﻿
 
-/* LEVEL CARD — top #1 */
+
 .level-card-first {
   position: relative;
   border-color: rgba(249, 115, 22, .45) !important;
@@ -24,7 +24,7 @@
   overflow: hidden;
 }
 
-/* Partículas */
+
 .lc-fire-spark {
   position: absolute;
   bottom: -2px;
@@ -55,7 +55,7 @@
 .lc-fire-spark:nth-child(odd)  { --spark-drift: 3.5px; }
 .lc-fire-spark:nth-child(even) { --spark-drift: -3.5px; }
 
-/* VARIANTE PLATEADA — top #2 */
+
 .level-card-second {
   position: relative;
   border-color: rgba(203, 213, 225, .45) !important;
@@ -74,7 +74,7 @@
   background: radial-gradient(circle, #ffffff 0%, #e2e8f0 45%, #94a3b8 75%, transparent 100%);
 }
 
-/* VARIANTE BRONCE — top #3 */
+
 .level-card-third {
   position: relative;
   border-color: rgba(194, 114, 42, .45) !important;
@@ -93,7 +93,7 @@
   background: radial-gradient(circle, #fde9d2 0%, #d99757 45%, #c2722a 75%, transparent 100%);
 }
 
-/* FEED CARD — primer elemento */
+
 .feed-card-latest {
   position: relative;
   border-color: rgba(249, 115, 22, .45) !important;

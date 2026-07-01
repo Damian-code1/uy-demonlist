@@ -1,4 +1,4 @@
-// ROLES.JS
+﻿
 
 const ROLE_META = {
   usuario:  { label: 'Usuario',  icon: 'fa-user',       color: '#64748b' },

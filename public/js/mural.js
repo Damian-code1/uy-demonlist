@@ -1,4 +1,4 @@
-// MURAL DE LA COMUNIDAD
+﻿
 
 const MURAL_PAGE_SIZE = 10;
 let muralPosts   = [];
@@ -36,7 +36,7 @@ async function loadMural(silent = false) {
   }
 }
 
-// Contador de tiempo en vivo
+
 function startMuralTimeTicker() {
   if (muralTimeInterval) clearInterval(muralTimeInterval);
   muralTimeInterval = setInterval(() => {
@@ -75,7 +75,7 @@ function renderMural() {
   const btn = document.getElementById('muralLoadMore');
   if (btn) btn.classList.toggle('hidden', muralShowing >= muralPosts.length);
 
-  // Eventos
+  
   wrap.querySelectorAll('.mural-reply-btn').forEach(btn => {
     btn.addEventListener('click', () => toggleReplyBox(btn.dataset.id));
   });
@@ -256,7 +256,7 @@ function toggleMuralVoterDrop(id, event) {
   event?.stopPropagation();
   const drop = document.getElementById(id);
   if (!drop) return;
-  // Cerrar todos los demás abiertos
+  
   document.querySelectorAll('.mural-voters-drop.open').forEach(d => {
     if (d.id !== id) d.classList.remove('open');
   });
@@ -577,7 +577,7 @@ function showMuralVoterPopup(voters, isLike, anchorEl) {
     <div class="lc-reaction-popup-list">
       ${voters.map(u => {
         const av = u.discord_id && u.discord_avatar
-          ? `<img src="https://cdn.discordapp.com/avatars/${u.discord_id}/${u.discord_avatar}.png?size=32" class="lc-reaction-avatar" onerror="this.style.display='none'">`
+          ? `<img src="https:
           : `<div class="lc-reaction-avatar lc-reaction-avatar-ph">${(u.name||'?')[0].toUpperCase()}</div>`;
         const sub = u.username && u.username !== u.name
           ? `<span style="font-size:.65rem;color:var(--text-dim);display:block">@${escMural(u.username)}</span>`

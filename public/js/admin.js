@@ -1,4 +1,4 @@
-// ADMIN.JS
+﻿
 
 let adminCurrentTab  = 'levels';
 let adminVictorLevelId = null;
@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('navAdminBtn')?.addEventListener('click', openAdminPanel);
 });
 
-// Helpers
+
 function adminLoading() {
   return `<div class="loader-wrap"><i class="fas fa-spinner fa-spin"></i><span>Cargando…</span></div>`;
 }
@@ -1041,7 +1041,7 @@ function openSubDetailModal(sub) {
     ${ytUrl ? `
     <div class="sub-detail-row">
       <div class="sub-detail-label"><i class="fab fa-youtube" style="color:#ff4444;margin-right:.35rem"></i>Video YouTube</div>
-      ${ytId ? `<img class="sub-detail-thumb" src="https://img.youtube.com/vi/${ytId}/mqdefault.jpg" alt="">` : ''}
+      ${ytId ? `<img class="sub-detail-thumb" src="https:
       <a href="${esc(ytUrl)}" target="_blank" class="sub-detail-video-link">
         <i class="fab fa-youtube" style="color:#ff4444"></i> Ver video
       </a>
@@ -1078,7 +1078,7 @@ function openSubDetailModal(sub) {
     </div>` : ''}
   `;
 
-  // Acciones
+  
   const isOwnSubmission = sub.submitted_by === window.currentUser?.id;
   const isOwnerTesting  = isOwnSubmission && window.currentUser?.role === 'owner';
   document.getElementById('subDetailActions').innerHTML = sub.status === 'pending' ? (
@@ -1128,11 +1128,11 @@ async function approveSubmission(id) {
     cancelText: 'Cancelar',
     allowEmpty: true,
   });
-  if (note === null) return; // canceló con el botón cancelar o clic afuera
+  if (note === null) return; 
 
   console.log('[admin] Aprobando submission', id);
 
-  // 1) Cerrar modal y actualizar la tabla SIEMPRE primero, así el usuario ve feedback inmediato
+  
   closeSubDetailModal();
   _updateSubmissionStatusInTable(id, 'approved', { approval_note: note || null });
 
@@ -1143,13 +1143,13 @@ async function approveSubmission(id) {
   } catch (e) {
     console.error('[admin] Error aprobando submission:', e);
     showToast('Error al aprobar: ' + e.message, 'error');
-    // Revertir el estado visual si falló de verdad
+    
     loadAdminSubmissions();
     return;
   }
 
-  // 2) Refrescar datos públicos SIEMPRE, en un try aparte para que un fallo acá
-  //    no se confunda con un fallo en la aprobación misma
+  
+  
   try {
     await refreshPublicData();
   } catch (e) {
@@ -1204,7 +1204,7 @@ async function deleteSubmission(id) {
     await adminDeleteSubmission(id);
     showToast('Submission eliminada', 'success');
     closeSubDetailModal();
-    // Quitar la fila de la tabla sin recargar todo
+    
     _removeSubmissionFromTable(id);
   } catch (e) { showToast('Error: ' + e.message, 'error'); }
 }
@@ -1232,7 +1232,7 @@ async function deleteAllSubmissions() {
   }
 }
 
-// Actualiza el estado de una submission en la tabla sin recargar todo
+
 function _updateSubmissionStatusInTable(id, newStatus, extra = {}) {
   const subs = window._adminAllSubs || [];
   const sub  = subs.find(s => s.id === id);
@@ -1244,13 +1244,13 @@ function _updateSubmissionStatusInTable(id, newStatus, extra = {}) {
   renderSubsFiltered();
 }
 
-// Quita una submission de la lista local y re-renderiza
+
 function _removeSubmissionFromTable(id) {
   window._adminAllSubs = (window._adminAllSubs || []).filter(s => s.id !== id);
   renderSubsFiltered();
 }
 
-// Clear del buscador de niveles en admin
+
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('adminLevelClear')?.addEventListener('click', () => {
     const input = document.getElementById('adminLevelSearchInput');
@@ -1260,12 +1260,12 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-// =============================================
-// SYNC POSICIONES CON AREDL
-// =============================================
-// =============================================
-// REORDER VICTORS
-// =============================================
+
+
+
+
+
+
 
 let _reorderLevelId = null;
 let _reorderDragSrc = null;
@@ -1777,7 +1777,7 @@ function renderAdminThumbnailsFiltered(q) {
   `;
 }
 
-// ─── Popup dedicado de thumbnail ───
+
 function openThumbModal(levelId, levelName, currentUrl, hasCustom) {
   const modal = document.getElementById('thumbFormModal');
   if (!modal) return;
@@ -1867,7 +1867,7 @@ window.saveLevelThumbnailFromModal  = saveLevelThumbnailFromModal;
 window.resetLevelThumbnailFromModal = resetLevelThumbnailFromModal;
 window.filterAdminThumbnails = filterAdminThumbnails;
 
-// ─── Globals ───
+
 window.openAdminPanel      = openAdminPanel;
 window.closeAdminPanel     = closeAdminPanel;
 window.loadAdminTab        = loadAdminTab;
@@ -1898,7 +1898,7 @@ async function syncLegacyFromGD() {
   const discordId = localStorage.getItem('uy_discord_id') || '';
   const headers = { 'Content-Type': 'application/json', 'x-discord-id': discordId };
 
-  // Paso 1: obtener lista de niveles a chequear
+  
   if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Cargando lista…'; }
   let levels = [];
   try {
@@ -1914,7 +1914,7 @@ async function syncLegacyFromGD() {
 
   if (!levels.length) { showToast('No hay niveles para chequear', 'info'); if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-sync-alt"></i> Auto-detectar Legacy'; } return; }
 
-  // Paso 2: mostrar modal de progreso
+  
   let progressModal = document.getElementById('legacySyncModal');
   if (!progressModal) {
     progressModal = document.createElement('div');
@@ -1952,7 +1952,7 @@ async function syncLegacyFromGD() {
   let cancelled  = false;
   cancelBtn.onclick = () => { cancelled = true; };
 
-  // Paso 3: chequear nivel por nivel
+  
   const results = { updated: 0, skipped: 0, errors: 0 };
   for (let i = 0; i < levels.length; i++) {
     if (cancelled) { status.textContent = 'Cancelado.'; break; }
@@ -1984,11 +1984,11 @@ async function syncLegacyFromGD() {
       results.errors++;
     }
 
-    // 250ms entre requests para no martillar GDBrowser
+    
     await new Promise(r => setTimeout(r, 250));
   }
 
-  // Paso 4: finalizar
+  
   bar.style.width = '100%';
   const iconEl = document.getElementById('lsm-icon');
   if (iconEl) iconEl.className = 'fas fa-check-circle';
@@ -2017,7 +2017,7 @@ async function syncLegacyFromGD() {
 }
 window.syncLegacyFromGD = syncLegacyFromGD;
 
-// ESC limpia filtros activos en submissions
+
 document.addEventListener('keydown', e => {
   if (e.key !== 'Escape') return;
   const pv = document.getElementById('subFilterPlayer')?.value;
