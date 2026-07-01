@@ -1019,6 +1019,20 @@ input[type="range"]::-moz-range-progress {
   gap: .5rem;
   flex-wrap: wrap;
 }
+.rl-history-thumb-blind {
+  width: 60px; height: 60px; flex-shrink: 0;
+  background: rgba(139,92,246,.1);
+  border: 1px dashed rgba(139,92,246,.3);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--violet); font-size: 1.1rem;
+}
+.rl-history-blind .rl-history-name {
+  color: var(--text-dim);
+  font-style: italic;
+  letter-spacing: 2px;
+}
+
 .rl-history-status {
   flex-shrink: 0;
   padding: .22rem .65rem;

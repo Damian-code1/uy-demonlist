@@ -847,15 +847,23 @@ function resetSlotDisplay() {
   if (thumbEl) { thumbEl.src = ''; thumbEl.style.display = 'none'; }
 }
 
-// Complete / fail / skip
+
 function _getEffectiveCompletedCount() {
+  const ordered = [...RL.session].reverse().filter(s => s.status === 'completed');
+  if (!ordered.length) return 0;
+
   let count = 0;
   let prevPct = null;
-  const ordered = [...RL.session].reverse().filter(s => s.status === 'completed');
-  for (const s of ordered) {
+
+  for (let i = 0; i < ordered.length; i++) {
+    const s   = ordered[i];
     const pct = s.percentage ?? 100;
+
     if (prevPct === null) {
-      count++;
+      const hasNext = ordered[i + 1] != null;
+      if (pct >= 100 || hasNext) {
+        count++;
+      }
     } else {
       const skipped = Math.max(0, pct - prevPct - 1);
       count += skipped + 1;
@@ -921,8 +929,14 @@ function finalizeComplete(percentage) {
     entry.timestamp = Date.now();
   }
 
-  RL.surrendered = true;
+  RL.surrendered   = true;
   RL.sessionActive = false;
+
+  if (RL.revealHidden) {
+    RL.revealHidden = false;
+    const hideEl = document.getElementById('rlHideLevel');
+    if (hideEl) hideEl.checked = false;
+  }
 
   showSurrenderBanner();
   showRlToast(
@@ -1029,7 +1043,8 @@ function updateSessionStats() {
   }
 
   const pdfBtn = document.getElementById('rlBtnDownloadPdf');
-  if (pdfBtn) pdfBtn.disabled = RL.session.length === 0;
+  if (pdfBtn) pdfBtn.disabled = false;
+  if (pdfBtn) pdfBtn.style.display = '';
 
   const detail = document.getElementById('rlStatsDetail');
   if (!detail) return;
@@ -1045,10 +1060,11 @@ function updateSessionStats() {
     const pos    = level.position || '?';
     const status = statusLabel(entry);
     const pctStr = entry.percentage != null ? ` · ${entry.percentage}%` : '';
+    const blind  = RL.revealHidden && entry.status === 'pending';
     return `<div class="rl-stats-row">
       <span class="rl-stats-row-num">${num}</span>
-      <span class="rl-stats-row-name">${esc(level.name)}</span>
-      <span class="rl-stats-row-pos">#${pos}</span>
+      <span class="rl-stats-row-name">${blind ? '???' : esc(level.name)}</span>
+      <span class="rl-stats-row-pos">${blind ? '—' : '#' + pos}</span>
       <span class="rl-stats-row-status ${entry.status}">${status}${pctStr}</span>
     </div>`;
   }).join('');
@@ -1103,26 +1119,27 @@ function renderHistory() {
       statusHtml = `<span class="rl-history-status rl-status-pending">⏳ Pendiente</span>`;
     }
 
+    const blind = RL.revealHidden && entry.status === 'pending';
     return `
-      <div class="rl-history-item">
+      <div class="rl-history-item${blind ? ' rl-history-blind' : ''}">
         <span class="rl-history-num">${num}</span>
-        ${RL.hideMode
-          ? `<div class="rl-history-thumb rl-history-thumb-hidden"><i class="fas fa-eye-slash"></i></div>`
+        ${blind
+          ? `<div class="rl-history-thumb rl-history-thumb-blind"><i class="fas fa-eye-slash"></i></div>`
           : thumb
             ? `<img class="rl-history-thumb" src="${thumb}" alt="" onerror="this.className='rl-history-thumb rl-history-thumb-ph';this.src='';">`
             : `<div class="rl-history-thumb rl-history-thumb-ph"></div>`
         }
         <div class="rl-history-info">
-          <div class="rl-history-name">${RL.hideMode ? '???' : esc(level.name)}</div>
-          <div class="rl-history-meta" ${RL.hideMode ? 'style="filter:blur(6px);user-select:none"' : ''}>
+          <div class="rl-history-name">${blind ? '???' : esc(level.name)}</div>
+          ${!blind ? `<div class="rl-history-meta">
             <span>${posLabel}</span>
             <span>·</span>
             <span>${ptsLabel}</span>
             ${level.aredl_position ? `<span>· AREDL #${level.aredl_position}</span>` : ''}
-          </div>
+          </div>` : ''}
         </div>
         ${statusHtml}
-        ${ytId && entry.status !== 'pending'
+        ${!blind && ytId && entry.status !== 'pending'
           ? `<a href="https://youtube.com/watch?v=${ytId}" target="_blank" class="rl-history-yt-btn">
                <i class="fab fa-youtube"></i> Ver
              </a>`
@@ -1180,10 +1197,24 @@ function showFinishModal() {
   launchConfetti();
 }
 
-  function downloadSessionPdf() {
+  async function downloadSessionPdf() {
   if (!RL.session.length) {
     showRlToast('No hay datos de sesión para exportar', 'error');
     return;
+  }
+  if (RL.revealHidden) {
+    const ok = await uiConfirm({
+      title: 'Modo ciego activo',
+      message: 'Tenés el modo ciego activado. Si descargás el PDF vas a ver los niveles ocultos. ¿Desactivar modo ciego y continuar?',
+      type: 'warning',
+      confirmText: 'Desactivar y descargar',
+      cancelText: 'Cancelar',
+    });
+    if (!ok) return;
+    RL.revealHidden = false;
+    const hideEl = document.getElementById('rlHideLevel');
+    if (hideEl) hideEl.checked = false;
+    renderHistory();
   }
   if (RL.hideMode) {
     showRlToast('Desactivá "Ocultar nivel" para poder descargar el PDF', 'error');
@@ -1443,11 +1474,9 @@ function showFinishModal() {
   rect(ML, y, CW, 0.5);
   y += 5;
 
-  setFont('normal', 7);
-  setTxt(...C.textDim);
-  doc.text('Generado por UY Demonlist · uy-demonlist-v2 · Basado en datos en vivo de la lista', W / 2, y, { align: 'center' });
-  y += 4;
-  doc.text(`https://gduruguay.com  ·  Sesión: ${new Date().toLocaleString('es-UY')}`, W / 2, y, { align: 'center' });
+  setFont('bold', 8);
+  setTxt(...C.violet);
+  doc.text('Uruguay Demonlist', W / 2, y, { align: 'center' });
 
   // Page number footer on last page
   setFont('normal', 7);

@@ -4807,9 +4807,9 @@ body {
   background: var(--bg3);
   border: 1px solid var(--border);
   border-radius: 14px;
-  box-shadow: 0 12px 36px rgba(0,0,0,.55), 0 0 0 1px rgba(139,92,246,.08);
-  overflow: hidden;
-  z-index: 9999;
+  box-shadow: 0 12px 36px rgba(0,0,0,.5);
+  overflow: visible;
+  z-index: 1200;
   opacity: 0; pointer-events: none;
   transform: translateY(-6px) scale(.97);
   transform-origin: top left;
@@ -4826,7 +4826,10 @@ body {
   color: var(--text-sub); font-size: .82rem; font-weight: 500;
   cursor: pointer; text-align: left;
   transition: background .15s, color .15s;
+  border-radius: 0;
 }
+.list-filter-option:first-child { border-radius: 14px 14px 0 0; }
+.list-filter-option:last-child  { border-radius: 0 0 14px 14px; }
 .list-filter-option i { width: 14px; text-align: center; color: var(--text-dim); font-size: .78rem; }
 .list-filter-option:hover { background: rgba(139,92,246,.08); color: var(--text); }
 .list-filter-option:hover i { color: var(--violet); }
