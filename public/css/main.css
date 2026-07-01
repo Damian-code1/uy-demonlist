@@ -66,70 +66,6 @@ input, textarea, select { font-family: inherit; }
 ul { list-style: none; }
 ::-webkit-scrollbar { display: none; }
 ::selection { background: rgba(139,92,246,.35); }
-body.performance-mode {
-  scroll-behavior: auto;
-}
-body.performance-mode *,
-body.performance-mode *::before,
-body.performance-mode *::after {
-  animation-duration: .001ms !important;
-  animation-iteration-count: 1 !important;
-  transition-duration: .01ms !important;
-  scroll-behavior: auto !important;
-}
-body.performance-mode #particleCanvas,
-body.performance-mode .hero-glow,
-body.performance-mode .hero::before,
-body.performance-mode .hero-badge,
-body.performance-mode .hero-badge-icon,
-body.performance-mode .hero-badge-shine,
-body.performance-mode .title-demon,
-body.performance-mode .title-list,
-body.performance-mode .hero-eyebrow,
-body.performance-mode .hero-stats,
-body.performance-mode .hero-cta,
-body.performance-mode .discord-hero-btn,
-body.performance-mode .section-h2,
-body.performance-mode .eyebrow-dot,
-body.performance-mode .scroll-bar,
-body.performance-mode .lc-top1-badge,
-body.performance-mode .lc-top1-spark,
-body.performance-mode .lb-medal-gold,
-body.performance-mode .lb-row,
-body.performance-mode .user-widget-card::before,
-body.performance-mode .perf-widget-btn::before {
-  animation: none !important;
-}
-body.performance-mode [data-aos] {
-  opacity: 1 !important;
-  transform: none !important;
-}
-body.performance-mode .level-card,
-body.performance-mode .lb-row,
-body.performance-mode .user-widget-card,
-body.performance-mode .perf-widget-btn,
-body.performance-mode .hero-stats,
-body.performance-mode .hero-cta,
-body.performance-mode .discord-hero-btn {
-  box-shadow: none !important;
-  backdrop-filter: none !important;
-}
-body.performance-mode .hero-eyebrow,
-body.performance-mode .hero-title,
-body.performance-mode .hero-desc,
-body.performance-mode .hero-badge,
-body.performance-mode .hero-stats,
-body.performance-mode .hero-cta,
-body.performance-mode .discord-hero-btn,
-body.performance-mode .lb-row {
-  opacity: 1 !important;
-}
-body.performance-mode .level-card:hover,
-body.performance-mode .lb-row:hover,
-body.performance-mode .user-widget-card:hover,
-body.performance-mode .perf-widget-btn:hover {
-  transform: none !important;
-}
 .navbar {
   position: fixed; top: 0; left: 0; right: 0;
   height: var(--navbar-h);
@@ -6766,8 +6702,62 @@ input, textarea, [contenteditable] {
 .perf-mode-float.active .perf-mode-float-toggle { background: rgba(124,58,237,.3); border-color: var(--violet); }
 .perf-mode-float.active .perf-mode-float-toggle::after { transform: translateX(16px); background: var(--violet); }
 .perf-mode-float.active .perf-mode-float-icon { color: var(--violet); }
-body.perf-mode * { animation: none !important; transition: none !important; }
+/* Modo rendimiento: desactiva animaciones y transiciones pero mantiene elementos visibles */
+body.perf-mode * {
+  animation: none !important;
+  transition-duration: .01ms !important;
+}
+
+/* Solo oculta elementos decorativos que no afectan el contenido */
+body.perf-mode #particleCanvas { display: none !important; }
 body.perf-mode .lc-fire-spark,
-body.perf-mode .rl-ember,
+body.perf-mode .rl-ember { display: none !important; }
+
+/* Hero: desactiva animaciones pero mantiene elementos visibles */
 body.perf-mode .hero-glow,
-body.perf-mode .hero::before { display: none !important; }
+body.perf-mode .hero::before {
+  animation: none !important;
+  opacity: 0.3 !important; /* Reduce opacidad en lugar de ocultar */
+}
+
+/* Asegura que los elementos del hero sean visibles */
+body.perf-mode .hero-eyebrow,
+body.perf-mode .hero-title,
+body.perf-mode .hero-desc,
+body.perf-mode .hero-badge,
+body.perf-mode .hero-stats,
+body.perf-mode .hero-cta,
+body.perf-mode .discord-hero-btn,
+body.perf-mode .title-demon,
+body.perf-mode .title-list {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+/* Desactiva efectos de hover en modo rendimiento */
+body.perf-mode .level-card:hover,
+body.perf-mode .lb-row:hover,
+body.perf-mode .user-widget-card:hover,
+body.perf-mode .perf-widget-btn:hover,
+body.perf-mode .hero-stats:hover,
+body.perf-mode .hero-cta:hover {
+  transform: none !important;
+}
+
+/* Elimina box-shadow y backdrop-filter para mejor rendimiento */
+body.perf-mode .level-card,
+body.perf-mode .lb-row,
+body.perf-mode .user-widget-card,
+body.perf-mode .perf-widget-btn,
+body.perf-mode .hero-stats,
+body.perf-mode .hero-cta,
+body.perf-mode .discord-hero-btn {
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+/* Desactiva animaciones de AOS */
+body.perf-mode [data-aos] {
+  opacity: 1 !important;
+  transform: none !important;
+}

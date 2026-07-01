@@ -103,7 +103,7 @@ function paintCards(levels, animated = true) {
   container.classList.toggle('grid-view', currentView === 'grid');
   const perfMode = typeof isPerformanceModeEnabled === 'function'
     ? isPerformanceModeEnabled()
-    : document.body?.classList.contains('performance-mode') || localStorage.getItem('uy_perf_mode') === '1';
+    : document.body?.classList.contains('perf-mode') || localStorage.getItem('uy_perf_mode') === '1';
 
   const firstLegacyIdx = levels.findIndex(l => l.legacy);
   let dividerInserted = false;

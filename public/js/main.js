@@ -22,7 +22,7 @@ function syncPerformanceModeUI() {
 }
 
 function applyPerformanceMode(enabled = isPerformanceModeEnabled()) {
-  document.body?.classList.toggle('performance-mode', enabled);
+  document.body?.classList.toggle('perf-mode', enabled);
   syncPerformanceModeUI();
 
   const canvas = document.getElementById('particleCanvas');
