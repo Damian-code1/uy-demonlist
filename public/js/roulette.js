@@ -902,6 +902,9 @@ function finalizeComplete(percentage) {
 
   showRlToast(toastMsg, 'success');
   if (isFull) launchConfetti();
+  
+  RL.current = null;
+  
   saveSession();
 
   if (effectiveCount >= RL.totalGoal) {
@@ -913,9 +916,6 @@ function finalizeComplete(percentage) {
   renderHistory();
   updateProgressUI();
   updateSessionStats();
-
-  RL.current = null;
-  saveSession();
   resetSlotDisplay();
   updateButtons();
 }
