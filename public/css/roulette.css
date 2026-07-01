@@ -1773,6 +1773,7 @@ kbd {
 .rl-blind-content {
   display: flex; flex-direction: column; align-items: center; gap: .85rem;
   color: var(--text-dim); position: relative; z-index: 1;
+  padding: 1rem;
 }
 .rl-blind-content i {
   font-size: 3rem; opacity: .35;
@@ -1786,6 +1787,14 @@ kbd {
 .rl-blind-content span {
   font-size: .78rem; letter-spacing: 3px; text-transform: uppercase;
   font-weight: 700; color: rgba(255,255,255,.25);
+}
+.rl-blind-content button {
+  animation: blindButtonPulse 2s ease-in-out infinite;
+  box-shadow: 0 0 20px rgba(139,92,246,.4), 0 4px 16px rgba(0,0,0,.6);
+}
+@keyframes blindButtonPulse {
+  0%,100% { transform: scale(1); box-shadow: 0 0 20px rgba(139,92,246,.4), 0 4px 16px rgba(0,0,0,.6); }
+  50%      { transform: scale(1.03); box-shadow: 0 0 32px rgba(139,92,246,.6), 0 6px 24px rgba(0,0,0,.8); }
 }
 .rl-blind-sub {
   font-size: .65rem !important; opacity: .35; letter-spacing: 1.5px !important;

@@ -779,7 +779,18 @@ function renderCurrentLevel(level) {
         blindEl.className = 'rl-blind-overlay';
         thumbEl.parentElement.appendChild(blindEl);
       }
-      blindEl.innerHTML = `<div class="rl-blind-content"><i class="fas fa-eye-slash"></i><span>BLIND MODE</span><span class="rl-blind-sub">Pegá la ID en GD para descubrir el nivel</span></div>`;
+      const levelId = level.aredl_level_id || level.gd_level_id;
+      blindEl.innerHTML = `
+        <div class="rl-blind-content">
+          <i class="fas fa-eye-slash"></i>
+          <span>BLIND MODE</span>
+          <span class="rl-blind-sub">Pegá la ID en GD para descubrir el nivel</span>
+          ${levelId ? `
+            <button class="rl-slot-chip rl-copy-id-btn rl-blind-chip" onclick="copyLevelId('${levelId}')" style="margin-top:.75rem">
+              <i class="fas fa-copy"></i> Copiar ID ${levelId}
+            </button>
+          ` : '<span class="rl-blind-sub" style="margin-top:.5rem"><i class="fas fa-exclamation-triangle"></i> Sin ID disponible</span>'}
+        </div>`;
       blindEl.style.display = 'flex';
     } else {
       thumbEl.className = 'rl-slot-thumb';
