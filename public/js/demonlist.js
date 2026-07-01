@@ -8,6 +8,10 @@ let _lmGdStatsCache = {};
 let favoritesView    = false;
 let userFavorites    = JSON.parse(localStorage.getItem('favorites') || '[]');
 
+window.filteredLevels = filteredLevels;
+window.favoritesView  = favoritesView;
+window.userFavorites  = userFavorites;
+
 async function syncFavoritesWithDB() {
   if (!window.currentUser) return;
   const discordId = localStorage.getItem('uy_discord_id');
@@ -19,6 +23,7 @@ async function syncFavoritesWithDB() {
     const data = await res.json();
     if (Array.isArray(data.favorites)) {
       userFavorites = data.favorites;
+      window.userFavorites = userFavorites;
       localStorage.setItem('favorites', JSON.stringify(userFavorites));
     }
   } catch {}
@@ -29,6 +34,7 @@ async function toggleFavoriteDB(levelId) {
   const action = idx >= 0 ? 'remove' : 'add';
   if (idx >= 0) userFavorites.splice(idx, 1); else userFavorites.push(levelId);
   localStorage.setItem('favorites', JSON.stringify(userFavorites));
+  window.userFavorites = userFavorites;
 
   if (window.currentUser) {
     const discordId = localStorage.getItem('uy_discord_id');
@@ -80,73 +86,85 @@ function showLevelsLoader() {
 
 function renderLevels() {
   filteredLevels = [...getLevelsData()];
+  window.filteredLevels = filteredLevels;
   paintCards(filteredLevels);
 }
 
 function paintCards(levels, animated = true) {
   const container = document.getElementById('levelsContainer');
   if (!container) return;
+  paintCards._token = (paintCards._token || 0) + 1;
+  const renderToken = paintCards._token;
   container.innerHTML = '';
   if (!levels.length) {
     container.innerHTML = `<div class="loader-wrap"><i class="fas fa-search"></i><span>No se encontraron niveles</span></div>`;
     return;
   }
   container.classList.toggle('grid-view', currentView === 'grid');
+  const perfMode = typeof isPerformanceModeEnabled === 'function'
+    ? isPerformanceModeEnabled()
+    : document.body?.classList.contains('performance-mode') || localStorage.getItem('uy_perf_mode') === '1';
 
-  const fragment = document.createDocumentFragment();
-  const cardEls  = [];
   const firstLegacyIdx = levels.findIndex(l => l.legacy);
-  let dividerInserted  = false;
+  let dividerInserted = false;
+  let index = 0;
+  const batchSize = perfMode ? 28 : 18;
+  const firstBatchSize = perfMode ? 28 : 14;
+  const fragment = document.createDocumentFragment();
+  const firstBatchCards = [];
 
-  levels.forEach((level, i) => {
-    // Separador antes del primer nivel legacy
-    if (!dividerInserted && level.legacy && i === firstLegacyIdx) {
-      const divider = document.createElement('div');
-      divider.className = 'legacy-divider';
-      divider.innerHTML = `
-        <div class="legacy-divider-line"></div>
-        <div class="legacy-divider-badge">
-          <i class="fas fa-history"></i>
-          <span>LEGACY LIST</span>
-          <span class="legacy-divider-sub">Insane Demons · sin puntos</span>
-        </div>
-        <div class="legacy-divider-line"></div>
-      `;
-      fragment.appendChild(divider);
-      dividerInserted = true;
+  const appendRange = (start, end, bucket) => {
+    for (let i = start; i < end; i++) {
+      const level = levels[i];
+      if (!dividerInserted && level.legacy && i === firstLegacyIdx) {
+        const divider = document.createElement('div');
+        divider.className = 'legacy-divider';
+        divider.innerHTML = `
+          <div class="legacy-divider-line"></div>
+          <div class="legacy-divider-badge">
+            <i class="fas fa-history"></i>
+            <span>LEGACY LIST</span>
+            <span class="legacy-divider-sub">Insane Demons · sin puntos</span>
+          </div>
+          <div class="legacy-divider-line"></div>
+        `;
+        fragment.appendChild(divider);
+        dividerInserted = true;
+      }
+      const card = buildCard(level, i);
+      fragment.appendChild(card);
+      if (bucket) bucket.push(card);
     }
-    const card = buildCard(level, i);
-    fragment.appendChild(card);
-    cardEls.push(card);
-  });
-  container.appendChild(fragment);
+    container.appendChild(fragment);
+  };
 
-  if (!animated) return;
+  const runBatch = () => {
+    if (renderToken !== paintCards._token) return;
+    const nextSize = index === 0 ? firstBatchSize : batchSize;
+    const end = Math.min(index + nextSize, levels.length);
+    const batchCards = index === 0 ? firstBatchCards : null;
+    appendRange(index, end, batchCards);
 
-  
-  const firstScreenCount = 14;
-  cardEls.slice(0, firstScreenCount).forEach((card, i) => {
-    gsap.from(card, { opacity: 0, y: 12, duration: .35, ease: 'power3.out', delay: Math.min(i * .02, .35) });
-  });
+    if (animated && !perfMode && index === 0 && batchCards.length) {
+      gsap.from(batchCards, {
+        opacity: 0,
+        y: 12,
+        duration: .32,
+        ease: 'power3.out',
+        stagger: { each: .02, from: 'start' }
+      });
+    }
 
-  if (cardEls.length <= firstScreenCount) return;
+    index = end;
+    if (index < levels.length) {
+      const schedule = window.requestIdleCallback
+        ? () => requestIdleCallback(runBatch, { timeout: 120 })
+        : () => setTimeout(runBatch, perfMode ? 16 : 0);
+      schedule();
+    }
+  };
 
-  cardEls.slice(firstScreenCount).forEach(card => {
-    card.style.opacity = '1';
-  });
-
-  const lazyObserver = new IntersectionObserver((entries, obs) => {
-    entries.forEach(entry => {
-      if (!entry.isIntersecting) return;
-      gsap.fromTo(entry.target,
-        { opacity: 0, y: 10 },
-        { opacity: 1, y: 0, duration: .3, ease: 'power3.out' }
-      );
-      obs.unobserve(entry.target);
-    });
-  }, { rootMargin: '200px 0px', threshold: 0 });
-
-  cardEls.slice(firstScreenCount).forEach(card => lazyObserver.observe(card));
+  runBatch();
 }
 
 
@@ -266,7 +284,7 @@ function buildCard(level, index) {
     </button>
 
     ${thumb
-      ? `<img class="lc-thumb" src="${thumb}" alt=""
+      ? `<img class="lc-thumb" src="${thumb}" alt="" loading="lazy" decoding="async" fetchpriority="low"
            data-fallback="${level.thumb_url_fallback || ''}"
            onerror="
              var fb=this.dataset.fallback;
@@ -797,6 +815,7 @@ function applyListSearch() {
   // Filtros sin texto
   if (_listFilter === 'top3') {
     filteredLevels = base.filter(l => (l.position || 999) <= 3);
+    window.filteredLevels = filteredLevels;
     paintCards(filteredLevels, false);
     return;
   }
@@ -804,12 +823,14 @@ function applyListSearch() {
     filteredLevels = base.filter(l =>
       l.youtube_url || (l.victors || []).some(v => v.videoUrl)
     );
+    window.filteredLevels = filteredLevels;
     paintCards(filteredLevels, false);
     return;
   }
 
   if (!q) {
     filteredLevels = base;
+    window.filteredLevels = filteredLevels;
     paintCards(filteredLevels, false);
     return;
   }
@@ -834,6 +855,8 @@ function applyListSearch() {
     return matchName || matchPlayer;
   });
 
+  window.filteredLevels = filteredLevels;
+
   paintCards(filteredLevels, false);
 }
 
@@ -854,6 +877,7 @@ function setupSearch() {
     input.value = '';
     clearBtn.style.display = 'none';
     filteredLevels = [...getLevelsData()];
+    window.filteredLevels = filteredLevels;
     paintCards(filteredLevels, false);
     input.focus();
   });
@@ -881,6 +905,7 @@ function setupFavoritesToggle() {
   if (!btn) return;
   btn.addEventListener('click', () => {
     favoritesView = !favoritesView;
+    window.favoritesView = favoritesView;
     btn.classList.toggle('active', favoritesView);
     btn.title = favoritesView ? 'Ver todos los niveles' : 'Ver favoritos';
     btn.querySelector('i').className = favoritesView ? 'fas fa-star' : 'far fa-star';

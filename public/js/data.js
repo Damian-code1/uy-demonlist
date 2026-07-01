@@ -83,6 +83,7 @@ async function refreshPublicData(opts = {}) {
     filteredLevels = searchQ
       ? allLevels.filter(l => l.name?.toLowerCase().includes(searchQ))
       : [...allLevels];
+    window.filteredLevels = filteredLevels;
     paintCards(filteredLevels, false);
   }
   if (typeof renderLeaderboard === 'function') renderLeaderboard();

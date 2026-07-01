@@ -2,13 +2,63 @@
 
 gsap.registerPlugin(ScrollTrigger);
 
+const PERF_MODE_KEY = 'uy_perf_mode';
+
+function isPerformanceModeEnabled() {
+  return localStorage.getItem(PERF_MODE_KEY) === '1';
+}
+
+function syncPerformanceModeUI() {
+  const enabled = isPerformanceModeEnabled();
+  const btn = document.getElementById('perfModeToggle');
+  if (btn) {
+    btn.classList.toggle('active', enabled);
+    btn.setAttribute('aria-pressed', enabled ? 'true' : 'false');
+    const icon = btn.querySelector('.perf-widget-state i');
+    const copy = btn.querySelector('.perf-widget-copy small');
+    if (icon) icon.className = enabled ? 'fas fa-circle-check' : 'fas fa-circle';
+    if (copy) copy.textContent = enabled ? 'Optimizado para PC lentas' : 'Menos animaciones';
+  }
+}
+
+function applyPerformanceMode(enabled = isPerformanceModeEnabled()) {
+  document.body?.classList.toggle('performance-mode', enabled);
+  syncPerformanceModeUI();
+
+  const canvas = document.getElementById('particleCanvas');
+  if (canvas) canvas.style.display = enabled ? 'none' : '';
+
+  const hasLevelCards = !!document.querySelector('.level-card');
+  if (hasLevelCards && typeof paintCards === 'function' && typeof getLevelsData === 'function') {
+    const toShow = window.favoritesView
+      ? getLevelsData().filter(l => (window.userFavorites || []).includes(l.id))
+      : (window.filteredLevels || getLevelsData());
+    paintCards(toShow, false);
+  }
+
+}
+
+function setupPerformanceModeToggle() {
+  const btn = document.getElementById('perfModeToggle');
+  if (!btn) return;
+  btn.addEventListener('click', () => {
+    const next = !isPerformanceModeEnabled();
+    localStorage.setItem(PERF_MODE_KEY, next ? '1' : '0');
+    applyPerformanceMode(next);
+  });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('year').textContent = new Date().getFullYear();
   setupNavbar();
-  initParticles();
+  setupPerformanceModeToggle();
+  applyPerformanceMode();
+  if (!isPerformanceModeEnabled()) initParticles();
   initSmoothScroll();
 
-  AOS.init({ duration: 520, easing: 'ease-out-quart', once: true, offset: 60 });
+  if (!isPerformanceModeEnabled()) {
+    AOS.init({ duration: 520, easing: 'ease-out-quart', once: true, offset: 60 });
+  }
 
   const modal = document.getElementById('completionModal');
   if (modal) { modal.classList.remove('active'); }
