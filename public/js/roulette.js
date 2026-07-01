@@ -571,8 +571,6 @@ function loadSession() {
     const aredlOnlyEl = document.getElementById('rlAredlOnly');
     if (allAredlEl)  allAredlEl.checked  = false;
     if (aredlOnlyEl) aredlOnlyEl.checked = false;
-    const hide = document.getElementById('rlHideLevel');
-    if (hide) hide.checked = RL.revealHidden;
 
     syncManualFromSlider();
 
@@ -769,7 +767,23 @@ function renderCurrentLevel(level) {
   if (thumbEl) {
     thumbEl.src = thumb || '';
     thumbEl.style.display = thumb ? '' : 'none';
-    thumbEl.className = `rl-slot-thumb${RL.hideMode ? ' rl-thumb-hidden-mode' : ''}`;
+    if (RL.hideMode) {
+      thumbEl.style.display = 'none';
+      let blindEl = document.getElementById('rlBlindOverlay');
+      if (!blindEl) {
+        blindEl = document.createElement('div');
+        blindEl.id = 'rlBlindOverlay';
+        blindEl.className = 'rl-blind-overlay';
+        thumbEl.parentElement.appendChild(blindEl);
+      }
+      blindEl.innerHTML = `<div class="rl-blind-content"><i class="fas fa-eye-slash"></i><span>BLIND MODE</span><span class="rl-blind-sub">Pegá la ID en GD para descubrir el nivel</span></div>`;
+      blindEl.style.display = 'flex';
+    } else {
+      thumbEl.className = 'rl-slot-thumb';
+      thumbEl.style.display = '';
+      const blindEl = document.getElementById('rlBlindOverlay');
+      if (blindEl) blindEl.style.display = 'none';
+    }
   }
 
   const infoEl = document.getElementById('rlSlotInfo');
@@ -801,7 +815,7 @@ function renderCurrentLevel(level) {
           ? `<span class="rl-slot-chip"><i class="fas fa-star" style="color:var(--gold)"></i>${pts.toLocaleString()} pts</span>`
           : `<span class="rl-slot-chip rl-slot-chip-nopts"><i class="fas fa-minus-circle"></i> Sin puntos</span>`
         }
-        ${level.victors?.length ? `
+        ${!RL.hideMode && level.victors?.length ? `
           <button class="rl-slot-chip rl-victors-chip" onclick="openRlVictorsPopup()" style="cursor:pointer;border-color:rgba(124,58,237,.4);color:var(--violet)">
             <i class="fas fa-users"></i>
             ${level.victors.length} victor${level.victors.length !== 1 ? 's' : ''}
@@ -811,7 +825,7 @@ function renderCurrentLevel(level) {
           <button class="rl-slot-chip rl-copy-id-btn" onclick="copyLevelId('${level.aredl_level_id}')">
             <i class="fas fa-copy"></i> ID ${level.aredl_level_id}
           </button>` : ''}
-        ${ytId ? `<a href="https://youtube.com/watch?v=${ytId}" target="_blank" class="rl-slot-chip" style="color:var(--red);text-decoration:none;border-color:rgba(244,63,94,.3)"><i class="fab fa-youtube"></i> Ver showcase</a>` : ''}
+        ${!RL.hideMode && ytId ? `<a href="https://youtube.com/watch?v=${ytId}" target="_blank" class="rl-slot-chip" style="color:var(--red);text-decoration:none;border-color:rgba(244,63,94,.3)"><i class="fab fa-youtube"></i> Ver showcase</a>` : ''}
           `}
       </div>
     `;
@@ -851,26 +865,8 @@ function resetSlotDisplay() {
 function _getEffectiveCompletedCount() {
   const ordered = [...RL.session].reverse().filter(s => s.status === 'completed');
   if (!ordered.length) return 0;
-
-  let count = 0;
-  let prevPct = null;
-
-  for (let i = 0; i < ordered.length; i++) {
-    const s   = ordered[i];
-    const pct = s.percentage ?? 100;
-
-    if (prevPct === null) {
-      const hasNext = ordered[i + 1] != null;
-      if (pct >= 100 || hasNext) {
-        count++;
-      }
-    } else {
-      const skipped = Math.max(0, pct - prevPct - 1);
-      count += skipped + 1;
-    }
-    prevPct = pct;
-  }
-  return count;
+  const lastPct = ordered[ordered.length - 1].percentage ?? 100;
+  return lastPct;
 }
 
 function finalizeComplete(percentage) {

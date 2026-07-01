@@ -1732,3 +1732,64 @@ kbd {
   color: #f59e0b !important;
   font-size: .72rem !important;
 }
+
+/* ── Blind Mode ── */
+.rl-blind-overlay {
+  position: absolute; inset: 0; background: #000;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 5; border-radius: inherit;
+}
+.rl-blind-content {
+  display: flex; flex-direction: column; align-items: center; gap: .5rem;
+  color: rgba(255,255,255,.15);
+}
+.rl-blind-content i { font-size: 2.5rem; }
+.rl-blind-content span { font-family: var(--font-title); font-size: 1.4rem; letter-spacing: 4px; }
+.rl-blind-sub { font-family: var(--font-body,inherit) !important; font-size: .72rem !important; letter-spacing: 1px !important; opacity: .6; }
+.rl-blind-name { color: rgba(255,255,255,.2); letter-spacing: 6px; font-family: var(--font-title); }
+
+/* ── Progress rediseño ── */
+.rl-progress-bar-wrap {
+  height: 10px; background: var(--bg5); border-radius: 10px;
+  overflow: hidden; margin: .5rem 0;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,.4);
+}
+.rl-progress-bar-fill {
+  height: 100%; border-radius: 10px;
+  background: linear-gradient(90deg, var(--violet), #f43f5e);
+  transition: width .5s cubic-bezier(.34,1.56,.64,1);
+  box-shadow: 0 0 12px rgba(124,58,237,.5);
+  position: relative;
+}
+.rl-progress-bar-fill::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.15), transparent);
+  animation: rl-progress-shine 2s ease-in-out infinite;
+}
+@keyframes rl-progress-shine {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+.rl-progress-steps {
+  display: flex; flex-wrap: wrap; gap: 3px; margin-top: .5rem;
+}
+.rl-progress-dot {
+  width: 10px; height: 10px; border-radius: 3px;
+  background: var(--bg5); border: 1px solid var(--border-s);
+  transition: background .3s, border-color .3s, box-shadow .3s;
+}
+.rl-progress-dot.completed {
+  background: linear-gradient(135deg, var(--violet), #f43f5e);
+  border-color: transparent;
+  box-shadow: 0 0 6px rgba(124,58,237,.5);
+}
+.rl-progress-dot.current {
+  background: rgba(124,58,237,.3);
+  border-color: var(--violet);
+  box-shadow: 0 0 8px rgba(124,58,237,.6);
+  animation: rl-dot-pulse 1.2s ease-in-out infinite;
+}
+@keyframes rl-dot-pulse {
+  0%,100% { box-shadow: 0 0 6px rgba(124,58,237,.4); }
+  50%      { box-shadow: 0 0 14px rgba(124,58,237,.8); }
+}

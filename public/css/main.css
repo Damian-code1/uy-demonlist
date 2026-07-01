@@ -6731,3 +6731,43 @@ input, textarea, [contenteditable] {
   .rl-victors-popup-header { padding: 1rem 1.1rem .85rem; }
   .rl-victors-popup-footer { padding: .75rem 1.1rem; }
 }
+
+/* ── Modo rendimiento ── */
+.perf-mode-float {
+  position: fixed; bottom: calc(1rem + 60px); right: 1rem; z-index: 1490;
+  background: linear-gradient(135deg, var(--bg3), var(--bg4));
+  border: 1px solid var(--border-s);
+  border-radius: 14px; padding: .65rem .95rem;
+  display: flex; align-items: center; gap: .6rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,.35);
+  transition: border-color .2s, box-shadow .2s, transform .15s;
+  cursor: pointer; user-select: none;
+  backdrop-filter: blur(12px);
+}
+.perf-mode-float:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(0,0,0,.45);
+}
+.perf-mode-float:hover { border-color: var(--violet); box-shadow: 0 8px 32px rgba(124,58,237,.25); }
+.perf-mode-float-icon { font-size: .95rem; color: var(--violet); }
+.perf-mode-float-text { font-size: .75rem; font-weight: 700; color: var(--text); letter-spacing: .3px; }
+.perf-mode-float-sub  { font-size: .62rem; color: var(--text-dim); }
+.perf-mode-float-toggle {
+  width: 36px; height: 20px; border-radius: 10px;
+  background: var(--bg5); border: 1px solid var(--border-s);
+  position: relative; transition: background .2s;
+  flex-shrink: 0;
+}
+.perf-mode-float-toggle::after {
+  content: ''; position: absolute; left: 3px; top: 3px;
+  width: 12px; height: 12px; border-radius: 50%;
+  background: var(--text-dim); transition: transform .2s, background .2s;
+}
+.perf-mode-float.active .perf-mode-float-toggle { background: rgba(124,58,237,.3); border-color: var(--violet); }
+.perf-mode-float.active .perf-mode-float-toggle::after { transform: translateX(16px); background: var(--violet); }
+.perf-mode-float.active .perf-mode-float-icon { color: var(--violet); }
+body.perf-mode * { animation: none !important; transition: none !important; }
+body.perf-mode .lc-fire-spark,
+body.perf-mode .rl-ember,
+body.perf-mode .hero-glow,
+body.perf-mode .hero::before { display: none !important; }

@@ -74,9 +74,7 @@
       </div>
       <a href="#submissions" class="nav-link" data-section="submissions">Submissions</a>
       <a href="#leaderboard" class="nav-link" data-section="leaderboard">Jugadores</a>
-      <a href="roulette.html" class="nav-link nav-roulette">
-        <i class="fas fa-dice" style="margin-right:.3rem;font-size:.8rem"></i>Ruleta
-      </a>
+      <a href="roulette.html" class="nav-link">Ruleta</a>
       <a href="#comunidad"   class="nav-link" data-section="comunidad">Discord</a>
       <a href="#donaciones"  class="nav-link" data-section="donaciones">Donaciones</a>
 
@@ -111,21 +109,8 @@
 
 <div class="floating-ui-stack">
   <div class="user-widget" id="userWidget">
-    <div class="user-widget-card">
-    </div>
-    <div class="user-widget-dropdown">
-    </div>
-  </div>
-</div>
-  <div class="perf-widget" id="perfWidget">
-    <button type="button" class="perf-widget-btn" id="perfModeToggle" aria-pressed="false" title="Modo rendimiento">
-      <span class="perf-widget-icon"><i class="fas fa-bolt"></i></span>
-      <span class="perf-widget-copy">
-        <strong>Rendimiento</strong>
-        <small>Menos animaciones</small>
-      </span>
-      <span class="perf-widget-state"></span>
-    </button>
+    <div class="user-widget-card"></div>
+    <div class="user-widget-dropdown"></div>
   </div>
 </div>
 <!-- END FLOATING -->
@@ -1055,6 +1040,30 @@
     });
   }
 </script>
+
+<div class="perf-mode-float" id="perfModeFloat">
+  <i class="fas fa-gauge-high perf-mode-float-icon"></i>
+  <div>
+    <div class="perf-mode-float-text">Rendimiento</div>
+    <div class="perf-mode-float-sub">Menos animaciones</div>
+  </div>
+  <div class="perf-mode-float-toggle"></div>
+</div>
+<script>
+(function(){
+  const btn = document.getElementById('perfModeFloat');
+  if (!btn) return;
+  const PKEY = 'uy_perf_mode';
+  function apply(on) {
+    document.body.classList.toggle('perf-mode', on);
+    btn.classList.toggle('active', on);
+    localStorage.setItem(PKEY, on ? '1' : '0');
+  }
+  apply(localStorage.getItem(PKEY) === '1');
+  btn.addEventListener('click', () => apply(!btn.classList.contains('active')));
+})();
+</script>
+</body>
 
 </body>
 </html>
