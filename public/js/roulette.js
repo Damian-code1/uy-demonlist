@@ -267,17 +267,27 @@ function openPctModal(mode) {
 
   if (mode === 'fail') {
     if (title) title.textContent = 'Abandonar nivel';
-    if (sub)   sub.textContent   = '¿Hasta qué porcentaje llegaste antes de abandonar?';
+    if (sub) {
+  sub.textContent = RL.hideMode
+    ? '¿Hasta qué porcentaje llegaste antes de abandonar el nivel oculto?'
+    : '¿Hasta qué porcentaje llegaste antes de abandonar?';
+}
     if (icon)  icon.innerHTML     = '<i class="fas fa-skull-crossbones"></i>';
     if (submit) submit.innerHTML  = '<i class="fas fa-skull-crossbones"></i> Confirmar abandono';
   } else {
     if (title) title.textContent = 'Registrar progreso';
-    if (sub)   sub.textContent   = '¿Hasta qué porcentaje llegaste en este nivel?';
+    if (sub) {
+  sub.textContent = RL.hideMode
+    ? '¿Hasta qué porcentaje llegaste en el nivel oculto?'
+    : '¿Hasta qué porcentaje llegaste en este nivel?';
+}
     if (icon)  icon.innerHTML     = '<i class="fas fa-percent"></i>';
     if (submit) submit.innerHTML  = '<i class="fas fa-check"></i> Confirmar';
   }
 
-  if (levelEl) levelEl.textContent = RL.current.name;
+  if (levelEl) {
+  levelEl.textContent = RL.hideMode ? '??? NIVEL OCULTO ???' : RL.current.name;
+  }
   if (errEl)   errEl.textContent   = '';
 
   if (hint) {
