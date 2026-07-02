@@ -10,6 +10,7 @@ function openAdminPanel() {
   window._scrollbarSetVisible?.(false);
   loadAdminTab('levels');
 }
+window.openAdminPanel = openAdminPanel;
 
 function closeAdminPanel() {
   document.getElementById('adminPanel')?.classList.remove('open');
@@ -18,6 +19,7 @@ function closeAdminPanel() {
   window._scrollbarSetVisible?.(true);
   closeUserDropdown();
 }
+window.closeAdminPanel = closeAdminPanel;
 
 function loadAdminTab(tab) { 
   adminCurrentTab = tab;
@@ -159,6 +161,7 @@ function openAdminLevelModal(id, name, pos, youtubeUrl, gdId, legacy, twoPlayer)
   document.getElementById('levelFormTwoPlayer').checked = !!twoPlayer;
   modal.classList.add('open');
 }
+window.openAdminLevelModal = openAdminLevelModal;
 
 function closeLevelModal() {
   document.getElementById('levelFormModal')?.classList.remove('open');
@@ -813,6 +816,7 @@ async function loadAdminSubmissions() {
     container.innerHTML = adminError('Error al cargar submissions: ' + e.message);
   }
 }
+window.loadAdminSubmissions = loadAdminSubmissions;
 
 function renderAdminSubmissions(subs) {
   const container = document.getElementById('admin-submissions-table');
@@ -1041,7 +1045,7 @@ function openSubDetailModal(sub) {
     ${ytUrl ? `
     <div class="sub-detail-row">
       <div class="sub-detail-label"><i class="fab fa-youtube" style="color:#ff4444;margin-right:.35rem"></i>Video YouTube</div>
-      ${ytId ? `<img class="sub-detail-thumb" src="https:
+      ${ytId ? `<img class="sub-detail-thumb" src="https://img.youtube.com/vi/${ytId}/mqdefault.jpg" alt="">` : ''}
       <a href="${esc(ytUrl)}" target="_blank" class="sub-detail-video-link">
         <i class="fab fa-youtube" style="color:#ff4444"></i> Ver video
       </a>

@@ -577,7 +577,7 @@ function showMuralVoterPopup(voters, isLike, anchorEl) {
     <div class="lc-reaction-popup-list">
       ${voters.map(u => {
         const av = u.discord_id && u.discord_avatar
-          ? `<img src="https:
+          ? `<img src="https://cdn.discordapp.com/avatars/${u.discord_id}/${u.discord_avatar}.png" class="lc-reaction-avatar" alt="">`
           : `<div class="lc-reaction-avatar lc-reaction-avatar-ph">${(u.name||'?')[0].toUpperCase()}</div>`;
         const sub = u.username && u.username !== u.name
           ? `<span style="font-size:.65rem;color:var(--text-dim);display:block">@${escMural(u.username)}</span>`
