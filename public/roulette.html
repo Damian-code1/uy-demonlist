@@ -401,36 +401,78 @@
   <div class="modal-backdrop" onclick="document.getElementById('rlFinishModal').classList.remove('open')"></div>
   <div class="rl-finish-box">
     <div class="rl-finish-header">
-      <div class="rl-finish-trophy">🏆</div>
+      <div class="rl-finish-trophy">
+        <i class="fas fa-trophy"></i>
+      </div>
       <div class="rl-finish-title">¡RULETA COMPLETADA!</div>
       <div class="rl-finish-sub">Completaste tu sesión de Extreme Demon Roulette</div>
     </div>
+    <div class="rl-finish-progress-display">
+      <div class="rl-finish-progress-circle">
+        <svg class="rl-finish-progress-svg" viewBox="0 0 120 120">
+          <defs>
+            <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:var(--success);stop-opacity:1" />
+              <stop offset="100%" style="stop-color:var(--violet);stop-opacity:1" />
+            </linearGradient>
+          </defs>
+          <circle class="rl-finish-progress-bg" cx="60" cy="60" r="54"></circle>
+          <circle class="rl-finish-progress-bar" id="rlFinishProgressCircle" cx="60" cy="60" r="54" stroke="url(#progressGradient)"></circle>
+        </svg>
+        <div class="rl-finish-progress-text">
+          <div class="rl-finish-progress-pct" id="rlFinishProgressPct">100%</div>
+          <div class="rl-finish-progress-label">Completado</div>
+        </div>
+      </div>
+    </div>
     <div class="rl-finish-stats-grid">
       <div class="rl-finish-stat">
-        <div class="rl-finish-stat-val" id="rlFinishCompleted" style="color:var(--success)">0</div>
-        <div class="rl-finish-stat-lbl">Completados</div>
+        <div class="rl-finish-stat-icon" style="background:rgba(34,197,94,.15);color:var(--success)">
+          <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="rl-finish-stat-content">
+          <div class="rl-finish-stat-val" id="rlFinishCompleted">0</div>
+          <div class="rl-finish-stat-lbl">Completados</div>
+        </div>
       </div>
       <div class="rl-finish-stat">
-        <div class="rl-finish-stat-val" id="rlFinishFailed" style="color:var(--red)">0</div>
-        <div class="rl-finish-stat-lbl">Rendidos</div>
+        <div class="rl-finish-stat-icon" style="background:rgba(239,68,68,.15);color:var(--red)">
+          <i class="fas fa-skull-crossbones"></i>
+        </div>
+        <div class="rl-finish-stat-content">
+          <div class="rl-finish-stat-val" id="rlFinishFailed">0</div>
+          <div class="rl-finish-stat-lbl">Rendidos</div>
+        </div>
       </div>
       <div class="rl-finish-stat">
-        <div class="rl-finish-stat-val" id="rlFinishSkipped" style="color:var(--warning)">0</div>
-        <div class="rl-finish-stat-lbl">Salteados</div>
+        <div class="rl-finish-stat-icon" style="background:rgba(245,158,11,.15);color:var(--warning)">
+          <i class="fas fa-forward"></i>
+        </div>
+        <div class="rl-finish-stat-content">
+          <div class="rl-finish-stat-val" id="rlFinishSkipped">0</div>
+          <div class="rl-finish-stat-lbl">Salteados</div>
+        </div>
       </div>
       <div class="rl-finish-stat">
-        <div class="rl-finish-stat-val" id="rlFinishPct" style="color:var(--violet)">0%</div>
-        <div class="rl-finish-stat-lbl">Ratio</div>
+        <div class="rl-finish-stat-icon" style="background:rgba(168,85,247,.15);color:var(--violet)">
+          <i class="fas fa-chart-line"></i>
+        </div>
+        <div class="rl-finish-stat-content">
+          <div class="rl-finish-stat-val" id="rlFinishRatio">0%</div>
+          <div class="rl-finish-stat-lbl">Ratio</div>
+        </div>
       </div>
     </div>
     <div class="rl-finish-actions">
       <button class="rl-finish-btn-pdf" id="rlBtnFinishPdf">
-        <i class="fas fa-file-pdf"></i> PDF
+        <i class="fas fa-file-pdf"></i> Descargar PDF
       </button>
       <button class="rl-finish-btn-new" id="rlBtnNewSession">
         <i class="fas fa-redo"></i> Nueva sesión
       </button>
-      <button class="rl-finish-btn-close" id="rlBtnCloseFinish">Cerrar</button>
+      <button class="rl-finish-btn-close" id="rlBtnCloseFinish">
+        <i class="fas fa-times"></i> Cerrar
+      </button>
     </div>
   </div>
 </div>

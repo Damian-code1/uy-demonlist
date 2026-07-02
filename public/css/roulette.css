@@ -1148,10 +1148,15 @@ input[type="range"]::-moz-range-progress {
   position: relative;
 }
 .rl-finish-trophy {
-  font-size: 3.5rem;
+  font-size: 4rem;
   line-height: 1;
   margin-bottom: .75rem;
   animation: trophy-bounce .5s cubic-bezier(.34,1.56,.64,1) .2s both;
+  background: linear-gradient(135deg, var(--gold), #fbbf24);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 4px 12px rgba(251,191,36,.3));
 }
 @keyframes trophy-bounce {
   from { transform: scale(0) rotate(-15deg); }
@@ -1159,36 +1164,112 @@ input[type="range"]::-moz-range-progress {
 }
 .rl-finish-title {
   font-family: var(--font-title);
-  font-size: 2.2rem;
-  letter-spacing: 3px;
+  font-size: 2rem;
+  letter-spacing: 2px;
   color: var(--text);
   margin-bottom: .5rem;
+  line-height: 1.2;
 }
 .rl-finish-sub {
-  font-size: .88rem;
+  font-size: .9rem;
   color: var(--text-sub);
+  line-height: 1.4;
+}
+
+.rl-finish-progress-display {
+  padding: 2rem;
+  display: flex;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(124,58,237,.05), rgba(34,197,94,.05));
+  border-bottom: 1px solid var(--border-s);
+}
+.rl-finish-progress-circle {
+  position: relative;
+  width: 120px;
+  height: 120px;
+}
+.rl-finish-progress-svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+.rl-finish-progress-bg {
+  fill: none;
+  stroke: var(--bg4);
+  stroke-width: 8;
+}
+.rl-finish-progress-bar {
+  fill: none;
+  stroke-width: 8;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s cubic-bezier(.34,1.56,.64,1);
+}
+.rl-finish-progress-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.rl-finish-progress-pct {
+  font-family: var(--font-title);
+  font-size: 2rem;
+  font-weight: 900;
+  color: var(--text);
+  line-height: 1;
+  background: linear-gradient(135deg, var(--success), var(--violet));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.rl-finish-progress-label {
+  font-size: .7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-dim);
+  margin-top: .25rem;
 }
 
 .rl-finish-stats-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1px;
+  background: var(--border-s);
   border-bottom: 1px solid var(--border-s);
 }
 .rl-finish-stat {
-  padding: 1.25rem .5rem;
-  text-align: center;
-  border-right: 1px solid var(--border-s);
+  padding: 1.25rem 1rem;
+  background: var(--bg2);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
-.rl-finish-stat:last-child { border-right: none; }
+.rl-finish-stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+.rl-finish-stat-content {
+  flex: 1;
+  min-width: 0;
+}
 .rl-finish-stat-val {
   font-family: var(--font-title);
-  font-size: 2rem;
+  font-size: 1.75rem;
   line-height: 1;
-  margin-bottom: .3rem;
+  margin-bottom: .25rem;
+  color: var(--text);
+  font-weight: 700;
 }
 .rl-finish-stat-lbl {
-  font-size: .62rem;
+  font-size: .7rem;
   font-weight: 700;
   letter-spacing: 1px;
   text-transform: uppercase;

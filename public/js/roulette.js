@@ -207,27 +207,28 @@ function validatePercentage(value, mode) {
   if (isNaN(num) || num < 0 || num > 100) {
     return { ok: false, msg: 'Ingresá un porcentaje válido entre 0 y 100.' };
   }
-  if (mode === 'complete' && num === 0) {
-    return { ok: false, msg: 'Para completar un nivel necesitás al menos 1%.' };
-  }
 
   if (mode === 'complete') {
-    const lastPct = getLastRecordedPercentage();
     const currentTotal = _getTotalPercentageCompleted();
     
-    if (lastPct !== null && num <= lastPct) {
+    if (currentTotal >= 100) {
       return { 
         ok: false, 
-        msg: `El porcentaje debe ser mayor al anterior (${lastPct}%). Ingresá más de ${lastPct}%.` 
+        msg: '¡Ya llegaste al 100%! No podés agregar más progreso.' 
       };
     }
     
-    const newTotal = currentTotal + num;
-    if (newTotal > 100) {
-      const maxAllowed = 100 - currentTotal;
+    if (num < currentTotal + 1) {
       return { 
         ok: false, 
-        msg: `Superarías el 100% total. Máximo permitido: ${maxAllowed}% (llegarías a ${newTotal}%).` 
+        msg: `Debés ingresar al menos ${currentTotal + 1}% para avanzar. Progreso actual: ${currentTotal}%.` 
+      };
+    }
+    
+    if (num > 100) {
+      return { 
+        ok: false, 
+        msg: `El máximo es 100%. No podés ingresar más de 100%.` 
       };
     }
   }
@@ -283,14 +284,14 @@ function openPctModal(mode) {
     if (mode === 'fail') {
       hint.textContent = 'Podés ingresar cualquier porcentaje del 0 al 100.';
     } else {
-      const lastPct = getLastRecordedPercentage();
       const currentTotal = _getTotalPercentageCompleted();
+      const minRequired = currentTotal + 1;
       const remaining = 100 - currentTotal;
       
-      if (lastPct !== null) {
-        hint.textContent = `Progreso anterior: ${lastPct}%. Progreso total: ${currentTotal}%. Debés ingresar más de ${lastPct}% (máximo ${remaining}% para llegar a 100%).`;
+      if (currentTotal === 0) {
+        hint.textContent = `Ingresá tu progreso de 1% a 100%. La ruleta avanza de 1 en 1 hasta llegar a 100%.`;
       } else {
-        hint.textContent = `Progreso total actual: ${currentTotal}%. Podés ingresar hasta ${remaining}% para completar el 100%.`;
+        hint.textContent = `Progreso actual: ${currentTotal}%. Ingresá entre ${minRequired}% y 100% (quedan ${remaining}% para completar la ruleta).`;
       }
     }
   }
@@ -1260,25 +1261,45 @@ function showFinishModal() {
   const skipped   = RL.session.filter(s => s.status === 'skipped').length;
   const total     = RL.session.filter(s => s.status !== 'pending').length;
   const pct       = total > 0 ? Math.round((completed / total) * 100) : 0;
+  const totalPct  = _getTotalPercentageCompleted();
 
   const titleEl = modal.querySelector('.rl-finish-title');
   const subEl   = modal.querySelector('.rl-finish-sub');
   const trophy  = modal.querySelector('.rl-finish-trophy');
 
-  if (completed >= RL.totalGoal) {
-    if (titleEl) titleEl.textContent = '🏆 ¡RULETA COMPLETADA! 🏆';
-    if (subEl) subEl.textContent = `Completaste ${completed} niveles — ¡desafío superado!`;
-    if (trophy) trophy.textContent = '🏆';
+  if (totalPct >= 100) {
+    if (titleEl) titleEl.innerHTML = '<i class="fas fa-trophy" style="color:var(--gold);margin-right:.5rem"></i>¡RULETA COMPLETADA!<i class="fas fa-trophy" style="color:var(--gold);margin-left:.5rem"></i>';
+    if (subEl) subEl.innerHTML = `¡Llegaste al <strong>100%</strong> — desafío superado con ${completed} nivel${completed !== 1 ? 'es' : ''}!`;
+    if (trophy) trophy.innerHTML = '<i class="fas fa-trophy"></i>';
+  } else if (failed > 0) {
+    if (titleEl) titleEl.innerHTML = '<i class="fas fa-skull-crossbones" style="margin-right:.5rem"></i>SESIÓN TERMINADA';
+    if (subEl) subEl.innerHTML = `Te rendiste en el ${totalPct}% del progreso`;
+    if (trophy) trophy.innerHTML = '<i class="fas fa-skull"></i>';
   } else {
-    if (titleEl) titleEl.textContent = '😵 SESIÓN TERMINADA';
-    if (subEl) subEl.textContent = `Completaste ${completed} de ${RL.totalGoal} niveles`;
-    if (trophy) trophy.textContent = '💀';
+    if (titleEl) titleEl.innerHTML = '<i class="fas fa-flag-checkered" style="margin-right:.5rem"></i>SESIÓN COMPLETADA';
+    if (subEl) subEl.innerHTML = `Alcanzaste el ${totalPct}% de progreso con ${completed} nivel${completed !== 1 ? 'es' : ''}`;
+    if (trophy) trophy.innerHTML = '<i class="fas fa-medal"></i>';
   }
 
   document.getElementById('rlFinishCompleted').textContent = completed;
   document.getElementById('rlFinishFailed').textContent    = failed;
   document.getElementById('rlFinishSkipped').textContent   = skipped;
-  document.getElementById('rlFinishPct').textContent       = pct + '%';
+  document.getElementById('rlFinishRatio').textContent     = pct + '%';
+  
+  const progressPctEl = document.getElementById('rlFinishProgressPct');
+  if (progressPctEl) progressPctEl.textContent = totalPct + '%';
+  
+  const progressCircle = document.getElementById('rlFinishProgressCircle');
+  if (progressCircle) {
+    const radius = 54;
+    const circumference = 2 * Math.PI * radius;
+    const offset = circumference - (totalPct / 100) * circumference;
+    progressCircle.style.strokeDasharray = `${circumference} ${circumference}`;
+    progressCircle.style.strokeDashoffset = circumference;
+    setTimeout(() => {
+      progressCircle.style.strokeDashoffset = offset;
+    }, 100);
+  }
 
   modal.classList.add('open');
   launchConfetti();
