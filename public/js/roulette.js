@@ -38,6 +38,7 @@ renderHistory();
 updateSessionStats();
 checkActiveSession();
 rebuildPool();
+checkAutoFinishModal();
 
 if (RL.current) {
   renderCurrentLevel(RL.current);
@@ -205,15 +206,8 @@ function validatePercentage(value, mode) {
   if (isNaN(num) || num < 0 || num > 100) {
     return { ok: false, msg: 'Ingresá un porcentaje válido entre 0 y 100.' };
   }
-  
-  
-  
-  if (mode === 'fail') {
-    return { ok: true, value: num };
-  }
-  const last = getLastRecordedPercentage();
-  if (last != null && num <= last) {
-    return { ok: false, msg: `El porcentaje es inválido: debe ser estrictamente mayor al anterior (${last}%).` };
+  if (mode === 'complete' && num === 0) {
+    return { ok: false, msg: 'Para completar un nivel necesitás al menos 1%.' };
   }
   return { ok: true, value: num };
 }
@@ -262,20 +256,17 @@ function openPctModal(mode) {
   if (levelEl) levelEl.textContent = RL.current.name;
   if (errEl)   errEl.textContent   = '';
 
-  const last = getLastRecordedPercentage();
   if (hint) {
     if (mode === 'fail') {
-      hint.textContent = 'Podés ingresar cualquier porcentaje del 0 al 100, sin importar tus intentos anteriores.';
+      hint.textContent = 'Podés ingresar cualquier porcentaje del 0 al 100.';
     } else {
-      hint.textContent = last != null
-        ? `Debe ser mayor que ${last}%`
-        : 'Primer nivel: podés ingresar cualquier porcentaje del 1 al 100.';
+      hint.textContent = 'Ingresá el porcentaje hasta el que llegaste (1–100).';
     }
   }
 
   if (input) {
     input.value = '';
-    input.min = mode === 'fail' ? 0 : (last != null ? last : 1);
+    input.min = 0;
     input.max = 100;
   }
 
@@ -461,7 +452,10 @@ function initControls() {
 }
 
 function isSessionEnded() {
-  return RL.surrendered || RL.session.some(s => s.status === 'failed');
+  const completed = RL.session.filter(s => s.status === 'completed').length;
+  return RL.surrendered
+    || RL.session.some(s => s.status === 'failed')
+    || completed >= RL.totalGoal;
 }
 
 function showSurrenderBanner() {
@@ -694,11 +688,29 @@ function checkActiveSession() {
   }
 }
 
+function checkAutoFinishModal() {
+  if (isSessionEnded()) {
+    const completed = RL.session.filter(s => s.status === 'completed').length;
+    if (completed >= RL.totalGoal && !RL.surrendered) {
+      RL.sessionActive = false;
+      saveSession();
+      setTimeout(showFinishModal, 600);
+    }
+  }
+}
+
 
 async function handleSpin() {
   if (isSessionEnded()) {
-    showRlToast('La sesión terminó porque te rendiste.', 'error');
-    showSurrenderBanner();
+    const completed = RL.session.filter(s => s.status === 'completed').length;
+    if (completed >= RL.totalGoal) {
+      showRlToast('¡Ya completaste la ruleta! Iniciá una nueva sesión para seguir jugando.', 'success');
+    } else if (RL.surrendered) {
+      showRlToast('Te rendiste. Limpiá el historial para empezar de nuevo.', 'error');
+      showSurrenderBanner();
+    } else {
+      showRlToast('La sesión terminó. Iniciá una nueva para jugar.', 'info');
+    }
     return;
   }
 
@@ -871,46 +883,38 @@ function resetSlotDisplay() {
 
 
 function _getEffectiveCompletedCount() {
-  const ordered = [...RL.session].reverse().filter(s => s.status === 'completed');
-  if (!ordered.length) return 0;
-  const lastPct = ordered[ordered.length - 1].percentage ?? 100;
-  return lastPct;
+  return RL.session.filter(s => s.status === 'completed').length;
 }
 
 function finalizeComplete(percentage) {
   if (isSessionEnded()) return;
   if (!RL.current) return;
 
-  const prevPct = getLastRecordedPercentage();
   const entry = RL.session.find(s => s.level.id === RL.current.id);
-  if (entry) {
-    entry.status     = 'completed';
-    entry.percentage = percentage;
-    entry.timestamp  = Date.now();
+  if (!entry) {
+    showRlToast('Error: no se encontró el nivel en la sesión', 'error');
+    return;
   }
 
-  const effectiveCount = _getEffectiveCompletedCount();
+  entry.status     = 'completed';
+  entry.percentage = percentage;
+  entry.timestamp  = Date.now();
+
+  const completedCount = _getEffectiveCompletedCount();
   const isFull  = percentage >= 100;
-  const skipped = prevPct != null ? Math.max(0, percentage - prevPct - 1) : 0;
 
   let toastMsg = isFull
     ? `¡${RL.current.name} completado al 100%! 🔥`
     : `${RL.current.name} — ${percentage}% registrado ✓`;
-  if (skipped > 0) {
-    toastMsg += ` · ${skipped} porcentaje${skipped > 1 ? 's' : ''} saltado${skipped > 1 ? 's' : ''} (quedan ${Math.max(0, RL.totalGoal - effectiveCount)})`;
+
+  if (completedCount < RL.totalGoal) {
+    toastMsg += ` (${completedCount}/${RL.totalGoal})`;
   }
 
   showRlToast(toastMsg, 'success');
   if (isFull) launchConfetti();
-  
-  RL.current = null;
-  
-  saveSession();
 
-  if (effectiveCount >= RL.totalGoal) {
-    setTimeout(showFinishModal, 800);
-    return;
-  }
+  RL.current = null;
 
   rebuildPool();
   renderHistory();
@@ -918,15 +922,21 @@ function finalizeComplete(percentage) {
   updateSessionStats();
   resetSlotDisplay();
   updateButtons();
+  saveSession();
+
+  if (completedCount >= RL.totalGoal) {
+    RL.sessionActive = false;
+    RL.surrendered = false;
+    saveSession();
+    setTimeout(showFinishModal, 800);
+    return;
+  }
 }
 
-  function finalizeFail(percentage) {
+function finalizeFail(percentage) {
   if (!RL.current || isSessionEnded()) return;
 
-  const entry = RL.session.find(
-    s => s.level.id === RL.current.id
-  );
-
+  const entry = RL.session.find(s => s.level.id === RL.current.id);
   if (entry) {
     entry.status = 'failed';
     entry.percentage = percentage;
@@ -1195,8 +1205,22 @@ function showFinishModal() {
   const completed = RL.session.filter(s => s.status === 'completed').length;
   const failed    = RL.session.filter(s => s.status === 'failed').length;
   const skipped   = RL.session.filter(s => s.status === 'skipped').length;
-  const total     = completed + failed + skipped;
+  const total     = RL.session.filter(s => s.status !== 'pending').length;
   const pct       = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+  const titleEl = modal.querySelector('.rl-finish-title');
+  const subEl   = modal.querySelector('.rl-finish-sub');
+  const trophy  = modal.querySelector('.rl-finish-trophy');
+
+  if (completed >= RL.totalGoal) {
+    if (titleEl) titleEl.textContent = '🏆 ¡RULETA COMPLETADA! 🏆';
+    if (subEl) subEl.textContent = `Completaste ${completed} niveles — ¡desafío superado!`;
+    if (trophy) trophy.textContent = '🏆';
+  } else {
+    if (titleEl) titleEl.textContent = '😵 SESIÓN TERMINADA';
+    if (subEl) subEl.textContent = `Completaste ${completed} de ${RL.totalGoal} niveles`;
+    if (trophy) trophy.textContent = '💀';
+  }
 
   document.getElementById('rlFinishCompleted').textContent = completed;
   document.getElementById('rlFinishFailed').textContent    = failed;
