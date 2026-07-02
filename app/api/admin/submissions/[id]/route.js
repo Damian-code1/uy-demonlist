@@ -229,9 +229,9 @@ export async function PUT(request, { params }) {
         [params.id]
       );
       if (submitterRows[0]) {
-        const submitterDiscordId = submitterRows[0]?.discord_id || submitterDiscordId || null;
-        submitterDiscordUsername    = submitterRows[0].discord_username || null;
-        submitterDiscordDisplayName = submitterRows[0].discord_display_name || null;
+        submitterDiscordId           = submitterRows[0]?.discord_id || null;
+        submitterDiscordUsername     = submitterRows[0].discord_username || null;
+        submitterDiscordDisplayName  = submitterRows[0].discord_display_name || null;
       }
     } catch (e) {
       console.warn('[submissions] No se pudo obtener discord_id del submitter:', e.message);
