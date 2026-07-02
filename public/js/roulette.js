@@ -1025,11 +1025,11 @@ function finalizeFail(percentage) {
   RL.surrendered   = true;
   RL.sessionActive = false;
 
-  if (RL.revealHidden) {
-    RL.revealHidden = false;
-    const hideEl = document.getElementById('rlHideLevel');
-    if (hideEl) hideEl.checked = false;
-  }
+  RL.hideMode = false;
+  RL.revealHidden = false;
+
+  const hideEl = document.getElementById('rlHideLevel');
+  if (hideEl) hideEl.checked = false;
 
   const levelName = RL.current ? RL.current.name : 'Nivel';
   RL.current = null;
@@ -1348,7 +1348,7 @@ function showFinishModal() {
     if (hideEl) hideEl.checked = false;
     renderHistory();
   }
-  if (RL.hideMode) {
+  if (RL.hideMode && !isSessionEnded()) {
     showRlToast('Desactivá "Ocultar nivel" para poder descargar el PDF', 'error');
     return;
   }
