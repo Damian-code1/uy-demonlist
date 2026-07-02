@@ -589,6 +589,19 @@ function loadSession() {
     RL.surrendered   = !!data.surrendered || RL.session.some(s => s.status === 'failed');
     RL._sessionForceEnded = !!data.forceEnded;
 
+
+    const totalPct = _getTotalPercentageCompleted();
+    const surrendered = RL.session.some(s => s.status === 'failed');
+
+    if (RL._sessionForceEnded && totalPct < 100 && !surrendered) {
+      RL._sessionForceEnded = false;
+      RL.sessionActive = true;
+    }
+
+    if (totalPct >= 100 || surrendered) {
+      RL._sessionForceEnded = true;
+    }
+
 const completed = RL.session
   .filter(s => s.status === 'completed' && s.percentage != null)
   .sort((a, b) => a.timestamp - b.timestamp);
@@ -750,17 +763,28 @@ function checkActiveSession() {
 }
 
 function checkAutoFinishModal() {
-  if (isSessionEnded()) {
-    const totalPct = _getTotalPercentageCompleted();
-    if (totalPct >= 100 && !RL.surrendered) {
-      RL.sessionActive = false;
-      forceEndSession();
-      saveSession();
-      setTimeout(showFinishModal, 600);
-    } else if (RL.surrendered || RL.session.some(s => s.status === 'failed')) {
-      forceEndSession();
-      showSurrenderBanner();
-    }
+  const totalPct = _getTotalPercentageCompleted();
+  const surrendered = RL.session.some(s => s.status === 'failed');
+
+  if (RL._sessionForceEnded && totalPct < 100 && !surrendered) {
+    RL._sessionForceEnded = false;
+    RL.sessionActive = true;
+    saveSession();
+    updateButtons();
+    return;
+  }
+
+  if (totalPct >= 100 && !surrendered) {
+    RL.sessionActive = false;
+    forceEndSession();
+    saveSession();
+    setTimeout(showFinishModal, 600);
+    return;
+  }
+
+  if (surrendered) {
+    forceEndSession();
+    showSurrenderBanner();
   }
 }
 
