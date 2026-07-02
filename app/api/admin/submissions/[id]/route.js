@@ -266,7 +266,9 @@ export async function PUT(request, { params }) {
         await notifyBotDM({
           discordId:       submitterDiscordId,
           decision:        status,
+          submissionId:    Number(params.id),
           levelName:       sub.level_name,
+          playerName:      playerDisplayName,
           staffName,
           youtubeLink:     sub.youtube_url || null,
           rejectionReason: status === 'rejected' ? (rejection_reason?.trim() || null) : null,
