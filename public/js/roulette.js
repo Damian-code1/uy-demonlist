@@ -19,6 +19,7 @@ const RL = {
   confettiCtx:  null,
   confettiParticles: [],
   pctModalMode: 'complete',
+  _sessionForceEnded: false,
 };
 
 const RL_STORAGE_KEY = 'uydl_roulette_session_v1';
@@ -452,10 +453,19 @@ function initControls() {
 }
 
 function isSessionEnded() {
-  const completed = RL.session.filter(s => s.status === 'completed').length;
-  return RL.surrendered
+  return RL._sessionForceEnded
+    || RL.surrendered
     || RL.session.some(s => s.status === 'failed')
-    || completed >= RL.totalGoal;
+    || _getEffectiveCompletedCount() >= RL.totalGoal;
+}
+
+function forceEndSession() {
+  RL._sessionForceEnded = true;
+  RL.sessionActive = false;
+  updateButtons();
+  updateProgressUI();
+  updateSessionStats();
+  saveSession();
 }
 
 function showSurrenderBanner() {
@@ -532,6 +542,7 @@ function saveSession() {
     surrendered:   RL.surrendered,
     totalGoal:     RL.totalGoal,
     hideMode:      RL.hideMode,
+    forceEnded:    RL._sessionForceEnded,
   }));
 }
 
@@ -545,6 +556,7 @@ function loadSession() {
     RL.current       = data.current || null;
     RL.sessionActive = !!data.sessionActive;
     RL.surrendered   = !!data.surrendered || RL.session.some(s => s.status === 'failed');
+    RL._sessionForceEnded = !!data.forceEnded;
 
     const total = RL.levels.length || RL.filterRange[1];
     RL.totalGoal = 100;
@@ -645,6 +657,7 @@ function startSession() {
   RL._sessionWasHidden = RL.hideMode;
   RL.surrendered = false;
   RL.current = null;
+  RL._sessionForceEnded = false;
   hideSurrenderBanner();
   resetSlotDisplay();
   updateButtons();
@@ -662,6 +675,7 @@ function resetSession() {
   RL.sessionActive = false;
   RL.surrendered   = false;
   RL.current       = null;
+  RL._sessionForceEnded = false;
   hideSurrenderBanner();
   resetSlotDisplay();
   updateButtons();
@@ -693,8 +707,12 @@ function checkAutoFinishModal() {
     const completed = RL.session.filter(s => s.status === 'completed').length;
     if (completed >= RL.totalGoal && !RL.surrendered) {
       RL.sessionActive = false;
+      forceEndSession();
       saveSession();
       setTimeout(showFinishModal, 600);
+    } else if (RL.surrendered || RL.session.some(s => s.status === 'failed')) {
+      forceEndSession();
+      showSurrenderBanner();
     }
   }
 }
@@ -902,12 +920,13 @@ function finalizeComplete(percentage) {
 
   const completedCount = _getEffectiveCompletedCount();
   const isFull  = percentage >= 100;
+  const isLast  = completedCount >= RL.totalGoal;
 
   let toastMsg = isFull
     ? `¡${RL.current.name} completado al 100%! 🔥`
     : `${RL.current.name} — ${percentage}% registrado ✓`;
 
-  if (completedCount < RL.totalGoal) {
+  if (!isLast) {
     toastMsg += ` (${completedCount}/${RL.totalGoal})`;
   }
 
@@ -918,18 +937,18 @@ function finalizeComplete(percentage) {
 
   rebuildPool();
   renderHistory();
-  updateProgressUI();
   updateSessionStats();
   resetSlotDisplay();
-  updateButtons();
-  saveSession();
 
-  if (completedCount >= RL.totalGoal) {
+  if (isLast) {
     RL.sessionActive = false;
     RL.surrendered = false;
-    saveSession();
+    forceEndSession();
     setTimeout(showFinishModal, 800);
-    return;
+  } else {
+    updateProgressUI();
+    updateButtons();
+    saveSession();
   }
 }
 
@@ -952,9 +971,12 @@ function finalizeFail(percentage) {
     if (hideEl) hideEl.checked = false;
   }
 
+  const levelName = RL.current ? RL.current.name : 'Nivel';
+  RL.current = null;
+
   showSurrenderBanner();
   showRlToast(
-    `${RL.current.name} — Abandonado en ${percentage}%. Sesión terminada.`,
+    `${levelName} — Abandonado en ${percentage}%. Sesión terminada.`,
     'info'
   );
 
@@ -962,12 +984,8 @@ function finalizeFail(percentage) {
   renderHistory();
   updateProgressUI();
   updateSessionStats();
-
-  RL.current = null;
-
   resetSlotDisplay();
-  updateButtons();
-  saveSession();
+  forceEndSession();
 }
 
 function handleSkip() {
