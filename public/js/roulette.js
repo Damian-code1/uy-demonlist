@@ -456,7 +456,7 @@ function isSessionEnded() {
   return RL._sessionForceEnded
     || RL.surrendered
     || RL.session.some(s => s.status === 'failed')
-    || _getEffectiveCompletedCount() >= RL.totalGoal;
+    || _getTotalPercentageCompleted() >= 100;
 }
 
 function forceEndSession() {
@@ -704,8 +704,8 @@ function checkActiveSession() {
 
 function checkAutoFinishModal() {
   if (isSessionEnded()) {
-    const completed = RL.session.filter(s => s.status === 'completed').length;
-    if (completed >= RL.totalGoal && !RL.surrendered) {
+    const totalPct = _getTotalPercentageCompleted();
+    if (totalPct >= 100 && !RL.surrendered) {
       RL.sessionActive = false;
       forceEndSession();
       saveSession();
@@ -904,6 +904,13 @@ function _getEffectiveCompletedCount() {
   return RL.session.filter(s => s.status === 'completed').length;
 }
 
+function _getTotalPercentageCompleted() {
+  const completed = RL.session.filter(s => s.status === 'completed');
+  if (!completed.length) return 0;
+  const total = completed.reduce((sum, s) => sum + (s.percentage || 0), 0);
+  return Math.min(100, total);
+}
+
 function finalizeComplete(percentage) {
   if (isSessionEnded()) return;
   if (!RL.current) return;
@@ -918,20 +925,18 @@ function finalizeComplete(percentage) {
   entry.percentage = percentage;
   entry.timestamp  = Date.now();
 
-  const completedCount = _getEffectiveCompletedCount();
+  const totalPct = _getTotalPercentageCompleted();
   const isFull  = percentage >= 100;
-  const isLast  = completedCount >= RL.totalGoal;
+  const isWon  = totalPct >= 100;
 
   let toastMsg = isFull
     ? `¡${RL.current.name} completado al 100%! 🔥`
     : `${RL.current.name} — ${percentage}% registrado ✓`;
 
-  if (!isLast) {
-    toastMsg += ` (${completedCount}/${RL.totalGoal})`;
-  }
+  toastMsg += ` (${totalPct}% total)`;
 
   showRlToast(toastMsg, 'success');
-  if (isFull) launchConfetti();
+  if (isFull || isWon) launchConfetti();
 
   RL.current = null;
 
@@ -940,7 +945,7 @@ function finalizeComplete(percentage) {
   updateSessionStats();
   resetSlotDisplay();
 
-  if (isLast) {
+  if (isWon) {
     RL.sessionActive = false;
     RL.surrendered = false;
     forceEndSession();
@@ -1012,29 +1017,29 @@ function handleSkip() {
 
 
 function updateProgressUI() {
+  const totalPct  = _getTotalPercentageCompleted();
   const completed = _getEffectiveCompletedCount();
   const skipped   = RL.session.filter(s => s.status === 'skipped').length;
   const failed    = RL.session.filter(s => s.status === 'failed').length;
-  const total     = RL.totalGoal;
-  const pct       = total > 0 ? Math.min(100, Math.round((completed / total) * 100)) : 0;
 
   const bar = document.getElementById('rlProgressFill');
-  if (bar) bar.style.width = pct + '%';
+  if (bar) bar.style.width = totalPct + '%';
 
   const countEl = document.getElementById('rlProgressCount');
-  if (countEl) countEl.textContent = `${completed} / ${total}`;
+  if (countEl) countEl.textContent = `${totalPct} / 100`;
 
   const dotsEl = document.getElementById('rlProgressDots');
   if (dotsEl) {
     dotsEl.innerHTML = '';
+    const total = 100;
     for (let i = 0; i < total; i++) {
       const dot = document.createElement('div');
-      if (i < completed) {
+      if (i < totalPct) {
         dot.className = 'rl-progress-dot completed';
-        dot.title = `Nivel ${i + 1}: completado`;
-      } else if (i === completed && RL.current) {
+        dot.title = `${i + 1}%`;
+      } else if (i === Math.floor(totalPct) && RL.current) {
         dot.className = 'rl-progress-dot current';
-        dot.title = 'Nivel actual';
+        dot.title = 'Progreso actual';
       } else {
         dot.className = 'rl-progress-dot';
       }
