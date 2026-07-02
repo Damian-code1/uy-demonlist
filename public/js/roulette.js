@@ -210,6 +210,28 @@ function validatePercentage(value, mode) {
   if (mode === 'complete' && num === 0) {
     return { ok: false, msg: 'Para completar un nivel necesitás al menos 1%.' };
   }
+
+  if (mode === 'complete') {
+    const lastPct = getLastRecordedPercentage();
+    const currentTotal = _getTotalPercentageCompleted();
+    
+    if (lastPct !== null && num <= lastPct) {
+      return { 
+        ok: false, 
+        msg: `El porcentaje debe ser mayor al anterior (${lastPct}%). Ingresá más de ${lastPct}%.` 
+      };
+    }
+    
+    const newTotal = currentTotal + num;
+    if (newTotal > 100) {
+      const maxAllowed = 100 - currentTotal;
+      return { 
+        ok: false, 
+        msg: `Superarías el 100% total. Máximo permitido: ${maxAllowed}% (llegarías a ${newTotal}%).` 
+      };
+    }
+  }
+  
   return { ok: true, value: num };
 }
 
@@ -261,7 +283,15 @@ function openPctModal(mode) {
     if (mode === 'fail') {
       hint.textContent = 'Podés ingresar cualquier porcentaje del 0 al 100.';
     } else {
-      hint.textContent = 'Ingresá el porcentaje hasta el que llegaste (1–100).';
+      const lastPct = getLastRecordedPercentage();
+      const currentTotal = _getTotalPercentageCompleted();
+      const remaining = 100 - currentTotal;
+      
+      if (lastPct !== null) {
+        hint.textContent = `Progreso anterior: ${lastPct}%. Progreso total: ${currentTotal}%. Debés ingresar más de ${lastPct}% (máximo ${remaining}% para llegar a 100%).`;
+      } else {
+        hint.textContent = `Progreso total actual: ${currentTotal}%. Podés ingresar hasta ${remaining}% para completar el 100%.`;
+      }
     }
   }
 
