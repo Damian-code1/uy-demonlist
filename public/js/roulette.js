@@ -589,6 +589,22 @@ function loadSession() {
     RL.surrendered   = !!data.surrendered || RL.session.some(s => s.status === 'failed');
     RL._sessionForceEnded = !!data.forceEnded;
 
+const completed = RL.session
+  .filter(s => s.status === 'completed' && s.percentage != null)
+  .sort((a, b) => a.timestamp - b.timestamp);
+
+let highest = 0;
+
+for (const entry of completed) {
+  if (entry.percentage > highest) {
+    highest = entry.percentage;
+  } else {
+    entry.percentage = highest;
+  }
+}
+
+saveSession();
+
     const total = RL.levels.length || RL.filterRange[1];
     RL.totalGoal = 100;
     RL.filterRange     = [1, total];
@@ -936,10 +952,12 @@ function _getEffectiveCompletedCount() {
 }
 
 function _getTotalPercentageCompleted() {
-  const completed = RL.session.filter(s => s.status === 'completed');
+  const completed = RL.session.filter(
+    s => s.status === 'completed' && s.percentage != null
+  );
+
   if (!completed.length) return 0;
-  const total = completed.reduce((sum, s) => sum + (s.percentage || 0), 0);
-  return Math.min(100, total);
+  return Math.max(...completed.map(s => s.percentage));
 }
 
 function finalizeComplete(percentage) {
@@ -952,11 +970,16 @@ function finalizeComplete(percentage) {
     return;
   }
 
-  entry.status     = 'completed';
-  entry.percentage = percentage;
-  entry.timestamp  = Date.now();
+  entry.status = 'completed';
+entry.percentage = percentage;
+entry.timestamp = Date.now();
 
-  const totalPct = _getTotalPercentageCompleted();
+updateProgressUI();
+updateSessionStats();
+renderHistory();
+saveSession();
+
+const totalPct = _getTotalPercentageCompleted();
   const isFull  = percentage >= 100;
   const isWon  = totalPct >= 100;
 
@@ -972,6 +995,7 @@ function finalizeComplete(percentage) {
   RL.current = null;
 
   rebuildPool();
+  updateProgressUI();
   renderHistory();
   updateSessionStats();
   resetSlotDisplay();
